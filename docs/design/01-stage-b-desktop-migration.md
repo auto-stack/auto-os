@@ -188,6 +188,16 @@ P2/P3 为 Stage B **硬前置**（框架仓改动，Category B 作用域），P7
 - **门档**：Category B——`cargo check -p auto-man` + rust_ui/api_gen 模块测试；
   折叠前 `cargo tf`。
 
+> **P-2 落地注记（2026-09-07，auto-lang PLAN-587 已执行复审）**：
+> `resolve_rust_workspace_dir(project_dir)` 单点解析——`AUTO_RUST_WORKSPACE`
+> env（设置即权威）→ 框架内项目=共享工作区（canonicalize+小写归一前缀检测，
+> 零变化）→ 仓外项目=`<project>/rust-workspace/`；rel 锚点
+> （auto-lang path 依赖/target-dir）从实际落点重算。单一漏斗
+> `ensure_shared_workspace` + 三处直调点（start_api_server/build/run）全走
+> resolve。验证：仓外 helloworld fixture 完整生成链 member 落 project-local +
+> 框架共享工作区 Cargo.toml 字节不变（V4）；框架内 015-notes 既有生成测试
+> 零回归；tf 唯红=charts 预存。KNOWN-DEBT P584-D1 结案。
+
 ### P3 清障二：桌面注册表指向仓外（三源聚合）
 
 - **现状锚点**：① iced 轨 `crates/auto-lang/examples/ui_desktop.rs:17-37`
@@ -325,7 +335,7 @@ os-008（drafting 原状，frontmatter 带 `origin`，正文 auto-lang 相对路
 | 批次 | 内容 | 主仓 | 前置 | 窗口约束 |
 |---|---|---|---|---|
 | **P-1** | 计划随迁批：§1-A2 七项 → `os-NNN` 重编 + `origin` 注记 + INDEX 指针行 | auto-os | 本设计定案 | 无（可与 541/582 收口并行） |
-| **P-2** | 清障一：rust-server 落点可配（§4-P2） | auto-lang | 无 | 无 |
+| **P-2** | 清障一：rust-server 落点可配（§4-P2）——**✅ 已落地（2026-09-07，auto-lang PLAN-587）** | auto-lang | 无 | 无 |
 | **P-3** | 清障二：注册表三源聚合（§4-P3，含 manifest schema 定稿）——**✅ 已落地（2026-09-07，auto-lang PLAN-586；执行期修正见 §4-P3 注记）** | auto-lang | 无 | 无 |
 | **P-4** | VM 债族修复（source_root=0 / m12/m16；583 台账 + `scratch/p583` 复现器） | auto-lang | 无 | 无（**建议**先于 P-5——shell.at 是该形态高密度用户，搬迁回归前修比回归中踩雷便宜） |
 | **P-7** | shell pack 批：§4-P7 加载器 + §1-A4 四件物理迁入 `shell/` + 权威翻转 + hash-lock 同步契约 | auto-lang 改造 + auto-os 落位 | P-3 落地（同族解析序机制复用） | 无硬窗口（shell 四件与 541/582 改动面零交集）；建议先于 P-5 完成，本体批一次收拢 |
