@@ -68,7 +68,7 @@ auto-os 开工时实测为准。
 | B2 | minesweeper（游戏波基底） | `examples/ui/038-minesweeper/` | 556 games-wave1 |
 | B3 | clock / tetris / klondike | 554/557/558 开工新落（现仅在计划中，无目录） | 554/557/558 |
 | B4 | gallery 系 | `examples/ui/029-photo-gallery/` 等，集合以 578 定案为准 | 578 desktop-gallery-apps |
-| B5 | notes explorer | 582 产出（examples/ui/ 下新目录） | 582 本仓收口 → 产出随迁 |
+| B5 | notes explorer | ~~582 产出（examples/ui/ 下新目录）~~ **实测修正（P-5 立项 2026-09-07）：582 产出=website playground（packages/auto-playground-vue），非 examples/ui 桌面资产——无实物随迁** | 582 本仓收口（产出留 website 轴） |
 
 公共资产：`examples/ui/common/` 中被随迁 app 引用者随迁（抽 `apps/common/`）；
 `p493-color-check`、`041-auto-edit`、`043/044`（capability/dnd/clipboard 桥）
