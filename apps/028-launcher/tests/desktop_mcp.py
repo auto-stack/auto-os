@@ -218,6 +218,9 @@ def main():
             mcp.screenshot("t3_open_palette")
 
         # ---- T3: type "to" → filter ----
+        # PLAN-009（Stage B P-6，2026-09-07）：注册表组成漂移更新——P-3 三源
+        # 聚合 + P-5 桌面域迁移后，"to" 命中集 4→5（新增 sys-monitor；
+        # calculator/todo/stopwatch 原含 "to"），排序随 recent 加权位移。
         print("\nT3: type query")
         inp = mcp.find(kind="input")
         result.check("palette input found", inp is not None, "no input in palette")
@@ -226,7 +229,7 @@ def main():
             time.sleep(0.5)
             st = mcp.state("q", "nres", "sel")
             result.check("q is to", state_field(st, "q") == '"to"', st)
-            result.check("filtered to 4", state_field(st, "nres") == "4", st)
+            result.check("filtered to 5", state_field(st, "nres") == "5", st)
             result.check("sel reset 0", state_field(st, "sel") == "0", st)
 
         # ---- T4: ↓×2 → Enter launches 012-stopwatch (plan acceptance) ----
@@ -239,6 +242,9 @@ def main():
         mcp.key("Enter")
         time.sleep(0.5)
         st = mcp.state("last", "visible", "recent")
+        # PLAN-009：fresh .am 状态下 sel=2 仍落 012-stopwatch（原断言保持，
+        # 2026-09-07 双上下文实测）；.am 残留 recent 加权会使落点漂移——
+        # 重跑前清 apps/028-launcher/.am（环境敏感注记）。
         result.check("Enter launched 012-stopwatch",
                      state_field(st, "last") == '"012-stopwatch"', st)
         result.check("palette hidden after launch", state_field(st, "visible") == '"0"', st)
