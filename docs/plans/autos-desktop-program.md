@@ -49,6 +49,18 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 | **509**（原提案 457）Smithay 宿主 Stage 1 | M5 | Linux 原生合成器宿主，复用桌面 shell——路线评估定案（auto-cosmic 复活/libcosmic/Smithay+桌面协议宿主三路线）+ 最小骨架 + shell 首帧 + I1 零分叉核对（`509-smithay-host-stage1.md`） | 🗄️ archived 2026-09-01（T1 裁定 **B**：Smithay+桌面协议宿主，smithay 0.7.0 入 manifest——报告 `509-smithay-route-verdict.md`；T5 环境 = WSL2+WSLg，基线成文；T2 双平台编译绿（host-smithay 新 crate）；T4 合成循环实跑 + 像素证据；T3 shell 首帧上屏（生产链渲染→宿主纹理）+ I1 diff 干净（auto-lang 仅 3 文件 cfg 差异）；live attach 登记 Stage 2；复审全量门 cargo tf 3350/3350 绿，I1 复验零行变更；merge 前置 = 报告 §7 大依赖确认位勾销） | 462+463 ✅ |
 | 386（**已复活**） | M6 | 路线 B：桌面协议五通道 + 双模 exe + 形态迁移，Stage 1-3 重构见 386 文件 §0 | 🔄 复活 2026-08-28（Stage 1 即刻可开工，前置仅 462✅+蓝图；Stage 2 待 463/464，Stage 3 含内存实测验收） | Stage1: 462✅；Stage2: +463/464 |
 
+### Stage B 随迁计划区（P-1 批自 auto-lang 迁入，2026-09-07；origin 溯源见各件 frontmatter）
+
+| os 计划 | origin | 状态指针 |
+|---|---|---|
+| 002 desktop-ux-followups | PLAN-535 | drafting 原状 |
+| **003 clock-app** | PLAN-554 | **🔄 executing（2026-09-07 开工，P-6 V8 冒烟批）**——T1 Tick 契约探针 ✅（路径经解析序换算全可达；vue 轨 `running` 门控差发现，秒表开关避名 `running`；notify 动词在；025 锚换算=apps/025-sys-monitor） |
+| 004 games-wave1 | PLAN-556 | drafting 原状 |
+| 005 tetris | PLAN-557 | drafting 原状 |
+| 006 klondike | PLAN-558 | drafting 原状 |
+| 007 p534-debt-batch-1 | PLAN-577 | drafting 原状 |
+| 008 desktop-gallery-apps | PLAN-578 | drafting 原状 |
+
 **编号映射（2026-08-28 立项）**：M2→**462**、M3→**463**、M4→**465**（原提案
 454/455/456，正文历史提案号不回改）；新增 **464**（launcher，吸收 Plan 441，
 其 palette 原语化降为 464 可选任务、vm 焦点原语改由 462 承载）。

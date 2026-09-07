@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-003
 origin: PLAN-554
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: clock-app
 author: [zhaopuming]
 created_at: 2026-09-05
@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径，如 [auto-lang/vm]
-current_step: 0
+current_step: 1
 total_steps: 7
 ---
 
@@ -149,12 +149,35 @@ var interval int = 250
 ## 执行步骤
 （原子任务：精确文件路径 + 确切操作 + 验证命令；每步完成后追加 [✅ 已完成] 一行证据）
 
-- [ ] **T1 Tick 契约探针**
+- [✅ 已完成] **T1 Tick 契约探针**（P-6 V8 冒烟批，2026-09-07）
   读 `crates/auto-lang/src/ui/iced/renderer.rs` `TICK_EVENT`/`AppTickRecipe`
   段与 vue 侧 setInterval 生成（ui_gen）+ 025 SPEC「Tick 机制」节；确认
   `interval` 变量取走条件与 vue/vm 双端行为；顺带核对 `__desktop_cmd`
   动词表有无 notify。结论写回本节。
   验证：探针笔记（scratch/p554/）
+
+  **T1 探针结论（路径均经解析序 `../auto-lang` 兄弟换算可达——V8 实证）**：
+
+  1. **取走条件**（`aura/extract.rs:719-737`）：widget 有 `.Tick` handler 时，
+     model 中**字面名 `interval`** 的 `Expr::Int` 字面量被取走为
+     `tick_interval`（非字量/缺省→1000ms），且 `interval` 从 state_vars
+     移除（不进 ref/状态面）。iced 轨 `renderer.rs:15097` 经
+     `component.tick_interval()` → `widget_tick`（TICK_EVENT=`"__tick"`，
+     renderer.rs:5583；AppTickRecipe tokio 订阅 6262-6380 段）恒挂。
+  2. **vue 轨门控差（关键坑）**：`ui_gen/vue.rs:3995-4016`——若模型存在
+     名为 `running` 的状态变量，setInterval 挂 `watch(running)`（仅
+     `running=="true"` 时跑）；无 `running` 变量则 onMounted 恒跑。iced 轨
+     **无此门控**。⇒ 单 App 混四 tab 时若用 `running` 命名秒表开关，vue 轨
+     会把整只 tick 门死（计时器/世界钟/闹钟停走）。**对策：秒表开关命名
+     避开 `running`（用 `sw_on`），tick 恒跑、handler 内自管累加门控**——
+     双端一致。
+  3. **notify 动词在**（`session.rs:1486` notify arm → push_notification，
+     shell toast/通知中心可达）：待澄清 #1 升级为可选——v1 仍以 in-app
+     banner 为主，闹钟触发可叠加 notify（执行期裁定）。
+  4. **时间源实存**：`Time.now_ms/now_sec`（stdlib.rs:686-696）。
+  5. **025 锚点换算**：正文旧锚 `examples/ui/025-dashboard`（541 更名+590
+     迁移）→ 现址本仓 `apps/025-sys-monitor/SPEC.md:114`（Tick 分频机制节，
+     250ms 基准+speedDiv 分频同款）。
 - [ ] **T2 骨架 tab 化**
   `examples/ui/012-stopwatch/src/front/app.at`：model 增 tab/新状态族；view
   改四 tab 胶囊 + 占位内容；原秒表面板迁入 stopwatch tab。
