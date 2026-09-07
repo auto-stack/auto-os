@@ -83,6 +83,15 @@ remote 窗或 extra root 注册）；② **local 形态**（本仓 `apps/` 目�
 扫描）；③ **框架 demo**（auto-lang `examples/ui` 默认注册表——经清障二接入
 聚合）。manifest 条目 schema 扩展由清障二计划（§4-P3）定稿。
 
+**Schema 定稿（2026-09-07，PLAN-586 执行）**：条目 `{ id, name?, repo?,
+kind: "repo"|"local"（缺省 repo）, ports?, status?（缺省 active）, added? }`
+——宽容读取（未知字段忽略）；repo 形态 `repo` 相对 manifest 根解析、目标含
+pac.at 才注册；local 形态由 `apps/` 容器展开覆盖（manifest 仅策展元数据）；
+坏条目跳过 + 警告不阻断启动。**注册形态执行期修正**：repo 条目落
+**extra root 原生挂载**（§1-C 候选①的 extra root 臂）——remote-apps 机制
+（Plan 516 G4）实测为 WS 投影协议端点，装不下 http/原生 app 形态；纯 web
+app iframe 嵌入列 Stage C 候选（依据与验证见 auto-lang PLAN-586 复审记录）。
+
 
 ## §2 留架清单（框架层不动）
 
@@ -205,6 +214,17 @@ P2/P3 为 Stage B **硬前置**（框架仓改动，Category B 作用域），P7
 - **门档**：Category B——涉 auto-man + auto-lang（app_registry/DesktopOptions），
   `cargo check -p auto-man -p auto-lang` + 模块测试；折叠前 `cargo tf`。
 
+> **P-3 落地注记（2026-09-07，auto-lang PLAN-586 已执行复审）**：三步全落
+> （extra roots 容器泛化 / manifest 框架侧直读〔用户裁定；`AUTO_OS_ROOT`
+> env 设置即权威不回落，兼关断开关〕/ 三轨 parity 锚 + iced
+> `DesktopOptions.extra_app_roots`）。**执行期修正**：方案 2 的 repo 条目
+> 由「remote/URL 机制注册为远程窗」修正为 **extra root 原生挂载**——
+> remote-apps.json（Plan 516 G4）实测为 WS 投影协议端点（连另一桌面实例
+> 投影面），http/原生 app 形态装不进；repo 仓本身即 pac.at+src/front/
+> app.at 单 app 根（os-config 先例同型）。V5 的「kanban 远程窗」措辞随修
+> 正为「kanban 原生挂载呈现」；交互级启动验收归 P-5 V1/V2。§3-a 包装脚本
+> 随 P-6 落地（用户裁定；P-3 以 env 注入等价形态验证）。
+
 ### P7 shell pack 路径化与权威翻转（二次裁定提级，原 Stage C 候选）
 
 - **现状锚点**：`crates/auto-lang/src/ui/shell.rs:10/21/32/45` 四个
@@ -306,7 +326,7 @@ os-008（drafting 原状，frontmatter 带 `origin`，正文 auto-lang 相对路
 |---|---|---|---|---|
 | **P-1** | 计划随迁批：§1-A2 七项 → `os-NNN` 重编 + `origin` 注记 + INDEX 指针行 | auto-os | 本设计定案 | 无（可与 541/582 收口并行） |
 | **P-2** | 清障一：rust-server 落点可配（§4-P2） | auto-lang | 无 | 无 |
-| **P-3** | 清障二：注册表三源聚合（§4-P3，含 manifest schema 定稿） | auto-lang | 无 | 无 |
+| **P-3** | 清障二：注册表三源聚合（§4-P3，含 manifest schema 定稿）——**✅ 已落地（2026-09-07，auto-lang PLAN-586；执行期修正见 §4-P3 注记）** | auto-lang | 无 | 无 |
 | **P-4** | VM 债族修复（source_root=0 / m12/m16；583 台账 + `scratch/p583` 复现器） | auto-lang | 无 | 无（**建议**先于 P-5——shell.at 是该形态高密度用户，搬迁回归前修比回归中踩雷便宜） |
 | **P-7** | shell pack 批：§4-P7 加载器 + §1-A4 四件物理迁入 `shell/` + 权威翻转 + hash-lock 同步契约 | auto-lang 改造 + auto-os 落位 | P-3 落地（同族解析序机制复用） | 无硬窗口（shell 四件与 541/582 改动面零交集）；建议先于 P-5 完成，本体批一次收拢 |
 | **P-5** | 资产搬迁本体批：A1 台账 + A3 launcher + B 批 apps + common 抽取 + L8 指针登记（L2 处置见 P-7 pin 快照）+ 框架层行数实测归档（tokei/cloc） | 两仓 | P-2/P-3 落地（搬完即可跑）；P-4/P-7 建议先行 | **541/582 合并后**（唯一硬窗口） |
