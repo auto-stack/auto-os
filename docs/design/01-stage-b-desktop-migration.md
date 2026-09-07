@@ -252,13 +252,13 @@ worktree 在飞的计划——`git worktree list`：`lang-541`、`lang-582`。T6
 |---|---|---|---|---|
 | 541-025-sys-monitor | 桌面 | executing | lang-541 在飞 | **本仓收口**（走完 review/merge/archive 终态，不随迁；产出 B1 随本体批资产随迁） |
 | 582-playground-notes-explorer | 桌面/examples | **reviewed**（起草时 executing，并行推进） | lang-582 在飞 | **本仓收口**（仅余 merge+archive；产出 B5 随迁） |
-| 535-desktop-ux-followups | 桌面 | drafting | 无 | **随迁**（§1-A2，P-1 批） |
-| 554-clock-app | 桌面 | drafting | 无 | **随迁** |
-| 556-games-wave1 | 桌面 | drafting | 无 | **随迁** |
-| 557-tetris | 桌面 | drafting | 无 | **随迁** |
-| 558-klondike | 桌面 | drafting | 无 | **随迁** |
-| 577-p534-debt-batch-1 | 桌面债批 | drafting | 无 | **随迁** |
-| 578-desktop-gallery-apps | 桌面 | drafting | 无 | **随迁** |
+| 535-desktop-ux-followups | 桌面 | drafting | 无 | **随迁 → os-002**（P-1 已执行 2026-09-07，PLAN-001） |
+| 554-clock-app | 桌面 | drafting | 无 | **随迁 → os-003**（P-1 已执行 2026-09-07） |
+| 556-games-wave1 | 桌面 | drafting | 无 | **随迁 → os-004**（P-1 已执行 2026-09-07） |
+| 557-tetris | 桌面 | drafting | 无 | **随迁 → os-005**（P-1 已执行 2026-09-07） |
+| 558-klondike | 桌面 | drafting | 无 | **随迁 → os-006**（P-1 已执行 2026-09-07） |
+| 577-p534-debt-batch-1 | 桌面债批 | drafting | 无 | **随迁 → os-007**（P-1 已执行 2026-09-07；编号消歧：与 auto-lang archive 既有 577-emitter-gaps-batch 无关） |
+| 578-desktop-gallery-apps | 桌面 | drafting | 无 | **随迁 → os-008**（P-1 已执行 2026-09-07） |
 | 545-use-namespace-semantics | 语言域 | drafting | 无 | 留守 auto-lang |
 | 570-py-subclass-factory | 语言域 | drafting | 无 | 留守 auto-lang |
 
@@ -276,6 +276,11 @@ worktree 在飞的计划——`git worktree list`：`lang-541`、`lang-582`。T6
    needs-analysis 中的 auto-lang 相对路径，在 auto-os 开工时按解析序换算。
 4. **台账接棒**：A1 台账迁入后，桌面域计划状态变更只记 auto-os 侧台账；
    auto-lang INDEX 留指针行（防腐：单一事实源）。
+
+**P-1 执行注记（2026-09-07，PLAN-001）**：七项已随迁为 `docs/plans/` os-002..
+os-008（drafting 原状，frontmatter 带 `origin`，正文 auto-lang 相对路径未回改、
+开工时换算）；auto-lang 侧 `docs/plans/INDEX.md` 指针行在案，七源文件已
+`git rm`（git 历史留档）。批次计划 os-001 已执行完毕。
 
 
 ## §6 验证矩阵
