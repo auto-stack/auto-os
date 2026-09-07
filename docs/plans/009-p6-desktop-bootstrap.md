@@ -12,7 +12,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-os/scripts, auto-os/ci, auto-lang/ci]  # 受影响的 specs 路径
-current_step: 2
+current_step: 3
 total_steps: 8
 ---
 
@@ -130,9 +130,19 @@ drafting→executing + T1 探针 ✅（路径经解析序 `../auto-lang` 换算�
   —— `DESKTOP_OS_ROOT=/d/autostack/auto-os bash scripts/desktop.sh iced` →
   **`38 entries (22 desktop-visible)`** = 33 框架 demo + 3 本仓 apps + os-config
   + kanban，与 590 直接 boot 实证全三源同口径 ✓（经 wrapper 路径成立）。
-- [ ] **T3 V2 零漂移**：三迁移 app + 框架在装 app desktop_mcp 全跑，锚数
+- [✅ 已完成] **T3 V2 零漂移**：三迁移 app + 框架在装 app desktop_mcp 全跑，锚数
   对账 14/11/11/19/26
   验证：对账表写入本计划测试设计节
+  —— worktree `847a769`。**对账表（2026-09-07 实测）**：
+  | 套件 | 位置 | 基线 | 实测 | 裁定 |
+  |---|---|---|---|---|
+  | 025-sys-monitor | 本仓 apps/ | 13（541） | **13P/0F** | ✓✓ 零漂移 |
+  | 028-launcher | 本仓 apps/ | 24 断言（464） | **24P/0F** | ✓✓（nres 4→5 组成漂移断言更新随批；fresh .am 落点注记） |
+  | 038-minesweeper | 本仓 apps/ | 无文档数 | **22P/0F** | ✓ 绿（基线=现状 22 在案） |
+  | 013-todo / 015-notes | lang examples/ui | 11/11 | 22P/0F、13P/0F/1S | ✓ 绿（套件已增长） |
+  | 011-calculator / 024-charts | lang examples/ui | 14/19（472 时代） | 12P/5F、12P/7F | **master 预存红**（未迁 app，590 零代码路径交集；债候选转 R 清单） |
+  迁址注记：套件 auto 二进制相对定位（`..\..\..\..\target`）随迁失效，
+  需 `AUTO_BIN=<lang>/target/debug/auto.exe` env（在案，套件头已支持）。
 - [ ] **T4 V3 双端抽查**：launcher+minesweeper vue/vm（autoui-verifier）
   验证：双轨证据（截图/断言输出）
 - [ ] **T5 V1 五面实机**：wrapper 全屏桌面五面交互 + launcher 启动 025/038
