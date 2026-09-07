@@ -1,0 +1,45 @@
+# Stage B P-6（PLAN-009 T7）：画廊/桌面域资产变更 → 触发 auto-lang website 部署
+# （画廊快照重建，gallery=true 等价形态）。
+#
+# 机制：auto-os push main 触及 ui-gallery/widgets-gallery/apps → 经
+# repository_dispatch（event_type=deploy-website）调 auto-stack/auto-lang 的
+# deploy-website workflow（PLAN-590 已改造画廊段从本仓构建；PLAN-009 补
+# repository_dispatch 触发臂）。
+#
+# 跨仓触发需 PAT：本仓 secrets 配置 AUTO_LANG_DISPATCH_TOKEN（repo scope 的
+# fine-grained PAT，对 auto-lang 的 Actions 写权限）。未配置时本 workflow 跳过
+# 触发并打印提示（不阻断）——降级路径=手动在 auto-lang 网页 UI dispatch
+# deploy-website 勾选 gallery，或 gh CLI：
+#   gh workflow run deploy-website.yml -f gallery=true -R auto-stack/auto-lang
+name: Trigger website gallery rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ui-gallery/**'
+      - 'widgets-gallery/**'
+      - 'apps/**'
+      - '.github/workflows/deploy-gallery-trigger.yml'
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify auto-lang deploy-website (gallery rebuild)
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_LANG_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::AUTO_LANG_DISPATCH_TOKEN 未配置——跳过跨仓触发。"
+            echo "降级：手动 dispatch auto-stack/auto-lang 的 deploy-website（gallery=true），或"
+            echo "  gh workflow run deploy-website.yml -f gallery=true -R auto-stack/auto-lang"
+            exit 0
+          fi
+          curl -sf -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/auto-stack/auto-lang/dispatches \
+            -d '{"event_type":"deploy-website"}'
+          echo "dispatched deploy-website (gallery rebuild) to auto-stack/auto-lang"
