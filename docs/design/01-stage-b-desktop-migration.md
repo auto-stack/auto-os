@@ -75,6 +75,28 @@ auto-os 开工时实测为准。
 等无桌面域计划者留架。端口带：in-repo apps 沿 examples 的 30NN/80NN 带；未来
 升格独立仓时改 17xxx 带（沿 auto-kanban 先例，本仓 AGENTS §3）。
 
+> **P-5 枚举实测定案（2026-09-07 执行，auto-lang PLAN-590；§1-B「以实测为准」
+> 授权兑现）**：
+> - **B1** 实迁形态 = `examples/ui/025-sys-monitor/`（541 终态主目录；表中
+>   `025-dashboard` 仅余 gitignored gen/ 残骸，零迁移，磁盘残留另清）→ `apps/025-sys-monitor/`。
+> - **B2** `038-minesweeper` → `apps/038-minesweeper/` ✓（desktop_mcp 随目录）。
+> - **B4** 定案口径 = 578 变更摘要的两 examples 级画廊：`examples/ui-gallery/`
+>   与 `examples/widgets-gallery/` → **本仓顶层** `{ui-gallery,widgets-gallery}/`
+>   （保 578 的 `apps_dir.parent()` 锚定语义自然延续）；`029-photo-gallery`
+>   为教学 demo 留架（L7）。
+> - **common**：三 app 源码零引用；ui-gallery/pac.at `dep settings` 唯一引用
+>   → 抽 `apps/common/settings/`（common/ 顶层无 pac.at，容器探测不误注册），
+>   ui-gallery dep 路径改 `../apps/common/settings`。
+> - **B3** clock/tetris/klondike 无实物（计划已 P-1 随迁）；**B5** 已修正（582
+>   产出=website playground，无实物随迁）。
+> - 框架侧消费面重锚：测试语料/docs 管线/CLI 脚手架经 `os_paths::
+>   resolve_os_top_dir` 解析序定位（env AUTO_OS_ROOT → 兄弟 → 主检出；
+>   solo 检出 SKIP 不炸）；ui-gallery 收割语料=框架 examples/ui（留架），
+>   `gallery_apps_dir` 补 `../auto-lang/examples/ui` 兄弟探测。
+> - **V1/V2/V3 实机验收（五面交互/desktop_mcp 基线/双端一致性）随 P-6
+>   随迁计划开工批执行**（P-5 收口=物理迁移+引用清零+门禁基线+容器探测
+>   boot 实证 38 entries/22 desktop-visible；实机交互面移交 P-6 一次收拢）。
+
 ### C. apps.manifest 对接面（清障二的消费端）
 
 本仓 `apps.manifest`（伞形清单；现有 kanban 一例：repo 形态 17100/17101）在
@@ -111,8 +133,14 @@ app iframe 嵌入列 Stage C 候选（依据与验证见 auto-lang PLAN-586 复�
 | L8 | 桌面程序历史设计文档 | `docs/design/autoui/{virtual-desktop(23), desktop-shell-and-launcher(24), desktop-shell(25), desktop-protocol-v1, examples-app-track(21)}.md` | 成文地与 specs 沉淀地；归档/历史不回改 | **新增**桌面程序设计一律落本仓 `docs/design/`（本 01 文档即首例）；本仓 00-intro 已注引用方式 |
 | L9 | specs ledger 与计划体系 | `docs/specs/`、`docs/plans/`（INDEX/.next-id） | auto-lang 治理体系 | 台账 A1 迁移后在 auto-lang `docs/plans/` INDEX 留指针行（§5 迁移机制） |
 
-规模注记：草案所称「框架层约 8 万行」以 §7 P-5 执行时实测（`tokei`/`cloc`）
-归档为准，不作为本设计硬数字。
+规模注记（**P-5 实测归档，2026-09-07，tokei v15.0.0**，PLAN-590）：草案所称
+「框架层约 8 万行」系低估——迁移后 auto-lang `crates/` Rust 实测 **1341 文件
+527,646 行（code 439,453 / comments 43,137 / blanks 45,056；另内嵌 Markdown
+36,980 行）**；其中 UI/桌面运行时子集（`src/{ui,ui_gen,aura}`）160 文件
+192,773 行（code 166,578）。随 P-5 迁出资产（apps/ 三 app + common/settings
++ 画廊两件，auto-os 侧实测）约 **12,495 行 / 11,129 code**（74 认型文件另含
+.at 语料）。以上数字非硬契约，复核口径：`tokei crates/ --types Rust`（两仓
+对应根目录执行）。
 
 
 ## §3 入口委托方式（ADR）
@@ -339,8 +367,8 @@ os-008（drafting 原状，frontmatter 带 `origin`，正文 auto-lang 相对路
 | **P-3** | 清障二：注册表三源聚合（§4-P3，含 manifest schema 定稿）——**✅ 已落地（2026-09-07，auto-lang PLAN-586；执行期修正见 §4-P3 注记）** | auto-lang | 无 | 无 |
 | **P-4** | VM 债族修复（source_root=0 / m12/m16；583 台账 + `scratch/p583` 复现器）——**✅ 已落地（2026-09-07，auto-lang PLAN-588；根因=静态模块白名单缺 file 的占位 receiver 漏槽，单点修+m16b 对账 319890==319890）** | auto-lang | 无 | 无（**建议**先于 P-5——shell.at 是该形态高密度用户，搬迁回归前修比回归中踩雷便宜） |
 | **P-7** | shell pack 批：§4-P7 加载器 + §1-A4 四件物理迁入 `shell/` + 权威翻转 + hash-lock 同步契约——**✅ 已落地（2026-09-07，auto-lang PLAN-589 + 本仓 shell/ 四件 + sync 脚本）** | auto-lang 改造 + auto-os 落位 | P-3 落地 ✅（同族解析序机制复用） | 无硬窗口；已先于 P-5 完成 ✓ |
-| **P-5** | 资产搬迁本体批：A1 台账 + A3 launcher + B 批 apps + common 抽取 + L8 指针登记（L2 处置见 P-7 pin 快照）+ 框架层行数实测归档（tokei/cloc） | 两仓 | P-2/P-3 落地（搬完即可跑）；P-4/P-7 建议先行 | **541/582 合并后**（唯一硬窗口） |
-| **P-6** | 随迁计划开工：七项在 auto-os 逐个执行（首个建议 554 或 577——小面验证解析序与流程） | auto-os | P-1 + P-5 | — |
+| **P-5** | 资产搬迁本体批：A1 台账 + A3 launcher + B 批 apps + common 抽取 + L8 指针登记（L2 处置见 P-7 pin 快照）+ 框架层行数实测归档（tokei/cloc）——**✅ 已落地（2026-09-07，auto-lang PLAN-590）：七件物理落位（apps/{028,025-sys,038}+common/settings+顶层画廊两件+台账接棒；对账 167 全等+19 CRLF 规范化+1 dep 改址）；框架仓引用清零+九处语料锚解析序重锚；tv 3618/3619、tf vs master 零新增确定性红；容器探测 boot 38 entries 实证；行数实测 §2 归档（crates/ Rust 527,646 行）；V1/V2/V3 实机验收随 P-6** | 两仓 | P-2/P-3 落地（搬完即可跑）；P-4/P-7 建议先行 | **541/582 合并后**（唯一硬窗口）✓ |
+| **P-6** | 随迁计划开工：七项在 auto-os 逐个执行（首个建议 554 或 577——小面验证解析序与流程）+ §3-a 包装脚本 + P-5 随迁资产 V1/V2/V3 实机验收 + auto-os 侧画廊变更触发 website 部署（repository_dispatch） | auto-os | P-1 + P-5 | — |
 | Stage C 候选 | `auto desktop` 一等子命令（§3-b）；auto-cosmic 归属重估（L4）；app 升格独立仓 17xxx 带规约化 | — | Stage B 稳定后 | — |
 
 P-2/P-3/P-4 互不依赖、不依赖 P-1/P-5/P-7 时机，设计定案后即可并行立项；
