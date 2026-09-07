@@ -4,6 +4,13 @@
 > finish-plan 步骤）。详细状态只住在各计划自己的状态头里，这里只放指针级一行。
 > **架构依据**：`docs/design/autoui/virtual-desktop.md`（下称 Design 23）。
 > **本文拥有的东西**：依赖图、入口条件仪表盘、裁定登记簿。计划内部进度不在此抄。
+>
+> **台账接棒（Stage B P-5，2026-09-07，auto-lang PLAN-590）**：本台账自
+> auto-lang `docs/plans/autos-desktop-program.md` 迁入（git 历史留档源仓）。
+> 自此桌面域计划状态变更**只记本侧**（Design 01 §5 迁移机制 4，单一事实源）；
+> auto-lang 侧 `docs/plans/INDEX.md` 留去向指针行。随批同迁：apps/
+> {028-launcher, 025-sys-monitor, 038-minesweeper, common/settings} +
+> 顶层 {ui-gallery, widgets-gallery}（经 P-3 容器探测/解析序定位注册与消费）。
 
 ## 目标
 

@@ -18,7 +18,7 @@
 | 阶段 | 范围 | 状态 |
 |---|---|---|
 | **Stage A** | 伞形仓骨架（本仓）+ 首个真实 app [auto-kanban](../auto-kanban)（v1 计划板，只读） | 🔄 Plan 579 执行中（2026-09-07） |
-| **Stage B** | 桌面 shell 自 auto-lang 搬迁入本仓（L2：设计文档 + 拆 plan；前置 = auto-lang 在途计划落地） | 未启动 |
+| **Stage B** | 桌面域资产自 auto-lang 搬迁入本仓（[Design 01](docs/design/01-stage-b-desktop-migration.md)） | 🔄 P-1..P-4/P-7 ✅；**P-5 资产本体批已执行**（2026-09-07，台账+launcher+apps+画廊落位）；余 P-6 随迁计划开工 |
 | **Stage C** | 伞形组合机制升级评估（manifest vs submodule；触发条件 = 出现"CI 钉树构建 OS 镜像"类真实需求） | 未启动 |
 
 **submodule 裁定（Stage A）**：不使用 git submodule——现有扁平兄弟仓 +
@@ -33,24 +33,43 @@ auto-os/
 ├── README.md            # 本文件
 ├── AGENTS.md            # agent 工作规约（app 仓约定/解析序/wt-guard 纪律）
 ├── apps.manifest        # 伞形 app 清单（JSON，虚拟伞形唯一事实源）
+├── apps/                # in-repo 桌面 app（Stage B P-5 随迁；含 pac.at 的
+│                        #   子目录 = local app root，P-3 容器探测注册）
+│   ├── 025-sys-monitor/ #   系统监视器（541 终态；tests/desktop_mcp 随目录）
+│   ├── 028-launcher/    #   桌面启动器（464；注册表型特权 app）
+│   ├── 038-minesweeper/ #   扫雷（games-wave1 基底）
+│   └── common/settings/ #   共享 SettingsPopover 组件（ui-gallery 消费）
+├── ui-gallery/          # UI 示例画廊（顶层；收割 auto-lang examples/ui，
+│                        #   解析序 AUTO_GALLERY_APPS → ../auto-lang）
+├── widgets-gallery/     # 组件文档画廊（顶层；框架 docs/schema 管线语料，
+│                        #   auto-lang 侧经 resolve_os_top_dir 解析序消费）
+├── shell/               # shell 四件（P-7 权威真相源；hash-lock 同步契约）
 ├── docs/plans/          # auto-plan 范式计划目录（.next-id 自 001 起）
-├── scripts/new-plan.sh  # 取号建骨架脚本（自 auto-lang 拷贝适配）
+│   └── autos-desktop-program.md  # 桌面程序台账（P-5 接棒，单一事实源）
+├── docs/design/         # 本仓设计文档（01 = Stage B 迁移定案）
+├── scripts/             # new-plan.sh / shell-pack-sync.py
 └── .autoos/specs.json   # spec ledger（六节，结构对齐 auto-lang 同名文件）
 ```
 
 ## Apps
 
-伞形登记的真实 app（详情见 `apps.manifest`）：
+伞形登记（详情见 `apps.manifest` + `apps/` 容器探测）：
 
-| id | name | repo | kind | ports | status |
+| id | name | repo / 目录 | kind | ports | status |
 |---|---|---|---|---|---|
 | kanban | 通用看板（v1 计划板） | [../auto-kanban](../auto-kanban) | repo | 17100 / 17101 | active (Plan 579) |
+| 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
+| 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
+| 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
-> examples/ui 归 demo。app 仓结构约定见 AGENTS.md。
+> examples/ui 归 demo。app 仓结构约定见 AGENTS.md。in-repo `apps/` 为
+> Stage B 随迁的桌面域 app（沿 examples 的 30NN/80NN 端口带；升格独立仓
+> 时改 17xxx 带）。
 
 ## 关联
 
 - 框架根：[../auto-lang](../auto-lang)（语言/编译器/VM/AutoUI/examples）
 - 桌面架构：auto-lang `docs/design/autoui/virtual-desktop.md`（Design 23）
-- 桌面程序台账：auto-lang `docs/plans/autos-desktop-program.md`（Stage B 随迁本仓）
+- 桌面程序台账：[docs/plans/autos-desktop-program.md](docs/plans/autos-desktop-program.md)
+  （Stage B P-5 随迁本仓，接棒单一事实源；auto-lang INDEX 留指针行）
