@@ -102,7 +102,7 @@ app iframe 嵌入列 Stage C 候选（依据与验证见 auto-lang PLAN-586 复�
 | # | 资产组 | 位置（auto-lang） | 留架理由 | 与桌面域的耦合点 |
 |---|---|---|---|---|
 | L1 | 桌面宿主运行时 | `crates/auto-lang/src/ui/`（iced/session/shell.rs/layout/vm_bridge/aura_view_builder 等） | WM/合成/会话/投影协议实现方，全量测试锚定 | `include_str!` 内嵌 shell 四件（`ui/shell.rs:10/21/32/45`）——§1 修正裁定的根因 |
-| L2 | shell 四件 .at 的**框架内副本** | `crates/auto-lang/assets/{shell,desktop,switcher,notification_center}.at` | P-7 权威翻转后转为 **pin 快照回退**（权威副本随迁本仓 `shell/`，§1-A4；hash-lock 同步契约防双源漂移） | `include_str!` 编译期内嵌（`ui/shell.rs:10/21/32/45`）——外部引用仅 7 处（§4-P7 改造面） |
+| L2 | shell 四件 .at 的**框架内副本** | `crates/auto-lang/assets/{shell,desktop,switcher,notification_center}.at` | P-7 权威翻转后转为 **pin 快照回退**（权威副本随迁本仓 `shell/`，§1-A4；hash-lock 同步契约防双源漂移） | `include_str!` 编译期内嵌（`ui/shell.rs:10/21/32/45`）——外部引用仅 7 处（§4-P7 改造面）。**P-7 已落地（2026-09-07）**：四件已入本仓 `shell/`（内容与 pin 快照全等），`scripts/shell-pack-sync.py` 契约在案（校验红灯/`--sync` 单向同步双模式） |
 | L3 | 语言核心与工具链 | `crates/` 全 workspace（auto-lang 九模块/auto-val/auto-man/auto-cli/auto-gen/auto-lsp/auto-cache…） | 语言/框架轴本体 | auto-man `rust_ui.rs` rust-server 产物链 = 清障一对象（§4） |
 | L4 | auto-cosmic（Smithay 宿主线） | `auto-cosmic/`（host-smithay crate，509 线） | 框架侧宿主技术实验（Linux 向合成宿主） | 未来合成宿主演进线；归属可随 Stage C 重估 |
 | L5 | Web/UI 生态包 | `packages/`（JS 四包）、`blocks/`、`website/`、`parity/`、`stdlib`（auto/lib） | 框架 UI 生态与语言运行库 | packages 被 app 轨道消费（vue 轨）——经版本引用，不随迁 |
@@ -338,7 +338,7 @@ os-008（drafting 原状，frontmatter 带 `origin`，正文 auto-lang 相对路
 | **P-2** | 清障一：rust-server 落点可配（§4-P2）——**✅ 已落地（2026-09-07，auto-lang PLAN-587）** | auto-lang | 无 | 无 |
 | **P-3** | 清障二：注册表三源聚合（§4-P3，含 manifest schema 定稿）——**✅ 已落地（2026-09-07，auto-lang PLAN-586；执行期修正见 §4-P3 注记）** | auto-lang | 无 | 无 |
 | **P-4** | VM 债族修复（source_root=0 / m12/m16；583 台账 + `scratch/p583` 复现器）——**✅ 已落地（2026-09-07，auto-lang PLAN-588；根因=静态模块白名单缺 file 的占位 receiver 漏槽，单点修+m16b 对账 319890==319890）** | auto-lang | 无 | 无（**建议**先于 P-5——shell.at 是该形态高密度用户，搬迁回归前修比回归中踩雷便宜） |
-| **P-7** | shell pack 批：§4-P7 加载器 + §1-A4 四件物理迁入 `shell/` + 权威翻转 + hash-lock 同步契约 | auto-lang 改造 + auto-os 落位 | P-3 落地（同族解析序机制复用） | 无硬窗口（shell 四件与 541/582 改动面零交集）；建议先于 P-5 完成，本体批一次收拢 |
+| **P-7** | shell pack 批：§4-P7 加载器 + §1-A4 四件物理迁入 `shell/` + 权威翻转 + hash-lock 同步契约——**✅ 已落地（2026-09-07，auto-lang PLAN-589 + 本仓 shell/ 四件 + sync 脚本）** | auto-lang 改造 + auto-os 落位 | P-3 落地 ✅（同族解析序机制复用） | 无硬窗口；已先于 P-5 完成 ✓ |
 | **P-5** | 资产搬迁本体批：A1 台账 + A3 launcher + B 批 apps + common 抽取 + L8 指针登记（L2 处置见 P-7 pin 快照）+ 框架层行数实测归档（tokei/cloc） | 两仓 | P-2/P-3 落地（搬完即可跑）；P-4/P-7 建议先行 | **541/582 合并后**（唯一硬窗口） |
 | **P-6** | 随迁计划开工：七项在 auto-os 逐个执行（首个建议 554 或 577——小面验证解析序与流程） | auto-os | P-1 + P-5 | — |
 | Stage C 候选 | `auto desktop` 一等子命令（§3-b）；auto-cosmic 归属重估（L4）；app 升格独立仓 17xxx 带规约化 | — | Stage B 稳定后 | — |
