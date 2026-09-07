@@ -1,10 +1,40 @@
 {
   "sections": [
-    { "id": "reports", "items": [] },
-    { "id": "goals", "items": [] },
-    { "id": "architecture", "items": [] },
-    { "id": "designs", "items": [] },
-    { "id": "tests", "items": [] },
-    { "id": "reviews", "items": [] }
+    {
+      "id": "reports",
+      "items": [
+        {
+          "id": "P001-1",
+          "title": "Stage B P-1 计划随迁批 — 变更摘要（七项桌面域计划 auto-lang → auto-os）",
+          "content": "Design 01（Plan 584 定案）§7 实施拆解第一批：§1-A2 七项桌面域在途计划\n（535-desktop-ux-followups / 554-clock-app / 556-games-wave1 / 557-tetris /\n558-klondike / 577-p534-debt-batch-1 / 578-desktop-gallery-apps，均 drafting、\n无 worktree）整体随迁本仓，纯文件零冲突（§5 推论），Category A 免 worktree\n（沿 Plan 584 先例）。\n\n编号映射（§5 迁移机制，重编保 drafting 原状、状态机续用）：535→os-002、\n554→003、556→004、557→005、558→006、577→007、578→008；frontmatter 增\norigin: PLAN-5xx 溯源，正文加随迁横幅（互链 Design 01 §5 与 auto-lang\nINDEX）；正文 auto-lang 相对路径不回改，推迟 P-6 开工时按本仓 AGENTS §2\n解析序换算。007 带编号消歧注记（与 auto-lang archive 既有\n577-emitter-gaps-batch 无关；auto-lang 活动区编号冲突随 git rm 消解）。\n\nauto-lang 侧收口：docs/plans/INDEX.md 新建（去向指针行 + 577 消歧 +\n545/570 留守注记 + P-5 台账指针预留），七源文件 git rm（git 历史留档；\n577 补账提交 42219a602 即为保全其历史）。Design 01 §5 处置表七行回填\n去向 + 迁移机制节补执行注记。\n\n顺带清偿：new-plan.sh 取号补零缺陷（.next-id 算术自增丢 3 位 padding；\n10#$ID 防八进制 + printf %03d，隔离副本冒烟 009→010）。\n\n验证：反向变换保真 diff 7/7 空（git show HEAD 源对照）；V7 搬迁零残留\n（auto-lang 活动面命中仅 INDEX 指针行 + archive 历史三件，归档不回改）；\nfrontmatter 结构 7/7。V8（随迁计划可执行性冒烟）属 P-6 开工批。\n两仓提交：auto-os 0c775a5/e0ae86d（+本 merge）、auto-lang 8a57f3f3b。"
+        }
+      ]
+    },
+    {
+      "id": "goals",
+      "items": []
+    },
+    {
+      "id": "architecture",
+      "items": []
+    },
+    {
+      "id": "designs",
+      "items": []
+    },
+    {
+      "id": "tests",
+      "items": []
+    },
+    {
+      "id": "reviews",
+      "items": [
+        {
+          "id": "P001-R1",
+          "title": "PLAN-001 复审记录 — P-1 计划随迁批（C1–C6 全过）",
+          "content": "verify-don't-trust 对账：C1 七文件就位（frontmatter 7/7）／C2 正文保真\n（反向 diff 7/7 空）／C3 auto-lang 收口（8a57f3f3b：INDEX + git rm）／\nC4 Design 01 §5 回填（e0ae86d）／C5 V7 零残留（活动面仅指针行）／\nC6 两仓提交+归档（本 merge）。\n\n遗漏/延后/workaround 扫描：V8 属 P-6 开工批非本批遗漏；台账接棒前置\n= A1 台账迁移（P-5），INDEX 已埋预留注记；new-plan.sh 补零修正为顺手\n清偿基建缺陷（有冒烟证据）非绕行；无未批准延后。健康检查：无代码面，\n校验脚本一次性 heredoc 未落盘，两仓 docs/ 面干净。\n裁定合规：Category A 免 worktree 沿 Plan 584 先例（b173c9b51）；编号\n映射沿 Design 01 §5 待澄清 #1 默认裁定。\nspec-impact：new_spec_components = reports/P001-1 + reviews/P001-R1\n（本仓 specs.json 首两笔）；supersedes/touched_goals 空。"
+        }
+      ]
+    }
   ]
 }

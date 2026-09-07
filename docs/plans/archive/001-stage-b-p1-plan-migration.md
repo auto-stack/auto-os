@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-001
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: archived                # drafting → executing → execution_done → reviewed → archived
 feature_name: Stage B P-1 计划随迁批（七项桌面域 drafting 计划自 auto-lang 迁入）
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -8,7 +8,7 @@ updated_at: 2026-09-07
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
+new_spec_components: [reports/P001-1, reviews/P001-R1]
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: []                   # 纯文件迁移，零代码/规格面
@@ -136,12 +136,44 @@ Category A：无 cargo/docs_gen。验证三件：
    仅横幅块+其分隔空行差异）；V7 grep 活动面命中=INDEX 指针行（允许）+
    archive 历史三件（575/583/584，归档不回改）；frontmatter plan_id/origin/
    status/updated_at 7/7 齐。
-6. [ ] **复审 + merge**：复审记录填写；specs.json 沉淀（reports/reviews）；
+6. [✅ 已完成] **复审 + merge**：复审记录填写；specs.json 沉淀（reports/reviews）；
    `git mv archive/` + `status: archived` 终态。
+   [✅ 已完成] 复审 C1–C6 全过（见复审记录）；specs.json 沉淀 P001-1/P001-R1；
+   git mv archive/ + status: archived（本 merge 提交）。
 
 ## 复审记录
 
-（待复审填写。）
+（2026-09-07 复审，verify-don't-trust 口径。）
+
+**验收对账（C1–C6）**：
+
+| # | 验收项 | 结果 | 证据 |
+|---|---|---|---|
+| C1 | 七文件就位 + origin + drafting | PASS | frontmatter 结构核对 7/7（plan_id/origin/status/updated_at） |
+| C2 | 正文保真 | PASS | 反向变换 diff 7/7 空（git show HEAD 源对照；差异仅横幅块+分隔空行） |
+| C3 | auto-lang 收口 | PASS | `8a57f3f3b`：INDEX.md 七行指针 + 七文件 git rm |
+| C4 | Design 01 §5 回填 | PASS | `e0ae86d`：处置表七行去向 + 迁移机制执行注记 |
+| C5 | V7 搬迁零残留 | PASS | 活动面命中 = INDEX 指针行（允许项）+ archive 历史三件（575/583/584，归档不回改原则内） |
+| C6 | 两仓提交 + 归档 | PASS | 本复审后随 merge 提交闭合 |
+
+**遗漏/延后/workaround 扫描**：
+
+- V8（随迁计划可执行性冒烟）Design 01 §6 标注适用批次「P-1 后」——属
+  P-6 开工批职责，非本批遗漏。
+- 迁移机制 4「台账接棒」前置条件 = A1 台账迁移（P-5 本体批），本批
+  INDEX 预留注记已埋。
+- new-plan.sh 补零修正是顺手清偿的取号基建缺陷（`0c775a5`，隔离副本
+  冒烟 009→010），非绕行 workaround；无其他未批准延后项。
+
+**健康检查**：无代码面（Category A）；校验脚本为一次性 heredoc 未落盘，
+无 debug 残留；两仓 `git status` docs/ 面干净。
+
+**裁定合规**：Category A 免 worktree 沿 Plan 584 先例（b173c9b51）；
+编号映射沿 Design 01 §5 待澄清 #1 默认裁定，无新决策点。
+
+**spec-impact**：`new_spec_components: [reports/P001-1, reviews/P001-R1]`
+（本仓 specs.json 首两笔入账）；`supersedes/touched_goals` 空（本仓尚无
+goals.md 与被替代组件）。
 
 ## 待澄清事项
 
