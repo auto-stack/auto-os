@@ -1,0 +1,13 @@
+{
+  "apps": [
+    {
+      "id": "kanban",
+      "name": "通用看板（v1 计划板）",
+      "repo": "../auto-kanban",
+      "kind": "repo",
+      "ports": [17100, 17101],
+      "status": "active",
+      "added": "2026-09-07"
+    }
+  ]
+}
