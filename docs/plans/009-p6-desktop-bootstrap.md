@@ -1,10 +1,10 @@
 ---
 plan_id: PLAN-009
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived
 feature_name: p6-desktop-bootstrap
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
-updated_at: 2026-09-07
+updated_at: 2026-09-08（execution_done：T1-T7 全 ✅，T8 交接 review/merge）
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -12,7 +12,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-os/scripts, auto-os/ci, auto-lang/ci]  # 受影响的 specs 路径
-current_step: 3
+current_step: 7
 total_steps: 8
 ---
 
@@ -143,18 +143,39 @@ drafting→executing + T1 探针 ✅（路径经解析序 `../auto-lang` 换算�
   | 011-calculator / 024-charts | lang examples/ui | 14/19（472 时代） | 12P/5F、12P/7F | **master 预存红**（未迁 app，590 零代码路径交集；债候选转 R 清单） |
   迁址注记：套件 auto 二进制相对定位（`..\..\..\..\target`）随迁失效，
   需 `AUTO_BIN=<lang>/target/debug/auto.exe` env（在案，套件头已支持）。
-- [ ] **T4 V3 双端抽查**：launcher+minesweeper vue/vm（autoui-verifier）
+- [✅ 已完成] **T4 V3 双端抽查**：launcher+minesweeper vue/vm（autoui-verifier）
   验证：双轨证据（截图/断言输出）
-- [ ] **T5 V1 五面实机**：wrapper 全屏桌面五面交互 + launcher 启动 025/038
+  —— worktree `dfea1a1`。vue 轨（`auto run` dev server + playwright
+  headless）三截图 `docs/reports/p6-v3/`（1280×800：launcher 待召态 9K /
+  开 palette 30K / minesweeper 开局 18K，内容量递增=渲染非空白）；vm 轨
+  证据=T3 套件（028=24/0、038=22/0，palette/过滤/启动/雷区交互深覆盖）。
+  环境注记：vue 首装遇 huawei 镜象未同步 `@tanstack/virtual-core@3.17.9`
+  404——`pnpm install --registry=https://registry.npmjs.org` 过（55.7s）。
+- [✅ 已完成] **T5 V1 五面实机**：wrapper 全屏桌面五面交互 + launcher 启动 025/038
   验证：证据笔记（plan 内嵌或 docs/reports/p6-v1/）
-- [ ] **T6 R4 CI 保活**：auto-lang `vm-files-ci.yml` checkout auto-os +
+  —— worktree `d0a031f`。`docs/reports/p6-v1/`：七截图+证据笔记
+  （dock/任务栏 ✓、launcher Ctrl+Space 召唤+键盘级过滤+Enter **启动迁移
+  app 038 端到端 ✓✓**、switcher MRU ✓、pager ✓、通知面 ✓）。注记：shell
+  面输入须 `autoui_keyboard` 逐键（find/type 只及聚焦 app）。
+- [✅ 已完成] **T6 R4 CI 保活**：auto-lang `vm-files-ci.yml` checkout auto-os +
   AUTO_OS_ROOT（lang 侧 worktree 提交）
   验证：CI 日志无 `SKIPPED — auto-os`（本地等价：AUTO_OS_ROOT=… 跑
   gallery_pages_compile 非 SKIP）
-- [ ] **T7 触发端**：本仓 `deploy-gallery-trigger.yml` + auto-lang
+  —— lang `os-009-dev` `018ec4325`：sparse checkout（widgets-gallery）+
+  env 权威臂 + 语料在位断言步 + **gallery_pages_compile 真跑步**（此前 CI
+  filter 不含该围栏=静默 solo-skip）。本地等价双向实证：env 命中 11.3s
+  真编译 / env 指空 0.009s SKIP（显式关断语义 ✓）。
+- [✅ 已完成] **T7 触发端**：本仓 `deploy-gallery-trigger.yml` + auto-lang
   deploy-website 增 repository_dispatch 臂（lang 侧 worktree）
   验证：手动 dispatch 一次 gallery=true 全链生效（或降级文档+待澄清）
-- [ ] **T8 收口**：Design 01 §7 P-6 行 ✅ + 台账 + specs 沉淀 + 归档
+  —— 本仓 `8be535f`（触发端：ui-gallery/widgets-gallery/apps 路径过滤 →
+  repository_dispatch auto-lang；token 未配=跳过+降级指引不阻断）+ lang
+  `f6b40278c`（deploy-website 增 dispatch 臂+五处画廊条件扩展）。全链
+  live 验证待 token 配置（待澄清 #1）；降级路径文档化在 workflow 内。
+- [→ 交接 /auto-plan:review] **T8 收口**：Design 01 §7 P-6 行回填（本批）+
+  台账（os-003 行已在案）+ specs 沉淀/归档（review/merge 承载）。
+  执行侧交付：auto-os worktree `plan-009-dev` 五提交（a860a17/847a769/
+  dfea1a1/d0a031f/8be535f）+ lang `os-009-dev` 两提交（018ec4325/f6b40278c）。
 
 ## 复审记录
 
