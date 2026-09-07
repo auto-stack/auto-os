@@ -1,0 +1,10 @@
+{
+  "sections": [
+    { "id": "reports", "items": [] },
+    { "id": "goals", "items": [] },
+    { "id": "architecture", "items": [] },
+    { "id": "designs", "items": [] },
+    { "id": "tests", "items": [] },
+    { "id": "reviews", "items": [] }
+  ]
+}
