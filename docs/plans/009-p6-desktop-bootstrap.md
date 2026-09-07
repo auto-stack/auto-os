@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-009
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: p6-desktop-bootstrap
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -12,7 +12,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-os/scripts, auto-os/ci, auto-lang/ci]  # 受影响的 specs 路径
-current_step: 0
+current_step: 2
 total_steps: 8
 ---
 
@@ -118,10 +118,18 @@ drafting→executing + T1 探针 ✅（路径经解析序 `../auto-lang` 换算�
 ## 执行步骤
 （原子任务：精确文件路径 + 确切操作 + 验证命令；每步完成后追加 [✅ 已完成] 一行证据）
 
-- [ ] **T1 包装脚本**：`scripts/desktop.ps1`+`desktop.sh`（解析序+轨道分发）
+- [✅ 已完成] **T1 包装脚本**：`scripts/desktop.ps1`+`desktop.sh`（解析序+轨道分发）
   验证：`./scripts/desktop.ps1 -Track iced` boot 日志含 `app registry: 38 entries`
-- [ ] **T2 V5 重证**：wrapper 起 iced 桌面，boot 日志三源对账（38/22 口径）
+  —— worktree 提交 `a860a17`。bash/ps1 双 dry-run 过；worktree iced 轨真 boot
+  **36 entries (20 desktop-visible)**=33 主检出 demo+3 本仓 apps 容器自命中
+  （组内无 os-config/kanban 兄弟=solo 语义）。**实证教训（脚本内注记）**：
+  cargo 按调用方 CWD 发现 `.cargo/config.toml`——从本仓 cargo run 丢
+  `/STACK:32MB` 致起动即栈溢出；修法=lang 侧 build + 本仓 CWD 直接 exec exe。
+- [✅ 已完成] **T2 V5 重证**：wrapper 起 iced 桌面，boot 日志三源对账（38/22 口径）
   验证：日志 grep + 条目分类清单
+  —— `DESKTOP_OS_ROOT=/d/autostack/auto-os bash scripts/desktop.sh iced` →
+  **`38 entries (22 desktop-visible)`** = 33 框架 demo + 3 本仓 apps + os-config
+  + kanban，与 590 直接 boot 实证全三源同口径 ✓（经 wrapper 路径成立）。
 - [ ] **T3 V2 零漂移**：三迁移 app + 框架在装 app desktop_mcp 全跑，锚数
   对账 14/11/11/19/26
   验证：对账表写入本计划测试设计节
