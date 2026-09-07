@@ -80,7 +80,7 @@ total_steps: 0
 ## 待澄清事项
 EOF
 
-echo "$((ID + 1))" > "$ID_FILE"
+printf '%03d\n' "$((10#$ID + 1))" > "$ID_FILE"
 echo "created: $PLAN_FILE"
-echo "next id: $((ID + 1))"
+echo "next id: $(printf '%03d' "$((10#$ID + 1))")"
 echo "提醒：请先在 main 上 commit .next-id 与 plan 骨架，再创建分组平铺 worktree：git worktree add D:/autostack/.wt/os-${ID}/auto-os -b plan-${ID}-dev（Plan 529 布局）。"
