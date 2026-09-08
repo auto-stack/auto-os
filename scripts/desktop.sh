@@ -37,7 +37,11 @@ if [ -z "$LANG_ROOT" ]; then
   exit 1
 fi
 
-export AUTO_OS_ROOT="$OS_ROOT"   # manifest 聚合 env 臂（P-3：设置即权威）
+# 复审补：Git-Bash 导出 `/d/...` 风格路径对 Windows 进程 is_dir() 必假
+# （extra roots/manifest 臂被静默丢弃）——注入 Windows 进程的 env 一律经
+# cygpath -m 转 `D:/...` 混合风格（非 bash 环境原样透传）。
+win_path() { command -v cygpath >/dev/null 2>&1 && cygpath -m "$1" || echo "$1"; }
+export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"   # manifest 聚合 env 臂（P-3：设置即权威）
 
 if [ "$TRACK" = "vue" ]; then
   AUTO_CLI=""
@@ -50,9 +54,26 @@ if [ "$TRACK" = "vue" ]; then
     echo "auto CLI 未找到：请先在 auto-lang 构建（cargo build -p auto）或加入 PATH" >&2
     exit 1
   fi
-  export AUTO_DESKTOP_APPS_EXTRA="$OS_ROOT/apps"
+  # 复审补二：AUTO_DESKTOP_APPS_EXTRA 是「单 app 根路径表」全替换语义
+  # （vue.rs desktop_extra_app_roots env 臂——无容器展开/不并 manifest）——
+  # 容器须在脚本侧展开为子目录列表（';' 分隔，Windows split_paths）。
+  # 追加 os-config 单根（同语义合身）；kanban(repo 形态)留缺省臂，vue 宿主
+  # v1 front-only 本就跳过需后端 app——注记在案。
+  EXTRA=""
+  for d in "$OS_ROOT"/apps/*/; do
+    [ -f "$d/pac.at" ] && EXTRA="${EXTRA:+$EXTRA;}$(win_path "${d%/}")"
+  done
+  [ -d "$OS_PARENT/auto-os-config/auto" ] && \
+    EXTRA="${EXTRA:+$EXTRA;}$(win_path "$OS_PARENT/auto-os-config/auto")"
+  export AUTO_DESKTOP_APPS_EXTRA="$EXTRA"
+  # 复审补（T1 漏注）：vue 轨主注册表目录缺省解析到 <project>/examples/ui
+  # （desktop-host 下不存在，vue.rs desktop_apps_dir 必败）——须显式注入
+  # 框架 demo 主注册表（§3-a 原设计：AUTO_DESKTOP_APPS + EXTRA 两件齐注）。
+  export AUTO_DESKTOP_APPS="$(win_path "$LANG_ROOT/examples/ui")"
+  export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"
   echo "[desktop.sh] track=vue  lang=$LANG_ROOT  os=$OS_ROOT  auto=$AUTO_CLI"
-  echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT  AUTO_DESKTOP_APPS_EXTRA=$AUTO_DESKTOP_APPS_EXTRA"
+  echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT  AUTO_DESKTOP_APPS=$AUTO_DESKTOP_APPS"
+  echo "[desktop.sh] AUTO_DESKTOP_APPS_EXTRA=$AUTO_DESKTOP_APPS_EXTRA"
   if [ "$DRYRUN" = 1 ]; then echo "[dry-run] cd $LANG_ROOT/examples/desktop-host; auto run --desktop"; exit 0; fi
   cd "$LANG_ROOT/examples/desktop-host"
   exec "$AUTO_CLI" run --desktop

@@ -59,10 +59,23 @@ if ($Track -eq 'vue') {
     if (-not $autoCli) {
         Write-Error "auto CLI 未找到：请先在 auto-lang 构建（cargo build -p auto）或将其加入 PATH"
     }
-    # desktop-host 的项目内兄弟探测够不到本仓 → env 显式聚合本仓 apps/
-    $env:AUTO_DESKTOP_APPS_EXTRA = Join-Path $OsRoot 'apps'
+    # 复审补二：AUTO_DESKTOP_APPS_EXTRA 是「单 app 根路径表」全替换语义
+    # （vue.rs desktop_extra_app_roots env 臂——无容器展开/不并 manifest）——
+    # 容器须在脚本侧展开为子目录列表（';' 分隔）。追加 os-config 单根；
+    # kanban(repo 形态)留缺省臂，vue 宿主 v1 front-only 本就跳过需后端 app。
+    $extra = @(Get-ChildItem -Directory (Join-Path $OsRoot 'apps') -ErrorAction SilentlyContinue |
+        Where-Object { Test-Path (Join-Path $_.FullName 'pac.at') } |
+        ForEach-Object { $_.FullName })
+    $osConfig = Join-Path $OsParent 'auto-os-config\auto'
+    if (Test-Path $osConfig) { $extra += $osConfig }
+    $env:AUTO_DESKTOP_APPS_EXTRA = ($extra -join ';')
+    # 复审补（T1 漏注）：vue 轨主注册表目录缺省解析到 <project>/examples/ui
+    # （desktop-host 下不存在，vue.rs desktop_apps_dir 必败）——须显式注入
+    # 框架 demo 主注册表（§3-a 原设计：AUTO_DESKTOP_APPS + EXTRA 两件齐注）。
+    $env:AUTO_DESKTOP_APPS = Join-Path $LangRoot 'examples\ui'
     Write-Host "[desktop.ps1] track=vue  lang=$LangRoot  os=$OsRoot  auto=$autoCli"
-    Write-Host "[desktop.ps1] AUTO_OS_ROOT=$($env:AUTO_OS_ROOT)  AUTO_DESKTOP_APPS_EXTRA=$($env:AUTO_DESKTOP_APPS_EXTRA)"
+    Write-Host "[desktop.ps1] AUTO_OS_ROOT=$($env:AUTO_OS_ROOT)  AUTO_DESKTOP_APPS=$($env:AUTO_DESKTOP_APPS)"
+    Write-Host "[desktop.ps1] AUTO_DESKTOP_APPS_EXTRA=$($env:AUTO_DESKTOP_APPS_EXTRA)"
     if ($DryRun) { Write-Host "[dry-run] cd <lang>/examples/desktop-host; & auto run --desktop"; return }
     Push-Location (Join-Path $LangRoot 'examples\desktop-host')
     try { & $autoCli run --desktop }
