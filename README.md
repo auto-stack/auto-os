@@ -18,7 +18,7 @@
 | 阶段 | 范围 | 状态 |
 |---|---|---|
 | **Stage A** | 伞形仓骨架（本仓）+ 首个真实 app [auto-kanban](../auto-kanban)（v1 计划板，只读） | 🔄 Plan 579 执行中（2026-09-07） |
-| **Stage B** | 桌面域资产自 auto-lang 搬迁入本仓（[Design 01](docs/design/01-stage-b-desktop-migration.md)） | 🔄 P-1..P-4/P-7 ✅；**P-5 资产本体批已执行**（2026-09-07，台账+launcher+apps+画廊落位）；余 P-6 随迁计划开工 |
+| **Stage B** | 桌面域资产自 auto-lang 搬迁入本仓（[Design 01](docs/design/01-stage-b-desktop-migration.md)） | 🔄 P-1..P-4/P-7 ✅；**P-5 ✅ + P-6 承载批 ✅**（2026-09-08，PLAN-009：§3-a 包装脚本 `scripts/desktop.{ps1,sh}`+V1/V2/V3 实机验收+CI 围栏保活+画廊部署触发端）；随迁七计划本体执行在途（os-003 开工） |
 | **Stage C** | 伞形组合机制升级评估（manifest vs submodule；触发条件 = 出现"CI 钉树构建 OS 镜像"类真实需求） | 未启动 |
 
 **submodule 裁定（Stage A）**：不使用 git submodule——现有扁平兄弟仓 +
