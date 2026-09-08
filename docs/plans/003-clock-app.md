@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径，如 [auto-lang/vm]
-current_step: 1
+current_step: 3
 total_steps: 7
 ---
 
@@ -178,13 +178,21 @@ var interval int = 250
   5. **025 锚点换算**：正文旧锚 `examples/ui/025-dashboard`（541 更名+590
      迁移）→ 现址本仓 `apps/025-sys-monitor/SPEC.md:114`（Tick 分频机制节，
      250ms 基准+speedDiv 分频同款）。
-- [ ] **T2 骨架 tab 化**
+- [✅ 已完成] **T2 骨架 tab 化**
   `examples/ui/012-stopwatch/src/front/app.at`：model 增 tab/新状态族；view
   改四 tab 胶囊 + 占位内容；原秒表面板迁入 stopwatch tab。
   验证：`cd examples/ui/012-stopwatch && auto build`
-- [ ] **T3 秒表接 Tick**
+  —— lang `os-003-dev` `6428299a3`（auto build 过；T1 契约 sw_on 替代
+  running 落地）。
+- [✅ 已完成] **T3 秒表接 Tick**
   `.Tick` 分频驱动 elapsed + 显示；Lap 扩 5 槽。
   验证：`auto run` 手测走表/暂停/计圈/复位
+  —— 同提交。累计法 v1（+=250ms，计划主文；差值法升级条件=vue 轨 Time 桥
+  确认，待澄清 #3 维持）。vue 生成验证=onMounted 恒 tick（无 watch 门控，
+  T1 坑精准避开）；VM 轨 MCP 手测自动化 `tests/t3_smoke.py`：走表
+  2250ms→"00:02.25"/计圈/暂停冻结全过。**执行期发现**：消息名 `Lap` 在
+  VM 轨被内置动词劫持（结果自动包 "Lap {n}: " 前缀）→ 改名 DoLap 规避
+  （app.at 注记；框架劫持面待查）。
 - [ ] **T4 计时器**
   设定三 input + Start/Pause/Cancel + 到零 banner。
   验证：`auto run` 倒数 1s 冒烟
