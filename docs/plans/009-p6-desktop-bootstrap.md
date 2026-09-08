@@ -1,15 +1,20 @@
 ---
 plan_id: PLAN-009
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed                # drafting → executing → execution_done → reviewed → archived
 feature_name: p6-desktop-bootstrap
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
 updated_at: 2026-09-08（execution_done：T1-T7 全 ✅，T8 交接 review/merge）
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
+supersedes_spec_components:
+  - "docs/design/01-stage-b-desktop-migration.md: 修改——§7 P-6 行承载批落地回填"
+new_spec_components:
+  - "scripts/desktop.ps1+desktop.sh: 新增——§3-a 桌面薄包装（解析序定位 auto-lang；vue 轨三 env 注入含容器展开；iced 轨 lang 侧 build+本仓 CWD 直 exec；DESKTOP_OS_ROOT 覆盖臂；cargo CWD 栈旗标与 cygpath 路径两教训注记）"
+  - ".github/workflows/deploy-gallery-trigger.yml: 新增——画廊/桌面域资产变更→repository_dispatch 触发 auto-lang website 部署（token 未配降级在案）"
+  - "auto-lang .github/workflows/vm-files-ci.yml: 修改——R4 画廊围栏 CI 保活（auto-os sparse checkout+AUTO_OS_ROOT+围栏真跑步）"
+touched_goals:
+  - "GOAL-010: 应用轨道产品化——auto-os 一命令起桌面（双轨）+V1/V2/V3 实机验收收拢+CI 围栏保活"
 
 affects: [auto-os/scripts, auto-os/ci, auto-lang/ci]  # 受影响的 specs 路径
 current_step: 7
@@ -186,3 +191,39 @@ drafting→executing + T1 探针 ✅（路径经解析序 `../auto-lang` 换算�
    dispatch + 文档注记（不阻断本计划）。
 2. V1 五面交互为本机实机项（Windows 首选）；若执行环境受限按 472/478
    headless 指针先例成文（用户知情后裁定）。
+
+## 复审记录
+
+**复审人**：ZCode（/auto-plan:review 独立复审），2026-09-08。
+**方法**：计划 vs 两 worktree 实际 diff（auto-os `plan-009-dev` 六提交 +
+lang `os-009-dev` 两提交）逐项重证；关键验证全部重跑。
+
+### 逐项验收裁定（verify, don't trust）
+
+| # | 验收标准 | 裁定 | 复审证据 |
+|---|---|---|---|
+| 1 | wrapper 双轨可起桌面；V5 经 wrapper 重证 | **过（复审修正后）** | **复审打回→当批修复→复证**：执行期 vue 轨仅 dry-run（未真起）——复审真跑暴露三处缺陷（①漏注 `AUTO_DESKTOP_APPS` 主注册表，vue.rs 缺省解析 `<project>/examples/ui` 必败；②`AUTO_DESKTOP_APPS_EXTRA` 为单 app 根**全替换**语义，容器须脚本侧展开为 `;` 路径表；③Git-Bash `/d/` 路径对 Windows 进程 `is_dir()` 必假，须 `cygpath -m` 转 `D:/`）——`9d960fe` 修复后：vue 轨 host 起+**三 extra root 命中**（23 apps，launcher/minesweeper 直挂）+iced 轨 38/22 确定性复证（AUTO_OS_ROOT 原生形）+ps1 dry-run 展开对 |
+| 2 | V2 零漂移对账表；V3 抽查 | **过** | 对账表在计划（T3）；复审档重跑 025-sys-monitor=**13/0**（541 基线零漂移锚复证）；V3 证据文件在案 |
+| 3 | V1 五面证据笔记 | **过** | `docs/reports/p6-v1/` 笔记+11 截图+驱动脚本；launcher→038 启动端到端 |
+| 4 | R4 CI 围栏激活 | **过** | 复审档重跑双向：env 命中 11.3s 真编译/指空 0.02s SKIP；yml 增真跑步（此前 CI filter 不含该围栏） |
+| 5 | 触发端 workflow 在案 | **过（token 待配=计划预留降级口径）** | 双侧 workflow 落位+yaml 解析过；全链 live 待 `AUTO_LANG_DISPATCH_TOKEN`（待澄清 #1，用户知情） |
+| 6 | Design 01/台账/两仓提交 | **过** | §7 P-6 行承载批回填；台账 os-003 行；提交清单核齐 |
+
+### 遗漏/延后/Workaround 猎查
+
+- **复审抓回的遗漏**：vue 轨未真跑即报 ✅（验收①「双轨」字面未兑现）——已按
+  打回-修复-复证闭环（`9d960fe`），教训入脚本注记。
+- **R 候选（不阻断）**：P009-R1 通知中心面板开合深交互未注入（面存在性+
+  托盘在案，479 实测口径留后续）；P009-R2 calculator/charts master 预存红
+  （T3 发现，与 590-R3 同族另案）；P009-R3 vue 桌面宿主 v1 front-only 注册
+  限制跳过 sys-monitor/kanban（框架既有 Plan 465 登记限制，非迁移缺陷）；
+  P009-R4 vue 轨 EXTRA 全替换语义不并 manifest/kanban（缺省臂可并；包装
+  场景受限注记，Stage C `auto desktop` 子命令候选动机 +1）。
+- **Workaround 均在案非隐藏**：rust workspace 陈旧 member 顺修（590）；
+  AUTO_BIN env 迁址必设（T3 注记）；pnpm 镜象 404 →官方源（T4 注记）。
+
+### 结论
+
+六项验收全过（含一处复审打回当批修复复证）；R1-R4 显式在案。
+**路由：`reviewed`**，就绪 `/auto-plan:merge`（auto-os 主仓 fold + lang 侧
+`os-009-dev` 两提交随批合入）。
