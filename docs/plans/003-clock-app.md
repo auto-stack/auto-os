@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-003
 origin: PLAN-554
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived
 feature_name: clock-app
 author: [zhaopuming]
 created_at: 2026-09-05
-updated_at: 2026-09-07
+updated_at: 2026-09-08（execution_done：T1-T7 全 ✅，交接 review）
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -193,20 +193,34 @@ var interval int = 250
   2250ms→"00:02.25"/计圈/暂停冻结全过。**执行期发现**：消息名 `Lap` 在
   VM 轨被内置动词劫持（结果自动包 "Lap {n}: " 前缀）→ 改名 DoLap 规避
   （app.at 注记；框架劫持面待查）。
-- [ ] **T4 计时器**
+- [✅ 已完成] **T4 计时器**
   设定三 input + Start/Pause/Cancel + 到零 banner。
   验证：`auto run` 倒数 1s 冒烟
-- [ ] **T5 世界时钟**
+  —— 执行期裁定：文本 input+str→int 解析改**步进器**（VM 状态 str
+  `.to_int()` 接收者坏——t_left 出 -163000 垃圾值实测；框架债登记）；
+  步进器取模回绕+唯一标签（时±/分±/秒±）。倒数/到零横幅/Dismiss 全过
+  （desktop_mcp T2 组）。
+- [✅ 已完成] **T5 世界时钟**
   城市表 + `Time.now_sec` 换算 handler + 行渲染 + 本地城高亮。
   验证：`auto run` 与系统时钟肉眼对拍（北京/纽约）
-- [ ] **T6 闹钟 + storage**
+  —— 框架侧补 **Time 模块 vue 桥**（ts_adapter：`Time.now_sec()`→
+  `Math.floor(Date.now()/1000)`，TDD 测试 `time_module_bridges_to_date_now`
+  过；此前 vue 轨无 Time 桥=时间类 app 双端缺口）。8 城渲染+北京/伦敦
+  8h±60s 时差断言过（desktop_mcp T3 组）；本地城 ● 高亮。
+- [✅ 已完成] **T6 闹钟 + storage**
   槽 CRUD + storage 持久化 + Tick 分钟比对触发 banner。
   验证：`auto run` 设下一分钟闹钟等到触发
-- [ ] **T7 测试与回写**
+  —— 5 槽 storage（`AUTO_VM_STORAGE_FILE` 隔离验证）；入列/跨重启恢复
+  过（desktop_mcp T4/T4b 组）；触发比对=fired 防重+当日轮转。
+- [✅ 已完成] **T7 测试与回写**
   `tests/desktop_mcp.py` 四断言组（双端）；pac.at 改 title/icon/category/
   desktop；README 012 行更新。
   验证：`python tests/desktop_mcp.py` 双轨绿 + `cargo check -p auto-lang`
   （若 T1 触及 ui_gen 则跑）
+  —— **desktop_mcp 12/12 全绿**（VM 轨四断言组）+ vue 轨 build 过+
+  playwright 三 tab 截图（tests/clock_vue_{timer,world}.png）；pac
+  Clock/clock/tool；README 012 行；`cargo check` 0 错 + ts_adapter 16/16
+  （含新桥测试）。提交：`6428299a3`（T2/T3）+ `43f2b8832`（T4-T7）。
 
 ## 复审记录
 
@@ -214,8 +228,17 @@ var interval int = 250
 
 1. 闹钟到点走 shell toast/通知中心（`__desktop_cmd` 上行）还是 in-app
    banner——T1 动词表核对后定；v1 默认 banner（保守面）。
+   **执行期收口：v1 落 in-app 顶栏横幅**（notify 叠加留 v2——T1 已证动词在，
+   session.rs:1486）。
 2. 世界时区夏令时：v1 固定偏移表（8 城多数无 DST 或影响 ±1h），SPEC
    登记限制；DST 规则表远期。
 3. 秒表精度 10ms 档基于 250ms Tick 分频外推（elapsed+=250 实际是墙钟
    步长）——显示 cc 两位够用；如需真精度改 `Time.now_ms` 差值法（T1
    后裁定，倾向差值法：Start 记锚点，Stop 累计）。
+
+> **执行期发现登记（T1-T7，交接 review 携带）**：① VM 状态 str `.to_int()`
+> 接收者错乱（垃圾值）→ app 改步进器规避，框架债候选；② Tick 后仅文本
+> 重绑重渲染（结构/样式 if 不重评估）→ 横幅恒结构顶栏，VM 渲染债候选；
+> ③ 消息名 `Lap` VM 轨被内置动词劫持（自动 "Lap {n}: " 前缀）→ 改名
+> DoLap，劫持面待查；④ ts_adapter 补 Time 模块 vue 桥（time_module_
+> bridges_to_date_now 锁）。
