@@ -227,6 +227,69 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 
 ## 复审记录
 
+### 阶段复审记录（2026-09-09 · A1/A2/B）
+
+stage: review（阶段性，仅 A1/A2/B） | plan_id: PLAN-002 | plan_revision: 0
+（frontmatter 无 plan_revision 字段，按交接记录记 rev 0） | outcome: **pass
+（A1/A2/B 三项全 pass；C/E 未完，整体保持 executing，不授予终态 reviewed）**
+| reviewed_commit: auto-os os-002-dev `fa77bc9`；auto-lang os-002-dev
+`d5b345fb1`（A1/A2=`efc7e64b9`，debt 回写=`518479259`） | base_commit:
+auto-os `6eb654c`，auto-lang `7613e961f` | dependency_revisions: master
+auto-lang `18ab5d642`（回归对照基线，脏区仅 website/docs markdown） |
+spec_inputs: auto-lang `docs/specs/autoui-skill/project.md`（22 行 stub，无
+交互原语条目，无冲突）；`.autoos/specs.json` 本审未动 | worktree 双仓
+`git status` 干净（实现全部已提交）。
+
+**acceptance_results**（复审独立复跑，非沿用 work 证据）：
+
+- **A1 pass**：layout_tests 35/35（`cargo test -p auto-lang --features
+  ui-iced,iced-layout-tests --lib layout_tests`，含首开翻转两帧断言
+  popover_first_open_after_content_swap/flip_matches_second_open）；
+  panel_is_degenerate 三单测绿；实机探针日志复核：popover-debug 127 帧
+  中 content=8×8 空壳 **0 帧**，电源面板 232×82.2 @x=1048 与记录一致。
+- **A2 pass**：fence 测试
+  test_convert_view_messages_preserves_window_thumbnail 绿；thumb-fallback
+  探针臂 46 次触发（实机日志）；desktop.at T36 归位后 a2vue 金样
+  test_a2vue_desktop_surface_asset 绿；pack==pin 逐字节一致（shell/
+  desktop.at vs assets/desktop.at diff 空）；hash-lock parity 测试绿。
+- **B pass**：7 枚测试全绿（hover_area::transition_fires_only_on_change /
+  test_layout_oncontextmenu_becomes_right_click /
+  test_convert_view_messages_preserves_layout_right_click /
+  test_layout_hover_flag_only_with_hover_variant /
+  test_layout_style_fn_selects_hover_on_flag /
+  layout_hover_flag_tracks_cursor_over（端到端）/
+  desktop_surface_at_loads_interactions_and_dispatch 试点断言 rc=4 hv=4）；
+  实机像素差自留档 PNG 独立重算：桌面格 hover=**6054**/撤除=**0**（与交接
+  记录一致），launcher l_hover_2..8 全命中（12364–14551）、1 号=选中态格
+  =0（7/8 命中复现）；p002b_desktop.log 格 col IconMenu 事件链在案。
+- **回归门 pass**：全量 `cargo t` 分支 1189 pass/3 fail vs master `18ab5d642`
+  1192 pass/3 fail——失败集**逐名全等**（plan370_015_behavior_tests::
+  d2_new_note_appends / d8_toggle_dark_mode / z6_export_prolog_alignment，
+  存量）。交接记录"24=24"系对开工日基点 master 的对照；本次复审以当日
+  master 重对照得 3=3，结论不变（零回归）。
+
+**findings**（均不阻塞本阶段结论）：
+
+- **F-1（P2，终审前必清）**：计划缺 `### 规范增量` 节，frontmatter 三 delta
+  字段空且无书面说明。终审（C/E 完成后）必须补：现有 canonical specs 无
+  UI 交互原语条目，B 的持久语义当前承载于设计稿
+  `docs/design/autoui/layout-interaction.md`——终审时要么登记新 spec
+  组件，要么写明空 impact 理由。
+- **F-2（P3）**：待澄清 #1（A2 skeleton vs 降级 icon 视觉形态）已因根因
+  修复失效（缩略直接渲染，无兜底形态需求），应标记"已失效"防空决策债。
+- **F-3（P3）**：`518479259` 在 KNOWN-DEBT 🟢 表格中段引入空行，Markdown
+  渲染表格被截断为两截，下个 docs 批顺手修复。
+- **F-4（P3）**：两处 AUTO_POPOVER_DEBUG 探针代码注释写"定案后移除"，与
+  详细设计"保留探针"决议不一致，措辞对齐（或清理批移除）。
+
+**evidence**（worktree 清理后可复现命令均已内录上文；主检出留档
+`D:/autostack/auto-lang/scratch/p002_review_master_fails.txt`=master 失败
+集；分支失败集与像素差重算结果已全文内录本记录，scratch/p002 为
+auto-lang worktree 临时证据，merge 清理后以上文内录为准）。
+
+next: work 继续 C/E（用户实机复核七项清单 + 通知中心开合确认）；F-1 于
+终审前清偿；整体计划保持 `executing`。
+
 ### work 交接记录（2026-09-09 · B）
 
 stage: work | PLAN-002 | rev 0 | partial（B 交付，C/E 未完，保持
