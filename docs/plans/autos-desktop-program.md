@@ -58,7 +58,7 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 | 004 games-wave1 | PLAN-556 | drafting 原状 |
 | 005 tetris | PLAN-557 | drafting 原状 |
 | 006 klondike | PLAN-558 | drafting 原状 |
-| 007 p534-debt-batch-1 | PLAN-577 | drafting 原状 |
+| **007 p534-debt-batch-1** | PLAN-577 | **📦 已归档——✅ 已交付（2026-09-09 merge）**——avatar 家族补齐（三臂+props desugar+Fill 零高根因，真 hover 不借语料工程,P534-D4 结案）/breadcrumb 环守卫（自名折叠递归,P530-D1+P534-D5 结案,全站 68/68）/schema 滞留清偿（419 元素+P3 拆册,三围栏绿）；KNOWN-DEBT 三条 ✅；复审/合并以 /auto-plan:review/:merge 承载 |
 | 008 desktop-gallery-apps | PLAN-578 | drafting 原状 |
 
 **编号映射（2026-08-28 立项）**：M2→**462**、M3→**463**、M4→**465**（原提案

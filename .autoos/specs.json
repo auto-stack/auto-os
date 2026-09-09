@@ -31,6 +31,11 @@
           "status": "published",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P007-5",
+          "title": "P534 债批一（origin PLAN-577）— 变更摘要",
+          "content": "os-007：①avatar 家族补齐（三臂+props 形态 desugar+w-10 h-10 默认尺寸）——/avatar 页两 40x40 圆实机渲染、/hovercard 触发器 hit area 非零+真 hover 进/出 state 翻转不借语料工程（534 G3 补全,P534-D4 结案）；②breadcrumb 栈溢出根因偿还（widget 自名折叠环守卫,P530-D1+P534-D5 结案）——直达页 ALIVE+全站扫描 68/68 零异常；③schema 再生成滞留清偿（419 元素真名登记/P3 显式拆册/kitchen-sink 50 节随生,三围栏 2/2+4/4+7/7）。KNOWN-DEBT 三条✅ 结案回写；gallery README avatar 行更新。代码落 auto-lang os-007-dev （49c75d2e4..af07c9d37 六提交）;auto-os os-007-dev（84ff922 kitchen-sink+d6a48d2 README）。"
         }
       ]
     },
@@ -64,6 +69,57 @@
           "status": "stable",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P007-1",
+          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+          "status": "stable",
+          "related": [
+            "PLAN-007"
+          ],
+          "created": "2026-09-09",
+          "last_modified": "2026-09-09",
+          "title": "avatar 家族 VM 渲染语义 — 架构注记",
+          "content": "avatar（容器,有子件经 convert_node_with 同表分发/无子件灰圆占位）/avatar-image（复用 convert_image_or_icon 图臂）/avatar-fallback（convert_text_element 文本臂）三臂,untracked/tracked 双镜像接线;props 形态 avatar (src/alt/fallback) 对齐 vue 端 desugar 为 AvatarImage+AvatarFallback。**持久规则**：centering 容器（center_x/center_y）无显式宽高时被 apply_container_style 设为 Fill×Fill,shrink 上下文（Popover 锚/行内）解析为零高——新增 centering 容器组件必须带默认尺寸类（对齐 vue 端 avatar 恒注入 w-10 h-10;534 期 hovercard 触发器零高根因）。圆形裁剪以 bg+rounded-full+尺寸类近似（VM 无 clip 原语,待澄清③口径）。"
+        },
+        {
+          "id": "P007-2",
+          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+          "status": "stable",
+          "related": [
+            "PLAN-007",
+            "PLAN-530",
+            "PLAN-534"
+          ],
+          "created": "2026-09-09",
+          "last_modified": "2026-09-09",
+          "title": "widget 子件渲染环守卫（自名折叠递归防护）— 架构注记",
+          "content": "widget_registry 折叠兜底（P435 P8-6:剥 -/_+小写）使未知 tag 可命中组件自身名——gallery 路由页 BreadcrumbPage 的 demo 用 breadcrumb-page tag,fold 后同名 → render_child_widget 无限自递归栈溢出（新会话直达 breadcrumb 页 100% 复现;P534-D5 连续导航溢出=扫描序列首踩病源页,非累积深度）。修法:AuraViewBuilder 持 active_child_widgets 进行中集合（按分支克隆传递,兄弟复用不受影响）,双胎 render_child_widget 入口命中环渲染 Empty（A→B→A 互递归同防）。**命名约束**：路由页 widget 名与 demo 内 shadcn tag 折叠同名时触发,页面命名避免与所演示组件折叠名相撞。"
+        },
+        {
+          "id": "P007-3",
+          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+          "status": "stable",
+          "related": [
+            "PLAN-007"
+          ],
+          "created": "2026-09-09",
+          "last_modified": "2026-09-09",
+          "title": "远程图源同步抓取 3s 超时上界 — 架构注记",
+          "content": "load_image_bytes（iced renderer）远程 URL 同步抓取在渲染线程上加 3s 超时——裸 reqwest::blocking::get 网络不可达时挂死渲染线程（bounds 不更新/截图超时/导航无响应,avatar 家族接通网络图源后实机复现）。结果按 URL 进程内缓存,阻塞每 URL 至多一次。真异步管线（ticket 化后台加载）为后续升格方向。"
+        },
+        {
+          "id": "P007-4",
+          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+          "status": "stable",
+          "related": [
+            "PLAN-007",
+            "PLAN-534"
+          ],
+          "created": "2026-09-09",
+          "last_modified": "2026-09-09",
+          "title": "schema 全量再生成滞留清偿形态 — 架构注记",
+          "content": "SCHEMA_DRIFT_GENERATE_AT=1 全量再生成入账口径：regen 真名登记（连字符/Pascal 翻转,NavDestination→nav-destination/Swiper→swiper/sidebar 系连字符）,旧下划线孪生与 Pascal 行退役,coverage 双向净（414=414）;P3 档位冲突显式拆册（vue 同件 iced 档不同——561 真值 sub=full/button=partial,regen 别名合并丢区分 → sidebar_menu_sub_button 独立立册）;kitchen-sink 38→50 节+core.md 随生;DOC_EXCLUDE+2（折叠键）。三围栏 schema_drift/queue_coverage/docs_gen 绿。"
         }
       ]
     },
@@ -97,6 +153,18 @@
           "status": "verified",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P007-6",
+          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+          "status": "verified",
+          "related": [
+            "PLAN-007"
+          ],
+          "created": "2026-09-09",
+          "last_modified": "2026-09-09",
+          "title": "P534 债批一验证矩阵 — 测试注记",
+          "content": "plan577_avatar 探针 3 用例+plan577_breadcrumb_cycle 环回归（红灯验证:摘守卫 STATUS_STACK_OVERFLOW 实测在案）=4/4;三围栏（AUTO_OS_ROOT 三仓跑法）2/2+4/4+7/7;实机：/avatar 像素密度（content 0.79×2,gray 0.70）+/hovercard 触发器 @rect(781,496,40,40) h=40+OS 级真 hover 进 true/出 false（t4hc 双轮 ALL PASS）;直达 breadcrumb ALIVE（len=33598）;全站扫描 68/68 零异常存活（p577_fullscan.py）;tf no-fail-fast 唯一红=charts,master 同命令集合全等;iced 唯一红=lucide 存量（master 集合全等）;tv 唯一红=charts 存量。证据:auto-lang 主检出 scratch/p577/（快照/bounds/截图/报告全套）。"
         }
       ]
     },
@@ -131,6 +199,11 @@
           "status": "published",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P007-R1",
+          "title": "os-007 复审记录 — 六项全过（格式漂移已修）",
+          "content": "六项验收全过（avatar 渲染像素/触发器 hover 行为双轮/三围栏/breadcrumb ALIVE+68-68/KNOWN-DEBT 三条/tf-tv-iced 对账零新增红）。执行期偏差四项显式在案（props desugar 补臂/Fill 零高与图源超时两根因修复构成验收必要面/病源修正为自名折叠递归/D5 根因同 P530-D1 直接结案非另立）。F1 新增代码 3 处 rustfmt 偏好差异 review 中修正（净漂移与 master 持平 637）,行为零变化+实机对最终 HEAD 重验。独立性声明:执行会话内以工件重建判定。reviewed_commit af07c9d37/auto-os d6a48d2。"
         }
       ]
     }
