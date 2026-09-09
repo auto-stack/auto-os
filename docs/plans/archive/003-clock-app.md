@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-003
 origin: PLAN-554
-status: reviewed                # drafting → executing → execution_done → reviewed → archived
+status: archived                 # drafting → executing → execution_done → reviewed → archived
 feature_name: clock-app
 author: [zhaopuming]
 created_at: 2026-09-05

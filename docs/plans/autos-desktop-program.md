@@ -54,7 +54,7 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 | os 计划 | origin | 状态指针 |
 |---|---|---|
 | 002 desktop-ux-followups | PLAN-535 | drafting 原状 |
-| **003 clock-app** | PLAN-554 | **🔄 executing（2026-09-07 开工，P-6 V8 冒烟批）**——T1 Tick 契约探针 ✅（路径经解析序换算全可达；vue 轨 `running` 门控差发现，秒表开关避名 `running`；notify 动词在；025 锚换算=apps/025-sys-monitor） |
+| **003 clock-app** | PLAN-554 | **📦 已归档——✅ 已交付（2026-09-08 merge）**——Clock 四 tab（秒表真走表/计时器横幅/世界时钟 8 城/闹钟 storage 5 槽）desktop_mcp 12/12；框架交付 ts_adapter Time vue 桥；债候选 P003-R1..R3（VM str to_int 接收者/Tick 后重渲染面/Lap 劫持）移交框架侧；复审/合并以 /auto-plan:review/:merge 承载 |
 | 004 games-wave1 | PLAN-556 | drafting 原状 |
 | 005 tetris | PLAN-557 | drafting 原状 |
 | 006 klondike | PLAN-558 | drafting 原状 |

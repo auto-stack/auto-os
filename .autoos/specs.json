@@ -19,6 +19,18 @@
           "status": "published",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P003-1",
+          "title": "Clock 四 tab 应用（origin PLAN-554）— 变更摘要",
+          "content": "os-003（V8 冒烟项）：012-stopwatch 原地升级 Clock——秒表（真走表：.Tick\n250ms 累计法修复原不走表缺陷+5 计圈槽）/计时器（步进器设定+倒数+到零横幅+\nDismiss）/世界时钟（8 城固定偏移+Time.now_sec 换算+本地城●高亮）/闹钟\n（5 槽 storage 持久化+分钟比对触发横幅+fired 当日防重）。registry id 保持\n012-stopwatch 稳定；pac title Clock/icon clock/category tool。框架侧交付\nts_adapter Time 模块 vue 桥（时间类 app 双端能力基建）。desktop_mcp 四断言\n组 12/12+vue 三 tab 截图。",
+          "file": "docs/plans/archive/003-clock-app.md",
+          "related": [
+            "PLAN-003"
+          ],
+          "status": "published",
+          "created": "2026-09-08",
+          "last_modified": "2026-09-08"
         }
       ]
     },
@@ -36,6 +48,18 @@
           "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
           "related": [
             "PLAN-009"
+          ],
+          "status": "stable",
+          "created": "2026-09-08",
+          "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P003-2",
+          "title": "Time 模块 vue 桥 + Tick 契约实践 — 架构注记",
+          "content": "①ts_adapter builtin 表增 Time 臂：Time.now_sec()→Math.floor(Date.now()/\n1000)、now_ms→Date.now()（VM 侧 stdlib 实存而 vue 轨无桥=此前缺口；TDD 锁\ntime_module_bridges_to_date_now）。②Tick 契约（T1 探针）：interval 字面量\n被 aura/extract 取走（.Tick 存在时）；vue 轨 watch(running) 自动门控——开关\n命名避 running（sw_on）。③横幅形态：VM 轨 Tick 后仅文本重绑重渲染（结构/\n样式 if 不重评估）→ 恒结构顶栏+文本绑定。④VM 渲染/引擎债候选 P003-R1..R3：\n状态 str .to_int() 接收者坏（垃圾值）；Tick 后重渲染面；Lap 消息名被内置\n动词劫持（自动 'Lap {n}: ' 前缀→改名 DoLap）。",
+          "file": "docs/plans/archive/003-clock-app.md",
+          "related": [
+            "PLAN-003"
           ],
           "status": "stable",
           "created": "2026-09-08",
@@ -61,6 +85,18 @@
           "status": "verified",
           "created": "2026-09-08",
           "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P003-3",
+          "title": "Clock 验证矩阵 — 测试注记",
+          "content": "tests/desktop_mcp.py 四断言组（013 惯例自举）：T1 秒表（走表≥1000ms/\nMM:SS.cc 形态/计圈/复位）；T2 计时器（缺省 1s/运行/到零横幅/Dismiss——横幅\n按钮恒在经 press_sequence）；T3 世界时钟（≥8 城+北京/伦敦 8h±60s 时差\n断言）；T4 闹钟（步进器唯一标签时±/分± 设定+入列+AUTO_VM_STORAGE_FILE\n隔离跨重启恢复）。**12/12 全绿（复审档重跑）**。vue 轨=build+playwright\n三 tab 截图（tests/clock_vue_{timer,world}.png）。tf 门禁 22 红=master 预存\n集逐名全等零新增。步进器取模回绕（%24/%60）跨午夜可设。",
+          "file": "docs/plans/archive/003-clock-app.md",
+          "related": [
+            "PLAN-003"
+          ],
+          "status": "verified",
+          "created": "2026-09-08",
+          "last_modified": "2026-09-08"
         }
       ]
     },
@@ -79,6 +115,18 @@
           "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
           "related": [
             "PLAN-009"
+          ],
+          "status": "published",
+          "created": "2026-09-08",
+          "last_modified": "2026-09-08"
+        },
+        {
+          "id": "P003-4",
+          "title": "os-003 复审记录 — 六项全过（偏离显式在案）",
+          "content": "六项验收全过（12/12 复跑/boot title Clock 实证/curation 复跑/tf 零新增红）。\n偏离三项（执行期裁定+实测依据）：步进器替代 input（VM 状态 str to_int 坏）；\n恒结构顶栏替代覆盖层（Tick 后重渲染面）；DoLap 改名（劫持）。延后两项：\nnotify 叠加 v2（T1 已证动词在 session.rs:1486）；DST 固定偏移 v1。债候选\nP003-R1..R3 移交框架侧。spec-impact：Time 桥+Clock app+GOAL-010。",
+          "file": "docs/plans/archive/003-clock-app.md",
+          "related": [
+            "PLAN-003"
           ],
           "status": "published",
           "created": "2026-09-08",
