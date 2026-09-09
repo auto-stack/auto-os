@@ -223,6 +223,9 @@ widget App {
                                 } else {
                                     col {
                                         onclick: .Launch(g.name)
+                                        // PLAN-002 B：布局件 hover 类消费（此前 col
+                                        // 的 hover: 静默丢弃——526 Q9① 实测网格态
+                                        // 无高亮；VM 轨现与 Vue 原生 :hover 同效）。
                                         style: "flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-primary/10 cursor-pointer"
                                         col {
                                             style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
