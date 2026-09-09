@@ -317,7 +317,7 @@ main）,item IDs P007-1..6+P007-R1,file 指向 archive 路径,JSON 校验通过;
 docs/plans/INDEX.md 随迁表行翻 📦 |
 archived: docs/plans/archive/007-p534-debt-batch-1.md（git mv）;completion_kind:
 delivered |
-cleaned: 待填（拆除后回填） |
+cleaned: 三 worktree wt-guard clean（auto-lang/auto-os/auto-down 各 rc=0）→ git worktree remove×3+branch -d×3+组目录 rmdir;实证:.wt/ 下仅余并行会话组 lang-593/lang-595 |
 
 备注:并行会话期间 auto-lang master 前移（594 merge/595 review),merge 零冲突
 （重叠文件无并行改动）;master 未提交的 v05/website 改动为并行会话所有,
