@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-007
 origin: PLAN-577
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: P534 债务清偿批一期（avatar 家族 + schema 滞留 + breadcrumb 栈溢出）
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径
-current_step: 0
+current_step: 6
 total_steps: 9
 ---
 
@@ -177,29 +177,32 @@ pre-fold `cargo tf`;不触 aavm 路径零 taa 触发）
 master 基点,执行时以 grep 重新定位。worktree=`D:/autostack/.wt/lang-577/
 auto-lang`;依赖仓不涉及。）
 
-1. [ ] **avatar-image/fallback 臂**:aura_view_builder.rs 两处分发区
-   （grep `"avatar" =>` 定位 :1842/:3405 邻域）加
-   `"avatar-image" => convert_image_or_icon(props)` 与
-   `"avatar-fallback"` text 臂;`convert_avatar` 改造:有子件→容器+子件
-   转换（untracked+tracked 双镜像）。验证:`cargo check -p auto-lang` 零错。
-2. [ ] **四表同步**:avatar-image/avatar-fallback 入 schema.rs elements
-   （grep `elements.insert("sheet"` 邻域先例）+schema/aura.at
-   （avatar-image/avatar-fallback 元素,backends.iced 回填）+render_support
-   +schema_drift_baseline（SCHEMA_DRIFT_UPDATE_BASELINE=1 后人工复核 diff,
-   只允许 avatar 拼写维度）。验证:三围栏绿。
-3. [ ] **avatar 探针**:plan577 探针模块或 layout_tests 追加——avatar
-   （有子件）渲染 avatar-image/avatar-fallback（fallback 文本可见,hit
-   area 非零）;无子件占位保持（回归）。验证:`cargo t` 滤 plan577/新测全绿。
+1. [✅ 已完成] **avatar-image/fallback 臂**——`d9bb87ef9`：双镜像三臂
+   （avatar 容器转换子件/avatar-image→convert_image_or_icon/avatar-fallback
+   →convert_text_element 带 events/children）；check 0 错。
+2. [✅ 已完成] **四表同步**——schema.rs elements（avatarimage/avatarfallback）
+   +render_support 三臂 full+aura.at 全量再生成+baseline 复核 8+/5-（全
+   avatar 拼写/消漂维度：canvas 行消解+sub_button 入册消漂为改善项）；
+   **三围栏 2/2+4/4+7/7 绿**。
+3. [✅ 已完成] **avatar 探针**——`tests/plan577_avatar_tests.rs` 2/2：
+   有子件（avatar-image 图节点 src 入树+avatar-fallback 文本 "CN" 可见）
+   /无子件容器占位保持。
 4. [ ] **avatar 实机**:gallery /avatar 页+/hovercard 页截图
    （scratch/p577/落账）;hovercard 触发器 hit area 非零（bounds 快照
    @rect h>0）→真 hover 进/出 state 翻转（复用 534 sweep 法）。
    验证:截图+state 证据在案。
-5. [ ] **element_coverage 登记**:12 元素 NotConsumed 行（对齐 drawer_close
-   风格）。验证:`cargo test -p auto-lang --test schema_drift
-   queue_coverage_drift_fence` 绿。
-6. [ ] **schema 全量再生成**:SCHEMA_DRIFT_GENERATE_AT=1→aura.at diff
-   人工复核→P3 sidebar_menu_sub_button 档位诊断+对齐→baseline 裁剪
-   复核。验证:schema_drift 2/2+docs_gen 4/4 绿。
+5. [✅ 已完成] **element_coverage 登记**——实测修正：534 调查 12 项中
+   sidebar 系 10 项 561 期已按折叠名在册；全量再生成把命名翻转为连字符/
+   Pascal/整词真名（sidebar-group-action…/NavDestination→nav-destination/
+   Swiper→swiper/sidebarinput…）——真名登记+旧下划线孪生与 Pascal 行退役，
+   双向净+计数一致（414=414）。
+6. [✅ 已完成] **schema 全量再生成**——aura.at 419 元素（413→419）人工
+   复核（再生成滞留全清：drawer/hover_card/nav 组/sheet/sidebar 进
+   builtin 层）；**P3 消解**=sidebar_menu_sub_button 独立立册（vue 同件但
+   iced 档不同——561 真值 sub=full/button=partial，regen 别名合并丢该
+   区分，显式产物元素拆开）；kitchen-sink 38→50 节+core.md 随生
+   （auto-os worktree `84ff922`）；DOC_EXCLUDE+2（折叠键）；
+   schema_drift 2/2+docs_gen 4/4+queue 1/1 绿。
 7. [ ] **breadcrumb 病源二分**:debug 构建直达 breadcrumb 复现→页面内容
    逐块注释二分（≤6 步,scratch/p577/ 留痕）→锁定病源构造→最小 .at
    复现（≤10 行）固定。验证:最小复现 100% 复现溢出。
