@@ -177,8 +177,9 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 - [ ] C 用户复核清单七项逐项确认并勾销。
       [复核进展 2026-09-09] **T20 ✓**（首击=窗口置顶+按钮同时生效，空白区
       只聚焦无误触发；事件实录 scratch/p002/review_ue.log：Digit/ToggleTodo
-      handler 首击即发）。发现 N1/N2 两个新问题（见复审记录登记），N1 阻塞
-      T31 复核语义定夺，余 T24/T28/T32/T37/T38 待续。
+      handler 首击即发）。**T24 ✓**（最大化底缘与任务栏无遮挡，用户确认；
+      附带产出 N4 居中+N5 圆角两优化，见下）。发现 N1/N2 两个新问题
+      （已修复待验），余 T28/T31/T32/T37/T38 待续。
 
 ## 执行步骤
 
@@ -230,6 +231,36 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 - [ ] E 用户复核：通知中心开合（同 D 场景）确认修复。
 
 ## 复审记录
+
+### work 交接记录（2026-09-09 · N3/N4/N5）
+
+stage: work | PLAN-002 | rev 0 | partial（C 复核推进：T20/T24 ✓，N1/N2
+已修复用户确认 ✓，N3/N4/N5 交付待验，保持 executing） | code_commit:
+auto-lang os-002-dev `60d3efb75`（本仓无改动） | task_ids: N3+N4+N5
+evidence: N3=execute_launch_app Ok 臂去通知（toast 逐面重复：412 双层
+Stack 每动态视图面一份；失败臂保留）；N4=fit_aware_root 居中包裹（512
+待澄清③定案，测量锚点口径不变）；N5=window_radius 四角全圆（T25 降级
+撤销）+客户区底色同步+app 根节点默认 rounded-b-2xl（round_bottom_root_default
+纯函数+单测，显式 radius 声明优先）；layout_tests 35/35+cargo t 3=3
+零回归 | blockers: 无 | next: 用户验 N3/N4/N5 → 续 C3/T28、C4/T31、
+C5/T32、C6/T37、C7/T38、E
+
+### 复核结论登记（2026-09-09 · 第二轮）
+
+- **N1 ✓**：chip 全域双击启动，用户确认（方案 A 落地生效）。
+- **N2 ✓**：开窗闪变消除，用户确认（fit 测量期越界隐藏生效）。
+- **C2/T24 ✓**：最大化底缘与任务栏无遮挡，用户确认。
+- **N3（已修复待验）**：启动成功通知去除（桌面+app 窗双份 Success 均
+  消失；失败反馈保留）。顺带登记：toast 层逐视图面渲染的重复缺陷仍在
+  （任何 notify 都会在 shell+每个 app 窗各弹一份）——用户裁定启动场景
+  去通知后暂无消费面，登记 KNOWN-DEBT 候选，首个真实 notify 需求出现
+  时系统化收口（单点渲染+跨窗去重）。
+- **N4（已修复待验）**：最大化/放大 fit 窗内容居中（原左上角沉底，
+  512 待澄清③由用户裁定关闭：居中语义定案）。
+- **N5（已修复待验）**：窗框底部圆角系统化——①窗框四角全圆（撤销
+  526 T25 底边方角降级；最大化仍方角=全屏惯例）②客户区底色同步底角
+  ③vwin 托管 app 根节点默认 rounded-b-2xl（16px 与窗框对齐；应用显式
+  radius 声明优先不覆盖；独立模式 OS 窗走系统原生圆角不涉及）。
 
 ### work 交接记录（2026-09-09 · N1/N2）
 
