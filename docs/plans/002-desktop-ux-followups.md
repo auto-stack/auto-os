@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [ui/session, ui/iced, virtual_window.rs, popover.rs, code_editor]                   # 受影响的 specs 路径，如 [auto-lang/vm]
-current_step: 2
+current_step: 3
 total_steps: 5
 ---
 
@@ -100,6 +100,33 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 **保留探针**：`AUTO_POPOVER_DEBUG=1` 门控两处（popover.rs Panel::layout
 逐帧几何、renderer.rs WindowThumbnail fallback 臂触发），定位复验通道。
 
+### B 实施回填（2026-09-09）
+
+设计稿 = `docs/design/autoui/layout-interaction.md`（问题/设计/语义边界/
+分期/后续项）。要点：
+
+- **右键**：`View::Row/Column/Container` 增 `on_right_click`（命名对齐
+  Button 402 先例）；aura `set_layout_onclick` → `set_layout_events`（同一
+  提取点收 `onclick`/`click` 与 `oncontextmenu`，tracked/untracked 镜像）；
+  `convert_view_messages` 显式穿透（D-GAP 第四例教训的护栏测试）。
+- **hover**：新增 `crates/auto-lang/src/ui/iced/hover_area.rs`——HoverArea
+  纯委托包装 widget（PointerArea/table_resize 先例），自持
+  `State{hovered,cursor_position,bounds}`；与样式闭包共享
+  `Arc<AtomicBool>` 标志（`layout_hover_flag` 仅在样式声明 `hover:` 变体时
+  构造），`layout_style_fn` 按标志在 base 与
+  `merged_with_variant(style, Hover)` 两套已构建样式间二选一；翻转只
+  `shell.request_redraw()`（不重建 view、不发消息）。
+- **包装点**：`wrap_layout_onclick` → `wrap_layout_events(el, onclick,
+  on_right_click, hover)`——单个 mouse_area 承载左右两键 + 外层 HoverArea；
+  inspect 捕获态自守卫不包（490 G4 同规则）。
+- **试点站点**：launcher 网格格（既有 `hover:bg-primary/10` 生效，零 .at
+  改动）+ 桌面图标格（`hover:bg-white/10`，`oncontextmenu` 自 icon button
+  迁至格 col）。desktop.at 走 auto-os `scripts/shell-pack-sync.py --sync`
+  同步 pin + `AUTO_LANG_UPDATE_GOLDEN=1` 金样再生。
+- **语义边界**（设计稿 §3）：hover 类作用于布局件自身（不级联子件文本色）；
+  布局类 hover 不重排；`View::Grid` 无事件槽（后续项）；`cursor-pointer`
+  iced 适配器 no-op（后续项）。
+
 ## 测试设计
 
 - A1：popover 首开定位 headless 单测（Simulator：visible 翻转后首帧 bounds
@@ -128,8 +155,25 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       fence 测试 test_convert_view_messages_preserves_window_thumbnail
       （Grid 319/menubar 422/496 MouseArea 后同坑第四例）。实机：
       thumb-fallback 臂复活（wid=1/2 各 21/25 帧），fallback icon 真渲染。
-- [ ] B wrap_layout_onclick 设计草稿 + 试点落地（或用户裁定再延后并更新
+- [x] B wrap_layout_onclick 设计草稿 + 试点落地（或用户裁定再延后并更新
       KNOWN-DEBT 理由）。
+      [✅ 已完成] 2026-09-09。原 `wrap_layout_onclick` → `wrap_layout_events`
+      收拢布局件三臂（auto-lang os-002-dev `d5b345fb1`，auto-os `fa77bc9`）：
+      ① onclick（490 G4 原样）② `oncontextmenu`——`View::Row/Column/Container`
+      增 `on_right_click`，aura `set_layout_events` 双键提取（tracked/untracked
+      镜像），`convert_view_messages` 显式穿透（D-GAP 护栏测试同坑第五例）
+      ③ `hover:` 变体类消费——新增 `hover_area.rs`（HoverArea 自持 hover 态 +
+      与样式闭包共享 `Arc<AtomicBool>` 标志，翻转只 request_redraw，零 view
+      重建/零消息往返）。试点：launcher 网格格（既有 `hover:bg-primary/10`
+      生效）+ 桌面图标格（`hover:bg-white/10` + 右键自 icon button 迁至格 col，
+      格内全域可右键）。证据：设计稿 `docs/design/autoui/layout-interaction.md`；
+      测试 7 枚（含 iced_test 端到端 flag 驱动、desktop 试点断言 rc=4/hv=4）；
+      `cargo t` 全量失败集与 master 全等 24=24（零回归）、iced-layout-tests
+      35/35、shell pack hash-lock 绿、a2vue 金样再生后绿；实机
+      scratch/p002/p002b_{desktop,launcher}.ps1——桌面格 hover 像素差 6054/
+      撤除 0、label 区右键菜单、launcher 网格 7/8 候选点命中 152×95 格
+      （未命中的 1 号=选中态格，本就无 hover: 类）。KNOWN-DEBT 526 行结案，
+      余项（Grid 事件槽/cursor-pointer/hover 文本级联/全示例 sweep）另立。
 - [ ] C 用户复核清单七项逐项确认并勾销。
 
 ## 执行步骤
@@ -156,7 +200,14 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       左下角常驻渲染，auto-os `56cc364` pack+pin+金样再生）与
       resolve_shell_pack_dir 组目录解析 bug（worktree 构建静默读主检出
       pack，ancestors nth(3) 修复）——两项均独立登记 KNOWN-DEBT。
-- [ ] B wrap_layout_onclick 设计草稿 + launcher/桌面试点。
+- [x] B wrap_layout_onclick 设计草稿 + launcher/桌面试点。
+      [✅ 已完成] 2026-09-09，auto-lang `d5b345fb1` + auto-os `fa77bc9`。
+      设计草稿 `docs/design/autoui/layout-interaction.md`（问题/设计/语义
+      边界/分期）；实现=`hover_area.rs`（新 widget）+ `wrap_layout_events`
+      + `layout_hover_flag/layout_style_fn` + 三节点双路径臂 + aura
+      `set_layout_events` + View 字段（含 convert_view_messages 穿透）；
+      试点站点=launcher 网格格 + desktop.at 图标格（pack=pin 同步+金样再生）。
+      证据见验收标准 B 项。
 - [ ] C 用户复核七项逐项销账（T20/T24/T28/T31/T32/T37/T38）。
 - [x] D 崩溃：铃铛二次开合通知中心 → 进程静默退出 code 1（复现 2/2：
       2026-09-03 21:38 用户实机 + 22:0x 验收通道 handler 双调；无 panic
@@ -175,6 +226,21 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 - [ ] E 用户复核：通知中心开合（同 D 场景）确认修复。
 
 ## 复审记录
+
+### work 交接记录（2026-09-09 · B）
+
+stage: work | PLAN-002 | rev 0 | partial（B 交付，C/E 未完，保持
+executing） | code_commit: auto-lang os-002-dev `d5b345fb1`，auto-os
+os-002-dev `fa77bc9` | task_ids: B（+设计稿）
+evidence: 设计稿 `docs/design/autoui/layout-interaction.md`；测试 7 枚
+（hover_area 转移纯函数/标志门控/样式二选一/消息桥穿透 fence/aura
+oncontextmenu 提取/iced_test 端到端 flag 驱动/desktop 试点 rc=4 hv=4）；
+`cargo t` 全量失败集与 master 全等（24=24，零回归，三轮复跑仅
+clipboard_native 一次 flake 单测隔离绿）+ iced-layout-tests 35/35 +
+shell pack hash-lock 绿 + a2vue 金样再生绿 + desktop_protocol 仅基线红；
+实机 scratch/p002/p002b_{desktop,launcher}.ps1（桌面格 hover 6054/撤除 0、
+label 右键菜单、launcher 7/8 命中 152×95 格） | blockers: C/E 需用户实机
+复核 | next: C/E 用户复核，或径入 review（A1/A2/B 可先行复审）
 
 ### work 交接记录（2026-09-09）
 
@@ -195,4 +261,8 @@ worktree 解析失效（已修）——三项均入 auto-lang KNOWN-DEBT-AND-RIS
 ## 待澄清事项
 
 1. A2 空显兜底的视觉形态（skeleton 块 vs 首帧降级 icon）需用户定夺。
-2. B 的铺开范围（仅桌面 vs 全示例）影响回归面，试点后定。
+2. ~~B 的铺开范围（仅桌面 vs 全示例）影响回归面，试点后定。~~ **已裁定
+   （2026-09-09，B 交付）**：机制全量生效（渲染层全局），试点面 = launcher
+   + 桌面；全示例 sweep（481+88 处 `hover:` 的布局件逐例目检 + 金样对拍）
+   与余项（`View::Grid` 事件槽 / `cursor-pointer` 接线 / hover 文本色级联）
+   另立计划——见 `docs/design/autoui/layout-interaction.md` §5/§6。
