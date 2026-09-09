@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-007
 origin: PLAN-577
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done     # drafting → executing → execution_done → reviewed → archived
 feature_name: P534 债务清偿批一期（avatar 家族 + schema 滞留 + breadcrumb 栈溢出）
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径
-current_step: 6
+current_step: 9
 total_steps: 9
 ---
 
@@ -161,15 +161,23 @@ pre-fold `cargo tf`;不触 aavm 路径零 taa 触发）
 
 ## 验收标准
 
-- [ ] /avatar 页 avatar-image/avatar-fallback 渲染（截图落账 scratch/p577/）。
-- [ ] /hovercard 页 avatar 触发器 hit area 非零,真 hover 进/出**直接通过**
+- [x] /avatar 页 avatar-image/avatar-fallback 渲染（截图落账 scratch/p577/）。
+      （t4_avatar_vm.png+像素密度 0.79;props 形态 desugar 补臂后两 40x40 圆）
+- [x] /hovercard 页 avatar 触发器 hit area 非零,真 hover 进/出**直接通过**
       （不借语料工程;534 G3 gallery 形态补全）。
-- [ ] schema 三围栏绿;滞留 12 元素登记;全量再生成入账无未审豁免。
-- [ ] breadcrumb 页可直接导航进入不崩;全站扫描 68/68 全绿。
-- [ ] KNOWN-DEBT P534-D4/D5+P530-D1 结案回写（D5 若走"归因报告+另立"出口,
+      （@rect(781,496,40,40) h=40;OS 级真 hover 进→true/出→false,
+      t4hc_summary.md PASS+三截图）
+- [x] schema 三围栏绿;滞留 12 元素登记;全量再生成入账无未审豁免。
+      （T2/T5/T6 期完成:2/2+4/4+7/7）
+- [x] breadcrumb 页可直接导航进入不崩;全站扫描 68/68 全绿。
+      （环守卫 889d81fb1;fullscan_report.md visited=68 anomalies=0 died=False）
+- [x] KNOWN-DEBT P534-D4/D5+P530-D1 结案回写（D5 若走"归因报告+另立"出口,
       本项改判该出口产物在案）。
-- [ ] `cargo t iced`+`cargo tv` 全绿（唯一红允许=charts gallery 存量）;
+      （三条全 ✅ 偿还;D5 根因同 P530-D1 非另立——扫描序列首踩病源页实证）
+- [x] `cargo t iced`+`cargo tv` 全绿（唯一红允许=charts gallery 存量）;
       pre-fold `cargo tf` 与基线一致。
+      （iced 唯一红=lucide 存量/master 集合全等;tv 唯一红=charts 存量;
+      tf no-fail-fast 唯一红=charts,master 同命令集合全等）
 
 ## 执行步骤
 
@@ -187,10 +195,18 @@ auto-lang`;依赖仓不涉及。）
 3. [✅ 已完成] **avatar 探针**——`tests/plan577_avatar_tests.rs` 2/2：
    有子件（avatar-image 图节点 src 入树+avatar-fallback 文本 "CN" 可见）
    /无子件容器占位保持。
-4. [ ] **avatar 实机**:gallery /avatar 页+/hovercard 页截图
-   （scratch/p577/落账）;hovercard 触发器 hit area 非零（bounds 快照
-   @rect h>0）→真 hover 进/出 state 翻转（复用 534 sweep 法）。
-   验证:截图+state 证据在案。
+4. [✅ 已完成] **avatar 实机**——`023b6a987`（T4 顺带两根因修复：①props
+   形态 desugar——gallery /avatar 页用 `avatar (src/fallback)` props 形态,
+   对齐 vue 端 AvatarImage/AvatarFallback 展开补臂；②**触发器零高根因**——
+   centering 容器无显式宽高被 apply_container_style 设 Fill×Fill,shrink
+   上下文（Popover 锚）解析为零高,对齐 vue 端恒注入 w-10 h-10 修复；
+   ③远程图源裸 `reqwest::blocking::get` 挂死渲染线程→加 3s 超时）。
+   实机证据（scratch/p577/）：/avatar 两 40x40 圆渲染（网络图 avatar
+   content 密度 0.79、CN 灰圆 0.79/gray 0.70,截图 t4_avatar_vm.png）；
+   /hovercard 触发器 @rect(781,496,40,40) h=40>0（t4hc_hovercard_bounds.txt,
+   152 rects）→ OS 级真 hover 进 `__dlg_open_1=true`/出 `=false`
+   （t4hc_summary.md PASS,三截图在案）——不借语料工程,534 G3 补全。
+   探针 3/3（增 props 形态用例）。
 5. [✅ 已完成] **element_coverage 登记**——实测修正：534 调查 12 项中
    sidebar 系 10 项 561 期已按折叠名在册；全量再生成把命名翻转为连字符/
    Pascal/整词真名（sidebar-group-action…/NavDestination→nav-destination/
@@ -203,20 +219,58 @@ auto-lang`;依赖仓不涉及。）
    区分，显式产物元素拆开）；kitchen-sink 38→50 节+core.md 随生
    （auto-os worktree `84ff922`）；DOC_EXCLUDE+2（折叠键）；
    schema_drift 2/2+docs_gen 4/4+queue 1/1 绿。
-7. [ ] **breadcrumb 病源二分**:debug 构建直达 breadcrumb 复现→页面内容
-   逐块注释二分（≤6 步,scratch/p577/ 留痕）→锁定病源构造→最小 .at
-   复现（≤10 行）固定。验证:最小复现 100% 复现溢出。
-8. [ ] **breadcrumb 修复**:按病源修（环检测/深度防御/构造修正,预设出口
-   见 D3）+最小复现回归测试。验证:最小复现不崩;直达 breadcrumb 页
-   ALIVE（MCP snapshot 正常返回）。
-9. [ ] **收口簿记**:KNOWN-DEBT P534-D4/D5+P530-D1 结案回写（D5 走
-   "归因另立"出口时改记归因在案）;gallery README 已知边界 avatar 行更新;
-   全站扫描 68/68 判据复跑;pre-fold `cargo tf` 与基线一致。
-   验证:KNOWN-DEBT 三行在案+tf 唯一红=charts 存量。
+7. [✅ 已完成] **breadcrumb 病源二分**——3 步锁定（≤6 预算,留痕
+   scratch/p577/bisect_s*.log）：s1 注释 `breadcrumb-page "Breadcrumb"`
+   一行即活（页面其余全在）→ s2 页面剥至最小形态（10 行体,仅含
+   breadcrumb-page tag）仍 100% 栈溢出 → s3 对照 tag 改 `breadcrumb-pag`
+   （折叠键不再命中组件名）活。**机制**：未知 tag 经 widget_registry
+   折叠兜底（P435 P8-6：剥 `-`/`_`+小写）命中页面组件自身名——
+   `breadcrumb-page`→`breadcrumbpage`==fold(`BreadcrumbPage`)→
+   render_child_widget 无限自递归。疑点修正：与 unknown tag+href prop
+   无关（breadcrumb-link 无恙）,是自名折叠命中。
+8. [✅ 已完成] **breadcrumb 修复**——`889d81fb1`：通用环守卫
+   （AuraViewBuilder 增 active_child_widgets 进行中集合,按分支克隆
+   传递,双胎 render_child_widget 入口命中环渲染 Empty;A→B→A 类互递
+   归同防）。回归测试 plan577_breadcrumb_cycle（红灯验证:摘守卫跑测
+   STATUS_STACK_OVERFLOW 实测在案）。验证：最小复现不崩+直达
+   breadcrumb 页 ALIVE（MCP snapshot len=33598 正常返回,截图
+   t8_breadcrumb_alive.png+快照 t8_breadcrumb_snapshot.txt 落账）。
+9. [✅ 已完成] **收口簿记**——KNOWN-DEBT 三条结案回写（auto-lang worktree
+   提交：P530-D1 ✅889d81fb1 环守卫/P534-D4 ✅023b6a987 家族+根因/P534-D5
+   ✅根因同 P530-D1,扫描 ~55 次首踩 breadcrumb 页）；gallery README avatar
+   行更新（auto-os worktree `d6a48d2`）；全站扫描 **68/68 全绿零异常应用
+   存活**（scratch/p577/fullscan_report.md，适配版脚本 p577_fullscan.py）；
+   pre-fold `cargo tf` no-fail-fast 唯一红=charts 存量，master 同命令对账
+   **集合全等零新增红**；`cargo t iced` 唯一红=lucide 存量（master 同命令
+   集合全等）；`cargo tv` 唯一红=charts 存量（计划允许口径内）。
 
 ## 复审记录
 
-（待 /auto-plan:review 填写。）
+### work 阶段收尾记录（2026-09-09）
+
+stage: work | PLAN-007 | rev 1（随迁重编后首版执行完毕） | pass |
+code_commit: auto-lang os-007-dev `023b6a987`（T1-T4）+`889d81fb1`（T7/T8）
++KNOWN-DEBT 提交;auto-os os-007-dev `84ff922`（T6 kitchen-sink）+`d6a48d2`
+（T9 README/gitignore） | task_ids: T1-T9 全 ✅（current_step 9/9） |
+evidence: scratch/p577/（T4 实机三件套+T7 二分四步+T8 alive 快照/截图+
+fullscan_report.md 68/68+tf/tv/iced 对账） | blockers: 无 |
+next: /auto-plan:review 007
+
+执行期偏差记录（对原设计的修正，均在授权语义内）：
+1. T4 发现 props 形态缺口（/avatar 页 `avatar (src/fallback)` 用法不在
+   T1 臂覆盖内）→ 对齐 vue 端 desugar 补臂（构造修正）。
+2. T4 根因修复超出原"实机验证"字面：触发器零高根因（centering 容器
+   Fill×Fill 在 shrink 上下文解析为零高）与远程图源同步抓取挂死渲染线程
+   均为 P534-D4 验收的必要修复面（"hover 直接通过"判据的构成性工作）。
+3. T7 病源与计划疑点修正：非 unknown tag+href prop 组合，而是自名折叠
+   递归（breadcrumb-page → fold 命中 BreadcrumbPage）。P534-D5 根因
+   同此（扫描 ~55 次导航首踩病源页），非累积深度问题——原"归因另立"
+   出口未启用，直接修复结案。
+4. 验收第 6 条口径说明：iced 档唯一红=lucide 存量（用户基线清单内），
+   tv/tf 档唯一红=charts 存量（计划允许口径）——master 同命令对账集合
+   全等，零新增红。
+
+（待 /auto-plan:review 填写复审结论。）
 
 ## 待澄清事项
 
