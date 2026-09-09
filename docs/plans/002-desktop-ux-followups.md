@@ -231,6 +231,19 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
 
 ## 复审记录
 
+### work 交接记录（2026-09-09 · N1/N2）
+
+stage: work | PLAN-002 | rev 0 | partial（N1/N2 交付，C 复核进行中 T20 ✓，
+E 待验，保持 executing） | code_commit: auto-lang os-002-dev `5119f1ab3`，
+auto-os os-002-dev `844b7c8` | task_ids: N1（chip 双击死区，方案 A 定案）+
+N2（fit 窗开窗闪变）
+evidence: N1=desktop.at chip 降级 col+icon（pack sync 4e5bb4f1a9+金样再生
+10/6 行 churn）+试点断言 rc=4/hv=4 绿；N2=vwin_fit_hidden 纯函数+单测
+（越界 100k px 绘制偏移，布局原位锚点可测、Stack 零位移；ServiceTick
+计数 5 tick 强制显形护栏）+layout_tests 35/35+a2vue 15/15；cargo t 失败
+集与 master 全等 3=3 零回归；实机待用户复验（N1 双击/右键整格、N2 计算器
+开窗一次成型） | blockers: 无（等用户复验） | next: 用户续验 C2-C7/E
+
 ### 阶段复审记录（2026-09-09 · A1/A2/B）
 
 stage: review（阶段性，仅 A1/A2/B） | plan_id: PLAN-002 | plan_revision: 0
