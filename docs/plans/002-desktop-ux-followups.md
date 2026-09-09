@@ -247,6 +247,44 @@ Stack 每动态视图面一份；失败臂保留）；N4=fit_aware_root 居中�
 零回归 | blockers: 无 | next: 用户验 N3/N4/N5 → 续 C3/T28、C4/T31、
 C5/T32、C6/T37、C7/T38、E
 
+### work 交接记录（2026-09-10 · N6b 隔离矩阵）
+
+stage: work | PLAN-002 | rev 0 | partial（N6b 隔离取证推进，保持
+executing） | code_commit: auto-lang os-002-dev `ee986f0cb`（两隔离例）
+| task_ids: N6b
+evidence: **隔离矩阵**——A：独立 OS 窗口（iced::application，HostBackend
+直跑，无 DM 包装）`ui_popover_probe`：外点自动关闭**正常**（用户手测 +
+probe_standalone.log Toggle→Dismissed 循环实录）——popover widget 本体与
+iced core overlay::Element::Map 映射（local_shell+merge，源码核对无误）
+均健康；C：桌面 surface icon 菜单（daemon+深层嵌套）**坏**（前轮探针
+实锤：发布 4 次未达 daemon update + 基础树全聋）；B：裸 daemon+DM 包装
+`ui_popover_probe2` **无效测试床**——窗口全黑（裸 daemon 缺桌面主题/字体
+接线，渲染不出内容；0×0 client 系未开窗所致已修，留窗即黑屏）。
+**结论**：popover 外点关闭机制在健康 runtime 下工作正常；断点在桌面
+daemon 宿主环境（多窗口 daemon/主题接线/深层 widget 树三者之一）。
+**下轮 bisect 计划**：①把 probe B 补齐桌面同款 `.font(INTER)+.theme()`
+接线使内容可见，外点测试即判 daemon 层；②若 B 仍正常 → 在真桌面
+以 AUTO_POPOVER_DEBUG 探针对比 dock 菜单（shell.at 层）与 icon 菜单
+（surface 层）收窄宿主层；③修复候选：dismiss 消息改走 base 树旁路
+（subscription 全局键盘 Esc + 定时器兜底）或修 iced 集成断点。
+blockers: 无（bisect 路径明确） | next: 专项回合继续 N6b；N6a 同回合查
+evidence: **隔离矩阵**——A：独立 OS 窗口（iced::application，HostBackend
+直跑，无 DM 包装）`ui_popover_probe`：外点自动关闭**正常**（用户手测 +
+probe_standalone.log Toggle→Dismissed 循环实录）——popover widget 本体与
+iced core overlay::Element::Map 映射（local_shell+merge，源码核对无误）
+均健康；C：桌面 surface icon 菜单（daemon+深层嵌套）**坏**（前轮探针
+实锤：发布 4 次未达 daemon update + 基础树全聋）；B：裸 daemon+DM 包装
+`ui_popover_probe2` **无效测试床**——窗口全黑（裸 daemon 缺桌面主题/字体
+接线，渲染不出内容；0×0 client 系未开窗所致已修，留窗即黑屏）。
+**结论**：popover 外点关闭机制在健康 runtime 下工作正常；断点在桌面
+daemon 宿主环境（多窗口 daemon/主题接线/深层 widget 树三者之一）。
+**下轮 bisect 计划**：①把 probe B 补齐桌面同款 `.font(INTER)+.theme()`
+接线使内容可见，外点测试即判 daemon 层；②若 B 仍正常 → 在真桌面
+以 AUTO_POPOVER_DEBUG 探针对比 dock 菜单（shell.at 层）与 icon 菜单
+（surface 层）收窄宿主层；③修复候选：dismiss 消息改走 base 树旁路
+（subscription 全局键盘 Esc + 定时器兜底）或修 iced 集成断点。
+blockers: 无（bisect 路径明确） | next: 专项回合继续 N6b；N6a 同回合查
+
 ### work 交接记录（2026-09-09 · N6 取证）
 
 stage: work | PLAN-002 | rev 0 | partial（C 复核推进：T20/T24/T28 ✓，
