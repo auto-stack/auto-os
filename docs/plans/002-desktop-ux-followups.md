@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-002
 origin: PLAN-535
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-ux-followups
 author: [zhaopuming]
 created_at: 2026-09-04
-updated_at: 2026-09-07
+updated_at: 2026-09-09
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -13,8 +13,8 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [ui/session, ui/iced, virtual_window.rs, popover.rs, code_editor]                   # 受影响的 specs 路径，如 [auto-lang/vm]
-current_step: 0
-total_steps: 0
+current_step: 2
+total_steps: 5
 ---
 
 > **随迁注记（Stage B P-1，2026-09-07，PLAN-001）**：本计划自 auto-lang
@@ -76,7 +76,29 @@ total_steps: 0
 
 ## 详细设计
 
-（A1/A2/B 逐项实施时回填本节。）
+### A1/A2 实施回填（2026-09-09）
+
+**根因链（探针实测，scratch/p002/popover_debug6.log）**：dock 条目
+popover 的 content 子树含 `window_thumbnail`（526 T8 单 popover 双态结构）。
+builder 侧恒产 `View::WindowThumbnail`，但 VM 模式渲染前消息桥
+`convert_view_messages`（renderer.rs）无该变体臂——落 `_ => Empty` 兜底。
+iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8×8
+（子节点 0×0），Top 放置按 content=8×8 定位=锚点右上 8×8 空壳亮点，
+整段 hover 期可见；关→开翻转后 content 换型正常（菜单 152×112 首帧即
+正位）。→ KNOWN-DEBT 双🟢（首开偏左+懒捕获空显）实为同根两症。
+
+**修复四处**：
+1. `renderer.rs convert_view_messages` 补 WindowThumbnail 显式臂（根修）
+   + fence 测试（同坑第四例：Grid 319/menubar 422/496 MouseArea）。
+2. `popover.rs panel_is_degenerate` 纯函数 + Panel::draw 跳绘（防御纵深：
+   任何来源的退化 content 不再闪现空壳）+ 三单测。
+3. `desktop.at` blank 菜单 col 归位 popover 标签内（T36 括号错位回归——
+   修复过程中经金样对拍证实：master 金样即含散落结构）。
+4. `shell.rs resolve_shell_pack_dir` ancestors nth(3) 组目录解析（worktree
+   构建静默读主检出 pack——本次实机验证静默失效的根因，独立登记）。
+
+**保留探针**：`AUTO_POPOVER_DEBUG=1` 门控两处（popover.rs Panel::layout
+逐帧几何、renderer.rs WindowThumbnail fallback 臂触发），定位复验通道。
 
 ## 测试设计
 
@@ -88,8 +110,24 @@ total_steps: 0
 
 ## 验收标准
 
-- [ ] A1 popover 首开锚点居正（headless 断言 + 实机目检）。
-- [ ] A2 thumbnail 空显消除（实机目检）。
+- [x] A1 popover 首开锚点居正（headless 断言 + 实机目检）。
+      [✅ 已完成] 2026-09-09。根因非定位几何，而是 A2 同根（见下）：空壳
+      面板（content=[Empty]）以 0 尺寸公式定位=视觉偏移。修复①
+      convert_view_messages 补 WindowThumbnail 臂（空壳源头消除）②
+      Panel 退化内容跳绘护栏 panel_is_degenerate（防御纵深）。证据：
+      headless 翻转两帧断言×2（首开=再开+Top/BottomStart 锚居中，layout_
+      tests.rs）+ panel_is_degenerate 单测×3；实机 scratch/p002/
+      popover_debug6.log——空壳 0 帧（修前 11-15 帧/次），hover 缩略
+      200×120 整段在位 panel.x=174=254+(40−200)/2 精确居中，菜单
+      152×112 @198 居中，电源面板 232×82.2 @1048 不变。
+- [x] A2 thumbnail 空显消除（实机目检）。
+      [✅ 已完成] 2026-09-09。真根因=convert_view_messages（VM 模式消息
+      桥）缺 WindowThumbnail 臂——缩略节点落 `_ => Empty` 兜底，缩略在
+      VM 模式从未渲染过（非 KNOWN-DEBT 猜的快照时序；builder 侧恒产
+      thumb、iced 收 Empty，探针时序实锤 scratch/p002）。修复=显式臂 +
+      fence 测试 test_convert_view_messages_preserves_window_thumbnail
+      （Grid 319/menubar 422/496 MouseArea 后同坑第四例）。实机：
+      thumb-fallback 臂复活（wid=1/2 各 21/25 帧），fallback icon 真渲染。
 - [ ] B wrap_layout_onclick 设计草稿 + 试点落地（或用户裁定再延后并更新
       KNOWN-DEBT 理由）。
 - [ ] C 用户复核清单七项逐项确认并勾销。
@@ -97,8 +135,27 @@ total_steps: 0
 ## 执行步骤
 
 （每项开工时从本清单转正；完成追加 [✅ 已完成] 证据。）
-- [ ] A1 popover 首开锚点偏左修复（popover.rs Panel::layout）。
-- [ ] A2 thumbnail 空显兜底（snapshot.rs/渲染臂）。
+
+> **开工登记（2026-09-09）**：worktree 组 `D:/autostack/.wt/os-002/`——
+> auto-os（分支 os-002-dev，基点 `6eb654c`）+ auto-lang（分支 os-002-dev，
+> 基点 `7613e961f` = 当日 master，含并行会话 595 merge）。正文 auto-lang
+> 路径/行号锚点按 AGENTS §2 解析序换算（本次解析 = `D:/autostack/auto-lang`
+> 主检出读原文，改动落 auto-lang worktree）。
+- [x] A1 popover 首开锚点偏左修复（popover.rs Panel::layout）。
+      [✅ 已完成] 2026-09-09，auto-lang `efc7e64b9`。根因在
+      convert_view_messages（见 A2），非 popover.rs 定位几何；popover.rs
+      侧加 panel_is_degenerate 跳绘护栏（退化帧空壳不可见，纯函数+三
+      单测）；headless 翻转两帧断言×2（含 shell.at 同构内容换型场景）。
+      修 595 遗留 layout_tests.rs Value::Obj Box 化编译破损（master 存量）。
+- [x] A2 thumbnail 空显兜底（snapshot.rs/渲染臂）。
+      [✅ 已完成] 2026-09-09，auto-lang `efc7e64b9`。真根因=
+      convert_view_messages（VM 模式消息桥，renderer.rs:5875）缺
+      WindowThumbnail 臂——缩略落 `_ => Empty` 兜底，VM 模式从未渲染过
+      （KNOWN-DEBT 的"快照时序"猜想不成立）。修复=显式臂+fence 测试；
+      附带发现并修复 desktop.at T36 括号错位回归（blank 菜单散落桌面
+      左下角常驻渲染，auto-os `56cc364` pack+pin+金样再生）与
+      resolve_shell_pack_dir 组目录解析 bug（worktree 构建静默读主检出
+      pack，ancestors nth(3) 修复）——两项均独立登记 KNOWN-DEBT。
 - [ ] B wrap_layout_onclick 设计草稿 + launcher/桌面试点。
 - [ ] C 用户复核七项逐项销账（T20/T24/T28/T31/T32/T37/T38）。
 - [x] D 崩溃：铃铛二次开合通知中心 → 进程静默退出 code 1（复现 2/2：
@@ -119,7 +176,21 @@ total_steps: 0
 
 ## 复审记录
 
-（/auto-plan:review 回填）
+### work 交接记录（2026-09-09）
+
+stage: work | PLAN-002 | rev 0 | partial（A1/A2 交付，B/C/E 未完，保持
+executing） | code_commit: auto-lang os-002-dev `efc7e64b9`+`518479259`，
+auto-os os-002-dev `56cc364` | task_ids: A1/A2+附带三修复 |
+evidence: scratch/p002（探针日志 popover_debug6.log+截图 boot6/tb_first/
+first5 等）；headless popover 套件 26/26+p7_loader 2/2+a2vue 金样/
+desktop_surface 绿；desktop 套件 3 红与 master 集合全等（存量+flake，主
+检出复现在案） | blockers: B 需设计草稿试点时段；C/E 需用户实机复核 |
+next: B（wrap_layout_onclick 草稿+试点）或径入 review（A1/A2 可先行复审）
+
+**随迁发现登记**：①convert_view_messages D-GAP 尾差 8 变体（Accordion/
+NavigationRail/Overlay/Select/Sidebar/Slider/Tabs 等，KNOWN-DEBT 🟡候选）
+②desktop.at T36 括号错位回归（已修，金样再生）③resolve_shell_pack_dir
+worktree 解析失效（已修）——三项均入 auto-lang KNOWN-DEBT-AND-RISKS.md。
 
 ## 待澄清事项
 
