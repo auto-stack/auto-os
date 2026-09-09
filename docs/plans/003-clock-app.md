@@ -1,16 +1,20 @@
 ---
 plan_id: PLAN-003
 origin: PLAN-554
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed                # drafting → executing → execution_done → reviewed → archived
 feature_name: clock-app
 author: [zhaopuming]
 created_at: 2026-09-05
 updated_at: 2026-09-08（execution_done：T1-T7 全 ✅，交接 review）
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
+supersedes_spec_components:
+  - "auto-lang examples/ui/README.md: 修改——012 行更新为 Clock 四 tab（os-003 升级注记）"
+new_spec_components:
+  - "auto-lang crates/auto-lang/src/ui_gen/ts_adapter.rs: 修改——Time 模块 vue 桥（Time.now_sec()→Math.floor(Date.now()/1000)、now_ms→Date.now()；TDD 锁 time_module_bridges_to_date_now）——时间类 app 双端能力基建"
+  - "auto-lang examples/ui/012-stopwatch: 升级——Clock 四 tab（秒表真走表/计时器横幅/世界时钟 8 城/闹钟 storage 5 槽）+ tests/desktop_mcp.py 四断言组 12/12 + vue 三 tab 截图"
+touched_goals:
+  - "GOAL-010: 桌面默认应用集——012 升级 Clock（C 档策展成员，id 保持稳定）"
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径，如 [auto-lang/vm]
 current_step: 3
@@ -223,6 +227,47 @@ var interval int = 250
   （含新桥测试）。提交：`6428299a3`（T2/T3）+ `43f2b8832`（T4-T7）。
 
 ## 复审记录
+
+**复审人**：ZCode（/auto-plan:review 独立复审），2026-09-08。
+**方法**：计划 vs lang `os-003-dev` 实际 diff（两提交，8 文件 +794）逐项重证；
+关键验证全部复审档重跑。
+
+### 逐项验收裁定（verify, don't trust）
+
+| # | 验收标准 | 裁定 | 复审证据 |
+|---|---|---|---|
+| 1 | 双端四 tab 全功能；秒表真走表 | **过** | desktop_mcp **12/12 复审档重跑**（fresh .am+taskkill 清场）；vue build 过 + playwright 三 tab 截图（timer 24K/world 30K 内容量） |
+| 2 | desktop_mcp.py 双轨全绿 | **过** | VM 轨 12/12（exit=0）；vue 轨=build+三 tab 截图（**口径注记**：desktop_mcp.py 为 VM 轨套件，vue 轨历来走 build+playwright 冒烟——011/013/028 惯例一致） |
+| 3 | 闹钟 storage 跨重启 | **过** | 套件 T4b 组复跑 PASS（AUTO_VM_STORAGE_FILE 隔离，actual==expected repr 比对） |
+| 4 | pac title "Clock"/icon 生效 | **过** | VM boot 实证 `VM window title: Clock (from pac.at)`；icon clock/category tool 字段实存 pac |
+| 5 | registry id 012-stopwatch 不变 | **过** | scan_examples_ui_curation_set 复跑 PASS（012 在策展集=recent/dock 无破坏） |
+| 6 | README 012 行更新 | **过** | 文件在案（Clock 四 tab+os-003 注记） |
+
+**全量门禁**（ts_adapter 触及 → tf）：no-fail-fast 22 unique 红 =
+**master 预存 22 红集合逐名全等**（590/009 复审基线同集：layout×14/plan370×3/
+plan055/desktop_protocol/lucide/charts/plan492_m4）——**零新增红**，Time 桥
+无回归。
+
+### 遗漏/延后/Workaround 猎查
+
+- **遗漏**：无——T1-T7 全有对应 diff 与复跑证据；t3_smoke.py（T3 期证据）
+  随套件保留。
+- **计划文本偏离（均执行期注记在案，裁定合理）**：①「三 input」→步进器
+  （VM 状态 str `.to_int()` 接收者坏——t_left 垃圾值实测，框架债候选
+  P003-R1）；②横幅覆盖层→恒结构顶栏（**Tick 后仅文本重绑重渲染**，结构/
+  样式 if 不重评估——VM 渲染债候选 P003-R2，覆盖层留修复后升级）；③
+  消息名 Lap→DoLap（VM 内置动词劫持，自动 "Lap {n}: " 前缀——劫持面待查
+  P003-R3）；④秒表累计法（计划主文 v1 方案，差值法升级条件=Time 桥已补
+  但维持 v1 稳定，待澄清 #3 注记维持）。
+- **延后（在案）**：notify 叠加留 v2（待澄清 #1 执行期收口注记）；DST
+  固定偏移 v1（待澄清 #2 维持）。
+- **Workaround**：步进器唯一标签（时±/分±）兼无障碍收益，非隐藏。
+
+### 结论
+
+六项验收全过，tf 零新增红；三项偏离+两项延后全部显式在案。
+**路由：`reviewed`**，就绪 `/auto-plan:merge`（lang 侧 `os-003-dev`
+两提交随批合入）。
 
 ## 待澄清事项
 
