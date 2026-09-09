@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-007
 origin: PLAN-577
-status: execution_done     # drafting → executing → execution_done → reviewed → archived
+status: reviewed          # drafting → executing → execution_done → reviewed → archived
 feature_name: P534 债务清偿批一期（avatar 家族 + schema 滞留 + breadcrumb 栈溢出）
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -9,8 +9,13 @@ updated_at: 2026-09-07
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
+new_spec_components:
+  - ".autoos/specs.json#P007-1 avatar 家族 VM 渲染语义（三臂+props desugar+默认尺寸）"
+  - ".autoos/specs.json#P007-2 widget 子件渲染环守卫（自名折叠递归防护）"
+  - ".autoos/specs.json#P007-3 远程图源同步抓取 3s 超时上界"
+  - ".autoos/specs.json#P007-4 schema 全量再生成滞留清偿形态（真名登记+P3 显式拆册）"
+touched_goals: []             # 本仓（auto-os）无 goals.md 注册表;桌面域谱系
+                              # 隶 auto-lang GOAL-010 应用轨道,台账走 specs.json sections
 
 affects: [auto-lang/ui]       # 受影响的 specs 路径
 current_step: 9
@@ -270,7 +275,59 @@ next: /auto-plan:review 007
    tv/tf 档唯一红=charts 存量（计划允许口径）——master 同命令对账集合
    全等，零新增红。
 
-（待 /auto-plan:review 填写复审结论。）
+### 规范增量（review 定稿,merge 时沉积 .autoos/specs.json）
+
+- **P007-1 avatar 家族 VM 渲染语义**：`avatar`（容器,有子件经同表分发转换/
+  无子件灰圆占位）、`avatar-image`（复用图臂）、`avatar-fallback`（文本臂）
+  三臂；props 形态 `avatar (src/alt/fallback)` 对齐 vue 端 desugar 为
+  AvatarImage+AvatarFallback；默认注入 w-10 h-10（对齐 vue 恒注入语义）。
+  持久规则：**centering 容器（center_x/center_y）无显式宽高时被
+  apply_container_style 设为 Fill×Fill,shrink 上下文（Popover 锚/行内）
+  解析为零高**——新增 centering 容器组件必须带默认尺寸类（534 触发器
+  零高根因）。圆形裁剪以 bg+rounded-full+尺寸类近似（VM 无 clip 原语）。
+  验收：AC1/AC2。
+- **P007-2 widget 子件渲染环守卫**：widget_registry 折叠兜底（P435 P8-6
+  剥 `-`/`_`+小写）使未知 tag 可命中组件自身名（`breadcrumb-page`→
+  BreadcrumbPage）→ 无守卫无限自递归栈溢出。规则：AuraViewBuilder 持
+  active_child_widgets 进行中集合（按分支克隆传递,兄弟复用不受影响）,
+  双胎 render_child_widget 入口命中环渲染 Empty（A→B→A 互递归同防）。
+  命名约束沉淀：**路由页 widget 名与 demo 内 shadcn tag 折叠同名时触发**,
+  页面命名避免与所演示组件的折叠名相撞。验收：AC4。
+- **P007-3 远程图源同步抓取超时**：load_image_bytes 远程 URL 同步抓取
+  （渲染线程上）加 3s 超时——裸 reqwest::blocking::get 网络不可达时挂死
+  渲染线程（bounds 不更新/截图超时/导航无响应）。结果按 URL 进程内缓存,
+  阻塞每 URL 至多一次。验收：AC1/AC2 前置。
+- **P007-4 schema 再生成滞留清偿形态**：全量再生成（SCHEMA_DRIFT_GENERATE_AT=1）
+  的入账口径——regen 真名登记（连字符/Pascal 翻转）、旧下划线孪生退役、
+  P3 档位冲突显式拆册（vue 同件 iced 档不同时,regen 别名合并丢区分）、
+  kitchen-sink 随生、DOC_EXCLUDE 折叠键。验收：AC3。
+
+### review 记录（2026-09-09）
+
+stage: review | PLAN-007 | rev 1 | pass |
+reviewed_commit: auto-lang os-007-dev `af07c9d37`（T1-T9+review 格式修正,
+6 提交）;auto-os os-007-dev `d6a48d2`（T6 kitchen-sink+T9 README/gitignore） |
+base_commit: auto-lang `03a72b9f8`;auto-os `2afd1a8` |
+dependency_revisions: auto-down 零改动（纯路径依赖位） |
+spec_inputs: 无 canonical specs 被修改（.autoos/specs.json 沉积属 merge） |
+acceptance_results: AC1 pass/AC2 pass/AC3 pass/AC4 pass/AC5 pass/AC6 pass |
+findings: F1（已修）——新增代码 3 处 rustfmt 偏好差异（净漂移 637→638）,
+review 中按 rustfmt 形态修正后与 master 持平（637）,行为零变化
+（plan577 4/4+hover/breadcrumb 实机对最终 HEAD 重验） |
+evidence: 三围栏 2/2+4/4+7/7（AUTO_OS_ROOT 三仓围栏,worktree HEAD 复跑）;
+plan577 探针+回归 4/4（含红灯 STATUS_STACK_OVERFLOW 验证在案）;AC2 行为
+双轮实机 ALL PASS（hit area @rect(781,496,40,40) h=40,hover 进
+__dlg_open_1=true/出=false,scratch/p577/t4hc_*）;AC1 像素密度复测
+（content 0.79/0.79,gray 0.70）;AC4 fullscan_report.md 68/68 零异常存活
++t8 直达 ALIVE（len=33598,对最终 HEAD 重验）;AC5 KNOWN-DEBT 三条 ✅ 已偿还
+（worktree 提交 52a417be0）;AC6 tf no-fail-fast 唯一红=charts,master 同
+命令集合全等;iced 唯一红=lucide 存量（master 集合全等）;tv 唯一红=charts
+存量 |
+next: /auto-plan:merge 007
+
+独立性声明：本次 review 在执行会话内进行（无独立角色）——按技能要求以
+工件重建判定（diff 审读+围栏/探针/实机复跑+像素/快照复核），未采信
+执行摘要。
 
 ## 待澄清事项
 
