@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-007
 origin: PLAN-577
-status: reviewed          # drafting → executing → execution_done → reviewed → archived
+status: archived          # drafting → executing → execution_done → reviewed → archived
 feature_name: P534 债务清偿批一期（avatar 家族 + schema 滞留 + breadcrumb 栈溢出）
 author: [zhaopuming, ZCode]
 created_at: 2026-09-07
@@ -301,6 +301,27 @@ next: /auto-plan:review 007
   的入账口径——regen 真名登记（连字符/Pascal 翻转）、旧下划线孪生退役、
   P3 档位冲突显式拆册（vue 同件 iced 档不同时,regen 别名合并丢区分）、
   kitchen-sink 随生、DOC_EXCLUDE 折叠键。验收：AC3。
+
+
+### merge 收据（PLAN-007:r1, 2026-09-09）
+
+stage: merge | PLAN-007 | rev 1 | pass |
+prepared: reviewed 基线 af07c9d37（auto-lang）/d6a48d2（auto-os）+冻结规范增量
+P007-1..4;投影目标 .autoos/specs.json（P007-1..6+P007-R1 落位:reports/
+architecture×4/tests/reviews）;delivery 经 review 后仅增沉积/台账/格式提交 |
+landed: auto-lang master `0e7198699`（merge,plan577 4/4+check 0 错冒烟）;
+auto-os main `0b3bd23`（merge）——两仓 ancestry 经 merge 提交实证 |
+ledger_refreshed: .autoos/specs.json（worktree 内预备 a54c75e → merge 落
+main）,item IDs P007-1..6+P007-R1,file 指向 archive 路径,JSON 校验通过;
+台账 docs/plans/autos-desktop-program.md 007 行翻 📦;auto-lang
+docs/plans/INDEX.md 随迁表行翻 📦 |
+archived: docs/plans/archive/007-p534-debt-batch-1.md（git mv）;completion_kind:
+delivered |
+cleaned: 待填（拆除后回填） |
+
+备注:并行会话期间 auto-lang master 前移（594 merge/595 review),merge 零冲突
+（重叠文件无并行改动）;master 未提交的 v05/website 改动为并行会话所有,
+原样保留未触碰。
 
 ### review 记录（2026-09-09）
 
