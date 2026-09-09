@@ -1,6 +1,6 @@
 // Plan 435 P5b —— kitchen-sink demo 页(schema/aura.at 生成,**勿手改**)
 // 再生成:auto docs gen(测试内等价 KITCHEN_SINK_UPDATE=1 cargo test -p auto-lang --test docs_gen)
-// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 38 个)。
+// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 50 个)。
 
 widget KitchenSinkPage {
     msg { Go }
@@ -66,13 +66,6 @@ widget KitchenSinkPage {
                 button (size: "default") {}
             }
 
-            h2 "canvas"
-            row (style: "gap-2 flex-wrap items-center") {
-                canvas {}
-                canvas (coords: "sample") {}
-                canvas (clear: "sample") {}
-            }
-
             h2 "code_editor"
             row (style: "gap-2 flex-wrap items-center") {
                 code_editor {}
@@ -99,6 +92,29 @@ widget KitchenSinkPage {
                 divider (direction: "vertical") {}
             }
 
+            h2 "drawer"
+            row (style: "gap-2 flex-wrap items-center") {
+                drawer {}
+                drawer (direction: "left") {}
+                drawer (direction: "right") {}
+            }
+
+            h2 "drawer_description"
+            row (style: "gap-2 flex-wrap items-center") {
+                drawer_description "sample" {}
+            }
+
+            h2 "drawer_title"
+            row (style: "gap-2 flex-wrap items-center") {
+                drawer_title "sample" {}
+            }
+
+            h2 "drawer_trigger"
+            row (style: "gap-2 flex-wrap items-center") {
+                drawer_trigger {}
+                drawer_trigger (as_child: true) {}
+            }
+
             h2 "dropdown-menu"
             row (style: "gap-2 flex-wrap items-center") {
                 dropdown-menu "sample" {}
@@ -112,6 +128,26 @@ widget KitchenSinkPage {
                 grid {}
                 grid (columns: 1) {}
                 grid (gap: 1) {}
+            }
+
+            h2 "hover_card"
+            row (style: "gap-2 flex-wrap items-center") {
+                hover_card {}
+                hover_card (open_delay: 1) {}
+                hover_card (close_delay: 1) {}
+            }
+
+            h2 "hover_card_content"
+            row (style: "gap-2 flex-wrap items-center") {
+                hover_card_content {}
+                hover_card_content (side: "top") {}
+                hover_card_content (side: "right") {}
+            }
+
+            h2 "hover_card_trigger"
+            row (style: "gap-2 flex-wrap items-center") {
+                hover_card_trigger {}
+                hover_card_trigger (as_child: true) {}
             }
 
             h2 "icon"
@@ -172,6 +208,23 @@ widget KitchenSinkPage {
                 native_button (disabled: true) {}
             }
 
+            h2 "nav-group"
+            row (style: "gap-2 flex-wrap items-center") {
+                nav-group {}
+                nav-group (label: "sample") {}
+                nav-group (collapsible: true) {}
+                nav-group (indent: true) {}
+            }
+
+            h2 "nav-item"
+            row (style: "gap-2 flex-wrap items-center") {
+                nav-item {}
+                nav-item (to: "sample") {}
+                nav-item (exact: true) {}
+                nav-item (icon: "sample") {}
+                nav-item (label: "sample") {}
+            }
+
             h2 "p"
             row (style: "gap-2 flex-wrap items-center") {
                 p "sample" {}
@@ -222,6 +275,40 @@ widget KitchenSinkPage {
                 separator (label: "sample") {}
             }
 
+            h2 "sheet_content"
+            row (style: "gap-2 flex-wrap items-center") {
+                sheet_content {}
+                sheet_content (side: "top") {}
+                sheet_content (side: "right") {}
+            }
+
+            h2 "sheet_title"
+            row (style: "gap-2 flex-wrap items-center") {
+                sheet_title "sample" {}
+            }
+
+            h2 "sheet_trigger"
+            row (style: "gap-2 flex-wrap items-center") {
+                sheet_trigger {}
+                sheet_trigger (as_child: true) {}
+            }
+
+            h2 "sidebar"
+            row (style: "gap-2 flex-wrap items-center") {
+                sidebar {}
+                sidebar (side: "left") {}
+                sidebar (side: "right") {}
+                sidebar (variant: "sidebar") {}
+                sidebar (variant: "floating") {}
+            }
+
+            h2 "sidebar_menu_button"
+            row (style: "gap-2 flex-wrap items-center") {
+                sidebar_menu_button "sample" {}
+                sidebar_menu_button (tooltip: "sample") {}
+                sidebar_menu_button (active: true) {}
+            }
+
             h2 "slot"
             row (style: "gap-2 flex-wrap items-center") {
                 slot {}
@@ -237,15 +324,6 @@ widget KitchenSinkPage {
             h2 "span"
             row (style: "gap-2 flex-wrap items-center") {
                 span "sample" {}
-            }
-
-            h2 "terminal"
-            row (style: "gap-2 flex-wrap items-center") {
-                terminal {}
-                terminal (key: "sample") {}
-                terminal (cols: 1) {}
-                terminal (rows: 1) {}
-                terminal (lines: "sample") {}
             }
 
             h2 "text"

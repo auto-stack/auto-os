@@ -84,5 +84,6 @@ widgets-gallery/
   把手,**无拖拽手势**）、`/hovercard`（MouseArea 真 hover 触发,Bottom 锚定
   非模态）VM 轨已实现（解释器+rust codegen 双轨）。VM 与 shadcn 语义差异:
   hovercard 的 open-delay/close-delay 不消费（即时开合）;drawer 无拖拽。
-  本页示例触发器含 avatar 组合,VM 的 avatar 家族暂只渲染占位（缺口见
-  KNOWN-DEBT P534-D4）,hover 交互可在触发器为普通元素的页面验证。
+  本页示例触发器含 avatar 组合,VM 的 avatar 家族已实装（os-007：容器/图/
+  回退文本三臂+props 形态 desugar,真 hover 进/出不借语料工程;圆形裁剪
+  以 bg+rounded-full+尺寸类近似,远程图源失败回退占位,加载为同步 3s 超时）。
