@@ -175,6 +175,10 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       （未命中的 1 号=选中态格，本就无 hover: 类）。KNOWN-DEBT 526 行结案，
       余项（Grid 事件槽/cursor-pointer/hover 文本级联/全示例 sweep）另立。
 - [ ] C 用户复核清单七项逐项确认并勾销。
+      [复核进展 2026-09-09] **T20 ✓**（首击=窗口置顶+按钮同时生效，空白区
+      只聚焦无误触发；事件实录 scratch/p002/review_ue.log：Digit/ToggleTodo
+      handler 首击即发）。发现 N1/N2 两个新问题（见复审记录登记），N1 阻塞
+      T31 复核语义定夺，余 T24/T28/T32/T37/T38 待续。
 
 ## 执行步骤
 
@@ -289,6 +293,30 @@ auto-lang worktree 临时证据，merge 清理后以上文内录为准）。
 
 next: work 继续 C/E（用户实机复核七项清单 + 通知中心开合确认）；F-1 于
 终审前清偿；整体计划保持 `executing`。
+
+### C/E 复核进展 + 新发现登记（2026-09-09 · 第一轮）
+
+**T20 ✓**（证据见验收标准 C 项进展注）。
+
+- **N1（复核发现，阻塞 T31 收口）：桌面图标 chip（圆角徽标块）上双击无效**。
+  根因已定位——chip 是 iced `Button`（desktop.at popover 锚内
+  `button (icon: e.icon)`，无 onclick 无 on_right_click 纯视觉），在
+  `mouse-area (ondblclick)` **内侧**：iced 命中测试最内层优先，Button 捕获
+  press/release，祖先 MouseArea 的 on_double_click（496 M5）收不到按压——
+  chip 上双击只发 VM 裸 `click` 事件（review_ue.log 实录 8 条
+  `widget="" event="click"`，无 ActivateApp）；格内 label/padding 区双击
+  正常（ActivateApp 实录 ✓）。**存量缺陷**（T30 起结构即如此，非 B 引入；
+  526 T31 验证时用户双击落在 label 区未暴露）。修复方向待用户定夺双击
+  目标语义：**A（推荐）**=chip 降级非交互视觉件（image/col），整格
+  80×80 含 chip+label 统一双击/右键，hover 高亮框=可点边界（Windows
+  惯例，目标最大）；**B**=仅 chip 可双击（用户第一直觉，目标缩至 40×40
+  且 label 区失效，需 Button 双击原语或 chip 包 mouse-area + 撤格级
+  ondblclick）。定夺后转 work 实施。
+- **N2（复核发现，滚动登记）：app 窗打开瞬间偏大再缩至实际尺寸**。
+  机制=Plan 504 fit 窗（pac.at `window: "fit"`）先以初始尺寸开窗，
+  `__fit_measured` 测量回填后才缩到内容尺寸——首帧到测量帧间隙可见闪变。
+  修复方向（work 阶段设计）：fit 窗首帧隐藏/透明直至测量落定，或持久化
+  上次实测尺寸作初始值。独立于 C 清单，转 work 排期。
 
 ### work 交接记录（2026-09-09 · B）
 
