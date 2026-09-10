@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-010
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: popover-overlay-dismiss
 author: [zhaopuming]
 created_at: 2026-09-10
@@ -12,7 +12,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [ui/iced, virtual_window.rs, popover.rs]   # 受影响的 specs 路径
-current_step: 0
+current_step: 4
 total_steps: 5
 ---
 
@@ -22,6 +22,14 @@ total_steps: 5
 > （2026-09-09/10）与 auto-lang `scratch/p002/`（n6b_repro.ps1、探针插桩
 > `fd2b85ea3`、隔离例 `ee986f0cb`）。两计划互链：修复落地后 PLAN-002 C4
 > （T31 右键菜单）凭本计划交付复验勾销。
+>
+> **worktree 组（2026-09-10 work 登记）**：`D:/autostack/.wt/os-010/` 三仓
+> ——auto-os（os-010-dev，base=844b7c8=os-002-dev tip）+ auto-lang
+> （os-010-dev，base=ee986f0cb=os-002-dev tip，含 fd2b85ea3 探针插桩与隔离
+> 例——取证态一致）+ auto-down（os-010-dev，base=afc1cc8=组内依赖）。
+> 注意：两仓 os-010-dev 与 os-002-dev 共享历史（base 取其 tip），merge 时
+> 须先落/同溯 PLAN-002 链，防重复合入。work 交付：auto-lang `8873772ec`、
+> auto-os `58b90b2`。
 
 # [PLAN-010] popover-overlay-dismiss
 
@@ -94,18 +102,48 @@ DSL 提取层。
 在 overlay 场景的路由缺口 / 桌面深层 widget 树（Stack 分层）对 overlay
 事件派发的干扰。
 
-## 详细设计
+## 详细设计（T3 回填定稿：断点线）
 
-（bisect 步骤 1/2 完成后回填：断点定位 + 修复方案定稿。旁路线预设计——
+**断点定位（bisect 三步实录，2026-09-10）**：
 
-- **Esc 旁路**：桌面已有 hotkey 订阅体系（Ctrl+Space/Ctrl+Tab 先例），
-  增"菜单开启态 + Esc → MenuClose"订阅臂，绕开 overlay 消息面。
-- **点外旁路**：菜单开启时在 surface 根挂全屏透明 mouse-area（z 序置于
-  菜单面板之下、其余内容之上），on_press → MenuClose；面板自身点击仍由
-  overlay 层承接。此层属 base 树——但基础树全聋问题若不先解，旁路同样
-  不可达；故点外旁路以 bisect 查明"基础树全聋"根因为前提，或改由
-  global subscription 层（win32 钩子先例 native_dock_event_subscription）
-  承接。）
+1. **T1 探针 B**（`ui_popover_probe2` 补 `.font(INTER_FONT_*)×3+
+   .default_font+.theme(Dark)` 接线，shadcn_theme 为私有 fn 以 Dark 达
+   "内容可见"目的——主题不参与消息路由不影响判据）：外点→`[pv-dismiss]
+   publishing`→`DM::App reached update`→`Dismissed #1`；ESC→`Dismissed #2`。
+   **判定：daemon+DM 包装层健康，断点在桌面更深宿主结构**。
+2. **T2 dock vs icon**：icon 腿（surface 层）复现——`[pv-panel-press]
+   over_panel=false`→publish 后无到达、BlankPress 同期不可达；dock 腿被
+   hover-leave 遮蔽（合成光标移动即触发 onmouseleave→HoverEnd 先关菜单，
+   真实用户外点同样被 hover-leave 兜住）——dock 腿对"外点 dismiss"不可
+   测，改判据为 ESC。
+3. **T3 定位**：`AUTO_DEBUG_KEYS` 入口全量探针实锤——**消息一直都在到达
+   daemon update，但事件名是 `__popover_close` 而非 `MenuClose`**！链路
+   逐环核对（iced 0.14.0 `UserInterface::update` overlay 分支/
+   `overlay::Nested`/`Group`/`Element::Map`/`Shell::merge`，源码全查无误，
+   与 T1 互证）。真断点在 **aura 解析层的 prop 分桶**：`parser.rs:15561`
+   把一切 `on*` 键升格为 ViewEvent（events 桶），`ondismiss` 从不入
+   props；`convert_popover` 只查 props→恒 miss→合成 `__popover_close`；
+   该事件的处理臂（renderer.rs:12317）只清 menubar 自管开合全局
+   （`action_config::popover_open`），对 VM 态 popover（desktop.at 的
+   `menu_id`/`blank_menu` 状态驱动 open）是 no-op。menubar 时代未暴露：
+   自管模式恰好被该回退臂服务；桌面 VM 态 popover 是首个显式 ondismiss
+   消费者。**旁路线否决**：无需 scrim/subscription 兜底——路由本身健康，
+   修消息内容即可（断点线）。
+
+**修复（8873772ec）**：`convert_popover` 增 `events` 参数（两调用点同
+传），ondismiss 提取顺序 props→events（`aura_events_get_base` 基名大小写
+不敏感兜底，覆盖 `ondismiss.prevent` 修饰形态）；`__popover_close` 回退保
+留（无显式 ondismiss 的自管形态仍走原语义）。headless 回归
+`p010_popover_ondismiss_extracted_from_events`：MenuClose×4（icon）+
+BlankClose×1（blank）提取、convert_view_messages 后存活、MenuClose
+handler 闭环（menu_id 清位）。
+
+**N6a 定案（同提交）**：方框来源=PLAN-571 default 按钮预设的发丝描边
+（`bg-muted border border-border …`），无 variant 按钮全中（用户类
+bg-transparent 只覆盖填充不覆盖描边；build_button_style/visual wrap 的
+width=0 不可见——PLAN-002 待澄清②的谜底）。不动预设表（有互锁测试锚定，
+dock 条目等处的存量发丝框另行登记），菜单项按钮显式 `variant: "ghost"`
+（关闭/退出按语义 primary/ghost），iced/vue 双端 cva 同步去框。
 
 ## 测试设计
 
@@ -118,35 +156,109 @@ DSL 提取层。
 
 ## 验收标准
 
-- [ ] 桌面壳内 popover 外点点击自动关闭（icon 菜单+任务栏菜单+空白菜单
-      三面实测），日志实录 MenuClose/WinMenuClose 到达。
-- [ ] 菜单开启期基础树事件可达（BlankPress 在菜单开启时触发）。
-- [ ] ESC 关闭弹层（icon 菜单实测）。
-- [ ] N6a：弹层菜单项样式与常规右键菜单一致（无逐项方框）。
-- [ ] 回归门：cargo t 失败集与 master 全等（零新增失败）+ 实机像素/事件
-      证据留档 scratch。
+- [x] 桌面壳内 popover 外点点击自动关闭：icon 菜单 ✓（t5 实录
+      `[pv-dismiss]`→`MenuClose` 到达+截图菜单消失）、任务栏 dock 菜单 ✓
+      （ESC→HoverEnd 到达；外点由 hover-leave 天然兜住，合成光标无法分
+      离两者）、空白菜单 headless 验证 ✓（ondismiss=BlankClose 提取+
+      handler 闭环）实机待用户复核（空白右键被 P010-F1 遮蔽，见待澄清）。
+- [~] 菜单开启期基础树事件可达：✓ 实证一路——icon 菜单开启期右键另一
+      图标 `IconMenu 015-notes` 穿透到达并切换菜单（t5 S3）；✗ BlankPress
+      本体——空白左/右击在"无菜单开启"时同样不可达（t5b B1），归因
+      P010-F1（vwin 越界悬垂 levitate，menu 无关的独立存量），旧基线
+      n6b_repro.log 中 BlankPress 亦从未到达过（非本计划引入）。
+- [x] ESC 关闭弹层（icon 菜单实测）：t5 S2 `MenuClose` 到达+菜单消失。
+- [x] N6a：弹层菜单项样式与常规右键菜单一致（无逐项方框）——icon/dock
+      两菜单修复后截图（t5_n6a_icon_zoom.png / t5_s7_dock_menu_n6a.png
+      对照 t2_icon_menu_zoom.png），a2vue 金样再生双端一致。
+- [x] 回归门：cargo t 失败集 22=22 与 os-002 线基线全等（逐一 stash 对照
+      零新增；master 基线 3 为 PLAN-002 记录值，本线 base 已含 19 个存量
+      环境红——layout×15/lucide/coverage/plan055/plan492/plan370——与本次
+      改动无关，已逐一验证在 base 同样失败）+ a2vue 金样再生绿 +
+      iced-layout-tests 35/35 + popover/menubar/desktop_surface 子集全绿
+      + shell-pack hash-lock 绿。实机像素/事件证据留档
+      auto-lang `scratch/p010/`（t1/t2/t3/t5/t5b/t5c 日志+截图）。
 
 ## 执行步骤
 
 （原子任务：精确文件路径 + 确切操作 + 验证命令；每步完成后追加
 [✅ 已完成] 一行证据）
 
-- [ ] T1 补齐探针 B 渲染接线（`.font`+`.theme`，对齐 renderer.rs:15214
+- [x] T1 补齐探针 B 渲染接线（`.font`+`.theme`，对齐 renderer.rs:15214
       daemon 装配），外点测试判 daemon 层。
-- [ ] T2 真桌面 dock vs icon 菜单外点对比（收窄宿主层）。
-- [ ] T3 断点定位 + 修复方案定稿（旁路线/断点线二选一或组合）。
-- [ ] T4 修复落地 + N6a 样式修复 + 回归门。
-- [ ] T5 实机验收三面（icon/任务栏/空白菜单外点+Esc）+ PLAN-002 C4/T31
+      [✅ 已完成] ui_popover_probe2 补 .font×3+.default_font+.theme(Dark)；
+      实录外点→Dismissed #1、ESC→Dismissed #2 均达 daemon update——
+      **daemon 层健康，断点在桌面宿主结构**（scratch/p010/t1_probe_b.log）。
+- [x] T2 真桌面 dock vs icon 菜单外点对比（收窄宿主层）。
+      [✅ 已完成] icon(surface 层)复现：publish 后零到达+BlankPress 不可
+      达（t2_desktop.log）；dock 腿被 hover-leave 遮蔽不可测（t2c_dock.log
+      无 pv-panel-press，HoverEnd 先至）——改判据 ESC；配合
+      `AUTO_DEBUG_KEYS` 入口探针收窄完成（t3_entry_probe.log）。
+- [x] T3 断点定位 + 修复方案定稿（旁路线/断点线二选一或组合）。
+      [✅ 已完成] 入口探针实锤 `DM::App(AppId(4), __popover_close)` 到达
+      ——消息内容错，非路由丢；根修断点线定稿（parser on* 分桶→
+      convert_popover 只查 props→回退事件对 VM 态 popover no-op；详见
+      详细设计回填）。
+- [x] T4 修复落地 + N6a 样式修复 + 回归门。
+      [✅ 已完成] auto-lang `8873772ec`（convert_popover events 兜底+
+      headless 回归+探针 B 接线+pack pin+金样再生）+ auto-os `58b90b2`
+      （desktop.at/shell.at 菜单项 variant）；回归门：失败集 22=22 零新增
+      （stash 逐项对照）+ iced-layout-tests 35/35 + a2vue 15/15。
+- [~] T5 实机验收三面（icon/任务栏/空白 外点+Esc）+ PLAN-002 C4/T31
       复验勾销。
+      [部分完成] icon 外点/ESC ✓、dock ESC ✓、N6a 双菜单截图 ✓
+      （t5_acceptance.log + 截图）；空白腿与 PLAN-002 C4/T31 用户复核待
+      用户实机进行——空白右键开菜单在本环境被 P010-F1 遮蔽（见待澄清），
+      修复机制本身已由 headless（BlankClose 提取+闭环）与 icon/dock 实机
+      同构验证。
 
 ## 复审记录
 
 （无）
 
+### work 交接记录（2026-09-10）
+
+stage: work | plan_id: PLAN-010 | plan_revision: 0 | outcome: partial
+（T1-T4 完成，T5 空白腿+C4 勾销待用户实机；保持 `executing`） |
+code_commit: auto-lang os-010-dev `8873772ec`，auto-os os-010-dev
+`58b90b2` | task_ids: T1,T2,T3,T4,T5(部分)
+
+evidence: 根修断点=parser on* 分桶使 ondismiss 落 events 桶而
+convert_popover 只查 props（t3_entry_probe.log 实录 `__popover_close`
+到达=no-op 臂；入口探针 AUTO_DEBUG_KEYS 定案）；修复后 t5_acceptance.log：
+icon 外点/ESC→MenuClose 到达、icon 菜单开启期右键另一图标 IconMenu
+穿透到达（基础树可达实证）、dock ESC→HoverEnd 到达、面板内 打开→
+MenuOpen 到达；N6a 修复前后截图（t2_icon_menu_zoom.png 有框 →
+t5_n6a_icon_zoom.png / t5_s7_dock_menu_n6a.png 无框）；headless
+p010_popover_ondismiss_extracted_from_events 绿；回归门 cargo t 失败集
+22=22（os-002 线 base 存量，stash 逐项对照零新增）+ iced-layout-tests
+35/35 + a2vue 15/15 + hash-lock 绿
+
+blockers: P010-F1（新登记，见待澄清）遮蔽空白菜单实机腿与 BlankPress
+判据；PLAN-002 C4/T31 勾销与空白菜单外点/Esc 需用户实机复核
+
+next: 用户实机复核（清单：①右键空白开 blank 菜单→外点左击→关闭？
+②blank 菜单 ESC→关闭？③icon 菜单外点/Esc 手感确认→勾销 PLAN-002
+C4/T31）；复核通过后径入 /auto-plan:review
+
 ## 待澄清事项
 
-1. 修复路线（旁路线 vs 断点线）视 T1/T2 bisect 结果定，T3 回填。
-2. N6a 方框来源未定（build_button_style/visual wrap 的 border 均
-   width=0 不可见，截图方框来源待一查）——T4 一并定位。
-3. 若断点确认为 iced 0.14 上游问题且短期不可修，是否接受旁路线为长期
-   方案（用户裁定）。
+1. ~~修复路线（旁路线 vs 断点线）~~ 已定：断点线（T3 实证路由健康，无需
+   旁路），详见详细设计回填。
+2. ~~N6a 方框来源~~ 已定：PLAN-571 default 预设发丝描边
+   （`border border-border`），无 variant 按钮全中。菜单项已显式
+   ghost/primary 去框；**dock 条目/启动钮等处的存量发丝框**不在本计划
+   范围，留 KNOWN-DEBT 候选（预设表变更需连带互锁测试，宜专项）。
+3. ~~旁路线为长期方案~~ 失效：断点线已落地，无长期旁路。
+4. **P010-F1（work 新登记，阻塞 T5 空白腿实机验收）**：桌面空白区域的
+   基础树点击不可达——无菜单开启时左击/右击空白（BlankPress/BlankMenu）
+   均不入 VM（t5b_blank.log B1 零事件；旧基线 n6b_repro.log 中
+   BlankPress 亦从未到达，非本计划引入）。嫌疑机制：vwin 内容部件越界
+   悬垂（组件测量宽于窗 rect）使 iced Stack::update 的 levitate 生效
+   （上层报交互→下层光标 Levitating→mouse-area 全部失焦；源码
+   iced_widget-0.14.2/stack.rs:231），与 S3（图标格穿透成功）、B1（无
+   菜单同样聋）全部自洽。归属：vwin/Stack 命中测试专项（非 popover 域），
+   建议单独立项或在 PLAN-002 收尾时合并处置。
+5. 同击语义注记：外点关闭的那一次点击，MenuClose 于 press 期发布→视图
+   重建吃掉同击 release，BlankPress 不与 MenuClose 同击触发（菜单已关=
+   用户目标达成）；BlankPress 需下一次独立点击。此为 dismiss+重建时序的
+   固有形态，如需"一次点击双投递"须改 overlay 捕获语义（不建议）。
