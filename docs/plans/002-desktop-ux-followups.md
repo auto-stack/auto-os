@@ -180,8 +180,9 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       （最大化底缘与任务栏无遮挡，用户确认；附带产出 N4 居中+N5 圆角两
       优化）。**T28 ✓**（三键 hover 盒正方形、紧拢，用户确认）。
       **T31 核心链 ✓**（双击整格 80×80 含 chip/label/空隙全通 + 换 app
-      复测通过；右键菜单暴露 N6a/N6b 两缺陷，见下，T31 勾销待 N6 修复
-      后复验）。N1/N2 已修复并经用户确认。余 T32/T37/T38 待续。
+      复测通过；右键菜单暴露 N6a/N6b 两缺陷**已转 PLAN-010 专项**
+      （popover-overlay-dismiss，含隔离取证与三步 bisect 计划），修复后
+      复验勾销）。N1/N2 已修复并经用户确认。余 T32/T37/T38 待续。
 
 ## 执行步骤
 
@@ -248,6 +249,11 @@ Stack 每动态视图面一份；失败臂保留）；N4=fit_aware_root 居中�
 C5/T32、C6/T37、C7/T38、E
 
 ### work 交接记录（2026-09-10 · N6b 隔离矩阵）
+
+> **2026-09-10 移交注记**：N6a/N6b 已立专项 **PLAN-010**
+> （popover-overlay-dismiss，本仓 docs/plans/010-popover-overlay-dismiss.md）
+> ——取证结论、隔离矩阵与三步 bisect 计划以该计划"需求分析与背景调查/
+> 架构方案"两节为准，下文为其过程记录。
 
 stage: work | PLAN-002 | rev 0 | partial（N6b 隔离取证推进，保持
 executing） | code_commit: auto-lang os-002-dev `ee986f0cb`（两隔离例）
