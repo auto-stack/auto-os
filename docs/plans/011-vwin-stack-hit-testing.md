@@ -278,6 +278,30 @@ auto-lang 侧 specs 台账。）
 
 ## 复审记录
 
+### merge 回执（2026-09-11，PLAN-011:r2）——outcome: blocked（auto-lang 折叠待协调；auto-os 侧已落地）
+
+checkpoint:
+- **prepared ✓**：reviewed 基线 r2（621706c）；canonical diff=SD-01（ui/overview.md
+  §已知坑 追加 mouse_area 命中带规则）；交付提交 auto-os `46a07cf`（scope 至
+  `15f90be`）/ auto-lang `51eb14b1c`
+- **landed ◐**：auto-os ✓ main `5ce2654`（merge os-011-dev，零冲突；桌面链
+  PLAN-002 工作线+PLAN-010 N6a/N6c/N6d+本计划根修随链落地；`git diff
+  os-011-dev main -- shell/ apps/028-launcher/` 空=内容与复审态恒等；用户
+  sys-monitor 在途脏区未触碰）；**auto-lang ✗ blocked**——master 已推进
+  10+ 计划（591-610，merge-base 停在 7613e961），分支携整条 os-002→010→011
+  链，renderer.rs/parser.rs 等热文件双方都改且用户 Plan 610 在途
+  （主检出脏 renderer.rs/606），折叠需用户排序后协调执行
+- **SD-01 落稿 ✓（未 landed）**：auto-lang os-011-dev `b9c115a78`
+  （docs-only descendant of 51eb14b1c，符合 delivery_commit 豁免口径）
+- **ledger_refreshed ✗ / archived ✗ / cleaned ✗**：依 canonical 落地与
+  归档路径链接一致性顺延；三仓工作树保留（折叠+复审后清理，wt-guard 待跑）
+
+remaining action（解锁序列）：①用户 Plan 610 收口后，在 auto-lang 以
+worktree 协调折叠 os-011-dev → master（热文件冲突：renderer.rs/parser.rs
+两侧都改，须保 8873772ec popover 根修语义）；②折叠后复跑门（cargo t
+ui-iced 失败集对账+iced-layout-tests+hash-lock）；③回到本 merge 流程：
+ledger（P011-1..R1）→ 归档 → wt-guard 清理三仓工作树。
+
 ### 复审（2026-09-11，同会话复审——独立性限制与工件重构声明）
 
 stage: review | plan_id: PLAN-011 | plan_revision: 2 | outcome: **pass** |
