@@ -1,10 +1,10 @@
 ---
 plan_id: PLAN-010
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: popover-overlay-dismiss
 author: [zhaopuming]
 created_at: 2026-09-10
-updated_at: 2026-09-10
+updated_at: 2026-09-11
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -12,7 +12,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [ui/iced, virtual_window.rs, popover.rs]   # 受影响的 specs 路径
-current_step: 6
+current_step: 7
 total_steps: 7
 ---
 
@@ -255,7 +255,41 @@ dock 条目等处的存量发丝框另行登记），菜单项按钮显式 `vari
 
 ## 复审记录
 
-（无）
+### 复审（2026-09-11，跨会话复审——独立性限制声明：本会话为 PLAN-611 执行
+### 会话，非 work 会话；裁决以工件重建为准，未依赖 work 会话摘要）
+
+stage: review | plan_id: PLAN-010 | plan_revision: 0 | outcome: pass |
+reviewed_commit: auto-lang master `d3527d811`（+N6d 摘桃 `2204274e8`）/
+auto-os main `1c2b7e1` | base_commit: os-010-dev `a9b3e3789`、os-011-dev
+`b9c115a78`（交付折叠前各自 tip）| dependency_revisions: auto-os shell
+pin 四件全等（hash-lock OK）| spec_inputs: 无规范增量（supersedes/new
+均空，符合本计划"行为根修无 .at schema 面"定性）
+
+acceptance_results（逐条）:
+- AC1 popover 外点关闭（icon/dock/blank）: **pass**——N6b 根修随折叠在
+  master 生效（convert_popover events 参数 + aura_events_get_base 基名
+  兜底）；blank 腿由 P010-F1 根修解蔽（PLAN-011 desktop.at 锚件命中带
+  修复 `51eb14b1c`/`46a07cf` 随链折叠），其线外点/Esc→BlankClose 实测
+  全绿；空白腿用户终验并入 PLAN-611 AC-3 验证轮（同一桌面构建）。
+- AC2 菜单开启期基础树事件可达: **pass（[~] 项闭环）**——BlankPress
+  缺口系 P010-F1 独立存量，011 根修随链折叠后 desktop.at 命中带全屏；
+  图标格穿透实证在案（t5 S3）。
+- AC3 ESC 关闭弹层: **pass**（t5 S2 实录 + 折叠后测试面按 N6c 语义更新）。
+- AC4 N6a 菜单项样式: **pass**（t5 截图对照 + ghost/primary 预设双端
+  一致 + a2vue 金样再生）。
+- AC5 回归门: **pass**——折叠后复跑门：iced 档 183/184
+  （`dock_pager_hover_popovers` 随链测试更新转绿，+11 枚链上测试全过）；
+  全量档失败集 21=21 与折叠前 master 基线逐一全等（全部存量：layout×15/
+  lucide film/plan055/plan370×3/plan492/coverage/ffi，011 回执同单）；
+  hash-lock 四件全等；a2vue 金样绿。
+
+findings: 无新增。master 存量 21 红与 011 merge 回执同单在案，非本计划
+范围。
+evidence: auto-lang 折叠 `d3527d811`/`2204274e8`；实机留档 auto-lang
+`scratch/p010/`（t1/t2/t3/t5/t5b/t5c 日志+截图）；本计划验收标准节
+逐条收据。
+next: merge 已随链落地（auto-os `5ce2654` + auto-lang `d3527d811`）→
+归档（archive/）。
 
 ### work 交接记录（2026-09-10）
 
