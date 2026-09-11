@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-010
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: popover-overlay-dismiss
 author: [zhaopuming]
 created_at: 2026-09-10
@@ -347,3 +347,12 @@ C4/T31）；复核通过后径入 /auto-plan:review
    overlay 层，Windows 惯例外点关；switcher 已裁定保持不外点关
    （Ctrl+Tab 手势流）。候选实现与 N6d 同构（零宿主改动），留复核轮
    或 KNOWN-DEBT。
+
+### merge 回执（2026-09-11，随 011 链折叠落地——五检查点）
+
+prepared ✓（reviewed 基线 = os-010-dev `a9b3e3789`）| landed ✓（auto-os
+`5ce2654` 经 PLAN-011 merge；auto-lang `d3527d811` 经 os-011-dev 链折叠 +
+N6d 探针摘桃 `2204274e8`——011 线不含该测试提交，单摘保 N6d 全量）|
+ledger_refreshed ✓（autos-desktop-program 台账无本计划行，归档即登记）|
+archived ✓（git mv docs/plans/archive/）| cleaned → 待 011 归档后三仓
+worktree 统一 wt-guard 清理（os-002/os-010/os-011 双仓组）。
