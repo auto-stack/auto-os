@@ -30,6 +30,12 @@ total_steps: 5
 > 注意：两仓 os-010-dev 与 os-002-dev 共享历史（base 取其 tip），merge 时
 > 须先落/同溯 PLAN-002 链，防重复合入。work 交付：auto-lang `8873772ec`、
 > auto-os `58b90b2`。
+>
+> **用户实机复核轮（2026-09-11）**：icon 菜单外点关闭 ✓ 用户确认；新增
+> **N6c**（dock 菜单被 hover-leave 秒关、菜单项不可达）——已修：auto-os
+> `eb88c86` + auto-lang `39ce8d789`（shell.at pin c207f048e5），dock 菜单
+> 统一为 icon 菜单同构（WinMenuClose/HoverLeave 拆分），实机四判据实录
+> n6c_dock_menu.log。新版桌面已交付用户续复核。
 
 # [PLAN-010] popover-overlay-dismiss
 
