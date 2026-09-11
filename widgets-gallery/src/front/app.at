@@ -73,6 +73,8 @@ widget App {
         "/sonner" -> use sonner
         "/switch" -> use switch
         "/table" -> use table
+        "/treeview" -> use treeview
+        "/filetree" -> use filetree
         "/tabs" -> use tabs
         "/textarea" -> use textarea
         "/toast" -> use toast
@@ -485,6 +487,18 @@ widget App {
                                         sidebar_menu_button (to: "/table") {
                                             icon (name: "layout-grid") {}
                                             text "Table" {}
+                                        }
+                                    }
+                                    sidebar_menu_item {
+                                        sidebar_menu_button (to: "/treeview") {
+                                            icon (name: "list-todo") {}
+                                            text "TreeView" {}
+                                        }
+                                    }
+                                    sidebar_menu_item {
+                                        sidebar_menu_button (to: "/filetree") {
+                                            icon (name: "folder") {}
+                                            text "FileTree" {}
                                         }
                                     }
 

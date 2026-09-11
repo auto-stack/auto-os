@@ -1,0 +1,82 @@
+// pages/filetree.at — FileTree 组件文档页(PLAN-614)。
+//
+// 单实例综合演示卡(VM 轨 P320 单态:同名子组件须全画廊唯一实例):一张树
+// 同时演示 default_expanded 播种(src/src-components)、folder/folder-open
+// 展开切换、扩展名文件图标、badge 文件大小。node id 约定 = 路径(fs 形态
+// 语义),kind: "dir"/"file" 驱动 directory 图标。选中态为 FileTree 内部
+// 状态(自包含契约,页面不读)。
+
+widget FileTreePage {
+    use { package: official from "../components" }
+
+    msg {}
+
+    model {
+        ftNodes = [
+            { id: "src", label: "src", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                { id: "src/app.at", label: "app.at", kind: "file", icon: "", is_leaf: false, badge: "6 KB", children: [] },
+                { id: "src/components", label: "components", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                    { id: "src/components/tree_util.at", label: "tree_util.at", kind: "file", icon: "", is_leaf: false, badge: "4 KB", children: [] },
+                    { id: "src/components/treeview.at", label: "treeview.at", kind: "file", icon: "", is_leaf: false, badge: "2 KB", children: [] },
+                    { id: "src/components/filetree.at", label: "filetree.at", kind: "file", icon: "", is_leaf: false, badge: "2 KB", children: [] },
+                    { id: "src/components/flow_diagram.at", label: "flow_diagram.at", kind: "file", icon: "", is_leaf: false, badge: "21 KB", children: [] }
+                ] },
+                { id: "src/pages", label: "pages", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                    { id: "src/pages/treeview.at", label: "treeview.at", kind: "file", icon: "", is_leaf: false, badge: "8 KB", children: [] },
+                    { id: "src/pages/filetree.at", label: "filetree.at", kind: "file", icon: "", is_leaf: false, badge: "4 KB", children: [] }
+                ] }
+            ] },
+            { id: "assets", label: "assets", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                { id: "assets/logo.svg", label: "logo.svg", kind: "file", icon: "", is_leaf: false, badge: "1 KB", children: [] },
+                { id: "assets/hero.png", label: "hero.png", kind: "file", icon: "", is_leaf: false, badge: "182 KB", children: [] }
+            ] },
+            { id: "pac.at", label: "pac.at", kind: "file", icon: "", is_leaf: false, badge: "1 KB", children: [] },
+            { id: "README.md", label: "README.md", kind: "file", icon: "", is_leaf: false, badge: "2 KB", children: [] }
+        ]
+    }
+
+    view {
+        col {
+            h1 "FileTree"
+            text "FileTree is a file-system flavored preset of TreeView: directory nodes show folder / folder-open icons by expanded state, files get extension icons, and the expand / selection state is managed internally — no controlled wiring needed. Node ids follow path semantics (\"src/components\"), matching a filesystem walk. The badge field renders right-aligned meta text — file sizes here."
+
+            h2 "Installation"
+            codeblock (lang: "bash", code: "use { package: official from \"./components\" }") {}
+
+            h2 "Demo"
+            text "default_expanded seeds the initially expanded directories; chevrons and folder icons toggle the internal state." (style: "text-muted-foreground") {}
+            preview-card (id: "filetree-demo") {
+                FileTree (nodes: .ftNodes, default_expanded: ["src", "src/components"]) {}
+            }
+
+            h2 "Properties"
+            table {
+                thead {
+                    tr {
+                        th "Property"
+                        th "Type"
+                        th "Default"
+                        th "Values"
+                        th "Description"
+                    }
+                }
+                tbody {
+                    tr {
+                        td "nodes"
+                        td "List"
+                        td "[]"
+                        td "node records"
+                        td "File tree data: { id, label, kind: \"dir\" | \"file\", children, badge }"
+                    }
+                    tr {
+                        td "default_expanded"
+                        td "List"
+                        td "[]"
+                        td "id strings"
+                        td "Directories expanded on mount"
+                    }
+                }
+            }
+        }
+    }
+}
