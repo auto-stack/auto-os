@@ -685,7 +685,10 @@ widget App {
                 }
 
                 // Main content
-                main (style: "flex-1 overflow-hidden") {
+                // flex flex-col 修复:main 此前为 block,Provider(min-h-0 flex-1)
+                // 拿不到有界高度 → SidebarContent(overflow-auto) 永不触发,
+                // 内容被 overflow-hidden 裁剪(P614 用户实录:主面板无滚动条)。
+                main (style: "flex-1 overflow-hidden flex flex-col") {
                     sidebar_provider (class: "w-full min-h-0 flex-1 flex-col") {
                         sidebar_content (style: "h-full") {
                         div (style: "p-4 md:p-8 lg:p-10 max-w-5xl mx-auto pb-32 md:pb-20") {
