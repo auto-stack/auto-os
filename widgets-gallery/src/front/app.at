@@ -690,7 +690,9 @@ widget App {
                 // 内容被 overflow-hidden 裁剪(P614 用户实录:主面板无滚动条)。
                 main (style: "flex-1 overflow-hidden flex flex-col") {
                     sidebar_provider (class: "w-full min-h-0 flex-1 flex-col") {
-                        sidebar_content (style: "h-full") {
+                        // ash-scroll-fade:平时隐藏滚动条,hover 面板时以
+                        // primary 半透明浮现(PLAN-614 T-10,scaffold 变体)
+                        sidebar_content (style: "h-full ash-scroll-fade") {
                         div (style: "p-4 md:p-8 lg:p-10 max-w-5xl mx-auto pb-32 md:pb-20") {
                             outlet
                         }
