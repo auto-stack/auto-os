@@ -1,0 +1,160 @@
+// pages/treeview.at — TreeView 组件文档页(PLAN-614)。
+//
+// 单实例综合演示卡(VM 轨 P320 单态:同名子组件须全画廊唯一实例,多实例
+// 播种串扰——flow-diagram 页双卡同款限制,契约文档收录):一张树同时演示
+// 任意形状(深链 >8 层/pad 钳制 + 混合叶枝)、directory 模式图标、显式
+// icon 字段、badge、展开/收起全部按钮、选中回显。受控契约:expanded/
+// selected 归页面,on_toggle/on_select 回调携带节点 id。
+//
+// 回显计数走 handler 内预计算(tvCount)——view 端 f-string 内方法调用
+// (.len())VM 轨不解析(P614 实证),纯字段插值正常。
+
+use components.tree_util: toggle_id, collect_ids
+
+widget TreeViewPage {
+    use { package: official from "../components" }
+
+    msg { TvToggle(str), TvSelect(str), TvExpandAll, TvCollapseAll }
+
+    model {
+        tvExpanded List = ["project", "src"]
+        tvCount int = 2
+        tvSelected str = ""
+
+        // 任意形状:深链(level-1..level-9 验证 pad 钳制)+混合叶枝+单子链;
+        // kind/icon/badge 全键书写(VM Obj 形状锁定,缺键硬错)。
+        tvNodes = [
+            { id: "project", label: "project", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                { id: "src", label: "src", kind: "dir", icon: "", is_leaf: false, badge: "12", children: [
+                    { id: "main.rs", label: "main.rs", kind: "file", icon: "", is_leaf: false, badge: "", children: [] },
+                    { id: "lib.rs", label: "lib.rs", kind: "file", icon: "", is_leaf: false, badge: "", children: [] },
+                    { id: "level-1", label: "level-1", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                        { id: "level-2", label: "level-2", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                            { id: "level-3", label: "level-3", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                { id: "level-4", label: "level-4", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                    { id: "level-5", label: "level-5", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                        { id: "level-6", label: "level-6", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                            { id: "level-7", label: "level-7", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                                { id: "level-8", label: "level-8 (pad clamp)", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                                    { id: "level-9", label: "level-9", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
+                                                        { id: "bottom", label: "bottom.txt", kind: "file", icon: "", is_leaf: false, badge: "", children: [] }
+                                                    ] }
+                                                ] }
+                                            ] }
+                                        ] }
+                                    ] }
+                                ] }
+                            ] }
+                        ] }
+                    ] }
+                ] },
+                { id: "Cargo.toml", label: "Cargo.toml", kind: "file", icon: "", is_leaf: false, badge: "", children: [] },
+                { id: "logo.png", label: "logo.png", kind: "file", icon: "", is_leaf: false, badge: "", children: [] }
+            ] },
+            { id: "handbook", label: "Handbook", kind: "dir", icon: "book-open", is_leaf: false, badge: "v2", children: [
+                { id: "intro", label: "Introduction", kind: "file", icon: "", is_leaf: true, badge: "", children: [] },
+                { id: "faq", label: "FAQ", kind: "file", icon: "", is_leaf: false, badge: "", children: [] }
+            ] },
+            { id: "readme", label: "README.md", kind: "file", icon: "", is_leaf: false, badge: "", children: [] }
+        ]
+    }
+
+    on {
+        .TvToggle(id) -> {
+            .tvExpanded = toggle_id(.tvExpanded, id)
+            .tvCount = .tvExpanded.len()
+        }
+        .TvSelect(id) -> {
+            .tvSelected = id
+        }
+        .TvExpandAll -> {
+            .tvExpanded = collect_ids(.tvNodes, true)
+            .tvCount = .tvExpanded.len()
+        }
+        .TvCollapseAll -> {
+            .tvExpanded = []
+            .tvCount = 0
+        }
+    }
+
+    view {
+        col {
+            h1 "TreeView"
+            text "TreeView displays hierarchical data with expand/collapse and single selection. It is a controlled component: the expanded and selected state lives in your page, updated through the on_toggle / on_select callbacks that carry the node id. Any tree shape works — arbitrary depth, single-child chains, mixed leaf and branch nodes."
+
+            h2 "Installation"
+            codeblock (lang: "bash", code: "use { package: official from \"./components\" }") {}
+
+            h2 "Demo"
+            text "Click a chevron to expand or collapse; click a label to select. Directory nodes map to folder / folder-open icons, files to extension icons, and explicit icon fields win over auto-mapping. The deep chain demonstrates indent clamping past depth 8." (style: "text-muted-foreground") {}
+            preview-card (id: "treeview-demo") {
+                col (style: "gap-3 w-full") {
+                    row (style: "gap-2") {
+                        button (text: "Expand all", size: "sm", variant: "outline", onclick: .TvExpandAll) {}
+                        button (text: "Collapse all", size: "sm", variant: "outline", onclick: .TvCollapseAll) {}
+                    }
+                    TreeView (nodes: .tvNodes, expanded: .tvExpanded, selected: .tvSelected, on_toggle: .TvToggle, on_select: .TvSelect, directory: true) {}
+                    text (text: f"expanded: ${.tvCount} dirs · selected: ${.tvSelected}") { style: "text-xs text-muted-foreground" }
+                }
+            }
+
+            h2 "Properties"
+            table {
+                thead {
+                    tr {
+                        th "Property"
+                        th "Type"
+                        th "Default"
+                        th "Values"
+                        th "Description"
+                    }
+                }
+                tbody {
+                    tr {
+                        td "nodes"
+                        td "List"
+                        td "[]"
+                        td "node records"
+                        td "Nested tree data: { id, label, children, kind, icon, is_leaf, badge }"
+                    }
+                    tr {
+                        td "expanded"
+                        td "List"
+                        td "[]"
+                        td "id strings"
+                        td "Controlled: ids of expanded branch nodes"
+                    }
+                    tr {
+                        td "selected"
+                        td "string"
+                        td "\"\""
+                        td "node id"
+                        td "Controlled: single selected node id"
+                    }
+                    tr {
+                        td "on_toggle"
+                        td "msg"
+                        td "—"
+                        td "callback(id)"
+                        td "Fires when a chevron is clicked"
+                    }
+                    tr {
+                        td "on_select"
+                        td "msg"
+                        td "—"
+                        td "callback(id)"
+                        td "Fires when a label row is clicked"
+                    }
+                    tr {
+                        td "directory"
+                        td "boolean"
+                        td "false"
+                        td "true, false"
+                        td "Auto-map folder / file icons from kind and extension"
+                    }
+                }
+            }
+        }
+    }
+}
+
