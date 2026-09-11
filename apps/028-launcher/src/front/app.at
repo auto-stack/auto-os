@@ -98,11 +98,18 @@ widget App {
             if .mode == "palette" {
                 // ---- palette 形态：语义 scrim + 顶部 1/4 处搜索卡（Plan 503
                 // stella 化：bg-card/80 三件套 + 品牌色图标底块 + 分类胶囊）----
+                // PLAN-010 N6d：外点关闭——scrim on_press 捕获，与 icon 菜单
+                // ondismiss 同效（宿主 launcher_visible 直读 visible，零宿主改动）。
+                mouse-area (onclick: .Close) {
                 col {
                     style: "w-full h-full bg-background/60 flex flex-col items-center"
                     spacer { style: "h-24 w-full" }
+                    // PLAN-010 N6d：卡片守卫——on_press 捕获吞掉卡片空白区点击
+                    //（守卫动作 ApplyFilter 幂等纯重算，不动 sel/gsel），
+                    // 点卡片不再落到 scrim（布局件 onclick=on_release 不捕获，不可作守卫）。
+                    mouse-area (onclick: .ApplyFilter, style: "w-full max-w-xl") {
                     col {
-                        style: "w-full max-w-xl bg-card/80 border rounded-2xl shadow-2xl overflow-hidden"
+                        style: "w-full bg-card/80 border rounded-2xl shadow-2xl overflow-hidden"
 
                         // 搜索行
                         row {
@@ -191,16 +198,22 @@ widget App {
                             text .count { style: "ml-auto text-xs text-muted-foreground" }
                         }
                     }
+                    }
                     spacer { style: "h-24 w-full" }
+                }
                 }
             } else {
                 // ---- grid 形态（P5）：图标网格（注册表序全量）+ 方向键焦点
                 //（Plan 503：语义 scrim + 卡片三件套 + 品牌色瓦片）----
+                // PLAN-010 N6d：外点关闭（同 palette 形态）。
+                mouse-area (onclick: .Close) {
                 col {
                     style: "w-full h-full bg-background/60 flex flex-col items-center"
                     spacer { style: "h-24 w-full" }
+                    // PLAN-010 N6d：卡片守卫（同 palette 形态）。
+                    mouse-area (onclick: .ApplyFilter, style: "w-full max-w-2xl") {
                     col {
-                        style: "w-full max-w-2xl bg-card/80 border rounded-2xl shadow-2xl p-6"
+                        style: "w-full bg-card/80 border rounded-2xl shadow-2xl p-6"
                         row {
                             style: "flex items-center mb-4"
                             text "All apps" { style: "text-foreground text-sm" }
@@ -243,7 +256,9 @@ widget App {
                             text "Tab palette" { style: "text-xs text-muted-foreground" }
                         }
                     }
+                    }
                     spacer { style: "h-24 w-full" }
+                }
                 }
             }
         } else {
