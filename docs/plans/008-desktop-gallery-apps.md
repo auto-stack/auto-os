@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-008
 origin: PLAN-578
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-gallery-apps
 author: [ZCode, zhaopuming]
 created_at: 2026-09-07
-updated_at: 2026-09-07
+updated_at: 2026-09-11
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -13,8 +13,8 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui, auto-man]   # 受影响的 specs 路径，如 [auto-lang/vm]
-current_step: 0
-total_steps: 6
+current_step: 7
+total_steps: 7
 ---
 
 > **随迁注记（Stage B P-1，2026-09-07，PLAN-001）**：本计划自 auto-lang
@@ -24,6 +24,30 @@ total_steps: 6
 > 其 `docs/plans/INDEX.md`。正文中的 auto-lang 相对路径/行号锚点，开工时按本仓
 > AGENTS §2 解析序换算（env → `../auto-lang` → `D:/autostack/auto-lang`），
 > 现文不回改。
+
+> **执行重锚定案（2026-09-11，/auto-plan:work 开工轮）**：计划起草后 P-5
+> （2026-09-07，PLAN-590）已把画廊两件自 auto-lang `examples/` 迁 **auto-os
+> 顶层**（auto-lang 侧 047743158 git rm；auto-lang 残留目录为未跟踪构建
+> 产物）——§详细设计 1/3 的 `apps_dir.parent()` 兄弟锚定前提失效，按 §6
+> 重锚条款改锚 **`resolve_os_top_dir` 解析序**（`AUTO_OS_ROOT` env → 兄弟
+> → 主检出；P-5 为框架消费随迁资产既建机制，docs 管线同款）。语义三件套
+> 不变（按名探测 / 缺席静默跳过 / storage `shell.apps.scan_galleries`
+> 开关）。逐任务重锚：**T1** pac 落点=auto-os 顶层两 pac.at；**T2**
+> `gallery_extra_roots()` 去 `apps_dir` 参 + 纯函数
+> `gallery_extra_roots_from(storage_value, parent)` 参数化（测试设计 2
+> 的 storage 注入两难按预案取参数化臂）；**T3** 接线折叠进
+> `host_extra_roots()`（renderer.rs boot `None` 臂自动覆盖，renderer 零
+> 改动——行号 ~11274 现漂移 11377 亦不再需要）；**T4** vue.rs
+> `desktop_extra_app_roots(root_dir)` 现形态无 apps_dir 参，缺省臂在
+> manifest 臂后追加 `gallery_extra_roots_from(None, parent)`（env
+> `AUTO_DESKTOP_APPS_EXTRA` 全替换臂不动）；**加座**：`AUTO_DESKTOP_APPS_EXTRA`
+> 全替换语义下脚本化 vue 轨的画廊供给 = `scripts/desktop.{ps1,sh}` EXTRA
+> 追加两画廊根（widgets-gallery 由 render 过滤自然排除——设计行为）；
+> 三轨 parity 测试组合面同步画廊臂（fixture 补画廊目录防主检出兜底泄入）。
+> **T6** 实机走 `scripts/desktop.{ps1,sh}`（P-6 包装）双轨。证据目录沿
+> 正文 `docs/plans/evidence/578/`。执行落点：worktree 组
+> `.wt/os-008/{auto-os,auto-lang}`（分支均 `os-008-dev`；base=auto-os
+> `a8d7450` / auto-lang master `622edfdd9`）。
 
 # [PLAN-008] 桌面画廊上架——ui-gallery / widgets-gallery 注册进虚拟桌面缺省应用面
 
@@ -39,8 +63,14 @@ PLAN-552 语义缺省 `desktop_visible=true`（opt-out），无需 pac `desktop:
 展示字段。VM 轨新增 `shell.apps.scan_galleries` storage 开关（缺省开，
 命名对齐既有 `shell.apps.scan_siblings`）。
 
-不动：examples/ui 主根扫描与策展恰等断言（20 id 口径）、Plan 552 boot
-两分逻辑、`extra_roots_from`/`desktop_extra_app_roots` 的 env 覆盖语义
+另收一项（2026-09-11 用户裁定补入）：**022-kanban 教学 demo 退桌面策展**
+——独立仓 auto-kanban（apps.manifest extra root 挂载，P-3 已落地）替位，
+examples/ui 早期 demo 不再上桌面：删 pac `desktop:` 行 + 策展恰等断言
+同步（C 档 17→16）；demo 本体留 examples/ui 作教学与收割语料
+（§详细设计 7）。
+
+不动：examples/ui 主根扫描机制与 Plan 552 boot 两分逻辑、
+`extra_roots_from`/`desktop_extra_app_roots` 的 env 覆盖语义
 （`AUTO_DESKTOP_APPS_EXTRA` 设置时整体替换缺省，保持不变）。
 
 **与 PLAN-579（auto-os 立项）的对齐**（2026-09-07 追加，同日二次修订）：
@@ -77,6 +107,10 @@ PLAN-552 语义缺省 `desktop_visible=true`（opt-out），无需 pac `desktop:
 4. **可关**：VM 轨 `shell.apps.scan_galleries=false` 可整体关闭画廊
    探测（对称 `shell.apps.scan_siblings`）；Vue 轨沿用
    `AUTO_DESKTOP_APPS_EXTRA` 整体覆盖既有语义，不新增开关。
+5. **022-kanban 退策展**（用户裁定 2026-09-11）：`examples/ui/022-kanban/
+   pac.at` 删 `desktop: "true"` 行 + `scan_examples_ui_curation_set`
+   want 集同步（C 档 17→16）——app 升格独立仓后早期 demo 退桌面，
+   独立 app 替位（auto-kanban 已挂载，零新增机制）。
 
 ## 架构方案
 
@@ -108,6 +142,14 @@ PLAN-552 语义缺省 `desktop_visible=true`（opt-out），无需 pac `desktop:
   （552 清退的 Tier1/2 教学示例职能已收拢进画廊），理应上架；
   widgets-gallery 是自研的第一个独立 UI app，兼 AutoUI 文档与展示面，
   也有理由上架。
+- **用户裁定**（2026-09-11，策展规则补入）：app 一旦升格独立仓
+  （apps.manifest 注册），其 examples/ui 早期教学 demo 即退桌面策展——
+  demo 本体留框架仓继续作教学示例与 ui-gallery 收割语料，桌面消费面只
+  呈现独立 app。首例 kanban：`examples/ui/022-kanban/pac.at` 仍带
+  `desktop: "true"`（策展 C 档 17 之一，断言锚 `app_registry.rs:540`，
+  want 数组 557 行），与 auto-kanban（manifest extra root 原生挂载，
+  title 同为 "Kanban"）在新桌面双入口并存——本计划清此重叠；后续 app
+  升格沿用此规则（同样仅退策展 + 断言同步，零迁移）。
 - **PLAN-552 语义适配**：外部自含根 `desktop_visible` 缺省 true
   （opt-out）——画廊以 extra 根形态注册即上架，零 pac 改动（pac
   `desktop:` 显式值仍可覆盖）。策展恰等断言只扫 examples/ui 主根，
@@ -241,6 +283,21 @@ fn desktop_extra_app_roots(root_dir: &Path, apps_dir: &Path) -> Vec<(String, Pat
   若拆仓后画廊与主根分置两树，以 storage `shell.apps.extra_dirs` 注册
   画廊根即可（机制已备，零返工）。
 
+### 7. 022-kanban 退策展（2026-09-11 用户裁定补入）
+
+- `examples/ui/022-kanban/pac.at`：删 `desktop: "true"` 行——沿 552
+  opt-in 语义（主根 demo 缺省不上桌面），examples/ui 既有非桌面 demo
+  均为无字段形态，不引入显式 false 惯例；留一行注释指位替位方
+  auto-kanban（pac `//` 注释形态，沿 auto-kanban pac.at 先例）。
+- `crates/auto-lang/src/ui/app_registry.rs` `scan_examples_ui_curation_set`
+  （:540）：want 数组去 `"022-kanban"`（:557），断言文案与计数注释
+  C 档 17→16，注记 PLAN-008 退策展缘由（沿 551/553/590 既有计数注记
+  形态）。
+- 替位方零改动：auto-kanban 经 apps.manifest（P-3 落地）extra root
+  原生挂载已入 VM/Vue 双轨注册面，本项不触 manifest/挂载机制。
+- 022-kanban 目录本体不迁不删：`auto run` 开发形态、ui-gallery 收割
+  语料、`scan_examples_ui_finds_at_least_27_apps`（≥33）口径均不变。
+
 ## 测试设计
 
 全部新增测试紧贴既有形态（app_registry.rs 真实仓库材料门控单测 +
@@ -267,13 +324,17 @@ vue.rs 同文件 tests mod）：
    env 覆盖臂断言 galleries 不在（整体替换语义）。（env 测试需串行/
    隔离——参照 vue.rs 既有 env 测试的处理形态。）
 
-策展恰等断言（`scan_examples_ui_curation_set`）不改动：其只扫主根。
+策展恰等断言（`scan_examples_ui_curation_set`）**随退策展同步**（2026-09-11
+补入）：want 去 `"022-kanban"`（C 档 17→16）；其双向恰等特性（多一/少一
+即红）本身即钉死退策展回归，无需新增测试。扫描数断言（≥33）不变——
+退策展只动 desktop_visible，不动扫描面。
 
 ## 验收标准
 
-1. VM 桌面 boot：注册表日志相对现状 **+2 entries / +2
-   desktop-visible**；launcher/图标格可见 UI Gallery 与 Widgets
-   Gallery（图标 `image`/`layout-grid`、标题非裸 id）。
+1. VM 桌面 boot：注册表日志相对现状 **+2 entries / +1
+   desktop-visible**（画廊 +2/+2，022-kanban 退策展 -1）；launcher/图标格
+   可见 UI Gallery 与 Widgets Gallery（图标 `image`/`layout-grid`、
+   标题非裸 id）。
 2. VM 桌面实机：launch `widgets-gallery` 可用（VM 原生形态）；launch
    `ui-gallery` 不崩桌面（占位页或可用均可，见 §详细设计 5）。
 3. Vue desktop-host 生成：输出含 `extra root: ui-gallery`，注册表含
@@ -284,37 +345,105 @@ vue.rs 同文件 tests mod）：
 5. 门禁：`cargo check -p auto-lang -p auto-man` 触及文件零新警告；
    `cargo t gallery_extra`、`cargo t scan_gallery`、
    `cargo t desktop_extra` 全绿；`cargo t app_registry` 全绿。
+6. 022-kanban 退策展生效（2026-09-11 补入）：双轨桌面 launcher/图标格/
+   注册表无 022-kanban 条目，Kanban 入口唯一（auto-kanban）；
+   `cargo t scan_examples_ui`（含策展恰等 + ≥33 扫描两断言）绿。
 
 ## 执行步骤
 （原子任务：精确文件路径 + 确切操作 + 验证命令；每步完成后追加 [✅ 已完成] 一行证据）
 
-- [ ] **T1 pac 展示字段**：`examples/ui-gallery/pac.at` 增
+- [x] **T1 pac 展示字段**：`examples/ui-gallery/pac.at` 增
   `title: "UI Gallery"` + `icon: "image"`；`examples/widgets-gallery/pac.at`
   增 `title: "Widgets Gallery"` + `icon: "layout-grid"`。
   验证：`grep -n "title:\|icon:" examples/ui-gallery/pac.at examples/widgets-gallery/pac.at`
-- [ ] **T2 app_registry 画廊根探测**：`crates/auto-lang/src/ui/app_registry.rs`
+  [✅ 已完成] 重锚落点=auto-os 顶层两 pac.at（worktree os-008-dev）；grep
+  四行在案（icon:/title: 各 12/13 行）；lucide 在册 renderer.rs:5338-5339；
+  `scan_gallery_roots_entries_visible` 断言 title/icon 透传过（app_registry
+  19/19）。
+- [x] **T2 app_registry 画廊根探测**：`crates/auto-lang/src/ui/app_registry.rs`
   增 `gallery_extra_roots`（§详细设计 1）+ 测试设计 1/2/3/4 四单测。
   验证：`cargo t gallery_extra && cargo t scan_gallery && cargo t gallery_render_filter`
-- [ ] **T3 VM 轨 boot 接线**：`crates/auto-lang/src/ui/iced/renderer.rs`
+  [✅ 已完成] 重锚：`gallery_extra_roots()`（去 apps_dir 参）+ 纯函数
+  `gallery_extra_roots_from(storage_value, parent)` 走 `resolve_os_top_dir`
+  解析序；四单测 probes_repo_galleries / scan_galleries_off（storage 注入
+  两难按预案取参数化臂）/ entries_visible / render_filter_matrix；
+  nextest `cargo t app_registry` 19/19 绿（os-008 worktree，auto-lang
+  `os-008-dev`）。
+- [x] **T3 VM 轨 boot 接线**：`crates/auto-lang/src/ui/iced/renderer.rs`
   ~11274 处 extra 拼接 `gallery_extra_roots(apps_dir)`（§详细设计 2）。
   验证：`cargo check -p auto-lang`（零新警告）
-- [ ] **T4 Vue 轨缺省臂扩展**：`crates/auto-man/src/vue.rs`
+  [✅ 已完成] 重锚：接线折叠进 `host_extra_roots()` 末尾
+  `roots.extend(gallery_extra_roots())`——renderer.rs boot `None` 臂自动
+  覆盖，**renderer.rs 零改动**；`cargo check -p auto-lang -p auto-man`
+  过（触及文件零新警告，vue.rs:5561 mutable 警告=master 5556 既有位移）。
+- [x] **T4 Vue 轨缺省臂扩展**：`crates/auto-man/src/vue.rs`
   `desktop_extra_app_roots` 增 `apps_dir` 参 + 缺省臂按主根兄弟追加两
   画廊探测（§详细设计 3，579 对齐锚定）+ 测试设计 5 单测（含 root_dir
   异根锚定臂）。
   验证：`cargo t desktop_extra_app_roots`
-- [ ] **T5 局部门禁**：`cargo check -p auto-lang -p auto-man` +
+  [✅ 已完成] 重锚：缺省臂 manifest 臂后追加
+  `gallery_extra_roots_from(None, parent)`（P-5 解析序，签名不动）；
+  测试设计 5 重锚为 `desktop_extra_app_roots_default_includes_galleries`
+  （tmp 异根 fixture + manifest 占位防兜底泄入 + env 全替换腿）；三轨
+  parity 测试组合面同步画廊臂（fixture 补画廊目录）；nextest
+  `-p auto-man desktop_extra` 2/2 + `three_track` 1/1 绿。**加座**：
+  `scripts/desktop.{ps1,sh}` vue 轨 EXTRA 追加两画廊根（env 全替换语义下
+  脚本化轨道的画廊供给；widgets-gallery 由 render 过滤自然排除）。
+- [x] **T5 局部门禁**：`cargo check -p auto-lang -p auto-man` +
   `cargo t app_registry` + 新增滤串复跑。
   验证：命令全绿、触及文件零新警告
-- [ ] **T6 双轨实机冒烟**：VM 轨
+  [✅ 已完成] check 过（警告全既有，无触及文件新警告）；nextest：
+  `app_registry` 19/19、`scan_examples_ui` 2/2、`-p auto-man
+  desktop_extra` 2/2、`three_track` 1/1、`extra_roots` 双 crate 5/5
+  全绿（os-008 worktree）。
+- [x] **T6 双轨实机冒烟**：VM 轨
   `cargo run -p auto-lang --features ui-iced --example ui_desktop -- --fullscreen`
-  ——boot 日志 +2/+2、图标格两画廊可见、launch widgets-gallery 可用、
-  launch ui-gallery 不崩；Vue 轨 `examples/desktop-host` 下
+  ——boot 日志画廊 +2/+2（T7 已先行则 desktop-visible 净 +1，验收 1
+  口径）、图标格两画廊可见、launch widgets-gallery 可用、launch
+  ui-gallery 不崩；Vue 轨 `examples/desktop-host` 下
   `auto run --desktop`——生成日志含 `extra root: ui-gallery`、可 launch。
   证据：日志摘录 + 截图存 `docs/plans/evidence/578/`（可选用
   autoui-verifier 脚本）。
+  [✅ 已完成] 证据集+索引存 `docs/plans/evidence/578/`（README.md 为入口）。
+  **iced 轨**：受控对照（同 os-008 组 CWD）master exe `36 (20)` → 新 exe
+  `38 (21)` = **+2 entries / +1 desktop-visible**（验收 1 精确命中）；
+  全屏/窗口冒烟 boot 未崩（截图两张）。**vue 轨**：worktree `auto` CLI +
+  脚本 env——`✓ extra root: ui-gallery` 精确命中（验收 3 前半）；
+  widgets-gallery render 过滤缺席（设计行为）；`apps-registry.ts (23 apps)`
+  落地。**受挫项（验收 3 后半）**：ui-gallery 被生成器 v1 限制
+  `needs ext files`（Plan 465 登记，`@/ext/` 导入者跳过）拦在
+  apps-registry.ts 之外——扫描面登记 ✓、前台 materialize ✗，先于本计划
+  的生成器边界，非本计划回归；处置见待澄清④。**交互腿**（图标格目视/
+  launch 两画廊/scan_galleries=false 实机）沿 472/478 先例 headless 指针
+  成文，待用户实机复核。
+- [x] **T7 022-kanban 退策展**（2026-09-11 补入；建议先于 T6 执行使冒烟
+  覆盖终态，无依赖可任意位次）：`examples/ui/022-kanban/pac.at` 删
+  `desktop: "true"` 行（留注释指位 auto-kanban）；
+  `crates/auto-lang/src/ui/app_registry.rs` 策展断言 want 去
+  `"022-kanban"` + 计数注释 C 档 17→16（§详细设计 7）。
+  验证：`cargo t scan_examples_ui`（策展恰等 + ≥33 两断言）绿；桌面
+  Kanban 入口唯一（auto-kanban）。
+  [✅ 已完成] worktree 两处落地（auto-lang examples/ui/022-kanban/pac.at
+  注释替位 + want 数组去 022-kanban，断言文案/注释 17→16 注记 PLAN-008）；
+  nextest `scan_examples_ui` 2/2 绿（恰等 16 + ≥33）；桌面入口唯一性
+  归 T6 实机核对。
 
 ## 复审记录
+
+### work 交接（2026-09-11，/auto-plan:work 轮）
+
+`stage: work | plan_id: PLAN-008 | plan_revision: 执行重锚定案（2026-09-11）
+| outcome: blocked（单点）——T1-T5/T7 全绿交付，T6 双轨冒烟完成，验收 3
+后半受挫待裁定 | code_commit: auto-os 2c012a3 / auto-lang 45ae96897
+（各 os-008-dev；base a8d7450 / 622edfdd9）
+| task_ids: T1,T2,T3,T4,T5,T6,T7 | evidence:
+docs/plans/evidence/578/（iced 受控对照 36(20)→38(21)=+2/+1；vue 生成
+`✓ extra root: ui-gallery`；nextest app_registry 19/19 + scan_examples_ui
+2/2 + desktop_extra 2/2 + three_track 1/1 + extra_roots 5/5；check 零新
+警告）| blockers: 验收 3 后半"注册表含 ui-gallery 且可 launch"被 Plan 465
+v1 限制（needs ext files）拦住，非本计划回归——待澄清④用户裁定
+| next: ④裁定后（amend 验收或另立 ext-materialize 专项）→ execution_done
+→ /auto-plan:review；交互腿用户实机复核可并入 review 轮`
 
 ## 待澄清事项
 
@@ -336,3 +465,15 @@ vue.rs 同文件 tests mod）：
    桌面跑起来 + ③能够展示两个 gallery——其中③由本计划在新桌面交付
    （执行链：579 → Stage B → **578** → auto-ui 独立讨论），满足后独立
    立项讨论，届时零返工跟随迁置。
+4. **（2026-09-11 work 轮新增）验收 3 后半的处置裁定**：vue desktop-host
+   生成器对 `@/ext/` 导入者按 Plan 465 登记的 v1 限制跳过（"needs ext
+   files"）——ui-gallery（settings dep 形态）扫描面登记 ✓
+   （`✓ extra root: ui-gallery`）但前台 apps-registry.ts 无条目、不可
+   launch。两读待用户裁定：① amend 验收 3 后半为"extra root 登记 +
+   v1 限制注记"（gallery 全功能体验改走 VM 轨/独立窗口形态，§详细设计 5
+   的"全功能体验走 Vue 轨"假设同步修正）；② 另立专项让 desktop-host
+   materialize ext 依赖 app（Plan 465 registered-limitation 扩展，超出
+   本计划授权范围）。另记两则小注：⚠ "no entry .at" 文案对 render 过滤
+   跳过同型复用（既有措辞混用，可顺手修）；022-kanban 在 vue 轨系 v1
+   "needs API client" 既有跳过（从未上过 vue 桌面），验收 6 vue 腿自然
+   成立。
