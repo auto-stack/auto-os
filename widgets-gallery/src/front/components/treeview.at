@@ -33,6 +33,15 @@ widget TreeView (nodes: List, expanded: List = [], selected: str = "", on_toggle
         col (style: "w-full text-sm") {
             for r in .rows {
                 row (style: "items-center") {
+                    for g in r.guides {
+                        if g == "l" {
+                            div (style: "w-4 h-6 flex items-center justify-center") {
+                                div (style: "w-px h-6 bg-border") {}
+                            }
+                        } else {
+                            div (style: "w-4 h-6") {}
+                        }
+                    }
                     if r.has_kids {
                         mouse-area (onclick: .Toggle(r.id), style: "w-5 h-5 shrink-0 items-center justify-center cursor-pointer") {
                             if r.open {
@@ -44,7 +53,7 @@ widget TreeView (nodes: List, expanded: List = [], selected: str = "", on_toggle
                     } else {
                         div (style: "w-5 shrink-0") {}
                     }
-                    row (onclick: .Select(r.id), class: f"flex flex-row ${r.pad} flex-1 items-center gap-1.5 py-1 pr-2 rounded-md cursor-pointer ${r.state}") {
+                    row (onclick: .Select(r.id), class: f"flex flex-row flex-1 items-center gap-1.5 py-1 pr-2 rounded-md cursor-pointer ${r.state}") {
                         if r.icon != "" {
                             TreeIcon (name: r.icon) {}
                         }
@@ -58,3 +67,4 @@ widget TreeView (nodes: List, expanded: List = [], selected: str = "", on_toggle
         }
     }
 }
+
