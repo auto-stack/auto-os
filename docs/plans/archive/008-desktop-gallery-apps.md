@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-008
 origin: PLAN-578
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-gallery-apps
 author: [ZCode, zhaopuming]
 created_at: 2026-09-07
@@ -545,6 +545,22 @@ docs/plans/evidence/578/（iced 受控对照 36(20)→38(21)=+2/+1；vue 生成
 v1 限制（needs ext files）拦住，非本计划回归——待澄清④用户裁定
 | next: ④裁定后（amend 验收或另立 ext-materialize 专项）→ execution_done
 → /auto-plan:review；交互腿用户实机复核可并入 review 轮`
+
+### merge 归档回执（2026-09-11，/auto-plan:merge 轮）
+
+`PLAN-008:r2 | completion_kind: delivered`
+
+| 检查点 | 证据 |
+|---|---|
+| `prepared` | 复审基线 auto-os `2c012a3` / auto-lang `45ae96897`（r2 pass）；canonical diff=specs.json P008-1/P008-2（worktree `90e65a3`）；delivery 候选=两 os-008-dev 合流头 |
+| `landed` | auto-os main **`f3e4570`**（merge os-008-dev --no-ff：pac ×2+scripts ×2+specs 沉积）；auto-lang master **`c4481ca58`**（merge 前先 reconcile master 591-610 → `db63beeb5` 零冲突，融合树 cargo tf 3509/3510 唯一红=ffi_dual_019 在案 flake 隔离绿，scoped 19+2+1 全绿，落地后 master 复跑 app_registry 19/19+scan_examples_ui 2/2） |
+| `ledger_refreshed` | `.autoos/specs.json`：P008-1（architecture）/P008-2（tests）main 落地后读回在位（总条目 19）；file→本件 archive 终态路径 |
+| `archived` | 本件 `git mv` → `docs/plans/archive/008-desktop-gallery-apps.md` + status archived + 台账行翻 📦 |
+| `cleaned` | wt-guard：auto-os ✓ / auto-down ✓ 首跑 clean；auto-lang 首跑 **BLOCKED**（T6 vue 轨 pnpm 在 desktop-host gen 产物留 309 个 junction——guard 拦截生效）→ 按 guard 程序逐个 `cmd /c rmdir` 摘链接（309/309，零穿透）→ 复跑 clean → 三 worktree remove + 分支 `os-008-dev` ×3 删除（auto-os `90e65a3` / auto-lang `db63beeb5` / auto-down `1557a39` 零提交点）+ 残余 vite node 进程（PID 35040，锁 gen 目录）清杀 + 空组目录 `.wt/os-008` 移除；三仓 `worktree list` 复验零残留 |
+
+并发注记：auto-lang 主检出存在他人并发 WIP（renderer.rs/snapshot.rs/
+v05-release-promo.md 等，非本计划触及文件，会话间出现）——未触碰未提交，
+PLAN-011 auto-lang 折叠协调事项另案在途。
 
 ## 待澄清事项
 
