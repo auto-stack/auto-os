@@ -120,6 +120,19 @@
           "last_modified": "2026-09-09",
           "title": "schema 全量再生成滞留清偿形态 — 架构注记",
           "content": "SCHEMA_DRIFT_GENERATE_AT=1 全量再生成入账口径：regen 真名登记（连字符/Pascal 翻转,NavDestination→nav-destination/Swiper→swiper/sidebar 系连字符）,旧下划线孪生与 Pascal 行退役,coverage 双向净（414=414）;P3 档位冲突显式拆册（vue 同件 iced 档不同——561 真值 sub=full/button=partial,regen 别名合并丢区分 → sidebar_menu_sub_button 独立立册）;kitchen-sink 38→50 节+core.md 随生;DOC_EXCLUDE+2（折叠键）。三围栏 schema_drift/queue_coverage/docs_gen 绿。"
+        },
+        {
+          "id": "P008-1",
+          "file": "docs/plans/archive/008-desktop-gallery-apps.md",
+          "status": "stable",
+          "related": [
+            "PLAN-008",
+            "PLAN-578"
+          ],
+          "created": "2026-09-11",
+          "last_modified": "2026-09-11",
+          "title": "桌面注册表画廊根契约 — 架构注记",
+          "content": "画廊两件（ui-gallery/widgets-gallery，auto-os 顶层随迁资产）经 resolve_os_top_dir 解析序（AUTO_OS_ROOT env 设置即权威→兄弟 parent/auto-os→主检出 D:/autostack/auto-os）按名探测入桌面注册面 extra roots，双轨同律（vm host_extra_roots / vue desktop_extra_app_roots 缺省臂，三轨 parity 测试钉死）；目录缺席静默跳过（solo 检出不炸）；vm 轨 storage shell.apps.scan_galleries=false 整体关断（对称 scan_siblings，纯函数 gallery_extra_roots_from 参数化），vue 轨关断=AUTO_DESKTOP_APPS_EXTRA 全替换既有语义（desktop 脚本 EXTRA 显式注入画廊两件）；外部自含根 opt-out 缺省可见（PLAN-552 语义），展示字段 pac title:/icon:（image/layout-grid）。锚定不变式：P-5 随迁后画廊与主根示例的共置由解析序承载（apps_dir 兄弟锚退役）。vue 前台 materialize 受 Plan 465 v1 限制（@/ext/ 导入者跳过，ui-gallery 首例）——KNOWN-DEBT 候选 ext-materialize。"
         }
       ]
     },
@@ -165,6 +178,19 @@
           "last_modified": "2026-09-09",
           "title": "P534 债批一验证矩阵 — 测试注记",
           "content": "plan577_avatar 探针 3 用例+plan577_breadcrumb_cycle 环回归（红灯验证:摘守卫 STATUS_STACK_OVERFLOW 实测在案）=4/4;三围栏（AUTO_OS_ROOT 三仓跑法）2/2+4/4+7/7;实机：/avatar 像素密度（content 0.79×2,gray 0.70）+/hovercard 触发器 @rect(781,496,40,40) h=40+OS 级真 hover 进 true/出 false（t4hc 双轮 ALL PASS）;直达 breadcrumb ALIVE（len=33598）;全站扫描 68/68 零异常存活（p577_fullscan.py）;tf no-fail-fast 唯一红=charts,master 同命令集合全等;iced 唯一红=lucide 存量（master 集合全等）;tv 唯一红=charts 存量。证据:auto-lang 主检出 scratch/p577/（快照/bounds/截图/报告全套）。"
+        },
+        {
+          "id": "P008-2",
+          "file": "docs/plans/archive/008-desktop-gallery-apps.md",
+          "status": "stable",
+          "related": [
+            "PLAN-008",
+            "PLAN-552"
+          ],
+          "created": "2026-09-11",
+          "last_modified": "2026-09-11",
+          "title": "注册表画廊验证矩阵 — 测试注记",
+          "content": "真实材料门控四单测（probes_repo_galleries/scan_galleries_off/entries_visible/render_filter_matrix，resolve 未解析 SKIP）+ vue 轨缺省臂/env 全替换两腿 + 三轨 parity（fixture 含画廊目录防主检出兜底泄入，同序同集含 ui-gallery/widgets-gallery 尾部两位）；boot 计数受控基线语义：worktree 组内 36(20)→38(21)=+2/+1，组构成差（auto-os-config/auto-kanban 检出缺席）须同组对照禁跨组直比（P009-3 同律）；策展恰等断言 C 档 16（022-kanban 退策展，恰等特性双向钉死）+ ≥33 扫描数不变；实机腿经验收注入通道复现（launcher 21 徽标/双 launch 真渲染/storage 关断 36(19)）。"
         }
       ]
     },
