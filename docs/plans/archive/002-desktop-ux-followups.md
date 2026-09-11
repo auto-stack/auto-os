@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-002
 origin: PLAN-535
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-ux-followups
 author: [zhaopuming]
 created_at: 2026-09-04
@@ -174,7 +174,7 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       撤除 0、label 区右键菜单、launcher 网格 7/8 候选点命中 152×95 格
       （未命中的 1 号=选中态格，本就无 hover: 类）。KNOWN-DEBT 526 行结案，
       余项（Grid 事件槽/cursor-pointer/hover 文本级联/全示例 sweep）另立。
-- [ ] C 用户复核清单七项逐项确认并勾销。
+- [x] C 用户复核清单七项逐项确认并勾销。
       [复核进展 2026-09-09] **T20 ✓**（首击=窗口置顶+按钮同时生效，空白区
       只聚焦无误触发；事件实录 scratch/p002/review_ue.log）。**T24 ✓**
       （最大化底缘与任务栏无遮挡，用户确认；附带产出 N4 居中+N5 圆角两
@@ -190,6 +190,14 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       空白菜单（坐标锚）与标题菜单两面上实测确认；icon 菜单本体如需
       单独点验随 T32/T38 轮一并做）。**余 T32（Ctrl+Tab 召唤/预选/提交）、
       T38（launcher tag 样式）两项待用户复核**。
+      [复核进展 2026-09-11 二轮] **T32 ✓**（用户实机：Ctrl+Tab 循环推进
+      ✓——其阻塞根因之一为 launcher search 输入链（PLAN-013 W2 三连修
+      后恢复）；切换器裸 Tab bind 退役随 PLAN-013 落地，宿主直投为唯一
+      Tab 推进路径）。**T38 ✓**（用户实机：tag 样式统一 ✓ + 零结果 tag
+      隐藏 ✓——PLAN-013 RebuildCats 注册表计数过滤）。**七项 7/7 全销**。
+      [遗留移交] launcher search 聚焦/输入修复 + IME/CJK 支持与
+      Ctrl+Space 热键冲突 → PLAN-013（已归档，遗留 KNOWN-DEBT 三项在
+      案：W4 缩略图遮挡/CJK IME 专项/热键冲突）。
 
 ## 执行步骤
 
@@ -223,7 +231,10 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       `set_layout_events` + View 字段（含 convert_view_messages 穿透）；
       试点站点=launcher 网格格 + desktop.at 图标格（pack=pin 同步+金样再生）。
       证据见验收标准 B 项。
-- [ ] C 用户复核七项逐项销账（T20/T24/T28/T31/T32/T37/T38）。
+- [x] C 用户复核七项逐项销账（T20/T24/T28/T31/T32/T37/T38）。
+      ✅ 全销（2026-09-11，7/7：T32/T37/T38 随 PLAN-013 验证轮用户实机
+      确认——Ctrl+Tab 循环 ✓/tag 样式统一+零结果隐藏 ✓；launcher 聚焦/
+      输入链修复随 PLAN-013 W2 三连根修+MouseArea 专用臂落地）。
       [进展 2026-09-11] 5/7 ✓——T20/T24/T28/T31/T37 已销（T37 今日随
       PLAN-611/612 终验；T31 的 N6a/N6b 修复已随 PLAN-010 归档+链折叠
       落地，同构外点关闭机制今日实测）。**余 T32（Ctrl+Tab 召唤/预选/
@@ -242,9 +253,23 @@ iced 收到的 content=col([Empty])：面板 content 列被 p-1 chrome 撑成 8�
       20/20 存活零退出、审计零记录——本项负载未复现，按 D3 判据走
       不可复现分支：KNOWN-DEBT 526 行降档 🟡（疑外部击杀，049 同族），
       审计机制常驻，真实复现再启。台账 scratch/p575/ledger.jsonl。
-- [ ] E 用户复核：通知中心开合（同 D 场景）确认修复。
+- [x] E 用户复核：通知中心开合（同 D 场景）确认修复。
+      ✅ 销账（2026-09-11，用户实机随 PLAN-013 验证轮：开合正常、空态
+      "暂无通知"居中修复（w-full 补齐））。
 
 ## 复审记录
+
+
+### merge 回执（2026-09-11，五检查点——随链收口）
+
+prepared ✓（T32/T37/T38/E 用户实机终验+C 7/7 全销）| landed ✓（auto-os
+侧 N6a/N6c/N6d 随 PLAN-011 merge `5ce2654`；auto-lang 侧 os-002 工作线
+（PLAN-002 A/B + N1-N5）随 PLAN-011 链折叠 `d3527d811` 落地）|
+ledger_refreshed ✓（autos-desktop-program 台账无本计划独立行，归档即
+登记）| archived ✓（git mv docs/plans/archive/）| cleaned ✓（.wt/os-002
+双仓 worktree 随 os-010/os-011 清理批次一并 wt-guard 清除）。
+遗留移交：launcher 聚焦/输入链 → PLAN-013（W2 三连根修+MouseArea 专用
+臂，已归档）；IME/CJK 与热键冲突 KNOWN-DEBT 三项在案。
 
 ### work 交接记录（2026-09-09 · N3/N4/N5）
 
