@@ -297,6 +297,11 @@ C4/T31）；复核通过后径入 /auto-plan:review
    iced_widget-0.14.2/stack.rs:231），与 S3（图标格穿透成功）、B1（无
    菜单同样聋）全部自洽。归属：vwin/Stack 命中测试专项（非 popover 域），
    建议单独立项或在 PLAN-002 收尾时合并处置。
+   **【2026-09-11 移交回填】**已单独立项 PLAN-011（vwin-stack-hit-testing）
+   并 work 完成：levitate 假设证伪，真根因=mouse_area 命中带为内容盒、
+   desktop.at 空白菜单 popover 锚件命中带仅图标条带高（几何死区）；修复
+   auto-os os-011-dev `46a07cf`，空白腿判据（外点/Esc→BlankClose）已在其
+   线实测全绿——本计划 T5 空白腿与 C4/T31 的用户实机复核随其交付解蔽。
 5. 同击语义注记：外点关闭的那一次点击，MenuClose 于 press 期发布→视图
    重建吃掉同击 release，BlankPress 不与 MenuClose 同击触发（菜单已关=
    用户目标达成）；BlankPress 需下一次独立点击。此为 dismiss+重建时序的
