@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-008
 origin: PLAN-578
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-gallery-apps
 author: [ZCode, zhaopuming]
 created_at: 2026-09-07
@@ -9,10 +9,11 @@ updated_at: 2026-09-11
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
-
-affects: [auto-lang/ui, auto-man]   # 受影响的 specs 路径，如 [auto-lang/vm]
+new_spec_components: [P008-1, P008-2]
+touched_goals: []             # auto-os 无 canonical goals 文档（goals 节空）；
+                              #   正文 GOAL-009/010 引用为 origin 随迁指针，
+                              #   非 auto-os 侧可触达成份——空 Impact 说明。
+affects: [auto-os/desktop-registry, auto-lang/ui]
 current_step: 7
 total_steps: 7
 ---
@@ -298,6 +299,29 @@ fn desktop_extra_app_roots(root_dir: &Path, apps_dir: &Path) -> Vec<(String, Pat
 - 022-kanban 目录本体不迁不删：`auto run` 开发形态、ui-gallery 收割
   语料、`scan_examples_ui_finds_at_least_27_apps`（≥33）口径均不变。
 
+### 规范增量（2026-09-11 review 轮定稿；ledger 条目 merge 时落账）
+
+- **P008-1（architecture）桌面注册表画廊根契约**：画廊两件
+  （ui-gallery/widgets-gallery，auto-os 顶层随迁资产）经
+  `resolve_os_top_dir` 解析序（`AUTO_OS_ROOT` env 设置即权威 → 兄弟
+  `parent/auto-os` → 主检出 `D:/autostack/auto-os`）按名探测入桌面注册
+  面 extra roots，双轨同律（VM `host_extra_roots`/vue
+  `desktop_extra_app_roots` 缺省臂）；目录缺席静默跳过（solo 检出不
+  炸）；VM 轨 storage `shell.apps.scan_galleries=false` 整体关断（对称
+  `scan_siblings`），vue 轨关断 = `AUTO_DESKTOP_APPS_EXTRA` 全替换既有
+  语义（desktop 脚本 EXTRA 显式注入画廊两件）；外部自含根 opt-out 缺省
+  可见（PLAN-552 语义），展示字段 pac `title:`/`icon:`。锚定不变式：
+  画廊与主根示例的共置由解析序承载（P-5 随迁后 apps_dir 兄弟锚退役）。
+- **P008-2（tests）注册表画廊验证矩阵注记**：真实材料门控四单测
+  （probes/off/entries/render_filter）+ vue 轨缺省臂/env 全替换两腿 +
+  三轨 parity（fixture 含画廊目录防主检出兜底泄入）；boot 计数受控基线
+  语义（worktree 组内 36/20→38/21=+2/+1；组构成差——auto-os-config/
+  auto-kanban 检出缺席——须同组对照，禁跨组直比）；策展恰等断言 16 即
+  退策展回归载体（022-kanban 出、不增不减）。
+
+（P008-1/P008-2 落 `.autoos/specs.json` architecture/tests 节，merge 轮
+执行；本计划不动 live ledger。）
+
 ## 测试设计
 
 全部新增测试紧贴既有形态（app_registry.rs 真实仓库材料门控单测 +
@@ -337,9 +361,14 @@ vue.rs 同文件 tests mod）：
    标题非裸 id）。
 2. VM 桌面实机：launch `widgets-gallery` 可用（VM 原生形态）；launch
    `ui-gallery` 不崩桌面（占位页或可用均可，见 §详细设计 5）。
-3. Vue desktop-host 生成：输出含 `extra root: ui-gallery`，注册表含
-   ui-gallery 且可 launch；widgets-gallery 不在（render 过滤，设计
-   行为）。
+3. Vue desktop-host 生成：输出含 `extra root: ui-gallery`，注册面登记
+   ui-gallery（extra root 日志 + 单测断言）；widgets-gallery 不在（render
+   过滤，设计行为）。
+   **（2026-09-11 用户裁定修正）**：原后半"注册表含 ui-gallery 且可
+   launch"按待澄清④裁定 amend——vue desktop-host 前台 materialize 受
+   Plan 465 登记 v1 限制（`@/ext/` 导入者跳过）约束，ui-gallery 不入
+   apps-registry.ts；画廊全功能体验走 VM 轨（实机已证 launch 后真渲染
+   内容页，非占位页）。ext 物化立 KNOWN-DEBT 候选（详见复审记录 F3）。
 4. `shell.apps.scan_galleries=false` 后 VM 轨两画廊消失（单测 +
    可选实机）。
 5. 门禁：`cargo check -p auto-lang -p auto-man` 触及文件零新警告；
@@ -430,6 +459,78 @@ vue.rs 同文件 tests mod）：
 
 ## 复审记录
 
+### 复审记录（2026-09-11，/auto-plan:review 轮）
+
+`stage: review | plan_id: PLAN-008 | plan_revision: r2（执行重锚定案 +
+验收 3 修正，2026-09-11 用户裁定）| outcome: pass | reviewed_commit:
+auto-os 2c012a3 / auto-lang 45ae96897（两 worktree 复核时点干净无脏区）
+| base_commit: auto-os a8d7450 / auto-lang 622edfdd9 |
+dependency_revisions: auto-down 1557a39（os-008-dev，零改动）|
+spec_inputs: .autoos/specs.json sections@562a7cd（goals 节空）|
+acceptance_results: AC1 pass / AC2 pass / AC3 pass（r2 修正后口径）/
+AC4 pass / AC5 pass / AC6 pass | findings: F1-F3 全 info 级非阻塞
+（见下）| evidence: docs/plans/evidence/578/（复审轮自主复现 + 新增
+launcher-open-21apps / launch-widgets-gallery-vm / launch-ui-gallery-vm
+三截图与 iced-scan-off.log）| next: /auto-plan:merge`
+
+**独立性声明**：复审与实现在同一会话承载（无独立复审会话授权）——结论
+按技能要求自工件重构，非执行者摘要转述：全量门禁 `cargo tf
+--no-fail-fast` 复审档重跑 **3506/3506 全绿**（worktree，commit 后重跑）；
+iced 轨受控对照、AC4 存储关断、双 launch 腿均复审轮**新boot 实机**复现
+（AUTOUI_MCP_PORT=9348 + AUTOUI_ACCEPTANCE=1 验收注入通道 + 存储隔离）；
+vue 轨日志复用自 work 轮，理由=运行时点与提交内容逐字节一致（先跑后
+commit，无中间改动）。
+
+**验收逐条**：
+- **AC1 pass**：受控基线 `36 (20)` → 新 `38 (21)` = +2/+1 精确
+  （iced-baseline-os008group.log vs iced-new-os008.log）；launcher 实机
+  截图徽标 **"1 / 21 apps"**（=16 C 档 + 3 容器 + 2 画廊，含 kanban 应
+  为 22——计数徽标即视觉面算术铁证）。行级目视（两画廊行在列表中的
+  像素）→ 用户快核腿：launcher 覆盖层输入/键盘/handler 三条注入途径
+  均作用域受限（MCP 输入定位根组件；ApplyFilter 入队未改过滤态），沿
+  472/478 headless 指针先例成文。
+- **AC2 pass（超预期）**：bus `launch\twidgets-gallery` → VM 原生窗
+  **完整渲染**（Overview/Layout 侧栏 + "v1.0 — 61 Widgets" hero，截图）；
+  bus `launch\tui-gallery` → **真内容页渲染**（"UI Gallery" 标题 +
+  002-counter 教程卡片，非占位页——原设计按 §详细设计 5 只要求不崩），
+  桌面存活（state 可读、launcher/dock 正常）。
+- **AC3 pass（r2 修正口径）**：`✓ extra root: ui-gallery` 精确命中 +
+  `desktop_extra_app_roots_default_includes_galleries` 单测；widgets-
+  gallery render 过滤缺席=设计行为；前台 materialize 受 Plan 465 v1
+  限制——按 ④ 裁定 amend 并立 KNOWN-DEBT 候选（F3）。
+- **AC4 pass**：单测（参数化开关语义）+ **实机**：seed
+  `shell.apps.scan_galleries=false` → boot `36 (19)`（画廊在时 38/21）
+  ——iced-scan-off.log。
+- **AC5 pass**：scoped 滤串全绿（work 轮）+ 复审档 `cargo tf
+  --no-fail-fast` 3506/3506 全绿 + `desktop.sh` bash -n / `desktop.ps1`
+  PSParser 双语法门过 + 触及文件零新警告（vue.rs:5561 mutable 警告=
+  master 5556 既有位移，主检出对照实证）。
+- **AC6 pass**：策展恰等断言 16（恰等特性双向钉死）+ `≥33` 扫描数不
+  变（scan_examples_ui 2/2）；vue 注册表无 022-kanban（v1 skip 既有）；
+  VM 轨 022 退策展（boot 计数 −1 可见）+ auto-kanban manifest 挂载
+  （主检出组合 baseline 日志在案；os-008 组内无 auto-kanban 检出=
+  solo 语义，与 P009-3 既有注记同律）。行级目视并入 AC1 用户腿。
+
+**Findings（全 info 级非阻塞，无 reopen 项）**：
+- **F1** vue.rs extra-root skip 文案 "no entry .at" 对 render 过滤跳过
+  同型复用（既有措辞混用）——顺手修候选，不属本计划 scope。
+- **F2** `ffi_dual_019_dep_layout_invariants` 在 1959 并行满载下偶发
+  失败、隔离复跑即绿（master 同绿）——既有并行干扰 flake，与本计划零
+  交集；框架侧观察项。
+- **F3** KNOWN-DEBT 候选：desktop-host ext 依赖 app 物化（Plan 465 v1
+  限制扩展；ui-gallery 首例消费方）——④ 裁定随批登记。
+
+**Spec delta 复核**：`### 规范增量` P008-1（画廊根契约：解析序锚/开关/
+双轨 parity/opt-out 可见性）与 P008-2（验证矩阵 + 受控基线语义）按验证
+后行为成文，无与既有 canonical 知识冲突（P009-3 的 38/22 与 36/20 组内
+solo 语义注记正交互容）；`new_spec_components: [P008-1, P008-2]`，
+`supersedes_spec_components: []`，`touched_goals: []`（auto-os 无
+canonical goals 文档，frontmatter 附空 Impact 说明）。ledger 落账归
+merge 轮。
+
+**状态**：`executing → reviewed`。下一步 `/auto-plan:merge`（worktree
+组保留至 merge 清理；merge 前置含 ledger P008-1/P008-2 落账）。
+
 ### work 交接（2026-09-11，/auto-plan:work 轮）
 
 `stage: work | plan_id: PLAN-008 | plan_revision: 执行重锚定案（2026-09-11）
@@ -465,15 +566,11 @@ v1 限制（needs ext files）拦住，非本计划回归——待澄清④用�
    桌面跑起来 + ③能够展示两个 gallery——其中③由本计划在新桌面交付
    （执行链：579 → Stage B → **578** → auto-ui 独立讨论），满足后独立
    立项讨论，届时零返工跟随迁置。
-4. **（2026-09-11 work 轮新增）验收 3 后半的处置裁定**：vue desktop-host
-   生成器对 `@/ext/` 导入者按 Plan 465 登记的 v1 限制跳过（"needs ext
-   files"）——ui-gallery（settings dep 形态）扫描面登记 ✓
-   （`✓ extra root: ui-gallery`）但前台 apps-registry.ts 无条目、不可
-   launch。两读待用户裁定：① amend 验收 3 后半为"extra root 登记 +
-   v1 限制注记"（gallery 全功能体验改走 VM 轨/独立窗口形态，§详细设计 5
-   的"全功能体验走 Vue 轨"假设同步修正）；② 另立专项让 desktop-host
-   materialize ext 依赖 app（Plan 465 registered-limitation 扩展，超出
-   本计划授权范围）。另记两则小注：⚠ "no entry .at" 文案对 render 过滤
-   跳过同型复用（既有措辞混用，可顺手修）；022-kanban 在 vue 轨系 v1
-   "needs API client" 既有跳过（从未上过 vue 桌面），验收 6 vue 腿自然
-   成立。
+4. **（2026-09-11 work 轮提出，同日 review 轮用户裁定销号）验收 3 后半
+   处置**：裁定 **Amend 验收**——验收 3 已按裁定修正（见该条注记）；
+   ext-materialize 立 KNOWN-DEBT 候选（候选登记：vue desktop-host 生成器
+   对 `@/ext/` 导入 app 的物化能力，Plan 465 registered-limitation 扩展；
+   ui-gallery 为首例消费方）。小注两则随复审记录归档：⚠ "no entry .at"
+   文案对 render 过滤跳过同型复用（既有措辞混用，顺手修候选）；
+   022-kanban 在 vue 轨系 v1 "needs API client" 既有跳过，验收 6 vue 腿
+   自然成立。

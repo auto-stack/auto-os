@@ -1,8 +1,10 @@
-# PLAN-008 (origin 578) 证据索引 — 2026-09-11 work 轮
+# PLAN-008 (origin 578) 证据索引 — 2026-09-11 work + review 轮
 
 执行环境：worktree 组 `.wt/os-008/{auto-os,auto-lang,auto-down}`（分支均
 `os-008-dev`；auto-os base `a8d7450` / auto-lang base `622edfdd9`）。
 提交：auto-lang `45ae96897`、auto-os `2c012a3`。
+复审轮：同基线自主复现（AUTOUI_MCP_PORT=9348 + AUTOUI_ACCEPTANCE=1 +
+AUTO_VM_STORAGE_FILE 存储隔离），`cargo tf --no-fail-fast` 3506/3506 全绿。
 
 ## T6 iced 轨（VM 桌面）
 
@@ -42,10 +44,22 @@ desktop-visible**（画廊 +2/+2，022-kanban 退策展 −1），与计划推�
   完成标志；产物 `.wt/os-008/auto-lang/examples/desktop-host/gen/front/vue/
   src/apps-registry.ts`（grep 无 ui-gallery/widgets-gallery/022-kanban）。
 
-## 实机交互腿（待用户复核，沿 472/478 先例 headless 指针成文）
+## 实机腿（复审轮已自主复现 + 残余用户快核）
 
-- 图标格/launcher 中 UI Gallery（image 图标）/Widgets Gallery（layout-grid
-  图标）标题非裸 id 的目视确认。
-- launch `widgets-gallery`（VM 原生）可用；launch `ui-gallery` 不崩桌面。
-- `shell.apps.scan_galleries=false` 关断实机（单测已过：
-  `gallery_extra_roots_scan_galleries_off`）。
+复审轮经验收注入通道（autoui_desktop bus/handler）自主完成：
+- `launcher-open-21apps.png`——launcher 全列表徽标 **"1 / 21 apps"**
+  （16 C 档 + 3 容器 + 2 画廊；含 kanban 应为 22——视觉面算术铁证）。
+- `launch-widgets-gallery-vm.png`——bus `launch\twidgets-gallery`：VM
+  原生窗完整渲染（Overview/Layout 侧栏 + 61 Widgets hero）。AC2 ✓
+- `launch-ui-gallery-vm.png`——bus `launch\tui-gallery`：真内容页渲染
+  （UI Gallery 标题 + 002-counter 教程卡片，非占位页），桌面存活。AC2 ✓
+- `iced-scan-off.log`——seed `shell.apps.scan_galleries=false` 后 boot
+  `36 entries (19 desktop-visible)`（画廊在时 38/21）。AC4 实机 ✓
+
+残余用户快核腿（秒级，非阻塞）：
+- launcher 列表滚动至尾部，目视两画廊行（UI Gallery / Widgets Gallery
+  标题行）——MCP 输入/键盘/ApplyFilter handler 三条注入途径均作用域
+  受限（根组件），行级像素留用户。
+- 桌面图标格（非 launcher）中 image/layout-grid 图标形态目视。
+
+（原始 work 轮实机交互腿记录见下，已被复审轮自主复现取代大半。）
