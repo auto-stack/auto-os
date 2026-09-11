@@ -249,6 +249,9 @@ dock 条目等处的存量发丝框另行登记），菜单项按钮显式 `vari
       grid 双形态）、卡片内点击→仅 ApplyFilter 不关闭
       （n6d_launcher.log/n6e_card.log + 截图）；switcher 保持不外点关
       （Ctrl+Tab 手势流惯例），通知中心同改留 KNOWN-DEBT 候选。
+      [同步注记] 用户实机环境=os-011 组构建（PLAN-011 修 P010-F1 中），
+      launcher.at 已 cherry-pick 至 os-011-dev auto-os `15f90be`（运行时
+      加载免重建）；os-010 组构建同步验证通过（n6d/n6e 全判据）。
 
 ## 复审记录
 
