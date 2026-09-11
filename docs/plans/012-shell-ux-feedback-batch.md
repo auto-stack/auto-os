@@ -1,5 +1,6 @@
 ---
 plan_id: PLAN-012
+plan_revision: 2              # rev2 = 追加问题7（图标居中 + 任务栏状态指示，2026-09-11）
 status: drafting               # drafting → executing → execution_done → reviewed → archived
 feature_name: shell-ux-feedback-batch
 author: [zhaopuming]
@@ -15,14 +16,14 @@ affects: [auto-lang/ui/session.rs, auto-lang/ui/iced/renderer.rs, auto-lang/ui/d
           auto-lang/schema/projection-protocol-v1.md, shell/shell.at, shell/desktop.at,
           shell/notification_center.at, auto-os-config/auto/src/front]
 current_step: 0
-total_steps: 11
+total_steps: 14
 ---
 
 # [PLAN-012] shell-ux-feedback-batch
 
 ## 0. 变更摘要
 
-用户实机体验反馈批（2026-09-11，六项，含截图一）：
+用户实机体验反馈批（2026-09-11，rev1 六项 + rev2 追加一项，截图四张）：
 
 | # | 问题 | 根因调查结论（详见 §4） | 工作面 |
 |---|------|------------------------|--------|
@@ -32,6 +33,7 @@ total_steps: 11
 | 4 | dock 默认 calc/todo/notes 应去默认、与运行窗条目合并、增固定/取消固定 | `__wm_wins` 投影不排除 pinned 应用→重复显示；`set_dock_pinned` 动词已有（540 T3）；缺省三枚硬编码于 `DEFAULT_DOCK_PINNED`；代码无分隔符元素（两段 for 循环视觉分组） | shell pack + auto-lang 宿主 |
 | 5 | 桌面图标间距过大、不可拖拽/编辑 | `grid (cols: 8)` 均分整行宽→格距被拉伸；DSL v1 无拖拽/无图标位置存储 | shell pack + auto-lang 宿主（含有界调查） |
 | 6 | Launcher 列表显示 launcher 自身 | `summon_launcher` 全量注入 `registry_entries`，无排除 | auto-lang 宿主（一行过滤） |
+| 7 | 桌面/任务栏图标字形偏左上不居中；任务栏图标缺"开/关/聚焦"状态指示 | 字形渲染共享 lucide 出口但**两处出口**容器约束不一致（svgdoc 路径约束外层 container、lucide 路径裸返回）；状态面：运行点恒主色无聚焦区分、聚焦竖条被感知为"分隔符"、右侧开关型图标无打开态高亮 | auto-lang 渲染器（居中）+ shell pack（状态样式）+ 宿主（`__wm_notes_visible` 投影） |
 
 跨仓计划：主导仓 = 本仓（auto-os，桌面程序归属），改动落 **auto-os `shell/`**
 pack、**auto-lang `crates/`**（宿主/渲染器）、**auto-os-config**（仅核对，预判
@@ -51,6 +53,10 @@ pack、**auto-lang `crates/`**（宿主/渲染器）、**auto-os-config**（仅�
 5. **G5** 桌面图标紧凑排布（贴左上、格距≈格尺寸）；拖拽换位可用（有界调查
    后按决策实施；重命名编辑 v1 非目标）。
 6. **G6** launcher palette/grid 不再列出 launcher 自身。
+7. **G7** 图标字形在格/钮内居中（桌面 chip 与任务栏按钮双面）；任务栏状态
+   指示定型：左侧 app 图标三态（关闭无条 / 打开灰条 / 聚焦主色条+底色
+   高亮，Windows 11 形态），右侧开关型图标两态（面板/窗打开 = 底色常驻
+   高亮，关闭 = 默认）。
 
 非目标（v1）：通知横幅（toast）样式重做；per-window 最小化进 pinned 图标
 菜单（延后）；桌面图标重命名；os-config 插件配置内容本身的加载速度优化；
@@ -95,8 +101,9 @@ snapshot.rs 逐窗快照缓存（SWR），按 `VWinState.rect` 缩放贴合分�
 
 ### 4.1 授权与范围
 
-- 授权来源：用户 2026-09-11 实机反馈原文六项（本计划 §0 表格即原文归纳）
-  + 截图一（通知面板贴顶实拍）。
+- 授权来源：用户 2026-09-11 实机反馈原文（rev1 六项 + rev2 追加 #7；
+  本计划 §0 表格即原文归纳）+ 截图四张（通知面板贴顶、本机任务栏/桌面、
+  Win11 任务栏底条、Win11 快速设置 flyout 高亮）。
 - 允许仓/动作：auto-os（shell pack + docs）、auto-lang（crates/ + assets
   同步）、auto-os-config（只读核对）。worktree 红线遵守 AGENTS §2
   （`bash D:/autostack/wt-guard.sh` 先行）。
@@ -192,9 +199,56 @@ snapshot.rs 逐窗快照缓存（SWR），按 `VWinState.rect` 缩放贴合分�
   `"-launcher"` 结尾（session.rs:284 注，441 预订 028-launcher）——
   注入处按同规则过滤即可，**不影响** `launcher_entry` 发现链。
 
+**#7 图标居中 + 任务栏状态指示（2026-09-11 rev2 追加）**
+
+- **组件关系（用户问询"是否统一组件"）**：字形渲染器共享、包装层各异。
+  两面的字形最终都走 `lucide:` 前缀的 **`AbstractView::Image` 出口**
+  （renderer.rs:4864-4940：svg 画时着色 + `container(svg_widget)` 返回）；
+  但进入该出口的包装不同——任务栏 = `button (icon:)` prop 的按钮内嵌
+  路径（renderer.rs:3448 起，icon px 随按钮字号，svg 直挂按钮内容），
+  桌面 chip = desktop.at:101-106 手工 col 底块 + `icon (name:)`（
+  aura_view_builder.rs:6190 `convert_image_or_icon` → `View::Image`）。
+  另有第三处 lucide 出口（svgdoc 内联路径 renderer.rs:4997 注）——
+  **svgdoc 路径显式约束外层 container 尺寸（"Svg size_hint 默认 Fill →
+  container 撑满行内剩余宽"），lucide 路径（:4937）裸返回未约束
+  container**——同族不一致是"字形偏左上"的头号嫌疑（container 被撑大后
+  字形按 Contain 落位偏移）。像素级定案需实机探针（W7-T1），修复点=
+  共享出口（单点修复两面同愈）。
+- **状态指示现状**：
+  - 左侧：pinned 图标运行点 `h-1 w-6 bg-primary` 恒主色（shell.at:149，
+    无聚焦/非聚焦区分）；窗口条目聚焦 = 条目**左侧**竖条
+    `w-0.5 h-5 bg-primary`（shell.at:187-189）——实机截图中被感知为
+    "分隔符"（与 #4 的分隔符反馈同源）；聚焦无底色高亮。
+  - 右侧：开关型图标（切换器/铃铛/齿轮/电源）无打开态——面板开着时
+    图标外观与关闭态全同。
+  - 状态数据可达性：左三态 shell 可自算（`__wm_wins` 有
+    `focused`/`app`，`__wm_running` 有运行集）；切换器/电源 = shell
+    本地态（`switcher_open`/`shutdown_ask`）；齿轮 = `__wm_wins` 存在
+    `app=="os-config"` 条目即开（W1 落地后隐藏窗被投影排除，语义正好
+    = "关闭"）；**铃铛缺口**：通知面板 visible 在宿主 overlay 组件上，
+    shell 不可见 → 需投影新字段 `__wm_notes_visible`（"1"/""，
+    `__wm_notes_unread` 同型，随协议 v1.6）。
+- **跨平台对标（用户问询）**：
+  - **Windows 11**（用户截图 2/3）：左侧 app 图标底条三态——灰条=
+    打开非聚焦、主色条=聚焦、无条=关闭（仅固定图标有此态）；聚焦附加
+    底色高亮（与 hover 同款）；右侧 flyout（快速设置）打开 = 图标底色
+    常驻高亮。信息密度最高。
+  - **macOS**：Dock 运行 app 图标下方小点/短横线，**不区分前台后台**
+    （聚焦信息由菜单栏 app 名承担）；Dock 无聚焦底色高亮；两态而非
+    三态；"固定未运行"与普通未运行无视觉差。
+  - **Android / Material 3**：手机无持久任务栏；大屏 shelf 运行 app =
+    图标下短横线（macOS 同型两态）；Material 3 导航组件的选中态 =
+    药丸指示条 + tonal 底色，语义是"选中/未选中"而非"打开/聚焦/关闭"
+    三态；未读走徽标（notification dot）。
+  - **裁定**：采纳用户提议的 **Windows 11 方案**——三态信息最全、
+    与本 shell 既有词汇（运行点/主色 accent/hover 底）同构，改造成本
+    最低；macOS 方案丢聚焦信息、Material 方案无"固定未运行"表达，
+    均不满足 #7 需求。右侧开关型用底色常驻高亮（与 hover 样式一致，
+    用户截图 3 同款）。
+
 ### 4.3 相邻在途计划
 
-- PLAN-002（desktop-ux-followups，executing）：滚动跟踪计划，本批六项
+- PLAN-002（desktop-ux-followups，executing）：滚动跟踪计划，本批七项
   独立成册不入其清单；W2 锚定修复若踩到其 A1（popover 首开偏左）同族
   基建，两计划互链。
 - PLAN-010（popover overlay dismiss，已归档）：N6d 外点关闭模式 = 本计划
@@ -288,7 +342,9 @@ snapshot.rs 逐窗快照缓存（SWR），按 `VWinState.rect` 缩放贴合分�
    - 未固定运行窗右键菜单（既有三动作下）追加「固定到任务栏」
      （`dock_pin`）。
    - 视觉：合并后单组循环；两段循环间无分隔元素（§4.2 #4）——实机
-     截图复核入 AC-07 证据。
+     截图复核入 AC-07 证据。**聚焦左竖条随本批退役**（shell.at:187-189
+     `w-0.5 h-5` 竖条删除——实机被感知为"分隔符"，聚焦语义由 W7 的
+     底条+底色高亮承接）。
 4. **缺省置空**：`DEFAULT_DOCK_PINNED` → `[]`；config load 语义修：
    键缺席 → 空（不再回退三枚）；显式空串 → 空。存量用户 config.at
    已写三枚 → 保持（可自行取消固定）。README/设置页文案同步
@@ -323,6 +379,36 @@ e.id.ends_with("-launcher"))`（441 规则镜像，单点）；`launcher_entry`
 
 验收锚点：AC-09。
 
+### W7 图标居中 + 任务栏状态指示（G7，rev2 追加）
+
+1. **字形居中修复（共享出口单点）**：
+   - T12-T1 实机探针定案：任务栏 `button (icon:)` 内嵌路径
+     （renderer.rs:3448）与桌面 chip 的 `AbstractView::Image` lucide
+     出口（:4937）各拍一张几何（DEBUG 门控打印 svg 尺寸/容器 bounds
+     即可），确认"偏左上"是 container 未约束（svgdoc 同族，
+     :4997 注）还是按钮内容对齐臂缺省。
+   - T12-T2 修复：lucide 出口对齐 svgdoc 路径——显式 w/h 传导到外层
+     container + `center_x/center_y`；按钮内嵌路径按探针结论补对齐。
+     单点修双面（桌面 chip + 任务栏钮），launcher 文本字形面不受影响。
+2. **左侧 app 图标三态（Windows 11 底条形态）**：
+   - 循环重构随 W4 合并后单组循环做：每图标底条状态 =
+     聚焦（`__wm_wins` 存在 `w.app==id && w.focused=="1"`）→
+     `h-1 w-6 bg-primary` 主色条；否则运行（`__wm_running` contains）
+     → `h-1 w-6 bg-muted-foreground/60` 灰条；关闭 → 无条。
+   - 聚焦附加底色高亮：按钮底 `bg-foreground/10` 常驻（与 hover 同款
+     ——用户截图 2 形态；hover 恒亮等价叠加无冲突）。
+   - pinned 未运行图标照常显示（无条）——"固定未运行"可感知性由
+     图标本身在场表达（Windows 同语义）。
+3. **右侧开关型两态**：
+   - 切换器钮：`switcher_open=="1"` → 底 `bg-foreground/10`；电源钮：
+     `shutdown_ask=="1"` 同款（本地态，零宿主改动）。
+   - 齿轮钮：`__wm_wins` 存在 `w.app=="os-config"` 条目 → 高亮
+     （W1 hide 落地后隐藏即投影排除，语义自洽）。
+   - 铃铛钮：宿主投影 `__wm_notes_visible`（sync 投影新增字段，
+     "1"/""；指纹并入 notes 段尾部 `:v` 防 miss 刷新）→ 高亮。
+     协议面随 SD-01 v1.6 一并落。
+4. Vue 轨同帧核对（双端纪律）：底条/高亮/居中三件截图对照。
+
 ### 规范增量
 
 本仓无 `docs/specs/` 目录——规范事实源 = `.autoos/specs.json` 台账 +
@@ -331,11 +417,12 @@ auto-lang `schema/projection-protocol-v1.md`（shell 接缝合同）。增量
 
 | delta_id | 增/改 | 目标 | before/after 规则 | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | auto-lang schema/projection-protocol-v1.md（动词词表） | v1.5 → v1.6：增 `dock_pin\t<id>` / `dock_unpin\t<id>`；投影面增 `__dock_pinned_csv`（",csv," 串） | shell 侧无法读 Obj 数组做 csv 手术（B12）；窄动词宿主侧增删 | AC-07 |
+| SD-01 | add | auto-lang schema/projection-protocol-v1.md（动词词表） | v1.5 → v1.6：增 `dock_pin\t<id>` / `dock_unpin\t<id>`；投影面增 `__dock_pinned_csv`（",csv," 串）与 `__wm_notes_visible`（"1"/""，notes 指纹段扩 `:v` 尾标） | shell 侧无法读 Obj 数组做 csv 手术（B12）；窄动词宿主侧增删；铃铛打开态唯一事实源在宿主 overlay | AC-07/AC-12 |
 | SD-02 | add | auto-lang schema/projection-protocol-v1.md（DSL 合同面） | 合同面清单增 `workspace_preview (ws, fallback)` 布局件（宿主渲染臂合成，协议零字段增量） | DSL 无重叠布局，整桌面预览必须宿主 widget | AC-06 |
 | SD-03 | modify | .autoos/specs.json（architecture 节） | dock_pinned 缺省三枚 → 缺省空；"空表回退缺省"语义退役（缺键=显式空=空表） | 用户裁定默认不放 calc/todo/notes | AC-07 |
 | SD-04 | add | .autoos/specs.json（designs 节） | 通知面板关闭模型：面板=通知中心语义（外点/×/Esc 人工关，无定时）；toast=banner 语义（TTL 自动） | macOS 对标定型（§4.2 #2） | AC-03/AC-04 |
 | SD-05 | add | .autoos/specs.json（architecture 节） | os-config 窗 close→hide 常驻语义（registry_id==os-config 拦截臂） | 消除重复 launch 全链卡顿 | AC-01/AC-02 |
+| SD-06 | add | .autoos/specs.json（designs 节） | 任务栏状态指示定型：左 app 图标三态底条（无=关闭/灰=打开/主色=聚焦+聚焦底色高亮，聚焦左竖条退役）；右开关型两态底色高亮（切换器/铃铛/齿轮/电源）；= Windows 11 形态裁定（对标记录 §4.2 #7） | 用户 #7 提议采纳；三态信息密度最高且与既有词汇同构 | AC-10/AC-11/AC-12 |
 
 ## 6. 测试设计
 
@@ -350,6 +437,9 @@ auto-lang `schema/projection-protocol-v1.md`（shell 接缝合同）。增量
     断言）；config load 空表语义单测（缺键/显式空/非空三态）；
     `__dock_pinned_csv` 投影断言。
   - W6：注入过滤 fence 测试。
+  - W7：lucide 出口 container 约束单测（显式 w/h 传导 + 居中对齐断言，
+    svgdoc 路径同族护栏）；`__wm_notes_visible` 投影断言（指纹段刷新
+    触达）。
 - **shell pack 编译门**：`pack_tests::shell_packs_compile`（随 cargo t）
   + `shell_pack_hash_parity_with_embedded_snapshot`（sync 后四件全等）。
 - **实机/双端核验**（autoui-verifier 技能，vm 轨为主 + Vue 轨同帧）：
@@ -369,14 +459,19 @@ auto-lang `schema/projection-protocol-v1.md`（shell 接缝合同）。增量
 | AC-07 | dock 单组 + 固定/取消固定 | 实机：默认 dock 无固定项；运行 calc 右键固定→图标并入左组无重复；取消固定→回落窗口条目；重启后固定态保持 | 全链行为符合；config.at 落盘正确 |
 | AC-08 | 桌面图标紧凑 + 可拖拽 | 实机截图 + 拖拽操作 | 图标群贴左上、格距紧凑；拖拽按 W5-T1 决策工件验收（v1 至少支持拖拽换位且位置重启保持） |
 | AC-09 | launcher 不自列 | 实机开 launcher（palette+grid 两形态） | 列表/网格均无 launcher 自身条目；启动其他 app 正常 |
+| AC-10 | 图标字形居中 | 实机截图放大对照（桌面 chip + 任务栏钮 + 右侧系统钮） | 字形在各容器的包围盒内水平/垂直居中，双面一致；Vue 轨同帧无回归 |
+| AC-11 | 左侧 app 图标三态 | 实机：固定未运行/运行非聚焦/聚焦 三种 app 各一，截图 | 无条 / 灰条 / 主色条+底色高亮 三态可辨；聚焦左竖条不复存在 |
+| AC-12 | 右侧开关型两态 | 实机：逐个开/关 切换器面板、通知面板、os-config 窗、关机确认 | 打开态图标底色常驻高亮，关闭即回落；状态与面板实际可见性一致（含外点关闭路径） |
 
 ## 8. 执行步骤
 
 任务依赖：T1→T2（W1 内）；T4→T5→T6（W2 内）；T7→T8（W3 内）；
-T9 单线；T10→T11（W5 内）；T3 单线。跨包无依赖，可分组平铺
+T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**（同一
+循环区重构，随 T9 合并落地）；T14 的投影面与 T9 同区（sync 投影），
+先后落避免冲突。跨包无依赖，可分组平铺
 （worktree 布局沿 Plan 529：`.wt/os-012/auto-os`；auto-lang 侧改动
 随包同行——**两仓同 plan 分支纪律**，merge 阶段按 PLAN-011 先例双仓
-收口）。shell pack 改动包（T4/T7/T9/T10）每包收尾跑
+收口）。shell pack 改动包（T4/T7/T9/T10/T13）每包收尾跑
 `python scripts/shell-pack-sync.py` + hash parity。
 
 | ID | 任务 | 文件/符号 | 产出/验证 | AC |
@@ -392,6 +487,9 @@ T9 单线；T10→T11（W5 内）；T3 单线。跨包无依赖，可分组平�
 | T9 | W4 dock 合并 + pin/unpin：协议 v1.6 两动词 + `__dock_pinned_csv` 投影 + shell.at 菜单组 + 缺省置空与空表语义修 | auto-lang session.rs（枚举/encode/parse/执行臂）、renderer.rs（sync 投影、execute_set_dock_pinned 邻位）、desktop_config.rs（DEFAULT_DOCK_PINNED/load）、shell.at（:141-231 循环+菜单） | cargo t 四组单测；实机 AC-07；SD-01/03 回填 | AC-07 |
 | T10 | W5 桌面图标紧凑化 | auto-os shell/desktop.at（:82 grid 容器定宽） | 实机截图前后对照（AC-08 前半）；pack sync | AC-08 |
 | T11 | W5 拖拽：T1 有界调查决策工件 → 按决策实施（位置存储+注入+absolute 渲染+拖拽态机+持久化） | scratch/p012/w5-dnd.md；auto-lang desktop_config.rs 或 storage 键、renderer.rs 注入臂；shell/desktop.at | 决策工件 + 实机 AC-08 后半 | AC-08 |
+| T12 | W7 字形居中：实机探针定案（两出口几何）→ lucide 出口 container 约束+居中修复（对齐 svgdoc 路径）；按钮内嵌路径按结论补 | auto-lang renderer.rs :4937 出口、:3448 按钮内嵌路径；探针记录 scratch/p012/w7-icon-center.md | cargo t 出口单测；实机 AC-10 双面截图 | AC-10 |
+| T13 | W7 左侧三态：单组循环底条状态机（无/灰/主色）+ 聚焦底色高亮 + 聚焦左竖条退役（与 T9 同 PR 落地） | auto-os shell/shell.at（:141-231 循环区） | 实机 AC-11 三态截图；pack sync + 编译门 | AC-11 |
+| T14 | W7 右侧两态：切换器/电源本地态高亮 + 齿轮 `__wm_wins` 派生 + 铃铛 `__wm_notes_visible` 投影（指纹段扩展） | auto-os shell/shell.at（右侧钮区）；auto-lang renderer.rs sync 投影（notes 段尾 `:v`） | 实机 AC-12 四钮开合截图；cargo t 投影断言 | AC-12 |
 
 每步完成后在任务行追加 `[✅ 已完成 <date>] <证据指针>`。
 
@@ -403,6 +501,14 @@ T9 单线；T10→T11（W5 内）；T3 单线。跨包无依赖，可分组平�
   内可开工（auto-lang crates/ 改动按 Category A 门档）。next: work
   （建议顺序：T3/T9/T10 低风险先行，T1/T4 各含一段实机诊断，T11 受
   决策工件门控）。待澄清两项见 §10，不阻塞 T1/T3/T4/T5/T6/T9/T10 开工。
+- 2026-09-11 rev2（/auto-plan:new 修订，仍 drafting）：追加问题 #7
+  （图标字形居中 + 任务栏状态指示）。调查：字形共享 lucide 出口、
+  两处出口容器约束不一致为偏左上头号嫌疑（§4.2 #7）；状态指示裁定
+  采纳 Windows 11 方案（用户提议；macOS 两态丢聚焦信息、Material 3
+  无"固定未运行"表达，对标记录同节）。设计 W7（§5）、任务 T12-T14、
+  AC-10..12、SD-01 扩（`__wm_notes_visible`）/SD-06 增；total_steps
+  11→14；T13 依赖 T9 同区重构。outcome: pass，next: work（建议顺序
+  追加：T12 可独立先行，T13 随 T9 同 PR）。
 
 ## 10. 待澄清事项
 
