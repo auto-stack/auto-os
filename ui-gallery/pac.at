@@ -8,6 +8,9 @@ description: "AutoUI Gallery - Interactive UI Demo Gallery & Code Tutorials"
 
 scene: "ui"
 render: "vue"
+// PLAN-008：桌面注册表展示字段（launcher/图标格标题与图标）。
+icon: "image"
+title: "UI Gallery"
 front_port: 3049
 window: "1440x900"
 

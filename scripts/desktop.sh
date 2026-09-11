@@ -65,6 +65,11 @@ if [ "$TRACK" = "vue" ]; then
   done
   [ -d "$OS_PARENT/auto-os-config/auto" ] && \
     EXTRA="${EXTRA:+$EXTRA;}$(win_path "$OS_PARENT/auto-os-config/auto")"
+  # PLAN-008：顶层画廊两件随 EXTRA 显式注入（widgets-gallery render=vm 由
+  # vue 过滤自然排除——设计行为）。
+  for g in ui-gallery widgets-gallery; do
+    [ -d "$OS_ROOT/$g" ] && EXTRA="${EXTRA:+$EXTRA;}$(win_path "$OS_ROOT/$g")"
+  done
   export AUTO_DESKTOP_APPS_EXTRA="$EXTRA"
   # 复审补（T1 漏注）：vue 轨主注册表目录缺省解析到 <project>/examples/ui
   # （desktop-host 下不存在，vue.rs desktop_apps_dir 必败）——须显式注入
