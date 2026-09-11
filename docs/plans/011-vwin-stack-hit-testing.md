@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-011
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: vwin-stack-hit-testing
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -9,7 +9,7 @@ plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []        # 预填 SD-01（详见 §5 规范增量），复审定稿
+new_spec_components: ["P011-1"]  # ui/overview.md §已知坑：mouse_area 命中带规则（SD-01，merge 落账）
 touched_goals: []              # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/docs/specs/auto-lang/ui/architecture.md, ui/iced/virtual_window.rs, ui/iced/renderer.rs]
@@ -24,7 +24,8 @@ total_steps: 5
 > （t5b_blank.log / t5c_nofloat.log / n6b_repro.log）与本计划 §4。
 > 用户裁定（2026-09-11）：单独立项为 vwin/Stack 命中测试专项（否决并入
 > PLAN-002 收尾选项）。两计划互链：本计划交付后 PLAN-010 T5 空白腿与
-> PLAN-002 C4 解蔽续验。
+> PLAN-002 C4 解蔽续验。**【复审定案 2026-09-11】**levitate/悬垂假设证伪，
+> 真根因与修复见"详细设计回填"；outcome: pass → reviewed。
 
 # [PLAN-011] vwin-stack-hit-testing
 
@@ -179,7 +180,7 @@ AppId(1)/AppId(2) 热重载 45 次贯穿全程=两层 vwin 始终在场）。"�
 
 | delta_id | 操作 | 目标（auto-lang 仓相对路径） | before/after 规则 | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | docs/specs/auto-lang/ui/overview.md（KNOWN-DEBT/持久规则节；复审定稿时若入 architecture.md 一并定） | 新增持久规则："iced mouse_area 命中带=内容盒；DSL mouse-area 的显式尺寸类（w-full/h-full 等）落在外层包装 container，对命中几何 no-op——需要大命中带时必须让内容件自身 Fill（desktop.at P010-F1 先例）；转换器级修复（style 尺寸类进命中带）为 KNOWN-DEBT 候选" | 转换层陷阱属持久规则级知识（P007-1 零高规则同族）；levitate 围栏原案随假设证伪作废 | AC-01, AC-02, AC-04 |
+| SD-01 | add | docs/specs/auto-lang/ui/overview.md §已知坑（L247 节；复审定稿） | 新增持久规则："iced mouse_area 命中带=内容盒；DSL mouse-area 的显式尺寸类（w-full/h-full 等）落在外层包装 container，对命中几何 no-op——需要大命中带时必须让内容件自身 Fill（desktop.at P010-F1 先例）；转换器级修复（style 尺寸类进命中带）为 KNOWN-DEBT 候选" | 转换层陷阱属持久规则级知识（P007-1 零高规则同族）；levitate 围栏原案随假设证伪作废 | AC-01, AC-02, AC-04 |
 
 （spec 权威目录在 auto-lang 仓；本计划落 auto-os，delta 复审定稿时同步
 auto-lang 侧 specs 台账。）
@@ -276,6 +277,46 @@ auto-lang 侧 specs 台账。）
       ④vwin 拖拽/缩放手感。PLAN-010/PLAN-002 回填注记见主检出计划。
 
 ## 复审记录
+
+### 复审（2026-09-11，同会话复审——独立性限制与工件重构声明）
+
+stage: review | plan_id: PLAN-011 | plan_revision: 2 | outcome: **pass** |
+reviewed_commit: auto-os os-011-dev `15f90be`（HEAD；本计划 scope=46a07cf，
+其上 15f90be 为 PLAN-010 N6d 并发件不在本计划 scope）+ auto-lang os-011-dev
+`51eb14b1c` | base_commit: auto-os `eb88c86` / auto-lang `39ce8d789` |
+dependency_revisions: auto-down `afc1cc8`（os-011 组，未改动）|
+spec_inputs: docs/specs/auto-lang/ui/overview.md §已知坑（SD-01 落锚，
+merge 时落账）；SD-01 规则文本对 renderer.rs MouseArea 双臂
+（4265/6323→build_container→apply_container_style）实读复核一致
+
+**独立性声明**：复审与执行同会话，判定按技能要求重构自工件而非执行者
+摘要——六项证据行号逐一独立复核命中（t1_matrix_surface_only=0 事件证伪腿、
+t2_probe_FULL.log:132/154 条带判别、t3_verify.log:134/156/238、
+t3b_esc.log:192/245、金样 51eb14b1c 内容 diff 目检=内包 col 镜像、
+46a07cf diff 目检=最小结构改造无夹带）。
+
+acceptance_results: AC-01 ✓pass / AC-02 ✓pass / AC-03 ✓pass / AC-04
+✓pass / AC-05 ✓pass / AC-06 ✓pass（6/6）。复审加值门：**cargo tf 复审档
+3480 测试唯 1 红=test_charts_gallery_compiles（P007-6 在案 master 存量，
+零新增）**；tf 档不带 ui-iced（Plan 507 惯例），iced/layout 面由日常档
+--no-fail-fast 22=22 名单级全等收口（f010n/f011n diff 空），组合门完整。
+
+findings:
+- F-R1（非阻塞，范围外）：blank 菜单落屏幕左下（锚=全域+BottomStart 既有
+  语义）——已在待澄清④ 登记 KNOWN-DEBT 候选。
+- F-R2（非阻塞）：拖拽/缩放全程断言合成光标不可靠——t4b/chrome 自动化无
+  判定产物；代码路径零交集（auto-lang diff 仅 assets+金样）+ base 线
+  PLAN-526/002 用户核准沿用，列入用户实机复核清单④。
+- F-R3（记录）：探针脚手架 AUTO_STACK_PROBE 已撤（回归门在撤探针构建上
+  复跑：t4_sanity.log:208 死区 BlankPress 复证），判定表以日志+计划回填
+  为持久档案。
+
+evidence: scratch/p011/（t1_matrix×5/t2_probe/t3_verify/t3b_esc/t3c_strip/
+t4_sanity/t4_interact 日志+截图×4；worktree 移除后以本记录行号摘要为持久
+档案）；回归门命令与结果摘录见 AC 表与详细设计回填节。
+
+next: merge（/auto-plan:merge——合并时先落 PLAN-010 链：os-011-dev 同时
+携带 N6c/N6d 与本计划根修；SD-01 随 merge 落 auto-lang specs 台账）
 
 ### work 交接（2026-09-11）
 
