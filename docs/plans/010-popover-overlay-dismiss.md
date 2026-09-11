@@ -12,8 +12,8 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [ui/iced, virtual_window.rs, popover.rs]   # 受影响的 specs 路径
-current_step: 4
-total_steps: 5
+current_step: 6
+total_steps: 7
 ---
 
 > **来源（PLAN-002 复审发现移交，2026-09-10）**：本计划承接 PLAN-002 C 复核
@@ -31,11 +31,14 @@ total_steps: 5
 > 须先落/同溯 PLAN-002 链，防重复合入。work 交付：auto-lang `8873772ec`、
 > auto-os `58b90b2`。
 >
-> **用户实机复核轮（2026-09-11）**：icon 菜单外点关闭 ✓ 用户确认；新增
-> **N6c**（dock 菜单被 hover-leave 秒关、菜单项不可达）——已修：auto-os
-> `eb88c86` + auto-lang `39ce8d789`（shell.at pin c207f048e5），dock 菜单
-> 统一为 icon 菜单同构（WinMenuClose/HoverLeave 拆分），实机四判据实录
-> n6c_dock_menu.log。新版桌面已交付用户续复核。
+> **用户实机复核轮（2026-09-11）**：icon 菜单外点关闭 ✓ 用户确认；随后
+> 两项复核轮增量，独立成 phase（见执行步骤 Phase 2/3）：
+> - **Phase 2 · N6c**（dock 菜单被 hover-leave 秒关、菜单项不可达）——已
+>   修：auto-os `eb88c86` + auto-lang `39ce8d789`（shell.at pin
+>   c207f048e5），dock 菜单统一为 icon 菜单同构（WinMenuClose/HoverLeave
+>   拆分），实机四判据实录 n6c_dock_menu.log。
+> - **Phase 3 · N6d**（launcher 无外点关闭，用户提议添加）——已修：
+>   auto-os launcher.at 外点 scrim + 卡片守卫 + auto-lang headless 探针。
 
 # [PLAN-010] popover-overlay-dismiss
 
@@ -186,6 +189,8 @@ dock 条目等处的存量发丝框另行登记），菜单项按钮显式 `vari
 
 ## 执行步骤
 
+### Phase 1——N6b/N6a 根修（2026-09-10；auto-lang `8873772ec` + auto-os `58b90b2`）
+
 （原子任务：精确文件路径 + 确切操作 + 验证命令；每步完成后追加
 [✅ 已完成] 一行证据）
 
@@ -211,11 +216,42 @@ dock 条目等处的存量发丝框另行登记），菜单项按钮显式 `vari
       （stash 逐项对照）+ iced-layout-tests 35/35 + a2vue 15/15。
 - [~] T5 实机验收三面（icon/任务栏/空白 外点+Esc）+ PLAN-002 C4/T31
       复验勾销。
-      [部分完成] icon 外点/ESC ✓、dock ESC ✓、N6a 双菜单截图 ✓
-      （t5_acceptance.log + 截图）；空白腿与 PLAN-002 C4/T31 用户复核待
-      用户实机进行——空白右键开菜单在本环境被 P010-F1 遮蔽（见待澄清），
-      修复机制本身已由 headless（BlankClose 提取+闭环）与 icon/dock 实机
-      同构验证。
+      [部分完成] icon 外点/ESC ✓（用户实机确认）、dock ESC ✓、N6a 双菜单
+      截图 ✓（t5_acceptance.log + 截图）；空白腿与 PLAN-002 C4/T31 用户
+      复核待用户实机进行——空白右键开菜单在本环境被 P010-F1 遮蔽（见
+      待澄清），修复机制本身已由 headless（BlankClose 提取+闭环）与
+      icon/dock 实机同构验证。
+
+### Phase 2——N6c dock 菜单与 hover 解耦（2026-09-11 用户复核发现；auto-os `eb88c86` + auto-lang `39ce8d789`，pin c207f048e5）
+
+- [x] T6 dock 右键菜单统一为 icon 菜单同构实现。
+      [✅ 已完成] 根因=onmouseleave/ondismiss 共用 HoverEnd 兼清 win_menu
+      （鼠标移向菜单面板即离开条目 mouse-area→菜单秒关，菜单项不可达，
+      用户实测）。修复：HoverEnd 退役拆 HoverLeave（只清预览态）+
+      WinMenuClose（只清菜单，popover ondismiss 外点/Esc 专用）；hover
+      预览臂加 win_menu=="" 门；native 条目菜单一并统改。测试：
+      desktop_mcp_dock_pager_hover_popovers 按新语义更新+增 N6c 回归断
+      言；实机四判据（WinMenu→HoverLeave 越界→WinFocus 菜单项可达→ESC
+      WinMenuClose）实录 n6c_dock_menu.log + n6c_dock_hover_item.png。
+
+### Phase 3——N6d launcher 外点关闭（2026-09-11 用户提议添加；auto-os launcher.at + auto-lang 探针测试）
+
+- [x] T7 launcher palette/grid 两形态外点关闭。
+      [✅ 已完成] 宿主 launcher_visible() 直读 app visible 态
+      （session.rs:3310）→零宿主改动：palette/grid scrim 包 mouse-area
+      `onclick: .Close`（on_press 捕获；.Close 消息既有）；卡片守卫
+      mouse-area `onclick: .ApplyFilter`（幂等纯重算不动 sel/gsel）+
+      守卫容器 style 与卡片同 footprint（w-full max-w-xl/2xl）——
+      **mouse-area 隐式 Fill col 会破坏 scrim items-center 居中**（实机
+      卡片贴左；headless 探针
+      n6d_launcher_mouse_area_wrap_layout_probe 三结构对拍定位，守卫
+      style 修复后 x=352 复位）。实机判据：外点→Close 到达（palette+
+      grid 双形态）、卡片内点击→仅 ApplyFilter 不关闭
+      （n6d_launcher.log/n6e_card.log + 截图）；switcher 保持不外点关
+      （Ctrl+Tab 手势流惯例），通知中心同改留 KNOWN-DEBT 候选。
+      [同步注记] 用户实机环境=os-011 组构建（PLAN-011 修 P010-F1 中），
+      launcher.at 已 cherry-pick 至 os-011-dev auto-os `15f90be`（运行时
+      加载免重建）；os-010 组构建同步验证通过（n6d/n6e 全判据）。
 
 ## 复审记录
 
@@ -264,7 +300,16 @@ C4/T31）；复核通过后径入 /auto-plan:review
    iced_widget-0.14.2/stack.rs:231），与 S3（图标格穿透成功）、B1（无
    菜单同样聋）全部自洽。归属：vwin/Stack 命中测试专项（非 popover 域），
    建议单独立项或在 PLAN-002 收尾时合并处置。
+   **【2026-09-11 移交回填】**已单独立项 PLAN-011（vwin-stack-hit-testing）
+   并 work 完成：levitate 假设证伪，真根因=mouse_area 命中带为内容盒、
+   desktop.at 空白菜单 popover 锚件命中带仅图标条带高（几何死区）；修复
+   auto-os os-011-dev `46a07cf`，空白腿判据（外点/Esc→BlankClose）已在其
+   线实测全绿——本计划 T5 空白腿与 C4/T31 的用户实机复核随其交付解蔽。
 5. 同击语义注记：外点关闭的那一次点击，MenuClose 于 press 期发布→视图
    重建吃掉同击 release，BlankPress 不与 MenuClose 同击触发（菜单已关=
    用户目标达成）；BlankPress 需下一次独立点击。此为 dismiss+重建时序的
    固有形态，如需"一次点击双投递"须改 overlay 捕获语义（不建议）。
+6. **通知中心外点关闭**（N6d 同构候选，用户裁决项）：通知中心为同型
+   overlay 层，Windows 惯例外点关；switcher 已裁定保持不外点关
+   （Ctrl+Tab 手势流）。候选实现与 N6d 同构（零宿主改动），留复核轮
+   或 KNOWN-DEBT。
