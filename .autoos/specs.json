@@ -133,6 +133,20 @@
           "last_modified": "2026-09-11",
           "title": "桌面注册表画廊根契约 — 架构注记",
           "content": "画廊两件（ui-gallery/widgets-gallery，auto-os 顶层随迁资产）经 resolve_os_top_dir 解析序（AUTO_OS_ROOT env 设置即权威→兄弟 parent/auto-os→主检出 D:/autostack/auto-os）按名探测入桌面注册面 extra roots，双轨同律（vm host_extra_roots / vue desktop_extra_app_roots 缺省臂，三轨 parity 测试钉死）；目录缺席静默跳过（solo 检出不炸）；vm 轨 storage shell.apps.scan_galleries=false 整体关断（对称 scan_siblings，纯函数 gallery_extra_roots_from 参数化），vue 轨关断=AUTO_DESKTOP_APPS_EXTRA 全替换既有语义（desktop 脚本 EXTRA 显式注入画廊两件）；外部自含根 opt-out 缺省可见（PLAN-552 语义），展示字段 pac title:/icon:（image/layout-grid）。锚定不变式：P-5 随迁后画廊与主根示例的共置由解析序承载（apps_dir 兄弟锚退役）。vue 前台 materialize 受 Plan 465 v1 限制（@/ext/ 导入者跳过，ui-gallery 首例）——KNOWN-DEBT 候选 ext-materialize。"
+        },
+        {
+          "id": "P011-1",
+          "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
+          "status": "stable",
+          "related": [
+            "PLAN-011",
+            "PLAN-010",
+            "PLAN-002"
+          ],
+          "created": "2026-09-11",
+          "last_modified": "2026-09-11",
+          "title": "mouse_area 命中带=内容盒持久规则 — 架构注记(SD-01)",
+          "content": "iced mouse_area 命中带恒为内容盒(style 尺寸类只落外层包装 container,对命中几何 no-op)——desktop.at 空白菜单 popover 以全桌面 mouse-area 为锚件时命中带仅图标条带高,条带以下全桌面 BlankPress/BlankMenu 死区(P010-F1)。修复不变式:内容包 w-full h-full col 使命中带随之全屏(锚件几何不变/popover 放置语义不变/视觉零变化,46a07cf 最小结构改造)。规则文本已落 canonical:docs/specs/auto-lang/ui/overview.md §已知坑(SD-01,51eb14b1c 随链折叠 d3527d811)。P010-F1 先例+P007-1 同族互链;转换器级根治(命中带与样式盒解耦)登记 KNOWN-DEBT 候选。"
         }
       ]
     },
@@ -230,6 +244,19 @@
           "id": "P007-R1",
           "title": "os-007 复审记录 — 六项全过（格式漂移已修）",
           "content": "六项验收全过（avatar 渲染像素/触发器 hover 行为双轮/三围栏/breadcrumb ALIVE+68-68/KNOWN-DEBT 三条/tf-tv-iced 对账零新增红）。执行期偏差四项显式在案（props desugar 补臂/Fill 零高与图源超时两根因修复构成验收必要面/病源修正为自名折叠递归/D5 根因同 P530-D1 直接结案非另立）。F1 新增代码 3 处 rustfmt 偏好差异 review 中修正（净漂移与 master 持平 637）,行为零变化+实机对最终 HEAD 重验。独立性声明:执行会话内以工件重建判定。reviewed_commit af07c9d37/auto-os d6a48d2。"
+        },
+        {
+          "id": "P011-R1",
+          "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
+          "status": "stable",
+          "related": [
+            "PLAN-011",
+            "PLAN-010"
+          ],
+          "created": "2026-09-11",
+          "last_modified": "2026-09-11",
+          "title": "vwin-stack-hit-testing 复审 pass + 链折叠复跑门 — 复审注记",
+          "content": "r2 复审 outcome: pass(同会话复审,独立性限制声明,六项证据行号独立复核)——AC-01..06 6/6;tf 3480 唯一红=charts 存量;组合门=f010n/f011n 22=22 名单级全等。链折叠复跑门:os-011-dev→master d3527d811(merge-tree 零冲突,renderer.rs 三方 608/611/链自动归位)+N6d 摘桃 2204274e8;iced 档 183/184(dock_pager_hover_popovers 随链测试更新转绿)+全量失败集 21=21 折叠前基线逐一全等+hash-lock 四件全等。findings:F-R1 blank 菜单落屏幕左下(锚=全域既有语义,KNOWN-DEBT 候选)/F-R2 拖拽缩放合成光标断言不可靠(列入用户实机复核清单)/F-R3 探针已撤回归门在撤探针构建复跑。"
         }
       ]
     }

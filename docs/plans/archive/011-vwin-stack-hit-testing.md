@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-011
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: vwin-stack-hit-testing
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -411,3 +411,21 @@ next: work（建议 worktree 组 `.wt/os-011/` 三仓，auto-os/auto-lang base
    随点击处弹出——需 BlankMenu 事件携带坐标→popover at_point 锚，涉
    mouse-area 事件签名扩展，另立计划/KNOWN-DEBT 候选。无用户基线，不阻
    本计划验收。
+
+### merge 回执续（2026-09-11，r2 解锁——前回执 blocked 项全部闭合）
+
+- **landed ✓→完成**：auto-os `5ce2654`（前回执）+ **auto-lang `d3527d811`**
+  （os-011-dev → master 链折叠；merge-tree 干跑零冲突，renderer.rs 三方
+  ——master 侧 608 CALL_SPEC / 611 SWR+GlobalPress vs 链侧视图臂——自动
+  归位；os-010 线独有 N6d 探针 `2204274e8` 单摘补齐）。折叠后复跑门：
+  iced 档 183/184（`dock_pager_hover_popovers` 随链测试更新转绿，+11 枚
+  链上测试全过）+ 全量档失败集 21=21 与折叠前 master 基线逐一全等 +
+  hash-lock 四件全等（shell=c207f048e5/desktop=36c7413a0b/switcher/
+  notification_center）。
+- **SD-01 landed ✓**：`b9c115a78` 随折叠入 master（docs/specs/auto-lang/
+  ui/overview.md §已知坑）。
+- **ledger_refreshed ✓**：specs.json 落 P011-1（architecture）+ P011-R1
+  （reviews）。
+- **archived ✓**：git mv docs/plans/archive/。
+- **cleaned → 随本提交执行**：os-002/os-010/os-011 双仓 worktree+分支
+  wt-guard 清理（lang-602/607 在途保留）；remaining action ①②③全部闭合。
