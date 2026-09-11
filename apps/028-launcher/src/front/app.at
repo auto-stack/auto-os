@@ -35,6 +35,8 @@ widget App {
         // ---- Plan 503 分类胶囊 ----
         var cat str = "all"         // 当前分类（"all" = 全部）
         var cats = ["all", "tool", "task", "life", "notes", "social", "reading", "media", "data", "system", "game", "editor"]
+        // PLAN-013 W2：零结果分类隐藏——ApplyFilter 期按注册表计数过滤。
+        var cats_visible = ["all"]
 
         // ---- 查询与结果 ----
         var q str = ""
@@ -130,7 +132,7 @@ widget App {
                             // PLAN-526 T38：tag 统一为 all 同款可读样式
                             // （此前未选中 tag muted 前景在深底上不可读，
                             // 用户八轮反馈截图3）。
-                            for c in .cats {
+                            for c in .cats_visible {
                                 button (text: c) {
                                     onclick: .PickCat(c)
                                     style: "h-6 px-2.5 text-xs rounded-full bg-primary/15 text-primary"
@@ -214,6 +216,19 @@ widget App {
                     mouse-area (onclick: .ApplyFilter, style: "w-full max-w-2xl") {
                     col {
                         style: "w-full bg-card/80 border rounded-2xl shadow-2xl p-6"
+                        // PLAN-013 W2：grid 形态保留 search 行（与 palette
+                        // 同一 input 绑定，Tab 切换后持焦不丢）。
+                        row {
+                            style: "flex items-center gap-2 px-4 py-3 border-b"
+                            text "🔍" { style: "text-lg" }
+                            input {
+                                value: .q
+                                oninput: .SetQ
+                                onenter: .Pick
+                                placeholder: "Search apps…"
+                                style: "flex-1 text-lg text-foreground bg-background/50 rounded-lg px-2"
+                            }
+                        }
                         row {
                             style: "flex items-center mb-4"
                             text "All apps" { style: "text-foreground text-sm" }
@@ -352,6 +367,8 @@ widget App {
         // 字段读失效（B12 同族，探针测试钉死），字符串列表下标读保真；
         // ranked/gridrows 行对象为 handler 自建（view 侧读取已证可用）。
         .ApplyFilter -> {
+            // PLAN-013 W2：零结果分类隐藏（注册表计数过滤）。
+            .RebuildCats()
             .ranked = []
             .nres = 0
             var ql str = .q.lower()
@@ -671,12 +688,37 @@ widget App {
         }
 
         // Tab：palette ↔ grid
+        // PLAN-013 W2：可见分类重建——注册表计数 >0 的分类才出 tag。
+        .RebuildCats -> {
+            .cats_visible = ["all"]
+            var ci int = 0
+            while ci < .cats.len() {
+                var c = .cats[ci]
+                if c != "all" {
+                    var cnt int = 0
+                    var ai int = 0
+                    while ai < .apps_names.len() {
+                        if .apps_cats[ai] == c {
+                            cnt = cnt + 1
+                        }
+                        ai = ai + 1
+                    }
+                    if cnt > 0 {
+                        .cats_visible.push(c)
+                    }
+                }
+                ci = ci + 1
+            }
+        }
+
         .SwitchMode -> {
             if .mode == "palette" {
                 .mode = "grid"
             } else {
                 .mode = "palette"
             }
+            // PLAN-013 W2：切视图后 search input 重建——重新请求聚焦。
+            .__focus_input = "1"
         }
 
         // 启动（R11）：写上行总线 + recent + 隐匿。
