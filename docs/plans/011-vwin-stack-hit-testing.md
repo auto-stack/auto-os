@@ -299,6 +299,12 @@ headless 子集 13/13 含金样再生/hash-lock 四件全等）。plan_revision 
 blockers: 无（拖拽/缩放全程断言受合成光标限制，与修复代码路径零交集，
 随用户实机复核清单交付）
 
+concurrent: auto-os os-011-dev 于本计划 work 期间出现用户侧并发提交
+`15f90be`（PLAN-010 N6d launcher 外点关闭，stacked on 46a07cf，祖先关系
+已验证）——本计划全部回归门/实机证据产生于 `46a07cf`+`51eb14b1c` 构建，
+N6d 不触及 desktop.at/desktop_surface 面；合并时 os-011-dev 同时携带
+PLAN-010 N6d 与本计划根修，先落 PLAN-010 链。
+
 next: review（用户实机复核清单：①空白左/右击手感 ②blank 菜单外点/Esc
 ③icon 菜单外点/Esc→勾销 PLAN-002 C4/T31 ④vwin 拖拽/缩放手感；worktree
 保留供复审）
