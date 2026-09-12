@@ -13,7 +13,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: []                   # 本仓 docs/specs/ 缺位（.autoos/specs.json 六节均空）——
                               # 规范落点为 AGENTS.md / README.md，见 §5 规范增量
-current_step: 0
+current_step: 7
 total_steps: 12
 ---
 
@@ -135,17 +135,57 @@ auto-term/app/
 
 ## 详细设计
 
-### Phase 1 设计（T-01 定案后回填本节）
+### Phase 1 设计（T-01 定案，2026-09-12 调查回填）
 
-待定案点（bounded investigation 产出）：
-1. per-name 探测 URL 与 spawn 命令的声明载体（pac 新键 vs 约定脚本 vs 注册表文件）。
-2. 多 daemon 并存时的 env 注入策略（现 `AUTOOS_DAEMON` 单键 → 按 name 派生键名？
-   App 侧 api.at `daemon_base()` 消费形态是否需要同步泛化）。
-3. 三仓 serve 形态与"可 ping + 可 spawn"契约的差距清单：
-   - kanban：front 17100 / back 17101（pac 已声明）；back 形态待核（Plan 579）。
-   - musk：`api: rust` + backend/（a2r 产物）；serve 入口 musk-serve 脚本；pac 无端口。
-   - jade-garden：back/server Rust axum（442-c2 adapter，28 route）；front/auto pac 无端口。
-4. `autoos` 名零回归门：os-config 桌面设置链路（551 T6 热应用轮询）不回归。
+**定案 D1 声明载体：apps.manifest 条目扩展可选 `daemon` 对象**（三选一胜出）：
+
+```json
+{ "id": "auto-musk", "...": "...",
+  "daemon": { "port": 17201, "bin": "backend/target/release/musk",
+              "env_port": "MUSK_BACK_PORT", "health": "/api/health" } }
+```
+
+- 胜出理由：manifest 已是伞形唯一事实源且端口已登记（E9），框架已有 manifest 读取面
+  （E6，`manifest_repo_roots` 同址扩 `manifest_daemon_defs`），零新文件、零 pac 解析器
+  改动（`daemon:` 键保持 String 不变，值 = manifest id）。
+- 备选否决：pac 新键（结构化值需动 `parse_pac_fields`，且伞形事实源分裂）；注册表文件
+  （同分裂问题）。约定脚本（`daemon.{sh,ps1}`）作为 spawn 兜底不适合 detached + env
+  语义，否决。
+- `port`/`bin` 语义：`port` = daemon API 口（必填）；`bin` = 仓相对二进制路径（缺省 =
+  只探不孵，Offline 原因"未配置 bin"）；`env_port` = spawn 期端口覆盖 env 键（缺省
+  `<NAME 大写蛇形>_BACK_PORT`）；`health` 缺省 `/api/health`（osconfig 既有路径）。
+
+**定案 D2 spawn：沿用 `RealDaemonIo` 形态 + 发现序泛化**——二进制解析 =
+`<manifest repo>/<bin>`（存在才采用；osconfig 的 override/sibling/PATH 三序不泛化，
+per-name bin 路径 manifest 直说）。缺二进制 → Offline（原因含路径，"先 `cargo build
+--release`"提示），**桌面不做 cargo 兜底构建**（工具链/时长坑，v1 边界）。
+
+**定案 D3 env 策略：派生键 `<NAME 大写蛇形>_DAEMON = url`**——`autoos → AUTOOS_DAEMON`
+（同构，旧键不变）；`auto-musk → AUTO_MUSK_DAEMON`；`jade-garden → JADE_GARDEN_DAEMON`。
+App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
+
+**定案 D4 零回归门：`daemon: autoos` 全链原样**（`DAEMON_PORT`/`ENV_DAEMON`/
+`resolve_daemon_path`/`ensure_ready` 保留为 autoos 分发臂；既有测试
+`launch_app_daemon_ready_injects_env` 不动）。
+
+**差距清单定案（T-03..05 据此执行）**：
+- **kanban 免 daemon**（T-03 缩为核实注记）：outproc 子进程 = 完整 `auto run
+  --autodesk-incubate --app386=<dir>`（session.rs:2253-2275），仓内 `src/back/api.at`
+  随子进程 `auto run` 装载——无独立 daemon 进程，无需 `daemon:` 键。执行时验证窗口
+  出数据即闭环。
+- **musk**（T-04）：pac 补 `front_port: 17200`/`back_port: 17201` + `daemon: auto-musk`；
+  manifest daemon `{ port: 17201, bin: "backend/target/release/musk" }`（bin 名已核
+  `crates/musk` `[[bin]] musk`）；后端 `/api/health` 存在性与 serve 单入口核实在 T-04。
+- **jade-garden**（T-05）：`front/auto/pac.at` 补端口 + `daemon: jade-garden`；manifest
+  daemon `{ port: 17301, bin: "back/server/target/release/jade-garden-back",
+  "env_port": "JADE_GARDEN_PORT" }`（bin 名已核 `back/server/Cargo.toml`）；
+  `/api/health` 存在性 T-05 核实（现有 28 route 表未见 health——需补或换探针路径）。
+
+**auto-lang 实现面**（T-02）：`app_registry.rs` 增 `ManifestDaemon` serde 结构 +
+`manifest_daemon_defs(manifest_root)`（宽容读取同 `manifest_repo_roots` 纪律）；
+`osconfig_daemon.rs` 增 generic ensure（状态机参数化，autoos 臂薄包装）；`session.rs`
+`ensure_daemon_if_declared` 非 автоos 名 → manifest 查表 → 泛化链（懒读一次，不驻状态）；
+查无此名 → Offline 有因不阻断。
 
 ### Phase 2 设计
 
@@ -210,28 +250,54 @@ auto-term/app/
 
 ### Phase 1：daemon 化
 
-- **T-01** [调查/定案] daemon 泛化设计。读 auto-lang `crates/auto-lang/src/ui/session.rs`
-  （ensure_daemon_if_declared / launch_app_outproc）、`crates/auto-lang/src/ui/osconfig_daemon.rs`、
-  三仓 back/serve 形态（auto-kanban src/back、auto-musk backend + musk-serve 脚本、
-  auto-down/jade-garden back/server）；产出 §5 Phase 1 设计回填（声明载体/env 策略/
-  差距清单/零回归门四点定案）。→ AC-01
-- **T-02** [实现] auto-lang crates 泛化（按 T-01 定案）：`osconfig_daemon` per-name 化 +
-  `session.rs` 分发；补 `cargo t` 用例（未知名不注入 / autoos 不变 / 新名注入）。→ AC-01
-- **T-03** [配合] auto-kanban：`pac.at` 补 `daemon:` 键；back 17101 对齐 ping/spawn 契约。→ AC-01
-- **T-04** [配合] auto-musk：`pac.at` 补 `front_port: 17200` / `back_port: 17201` / `daemon:`;
-  serve 入口对齐契约。→ AC-01
-- **T-05** [配合] auto-down/jade-garden：`front/auto/pac.at` 补端口（17300/17301）与
-  `daemon:`；back/server 对齐契约。→ AC-01
+- **T-01** [✅ 已完成] [调查/定案] daemon 泛化设计。（证据 2026-09-12：outproc 子进程
+  = 完整 `auto run`（session.rs:2253-2275）→ kanban 仓内 back 免 daemon；musk bin=
+  `musk`、jade bin=`jade-garden-back`+`JADE_GARDEN_PORT` 已核；osconfig_daemon.rs
+  TCP ping `/api/health` + `DaemonIo` trait 注入面确认）四点定案回填 §5（D1 manifest
+  daemon 字段 / D2 发现序泛化无 cargo 兜底 / D3 派生 env 键 / D4 autoos 零回归门）。
+  → AC-01
+- **T-02** [✅ 已完成] [实现] auto-lang crates 泛化：`app_registry.rs` 增
+  `ManifestDaemon{port,bin,env_port}` + `manifest_daemon_defs/manifest_daemon_lookup`；
+  `osconfig_daemon.rs` 增 `GenericDaemon` + `ensure_generic_io` + `daemon_env_key`
+  （autoos 派生恒等 AUTOOS_DAEMON）；`session.rs` `ensure_daemon_if_declared` 分发
+  autoos 旧链 / per-name manifest 链。证据：`cargo test -p auto-lang --lib
+  --features ui-iced daemon` 29/29 绿连跑 ×2（11 新增 + 既有含 autoos 零回归门
+  `launch_app_daemon_ready_injects_env`）；附带既有测试竞态稳定性修复（fixture
+  唯一化 + env 断言串行锁，注释在案）。commit d57d8c486（worktree os-013-dev，
+  base 859c31710）。→ AC-01
+- **T-03** [✅ 已完成] [核实/注记] kanban 免 daemon 定案（原 pac 补键任务缩并）：
+  outproc 子进程 = 完整 `auto run --autodesk-incubate --app386=<dir>`
+  （session.rs:2253-2275），仓内 `src/back/api.at` 随进程装载，无独立 daemon。
+  §5 差距清单已注记；窗口出数据闭环归 T-06 实地。无代码改动。→ AC-01
+- **T-04** [✅ 已完成] [配合] auto-musk：pac 补 front_port 17200/back_port 17201 +
+  `daemon: auto-musk`；`MUSK_SERVE_PORT` 纯端口 env 覆盖（Serve 臂）。证据：
+  `cargo check -p musk` 绿（50.6s，auto-ai 依赖 worktree 解析）；`/api/health`
+  既有（server.rs:9 liveness probe，零后端改动）。commit e38e4f5。→ AC-01
+- **T-05** [✅ 已完成（验证受阻见待澄清②）] [配合] jade-garden：pac 补 17300/17301
+  + `daemon: jade-garden`；back 补 `GET /api/health`。代码 commit ece41b7。
+  编译验证受阻：`cargo check` 4 errors（vm_dispatch.rs base64 unresolved）——
+  **主检出同态既有损坏**（非本计划引入；Plan 058 base64 信封线与 063 在飞交叉，
+  不代修）。→ AC-01（实地门前置含此项）
 - **T-06** [实地验证] 桌面冷启逐一点击三 app（AC-01 全链）。依赖 T-02..T-05。→ AC-01
 
 ### Phase 2：auto-term app 化
 
-- **T-07** auto-term 仓新建 `app/pac.at` + `app/src/front/{app.at, autoterm_store.at,
-  autoterm_store 移植, autoterm_page.at}`（§5 Phase 2 设计；移植源 = auto-os-config
-  `auto/src/front/autoterm_{store,page}.at`，去 desktop_store 注册表分发层）。→ AC-02
-- **T-08** [实地验证] 桌面 launcher 点 AutoTerm 全链（Open/Send/回显/Close）。依赖 T-07。→ AC-02
-- **T-09** auto-os `apps.manifest` 登记 auto-term（17400/17401 转实）；README Apps 表
-  （SD-02 前半）。依赖 T-08。→ AC-03
+- **T-07** [✅ 已完成] auto-term 仓 `app/` 四件：pac.at（render vm / 17400-17401 预留 /
+  icon terminal / category system）+ front 三件（store/page 自 os-config OS-013 T3
+  升格移植，去 desktop_page 注册表分发层；App 根 200ms Tick 转发）。
+  commit 6f18c8c（worktree os-013-dev；含 .gitignore app 生成物规则）。→ AC-02
+- **T-08** [◐ 代码面完成，窗内交互留实机] 部署/冒烟前置已核实：`Term.engine_*`
+  shim dll 解析序（env AUTOTERM_ENGINE_DLL → 宿主 exe 同目录 → 祖先 target，缺席
+  spawn 返 0 优雅降级）；部署链现成 = auto-os-config `scripts/deploy-autoterm.sh`
+  （组布局感知，.wt/os-013/auto-term 自动命中；dll 现存 auto-term 主检出
+  target/debug）。注册表层短启动实证：ui_desktop CWD=worktree auto-os →
+  `[session] app registry: 41 entries (25 desktop-visible)`——auto-term 入可见集
+  （kanban skip 为 worktree 兄弟路径环境形态，主检出无此问题）。**剩余**：实机
+  launcher 点击 AutoTerm → New Session/Send/回显/Close 全链 + dll 部署执行。
+  → AC-02（实地部分）
+- **T-09** [✅ 已完成] manifest 登记 auto-term `{ repo: ../auto-term/app,
+  ports: [17400,17401] }`（无 daemon 字段：引擎进程内，无后端）。commit a599c68。
+  README Apps 表行随 merge 阶段补（SD-02）。→ AC-03
 
 ### Phase 3：kanban submodule
 
@@ -252,6 +318,18 @@ auto-term/app/
 - 2026-09-12 `/auto-plan:new` 起草（stage: new, PLAN-013 rev1）。outcome: pass——
   12 任务覆盖 AC-01..06 与 SD-01..03；T-01 为 bounded investigation（决策 artifact =
   §5 回填），未对未决机制发明实现细节。next: work（Phase 1 T-01 起）。
+- 2026-09-12 `/auto-plan:work` Phase 1 进展（stage: work, PLAN-013 rev1,
+  outcome: pass-partial——T-01..T-05 完成，T-06 实地门待前置）。
+  code_commit：auto-lang d57d8c486（worktree .wt/os-013/auto-lang @ os-013-dev,
+  base 859c31710）；auto-os 43597da（.wt/os-013/auto-os @ plan-013-dev, base 6fb6956）；
+  auto-musk e38e4f5（.wt/os-013/auto-musk @ os-013-dev）；auto-down ece41b7
+  （.wt/os-013/auto-down @ os-013-dev，含纯依赖 worktree auto-ai）。依赖修订：
+  auto-lang os-013-dev 含 T-2 泛化（musk backend 编译经组内 worktree 闭环）。
+  task_ids：T-01..T-05 ✅（T-03 缩并注记、T-05 验证受阻）；T-06 未启。
+  evidence：daemon 组 29/29×2 连跑绿（含 autoos 零回归门）；musk cargo check 绿；
+  manifest daemon 字段（musk MUSK_SERVE_PORT 显式声明、jade bin 相对 front/auto
+  根跳级路径）。blockers：见待澄清②③。next：T-06 实地门（前置 = jade base64
+  修复 + 两仓 cargo build --release + 桌面实机点击），随后 Phase 2（T-07 起）。
 
 ## 待澄清事项
 
@@ -262,3 +340,18 @@ auto-term/app/
    T-05 时确认该仓 plan 纪律）。
 3. 本仓 docs/specs/ 缺位（E10）：是否在本计划 merge 阶段补建最小 goals/architecture
    条目——留给 review 决定，不阻塞执行。
+4. **[work 阶段新增 2026-09-12]** jade `back/server` base64 既有编译损坏
+   （vm_dispatch.rs E0432×2/E0433×2；主检出 D:/autostack/auto-down 同态复现，
+   非 PLAN-013 引入）——归 Plan 058（base64 信封）/063 在飞线修复；T-06 实地门前
+   需其先绿（jade daemon spawn 链的 release 构建依赖可编译的 server）。
+5. **[work 阶段新增 2026-09-12]** T-06 实地门的两项前置构建：musk
+   `cargo build --release -p musk`（backend/，产物 backend/target/release/musk.exe）、
+   jade（base64 修复后）`cargo build --release`（back/server/）——桌面 spawn 发现序
+   按 manifest bin 路径找 release 产物，debug 产物不命中（D2 定案）。
+6. **[work 阶段新增 2026-09-12]** T-08 实地剩余前置：① 引擎件部署——
+   `bash auto-os-config/scripts/deploy-autoterm.sh`（组布局感知；dll 须先在
+   auto-term 构建或 AUTO_TERM_ROOT 指主检出 target/debug，现成产物在
+   D:/autostack/auto-term/target/debug/autoterm_core.dll）；② `trans rust`
+   子命令对 AutoUI widget/store DSL 不可用（os-config 原版/013-todo 同样
+   E0099，实测对照在案）——.at 装载验证以桌面注册表短启动为准，trans 门
+   不作 UI 形态依据。

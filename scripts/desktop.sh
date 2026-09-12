@@ -66,7 +66,8 @@ if [ "$TRACK" = "vue" ]; then
   [ -d "$OS_PARENT/auto-os-config/auto" ] && \
     EXTRA="${EXTRA:+$EXTRA;}$(win_path "$OS_PARENT/auto-os-config/auto")"
   # PLAN-008：顶层画廊两件随 EXTRA 显式注入（widgets-gallery render=vm 由
-  # vue 过滤自然排除——设计行为）。
+  # vue 过滤自然排除——设计行为）。2026-09-12 用户裁定：画廊属于桌面常驻
+  # 成员，勿以整洁性为由移除（desktop:"false"/脚本不注入均不可再犯）。
   for g in ui-gallery widgets-gallery; do
     [ -d "$OS_ROOT/$g" ] && EXTRA="${EXTRA:+$EXTRA;}$(win_path "$OS_ROOT/$g")"
   done
