@@ -13,7 +13,10 @@ async function openGame(page) {
 
 test('首屏显示棋盘、下一个方块和纪录面板', async ({ page }) => {
   await openGame(page)
-  const grids = page.locator('.grid')
+  // DialogContent uses a `grid` class for its panel layout. Scope these
+  // assertions to the two game grids so adding the standard Dialog does not
+  // make the geometry check depend on an implementation detail of the modal.
+  const grids = page.locator('.grid-cols-10, .grid-cols-4')
   await expect(grids).toHaveCount(2)
   const boardColumns = await grids.nth(0).evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length,
@@ -41,6 +44,17 @@ test('首屏显示棋盘、下一个方块和纪录面板', async ({ page }) => 
   expect(body).toContain('等级')
   expect(body).toContain('消行')
   expect(body).toContain('准备好了吗')
+
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  const dialogBox = await dialog.boundingBox()
+  const viewport = page.viewportSize()
+  expect(dialogBox).not.toBeNull()
+  expect(viewport).not.toBeNull()
+  if (dialogBox && viewport) {
+    expect(Math.abs(dialogBox.x + dialogBox.width / 2 - viewport.width / 2)).toBeLessThan(2)
+    expect(Math.abs(dialogBox.y + dialogBox.height / 2 - viewport.height / 2)).toBeLessThan(2)
+  }
 })
 
 test('开始、暂停和恢复共用 Store 状态机', async ({ page }) => {

@@ -93,25 +93,25 @@ widget App {
             }
             text "← → 移动 · ↑ 旋转 · ↓ 软降 · Space 硬降 · P 暂停" { style: "text-xs text-muted-foreground text-center" }
 
-            if .store.phase == "ready" {
-                col {
-                    style: "absolute inset-0 items-center justify-center bg-background/90 gap-3"
+            // 状态提示使用标准 dialog。它在 Vue 中是对话框浮层，
+            // 在 VM/Rust 中映射到同一套 Modal Popover，避免 absolute/inset
+            // 在原生渲染器降级为普通流式内容后跑到窗口角落。
+            dialog (open: .store.phase == "ready") {
+                dialog-content {
                     text "准备好了吗" { style: "text-xl font-medium" }
                     text "填满整行即可消除" { style: "text-sm text-muted-foreground" }
                     button "开始游戏" { onclick: .Start, style: "btn btn-primary" }
                 }
             }
-            if .store.phase == "paused" {
-                col {
-                    style: "absolute inset-0 items-center justify-center bg-background/90 gap-3"
+            dialog (open: .store.phase == "paused") {
+                dialog-content {
                     text "已暂停" { style: "text-xl font-medium" }
                     button "继续游戏" { onclick: .TogglePause, style: "btn btn-primary" }
                     button "重新开始" { onclick: .RestartAsk, style: "btn btn-ghost" }
                 }
             }
-            if .store.phase == "confirm" {
-                col {
-                    style: "absolute inset-0 items-center justify-center bg-background/90 gap-3"
+            dialog (open: .store.phase == "confirm") {
+                dialog-content {
                     text "重新开始？" { style: "text-xl font-medium" }
                     text "本局进度将清空，最高纪录会保留" { style: "text-sm text-muted-foreground" }
                     row {
@@ -120,17 +120,15 @@ widget App {
                     }
                 }
             }
-            if .store.phase == "help" {
-                col {
-                    style: "absolute inset-0 items-center justify-center bg-background/95 gap-3 p-6"
+            dialog (open: .store.phase == "help") {
+                dialog-content {
                     text "玩法说明" { style: "text-xl font-medium" }
                     text "← → 移动，↑ 顺时针旋转\n↓ 软降，Space 硬降\n空心轮廓表示硬降落点\n本版随机抽块，不含踢墙" { style: "text-sm text-muted-foreground text-center" }
                     button "返回游戏" { onclick: .CloseHelp, style: "btn btn-primary" }
                 }
             }
-            if .store.phase == "over" {
-                col {
-                    style: "absolute inset-0 items-center justify-center bg-background/90 gap-3"
+            dialog (open: .store.phase == "over") {
+                dialog-content {
                     text "游戏结束" { style: "text-xl font-medium" }
                     text .store.score_label { style: "text-3xl tabular-nums" }
                     text "再试一次，挑战最高纪录" { style: "text-sm text-muted-foreground" }
