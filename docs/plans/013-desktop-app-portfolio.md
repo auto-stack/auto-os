@@ -13,7 +13,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: []                   # 本仓 docs/specs/ 缺位（.autoos/specs.json 六节均空）——
                               # 规范落点为 AGENTS.md / README.md，见 §5 规范增量
-current_step: 7
+current_step: 10
 total_steps: 12
 ---
 
@@ -99,9 +99,14 @@ auto-term/app/
 - 两臂去重交互（已核实的解析序，§4 证据）：VM 轨 extra roots = 兄弟探测（os-config →
   apps 容器 → manifest → 画廊）。submodule 检出后**容器臂先胜**（id `kanban`，root=
   apps/kanban），manifest 臂 `../auto-kanban` 按 id 去重跳过——同仓同内容，行为不变。
-- 降级路径：新 worktree（`.wt/os-NNN/`）未 `git submodule update --init` 时 apps/kanban
-  为空目录 → 容器臂 pac.at 门静默跳过 → manifest 臂兄弟检出 `../auto-kanban` 兜底，
-  注册表完整（AC-05）。
+- 降级路径（T-12 实测修正）：组 worktree（`.wt/os-NNN/`）裸跑时
+  apps/kanban gitlink 未 init = 空目录 → 容器臂静默跳过；manifest 臂
+  `repo` 相对 manifest 根解析**组内兄弟**（无主检出回退）→ 同样缺席——
+  降级形态 = **缺席可见**（`apps.manifest entry kanban skipped` 警告，
+  注册表 41/25 正常不炸，2026-09-12 短启动实证），非原表述"主检出回退"。
+  标准桌面入口 `scripts/desktop.{sh,ps1}` 注入 `AUTO_OS_ROOT`=主检出
+  （manifest 根权威臂）→ kanban 经主检出兄弟命中，**注册表恒完整**
+  （同日短启动实证：零 skipped 警告）。AGENTS §2 submodule 纪律按此落地。
 - wt-guard 交互：gitlink 是普通目录（非 reparse point），`bash wt-guard.sh` 扫描不误伤；
   `git worktree remove` 会删 worktree 内 submodule 检出内容（git 数据在
   `.git/modules/` 保留，可恢复）——AGENTS.md worktree 纪律节补注记。
@@ -241,7 +246,7 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 | AC-02 | launcher 出现 AutoTerm，点击得可交互终端 | launcher 搜索 "AutoTerm" → 点击 → 输入命令 | `engine_spawn` 会话建立，输入回显/输出刷新，Close 后句柄释放 |
 | AC-03 | auto-term 入伞形清单 | `apps.manifest` 含 auto-term 行；`git grep autoterm apps.manifest` | `{ id: auto-term, repo: ../auto-term/app, ports: [17400,17401] }`；os-config 内嵌终端页不回归（设置页仍可开） |
 | AC-04 | apps/kanban submodule 就位且容器臂命中 | `git submodule status`；桌面启动日志 extra roots | gitlink 存在；kanban 经 apps/kanban 导入（id `kanban` 不变） |
-| AC-05 | worktree 未 init submodule 时注册表不缺失 | 新建 `.wt/os-013/auto-os` 不跑 submodule init，启动桌面 | kanban 经 manifest 臂 `../auto-kanban` 兜底，注册表完整 |
+| AC-05 | worktree 未 init submodule 时注册表不缺失缺失项可见、标准入口恒完整 | 裸跑（CWD=worktree，gitlink 未 init）：启动日志；`AUTO_OS_ROOT=主检出` 权威形态：同法 | 裸跑 = kanban skip 警告可见 + 注册表正常（41/25 实证，不炸）；权威形态 = 零 skipped 警告（kanban 经主检出 manifest 臂命中，同日实证） |
 | AC-06 | 文档与 submodule 形态一致 | 读 AGENTS.md §4 / README Apps 表 | SD-01/SD-02 内容落地，无"无 submodule"残留表述 |
 
 ## 执行步骤
@@ -301,13 +306,18 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 
 ### Phase 3：kanban submodule
 
-- **T-10** 主检出 main：`git submodule add git@github.com:auto-stack/auto-kanban.git
-  apps/kanban`；启动桌面验证容器臂命中（AC-04）。注意 main 主检出运行（new-plan.sh 同纪律）。→ AC-04
-- **T-11** 文档修订：`AGENTS.md` §4 混合形态（SD-01）+ worktree 纪律 submodule 注记；
-  README 目录结构 Apps 表（SD-02 后半）；daemon 键约定落点（SD-03）。→ AC-06
-- **T-12** [验证] worktree 降级：`git worktree add D:/autostack/.wt/os-013/auto-os
-  -b plan-013-dev`（不 init submodule）→ 启动注册表 kanban 兜底命中（AC-05）；验证后
-  按 wt-guard 纪律清理（`bash D:/autostack/wt-guard.sh` 先扫再 remove）。依赖 T-10、T-11。→ AC-05
+- **T-10** [✅ 已完成] 主检出 main：`git submodule add
+  git@github.com:auto-stack/auto-kanban.git apps/kanban`（commit abb0bee）；
+  容器臂命中实证：主检出短启动 `42 entries (26 desktop-visible)` **零
+  skipped 警告**（容器臂 apps/kanban 检出 + manifest 臂 id 去重静默）。→ AC-04
+- **T-11** [✅ 已完成] 文档修订（worktree plan-013-dev commit 19aab6f，含
+  main merge 5f708ea——manifest 冲突取带 daemon 字段超集版）：AGENTS §4
+  混合形态 + §2 submodule 纪律 + §3 daemon 键 schema；README 目录结构
+  apps/kanban 行 + Apps 表五仓全量（SD-01/02/03）。→ AC-06
+- **T-12** [✅ 已完成] [验证] 降级双形态短启动（2026-09-12）：裸跑
+  （gitlink 未 init）= kanban skip 警告 + 41/25 正常不炸；AUTO_OS_ROOT
+  权威 = 零 skipped（kanban 命中）。AC-05 措辞按实测修正（§7）。依赖
+  T-10、T-11 ✓。→ AC-05
 
 依赖链：T-01→T-02→(T-03,T-04,T-05)→T-06；T-07→T-08→T-09；T-10→(T-11,T-12)。
 三 phase 顺序执行（用户裁定单计划分 phase）；phase 间无硬技术依赖，P2/P3 可在 P1
@@ -330,6 +340,23 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
   manifest daemon 字段（musk MUSK_SERVE_PORT 显式声明、jade bin 相对 front/auto
   根跳级路径）。blockers：见待澄清②③。next：T-06 实地门（前置 = jade base64
   修复 + 两仓 cargo build --release + 桌面实机点击），随后 Phase 2（T-07 起）。
+- 2026-09-12 `/auto-plan:work` Phase 2 代码面（stage: work, rev1, pass-partial）。
+  code_commit：auto-term 6f18c8c（worktree .wt/os-013/auto-term @ os-013-dev，
+  含 auto-ai/auto-down/auto-lang 组内依赖 worktree 解析）；auto-os a599c68。
+  task_ids：T-07 ✅ T-09 ✅；T-08 ◐（注册表短启动实证 25 desktop-visible 含
+  auto-term；窗内交互 + deploy-autoterm.sh 部署留实机）。验证教训：`trans rust`
+  对 widget/store DSL 无效（对照实测在案）——UI .at 装载门 = 桌面注册表
+  短启动（待澄清⑥）。
+- 2026-09-12 `/auto-plan:work` Phase 3 完成（stage: work, rev1, pass-partial——
+  代码/文档/验证全落，剩 T-06/T-08 两个实地门汇聚 review 前收口）。
+  code_commit：auto-os main abb0bee（submodule add apps/kanban）+ worktree
+  plan-013-dev 5f708ea（merge main，manifest 冲突取超集版）+ 19aab6f
+  （T-11 文档）。task_ids：T-10 ✅ T-11 ✅ T-12 ✅。evidence：主检出短启动
+  42/26 零 skipped（容器臂 kanban 命中 AC-04）；降级双形态短启动（裸跑
+  skip 警告可见不炸 / AUTO_OS_ROOT 权威零 skipped，AC-05 实测措辞修正——
+  原设计"manifest 臂主检出回退"不成立，组 worktree 的 repo rel 解析组内
+  兄弟，标准入口 AUTO_OS_ROOT 权威为恒完整路径）。next：T-06/T-08 实地门
+  （用户实机 + jade base64 修复 + release 构建），全绿后 execution_done → review。
 
 ## 待澄清事项
 
