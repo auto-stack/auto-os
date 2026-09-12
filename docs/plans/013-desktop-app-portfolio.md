@@ -277,12 +277,16 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 - **T-04** [✅ 已完成] [配合] auto-musk：pac 补 front_port 17200/back_port 17201 +
   `daemon: auto-musk`；`MUSK_SERVE_PORT` 纯端口 env 覆盖（Serve 臂）。证据：
   `cargo check -p musk` 绿（50.6s，auto-ai 依赖 worktree 解析）；`/api/health`
-  既有（server.rs:9 liveness probe，零后端改动）。commit e38e4f5。→ AC-01
-- **T-05** [✅ 已完成（验证受阻见待澄清②）] [配合] jade-garden：pac 补 17300/17301
-  + `daemon: jade-garden`；back 补 `GET /api/health`。代码 commit ece41b7。
-  编译验证受阻：`cargo check` 4 errors（vm_dispatch.rs base64 unresolved）——
-  **主检出同态既有损坏**（非本计划引入；Plan 058 base64 信封线与 063 在飞交叉，
-  不代修）。→ AC-01（实地门前置含此项）
+  既有（server.rs:9 liveness probe，零后端改动）。commit e38e4f5。release 产物
+  `backend/target/release/musk.exe`（7m09s）；**spawn 冒烟**：`MUSK_SERVE_PORT=17201
+  musk serve` → `/api/health` 200（kill 干净退出）。→ AC-01
+- **T-05** [✅ 已完成] [配合] jade-garden：pac 补 17300/17301 +
+  `daemon: jade-garden`；back 补 `GET /api/health`。commit ece41b7 + base64
+  归位修复 c71e48b（见待澄清④）。release 产物
+  `back/server/target/release/jade-garden-back.exe`（6m06s）；**spawn 冒烟**：
+  `JADE_GARDEN_PORT=17301 jade-garden-back` → `/api/health` "ok" 200。→ AC-01
+  （实地门前置全部就绪：jade 修复 ✓ + 双 release 产物 ✓ + 引擎件部署 ✓，
+  剩实机桌面点击）
 - **T-06** [实地验证] 桌面冷启逐一点击三 app（AC-01 全链）。依赖 T-02..T-05。→ AC-01
 
 ### Phase 2：auto-term app 化
@@ -367,14 +371,19 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
    T-05 时确认该仓 plan 纪律）。
 3. 本仓 docs/specs/ 缺位（E10）：是否在本计划 merge 阶段补建最小 goals/architecture
    条目——留给 review 决定，不阻塞执行。
-4. **[work 阶段新增 2026-09-12]** jade `back/server` base64 既有编译损坏
-   （vm_dispatch.rs E0432×2/E0433×2；主检出 D:/autostack/auto-down 同态复现，
-   非 PLAN-013 引入）——归 Plan 058（base64 信封）/063 在飞线修复；T-06 实地门前
-   需其先绿（jade daemon spawn 链的 release 构建依赖可编译的 server）。
-5. **[work 阶段新增 2026-09-12]** T-06 实地门的两项前置构建：musk
-   `cargo build --release -p musk`（backend/，产物 backend/target/release/musk.exe）、
-   jade（base64 修复后）`cargo build --release`（back/server/）——桌面 spawn 发现序
-   按 manifest bin 路径找 release 产物，debug 产物不命中（D2 定案）。
+4. ~~jade `back/server` base64 既有编译损坏~~ **[已修 2026-09-12]**：根因 =
+   Plan 058 提交时 `base64` 误落 `[dev-dependencies]`（当时仅测试消费），
+   b64_encode/decode 提升为生产 fn 后未随迁 → 生产 import E0432（主检出
+   同态）。修复 = 归位 `[dependencies]`（auto-down worktree os-013-dev
+   commit c71e48b，`cargo check` 绿 1.9s）；release 构建随 T-06 前置执行。
+   058/063 主检出线合入时注意此差异（os-013-dev 分支先行）。
+5. ~~T-06 实地门的两项前置构建~~ **[已构建 2026-09-12]**：musk
+   `cargo build --release -p musk`（7m09s）+ jade `cargo build --release`
+   （6m06s，base64 修复后）双绿；release 产物已核在 manifest bin 路径。
+   另：T-08 引擎件已部署（deploy-autoterm.sh：autoterm_core.dll +
+   autoterm-ctrlc.exe → auto-lang/target/debug 宿主目录；term 门面 stdlib
+   安装副本在位）。**daemon spawn 语义冒烟双绿**（env 端口注入 → 进程起 →
+   /api/health 200，musk/jade 各一；kill 干净）——T-06/T-08 剩实机桌面点击。
 6. **[work 阶段新增 2026-09-12]** T-08 实地剩余前置：① 引擎件部署——
    `bash auto-os-config/scripts/deploy-autoterm.sh`（组布局感知；dll 须先在
    auto-term 构建或 AUTO_TERM_ROOT 指主检出 target/debug，现成产物在
@@ -382,3 +391,12 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
    子命令对 AutoUI widget/store DSL 不可用（os-config 原版/013-todo 同样
    E0099，实测对照在案）——.at 装载验证以桌面注册表短启动为准，trans 门
    不作 UI 形态依据。
+7. **[work 阶段新增 2026-09-12]** T-06/T-08 实机操作指引（无需提前合
+   main——daemon 字段 manifest 在 plan-013-dev 分支）：
+   `DESKTOP_OS_ROOT=D:/autostack/.wt/os-013/auto-os ./scripts/desktop.ps1 -Track iced`
+   （DESKTOP_OS_ROOT 为 desktop.ps1 原生覆盖位，= 以 worktree 为伞形根：
+   manifest 含 daemon 字段 + 组内 musk/jade/term worktree 兄弟全命中；
+   kanban 组内无 worktree → skip 警告可见，AC-05 已证形态）。验证点：
+   launcher 点 AutoTerm → New Session/Send 回显（T-08）；点 musk/jade →
+   后端自动 spawn（T-06；**需 release 产物在位**——spawn 按 manifest bin
+   找 target/release）。
