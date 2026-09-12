@@ -348,10 +348,13 @@ store TetrisStore {
                 for preview_i < 16 {
                     var preview_col int = preview_i % 4
                     var preview_row int = preview_i / 4
-                    var preview_class str = "h-5 w-5"
+                    // Preview cells keep a fixed square size. `h-full w-full`
+                    // is correct for board cells, but in an auto-sized native
+                    // grid it expands each occupied track to the whole card.
+                    var preview_class str = "h-5 w-5 rounded-none p-0 border border-slate-800 bg-slate-950"
                     var preview_j int = 0
                     for preview_j < 8 {
-                        if preview[preview_j] == preview_col && preview[preview_j + 1] == preview_row { preview_class = "h-full w-full border-2 " + .colors[.next_piece] + " brightness-125 shadow-inner" }
+                        if preview[preview_j] == preview_col && preview[preview_j + 1] == preview_row { preview_class = "h-5 w-5 rounded-none p-0 border-2 " + .colors[.next_piece] + " brightness-125 shadow-inner" }
                         preview_j = preview_j + 2
                     }
                     .next_cells.push({ cell_class: preview_class, display: "" })

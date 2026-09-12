@@ -50,6 +50,9 @@ widget App {
                         grid {
                             cols: 4
                             gap: 1
+                            // Keep the preview as a compact 4×4 board. Native
+                            // grid tracks otherwise stretch to the card height.
+                            style: "w-20 h-20 self-center"
                             for cell in .store.next_cells { div { class: cell.cell_class } }
                         }
                     }
