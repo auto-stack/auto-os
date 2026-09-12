@@ -227,8 +227,16 @@ store TetrisStore {
                     }
                     lock_row = lock_row + 1
                 }
-                while kept.len() != 200 { kept.push(0) }
-                .board = kept
+                // Board rows are stored top-to-bottom. Keep surviving rows in
+                // their original order, then prepend one empty row per cleared
+                // line so the stack falls toward the bottom of the board.
+                var shifted []int = []
+                var empty_cells int = cleared * 10
+                var empty_i2 int = 0
+                while empty_i2 < empty_cells { shifted.push(0); empty_i2 = empty_i2 + 1 }
+                var kept_i int = 0
+                while kept_i < kept.len() { shifted.push(kept[kept_i]); kept_i = kept_i + 1 }
+                .board = shifted
                 if cleared > 0 {
                     var base int = 0
                     if cleared == 1 { base = 100 }
