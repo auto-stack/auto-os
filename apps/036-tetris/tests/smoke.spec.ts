@@ -21,8 +21,19 @@ test('首屏显示棋盘、下一个方块和纪录面板', async ({ page }) => 
   const nextColumns = await grids.nth(1).evaluate(el =>
     getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length,
   )
+  const firstCell = await grids.nth(0).locator('button').first().evaluate(el => ({
+    trackWidth: el.parentElement
+      ? parseFloat(getComputedStyle(el.parentElement).gridTemplateColumns.split(/\s+/)[0])
+      : 0,
+    width: el.getBoundingClientRect().width,
+    radius: getComputedStyle(el).borderRadius,
+    padding: getComputedStyle(el).padding,
+  }))
   expect(boardColumns).toBe(10)
   expect(nextColumns).toBe(4)
+  expect(Math.abs(firstCell.width - firstCell.trackWidth)).toBeLessThan(0.1)
+  expect(firstCell.radius).toBe('0px')
+  expect(firstCell.padding).toBe('0px')
   await expect(grids.nth(0).locator('button')).toHaveCount(200)
   const body = await page.locator('body').innerText()
   expect(body).toContain('下一个')
