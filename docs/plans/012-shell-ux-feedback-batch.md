@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-012
 plan_revision: 2              # rev2 = 追加问题7（图标居中 + 任务栏状态指示，2026-09-11）
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（work 2026-09-12 收口，next: review）
+status: executing             # drafting → executing → execution_done → reviewed → archived（review 2026-09-12 needs_fix：F1 协议合同文档缺口回 work；T9 重开）
 feature_name: shell-ux-feedback-batch
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -15,7 +15,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 affects: [auto-lang/ui/session.rs, auto-lang/ui/iced/renderer.rs, auto-lang/ui/desktop_config.rs,
           auto-lang/schema/projection-protocol-v1.md, shell/shell.at, shell/desktop.at,
           shell/notification_center.at, auto-os-config/auto/src/front]
-current_step: 14
+current_step: 13
 total_steps: 14
 ---
 
@@ -484,7 +484,7 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
 | T6 | W2 toast TTL 现状核对记录（不改代码；策略文档落 SD-04） [✅ 已完成 2026-09-12] renderer.rs:12329 toasts.retain（duration_ms TTL、250ms tick 驱动）在案；关闭模型头注落 notification_center.at；同 1c236e8/da32c83f9 | renderer.rs:12217 核对；notification_center.at 头注 | 复审记录附核对证据 | AC-04 |
 | T7 | W3 切换器 popover 化（外点关闭）+ fallback 预案决策记录 [✅ 已完成 2026-09-12] 面板迁入 square-stack 钮 popover（top-end 右锚定，ondismiss=SwitcherToggle 外点/Esc 关；open 直读状态，热键 1.6s 收起不变）；desktop_mcp_dock_pager_hover_popovers 断言更新过；auto-os 1c236e8 | auto-os shell/shell.at（:317-355 迁入 popover）；renderer sync 臂核对热键路径 | 实机 AC-05；pack 编译门 | AC-05 |
 | T8 | W3 `workspace_preview` 宿主 widget（DSL 变体 + convert 臂 fence + 合成几何 + SWR 预抓）+ shell.at 卡片消费 [✅ 已完成 2026-09-12] 新布局件（schema/render_support/coverage 三表登记）+七处显式臂+workspace_preview.rs 数据面（sync 发布 usable tile/壁纸基色，tile_rect Contain 纯函数单测）+fence 测试；二分定位并绕开 VM 模板"popover content 内 for 循环体 button 不物化"问题（卡片 mouse-area 承载）；auto-lang 2493ec3ad / auto-os a7ee696 | auto-lang aura_view_builder.rs / renderer.rs（dynamic_view 族）/ snapshot.rs 消费；shell.at :332-338 | cargo t 变体 fence + 几何单测；实机 AC-06 | AC-06 |
-| T9 | W4 dock 合并 + pin/unpin：协议 v1.6 两动词 + `__dock_pinned_csv` 投影 + shell.at 菜单组 + 缺省置空与空表语义修 [✅ 已完成 2026-09-12] dock_pin/dock_unpin 枚举/encode/parse/执行臂（Vec 增删去重+save+双 inject）+__dock_pinned_csv（指纹 \|pinned: 段）+DEFAULT_DOCK_PINNED=[] 空表回退退役+shell.at 单组合并/双菜单；单测四组全过；auto-lang c83820d37 / auto-os 1c9a2fc | auto-lang session.rs（枚举/encode/parse/执行臂）、renderer.rs（sync 投影、execute_set_dock_pinned 邻位）、desktop_config.rs（DEFAULT_DOCK_PINNED/load）、shell.at（:141-231 循环+菜单） | cargo t 四组单测；实机 AC-07；SD-01/03 回填 | AC-07 |
+| T9 | W4 dock 合并 + pin/unpin：协议 v1.6 两动词 + `__dock_pinned_csv` 投影 + shell.at 菜单组 + 缺省置空与空表语义修 [✅ 已完成 2026-09-12] dock_pin/dock_unpin 枚举/encode/parse/执行臂（Vec 增删去重+save+双 inject）+__dock_pinned_csv（指纹 \|pinned: 段）+DEFAULT_DOCK_PINNED=[] 空表回退退役+shell.at 单组合并/双菜单；单测四组全过；auto-lang c83820d37 / auto-os 1c9a2fc。**review 2026-09-12 重开**：产物"SD-01/03 回填"未完成——auto-lang schema/projection-protocol-v1.md 仍停 v1.5，v1.6 增量（dock_pin/unpin 动词、__dock_pinned_csv、__wm_notes_visible、__wm_focused_app、refresh_desktop_icons、workspace_preview 合同面）合同文档未备（finding F1）；实现本体与单测已审验通过 | auto-lang session.rs（枚举/encode/parse/执行臂）、renderer.rs（sync 投影、execute_set_dock_pinned 邻位）、desktop_config.rs（DEFAULT_DOCK_PINNED/load）、shell.at（:141-231 循环+菜单） | cargo t 四组单测；实机 AC-07；SD-01/03 回填（**待 work 补协议文档**） | AC-07 |
 | T10 | W5 桌面图标紧凑化 [✅ 已完成 2026-09-12] grid 定宽 w-[696px]（8×80px 格+7×8px gap），原 w-full 拉伸数百 px 根因消除；pack sync pin 91951c49a4；auto-os 0167fa3 / auto-lang 23fdd39b7 | auto-os shell/desktop.at（:82 grid 容器定宽） | 实机截图前后对照（AC-08 前半）；pack sync | AC-08 |
 | T11 | W5 拖拽：T1 有界调查决策工件 → 按决策实施（位置存储+注入+absolute 渲染+拖拽态机+持久化） [✅ 已完成 2026-09-12] 工件 scratch/p012/w5-dnd.md（press-press 两段式+格子磁吸定案，Q2 默认条款）；desktop_icon_cells 格子分配+__desktop_cells/平行列表+refresh_desktop_icons 动词+desktop.at IconPress 态机+storage 持久（重启保持）；单测三件；auto-lang c5498ab61 / auto-os 90c67bc | scratch/p012/w5-dnd.md；auto-lang desktop_config.rs 或 storage 键、renderer.rs 注入臂；shell/desktop.at | 决策工件 + 实机 AC-08 后半 | AC-08 |
 | T12 | W7 字形居中：实机探针定案（两出口几何）→ lucide 出口 container 约束+居中修复（对齐 svgdoc 路径）；按钮内嵌路径按结论补 [✅ 已完成 2026-09-12] headless iced_test 三面探针定案（Row 不推远/chip 图标盒(10,10)居中/按钮图标盒(12,12)居中）——"偏左上"现行管线未复现，投机性渲染器改动不落，探针入套件锁行为；AC-10 终裁转实机；工件 scratch/p012/w7-icon-center.md；auto-lang 2b9c4583b | auto-lang renderer.rs :4937 出口、:3448 按钮内嵌路径；探针记录 scratch/p012/w7-icon-center.md | cargo t 出口单测；实机 AC-10 双面截图 | AC-10 |
@@ -551,6 +551,80 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   pinned）。196 败为 master 存量（vm_bridge/dynamic/session/layout
   基础测试族在全量序列下失败——序列/环境敏感：storage load-once、
   theme_source OS 派生等），非本计划引入，移交后续基建计划处理。
+- 2026-09-12 review（/auto-plan:review，实现会话内复核——判定从工件
+  重建而非执行摘要）：stage: review，PLAN-012 rev2，outcome:
+  **needs_fix**，status → executing（T9 重开，current_step 13/14）。
+  reviewed_commit：auto-os 90c67bc / auto-lang 66bf95261（两仓
+  os-012-dev，worktree clean）；base：auto-os main 6fb6956 /
+  auto-lang master 859c31710；依赖：auto-down bd21ef6（os-012-dev，
+  零改动零脏）。spec_inputs：.autoos/specs.json @ fe78410（六节，
+  review 未触碰）；auto-lang schema/projection-protocol-v1.md @
+  029a5f7ea（**v1.5——落后于实现，见 F1**）。
+  **复现验证**：iced 档全量单线程 @HEAD = 4620 过 / 196 败，名字级
+  diff vs master 基线（859c31710 = 199 败）零 branch-only 回归、净
+  修复 3；VM/默认档全量 = 3523 过 / 0 败；scoped 复跑（W1 拦截臂 /
+  W5 格子+持久+动词 / W8 物化+几何 fence / projection_v16 双投影 /
+  shell_pack 编译门）全过；hash-lock 四件全等（终 pin shell=
+  4ac3c70cb8 / desktop=38eb5ab273 / switcher=bee9ea8dc8 /
+  notification_center=8ae3071227）。
+  **验收映射**（AC → 证据 → 判定，HEAD 66bf95261）：
+  AC-01 partial｜w1_osconfig_close_hides_and_focus_unhides（close→hide
+    存续+投影排除+focus unhide 全链）；计时体感待实机。
+  AC-02 partial｜探活 250ms 档 + real_daemon_ping_short_timeout_fast_fail
+    （快失败实测 <1s）；首开 <300ms 计时待实机（工件裁定不做后台化）。
+  AC-03 partial｜w2_notification_panel_anchor_bottom_right（headless
+    端到端几何：卡片贴 dock 上方 y=687/根高768、右距对称）+ flex-1
+    塌缩诊断对照（#[ignore] 留档）；Vue 同帧截图待实机。
+  AC-04 partial｜×/scrim/Esc 同自隐臂（源检）+ N6d 守卫模式
+    （launcher 先例复用）+ pack 编译门；三路径交互截图待实机。
+  AC-05 partial｜popover ondismiss 机制（源检）+
+    desktop_mcp_dock_pager_hover_popovers（popover open 计数/结构
+    断言）；外点交互截图待实机。
+  AC-06 partial｜w8_workspace_preview_materializes_in_popover_for +
+    tile_rect Contain 几何单测 + 七处显式臂 fence；快照合成视觉
+    （多分区多窗截图）待实机。
+  AC-07 partial｜四组单测（parse 往返/执行臂增删去重/投影 csv+指纹/
+    config 三态语义）+ settings_dock 落盘断言；实机全链（固定→重启
+    保持）待实机。
+  AC-08 partial｜w-[696px] 定宽（源检）+ w5 三测试（分配/last-wins
+    持久/refresh 动词）；拖拽手感与截图待实机。
+  AC-09 pass（headless）｜summon_launcher_mounts_and_injects fence
+    （注册表含 launcher → 注入排除 + 召唤链完好，palette/grid 单点
+    同愈）；实机复核点并入合并前冒烟。
+  AC-10 partial｜w7 三面 headless 探针（Row 不推远/chip 图标盒
+    (10,10) 居中/按钮 (12,12) 居中）——"偏左上"未复现；实机放大
+    截图终裁待实机。
+  AC-11 partial｜projection_v16 扩 focused_app 翻转断言 + shell.at
+    三态底条/高亮结构；三态色彩可辨截图待实机。
+  AC-12 partial｜projection_v16_notes_visible（:v 指纹翻转）+ 四钮
+    判据源检（切换器/电源本地态、齿轮=运行集、铃铛=投影）；四钮开合
+    截图待实机。
+  **findings**：
+  - F1（major，SD-01/SD-02，→work）：协议合同文档
+    schema/projection-protocol-v1.md 停在 v1.5（@029a5f7ea），v1.6
+    增量（dock_pin/dock_unpin、refresh_desktop_icons 动词；
+    __dock_pinned_csv/__wm_notes_visible/__wm_focused_app 投影面；
+    workspace_preview 合同面）未落合同文档——canonical spec diff 未
+    备，merge 无从派生。修正：work 在 auto-lang worktree 按 §5 规范
+    增量表 + 本记录验收映射补 v1.6 节（字段表/动词词表/变更记录），
+    纯文档零行为变更。T9 已重开（产物含 SD 回填）。
+  - F2（blocker-for-pass，AC-01..12 实机子集，→用户/环境）：实机/
+    双端核验未执行——autoui-verifier 技能本会话不可用，GUI 驱动不
+    在会话能力内。**逐 AC 判定均如实标 partial（确定性证据已备，
+    视觉/计时证据缺）**，按"不把未验证的必要判据记 pass"纪律不判
+    pass。解除动作：用户在实机按 §7 各 AC 验证方法走查（或授权
+    autoui-verifier 环境后由下一轮 review 采集），截图落
+    docs/plans/evidence/012/。
+  - F3（minor，随 F2）：docs/plans/evidence/012/ 证据目录未建
+    （待实机采集时一并落）。
+  evidence：本记录引用的测试名均在 auto-lang worktree
+  crates/auto-lang/src/ui/{iced/renderer.rs,iced/layout_tests.rs,
+  iced/workspace_preview.rs,desktop_config.rs,session.rs} 可检索；
+  全量门原始名单 /tmp/os012_review_gate.txt（会话临时，结论已摘要
+  入本记录）；决策工件三份 auto-lang worktree scratch/p012/
+  （不入库，结论已摘入 §9）。
+  next：work（F1 协议文档 v1.6）→ F2 实机采集（用户）→ 复审
+  （预期 pass：复用确定性证据 + F2 截图/计时补全）。
 
 ## 10. 待澄清事项
 
