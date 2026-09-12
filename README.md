@@ -58,6 +58,8 @@ auto-os/
 | id | name | repo / 目录 | kind | ports | status |
 |---|---|---|---|---|---|
 | kanban | 通用看板（v1 计划板） | [../auto-kanban](../auto-kanban) | repo | 17100 / 17101 | active (Plan 579) |
+| auto-musk | Auto Musk（Coding Agent） | [../auto-musk](../auto-musk) | repo | 17200 / 17201（预留，待 pac 采纳） | active (2026-09-11) |
+| jade-garden | Jade Garden（类 Obsidian 知识库） | [../auto-down](../auto-down)`/jade-garden/front/auto` | repo | 17300 / 17301（预留，待 pac 采纳） | active (2026-09-11) |
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
@@ -66,6 +68,11 @@ auto-os/
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md。in-repo `apps/` 为
 > Stage B 随迁的桌面域 app（沿 examples 的 30NN/80NN 端口带；升格独立仓
 > 时改 17xxx 带）。
+> 未来方向：examples demo 逐步独立为外部仓，经 git submodule 引入本仓
+> 统一管理（首个样板 kanban；机制落地另立计划）。AutoTerm（[../auto-term](../auto-term)）
+> 为引擎 adapter 形态（autoterm-core cdylib + at 复刻应用，无 pac.at），
+> 桌面终端当前经 os-config `autoterm_page`（View::Terminal）承载，
+> 独立 app 化另立计划。
 
 ## 关联
 
