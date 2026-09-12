@@ -198,6 +198,11 @@ def persistence() -> tuple[str, str]:
         after_lower = http_json(base + "/api/tetris/record")
         if before != 42 or after_lower != 42:
             return "blocked", f"lower score overwrote record: {before} -> {after_lower}"
+        negative = http_json(base + "/api/tetris/score", "POST", {"score": "-1"})
+        invalid = http_json(base + "/api/tetris/score", "POST", {"score": "oops"})
+        after_invalid = http_json(base + "/api/tetris/record")
+        if negative is not False or invalid is not False or after_invalid != 42:
+            return "blocked", f"invalid scores were accepted: {negative}, {invalid}, {after_invalid}"
         higher = http_json(base + "/api/tetris/score", "POST", {"score": "99"})
         after = http_json(base + "/api/tetris/record")
         persisted_text = record_file.read_text(encoding="utf-8")
