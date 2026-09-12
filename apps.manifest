@@ -8,6 +8,34 @@
       "ports": [17100, 17101],
       "status": "active",
       "added": "2026-09-07"
+    },
+    {
+      "id": "auto-musk",
+      "name": "Auto Musk（Coding Agent）",
+      "repo": "../auto-musk",
+      "kind": "repo",
+      "ports": [17200, 17201],
+      "status": "active",
+      "added": "2026-09-11",
+      "daemon": {
+        "port": 17201,
+        "bin": "backend/target/release/musk",
+        "env_port": "MUSK_SERVE_PORT"
+      }
+    },
+    {
+      "id": "jade-garden",
+      "name": "Jade Garden（类 Obsidian 知识库）",
+      "repo": "../auto-down/jade-garden/front/auto",
+      "kind": "repo",
+      "ports": [17300, 17301],
+      "status": "active",
+      "added": "2026-09-11",
+      "daemon": {
+        "port": 17301,
+        "bin": "../../back/server/target/release/jade-garden-back",
+        "env_port": "JADE_GARDEN_PORT"
+      }
     }
   ]
 }
