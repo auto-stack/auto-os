@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-012
 plan_revision: 2              # rev2 = 追加问题7（图标居中 + 任务栏状态指示，2026-09-11）
-status: executing             # drafting → executing → execution_done → reviewed → archived（review 2026-09-12 needs_fix：F1 协议合同文档缺口回 work；T9 重开）
+status: executing             # drafting → executing → execution_done → reviewed → archived（review needs_fix→work F1 已修；余 F2 实机采集待用户后复审）
 feature_name: shell-ux-feedback-batch
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -15,7 +15,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 affects: [auto-lang/ui/session.rs, auto-lang/ui/iced/renderer.rs, auto-lang/ui/desktop_config.rs,
           auto-lang/schema/projection-protocol-v1.md, shell/shell.at, shell/desktop.at,
           shell/notification_center.at, auto-os-config/auto/src/front]
-current_step: 13
+current_step: 14
 total_steps: 14
 ---
 
@@ -484,7 +484,7 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
 | T6 | W2 toast TTL 现状核对记录（不改代码；策略文档落 SD-04） [✅ 已完成 2026-09-12] renderer.rs:12329 toasts.retain（duration_ms TTL、250ms tick 驱动）在案；关闭模型头注落 notification_center.at；同 1c236e8/da32c83f9 | renderer.rs:12217 核对；notification_center.at 头注 | 复审记录附核对证据 | AC-04 |
 | T7 | W3 切换器 popover 化（外点关闭）+ fallback 预案决策记录 [✅ 已完成 2026-09-12] 面板迁入 square-stack 钮 popover（top-end 右锚定，ondismiss=SwitcherToggle 外点/Esc 关；open 直读状态，热键 1.6s 收起不变）；desktop_mcp_dock_pager_hover_popovers 断言更新过；auto-os 1c236e8 | auto-os shell/shell.at（:317-355 迁入 popover）；renderer sync 臂核对热键路径 | 实机 AC-05；pack 编译门 | AC-05 |
 | T8 | W3 `workspace_preview` 宿主 widget（DSL 变体 + convert 臂 fence + 合成几何 + SWR 预抓）+ shell.at 卡片消费 [✅ 已完成 2026-09-12] 新布局件（schema/render_support/coverage 三表登记）+七处显式臂+workspace_preview.rs 数据面（sync 发布 usable tile/壁纸基色，tile_rect Contain 纯函数单测）+fence 测试；二分定位并绕开 VM 模板"popover content 内 for 循环体 button 不物化"问题（卡片 mouse-area 承载）；auto-lang 2493ec3ad / auto-os a7ee696 | auto-lang aura_view_builder.rs / renderer.rs（dynamic_view 族）/ snapshot.rs 消费；shell.at :332-338 | cargo t 变体 fence + 几何单测；实机 AC-06 | AC-06 |
-| T9 | W4 dock 合并 + pin/unpin：协议 v1.6 两动词 + `__dock_pinned_csv` 投影 + shell.at 菜单组 + 缺省置空与空表语义修 [✅ 已完成 2026-09-12] dock_pin/dock_unpin 枚举/encode/parse/执行臂（Vec 增删去重+save+双 inject）+__dock_pinned_csv（指纹 \|pinned: 段）+DEFAULT_DOCK_PINNED=[] 空表回退退役+shell.at 单组合并/双菜单；单测四组全过；auto-lang c83820d37 / auto-os 1c9a2fc。**review 2026-09-12 重开**：产物"SD-01/03 回填"未完成——auto-lang schema/projection-protocol-v1.md 仍停 v1.5，v1.6 增量（dock_pin/unpin 动词、__dock_pinned_csv、__wm_notes_visible、__wm_focused_app、refresh_desktop_icons、workspace_preview 合同面）合同文档未备（finding F1）；实现本体与单测已审验通过 | auto-lang session.rs（枚举/encode/parse/执行臂）、renderer.rs（sync 投影、execute_set_dock_pinned 邻位）、desktop_config.rs（DEFAULT_DOCK_PINNED/load）、shell.at（:141-231 循环+菜单） | cargo t 四组单测；实机 AC-07；SD-01/03 回填（**待 work 补协议文档**） | AC-07 |
+| T9 | W4 dock 合并 + pin/unpin：协议 v1.6 两动词 + `__dock_pinned_csv` 投影 + shell.at 菜单组 + 缺省置空与空表语义修 [✅ 已完成 2026-09-12] dock_pin/dock_unpin 枚举/encode/parse/执行臂（Vec 增删去重+save+双 inject）+__dock_pinned_csv（指纹 \|pinned: 段）+DEFAULT_DOCK_PINNED=[] 空表回退退役+shell.at 单组合并/双菜单；单测四组全过；auto-lang c83820d37 / auto-os 1c9a2fc。**review 2026-09-12 重开→work F1 修复**：协议合同文档 schema/projection-protocol-v1.md 已补 v1.6 节（动词词表/投影面/指纹段/DSL 合同面/缺省空语义/变更记录，auto-lang worktree 提交，纯文档零行为变更）；实现本体与单测已审验通过 | auto-lang session.rs（枚举/encode/parse/执行臂）、renderer.rs（sync 投影、execute_set_dock_pinned 邻位）、desktop_config.rs（DEFAULT_DOCK_PINNED/load）、shell.at（:141-231 循环+菜单） | cargo t 四组单测；实机 AC-07；SD-01/03 回填（**待 work 补协议文档**） | AC-07 |
 | T10 | W5 桌面图标紧凑化 [✅ 已完成 2026-09-12] grid 定宽 w-[696px]（8×80px 格+7×8px gap），原 w-full 拉伸数百 px 根因消除；pack sync pin 91951c49a4；auto-os 0167fa3 / auto-lang 23fdd39b7 | auto-os shell/desktop.at（:82 grid 容器定宽） | 实机截图前后对照（AC-08 前半）；pack sync | AC-08 |
 | T11 | W5 拖拽：T1 有界调查决策工件 → 按决策实施（位置存储+注入+absolute 渲染+拖拽态机+持久化） [✅ 已完成 2026-09-12] 工件 scratch/p012/w5-dnd.md（press-press 两段式+格子磁吸定案，Q2 默认条款）；desktop_icon_cells 格子分配+__desktop_cells/平行列表+refresh_desktop_icons 动词+desktop.at IconPress 态机+storage 持久（重启保持）；单测三件；auto-lang c5498ab61 / auto-os 90c67bc | scratch/p012/w5-dnd.md；auto-lang desktop_config.rs 或 storage 键、renderer.rs 注入臂；shell/desktop.at | 决策工件 + 实机 AC-08 后半 | AC-08 |
 | T12 | W7 字形居中：实机探针定案（两出口几何）→ lucide 出口 container 约束+居中修复（对齐 svgdoc 路径）；按钮内嵌路径按结论补 [✅ 已完成 2026-09-12] headless iced_test 三面探针定案（Row 不推远/chip 图标盒(10,10)居中/按钮图标盒(12,12)居中）——"偏左上"现行管线未复现，投机性渲染器改动不落，探针入套件锁行为；AC-10 终裁转实机；工件 scratch/p012/w7-icon-center.md；auto-lang 2b9c4583b | auto-lang renderer.rs :4937 出口、:3448 按钮内嵌路径；探针记录 scratch/p012/w7-icon-center.md | cargo t 出口单测；实机 AC-10 双面截图 | AC-10 |
@@ -625,6 +625,20 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   （不入库，结论已摘入 §9）。
   next：work（F1 协议文档 v1.6）→ F2 实机采集（用户）→ 复审
   （预期 pass：复用确定性证据 + F2 截图/计时补全）。
+- 2026-09-12 work F1 修复（/auto-plan:work，needs_fix 回修）：stage:
+  work，PLAN-012 rev2，outcome: **pass（F1 范围）**，status 保持
+  executing（F2 未闭合）。code_commit：auto-lang os-012-dev（schema/
+  projection-protocol-v1.md v1.5→v1.6，48+/6-——动词词表
+  dock_pin/dock_unpin/refresh_desktop_icons、投影面 __dock_pinned_csv/
+  __wm_focused_app/__wm_notes_visible、指纹段 notes `:v` 尾标与
+  `|pinned:` 段、DSL 合同面 workspace_preview 与 __desktop_cells 格子
+  表、dock_pinned 缺省空语义、close→hide 投影排除注记、§5 v1.6 金样
+  补登）。task_ids：T9（SD-01 回填清偿）+T8/T11/T13/T14（SD-02 与
+  投影面文档随行）。verification：纯文档零行为变更（diff --stat 48+/6-
+  ，无 .rs/.at 触碰）；hash-lock 四件全等不受影响。blockers：**F2**
+  （实机/双端核验，AC-01..12 视觉与计时证据——见 review 记录解除动
+  作：用户按 §7 走查或授权 autoui-verifier 环境）。next：F2 采集完成
+  后复审（复用本计划全部确定性证据 + F2 补全）。
 
 ## 10. 待澄清事项
 
