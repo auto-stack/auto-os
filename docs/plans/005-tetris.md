@@ -538,8 +538,9 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   过滤，方向键、Space、P 不依赖 IME。
 - 证据：Rust UI 重新编译并以 `AUTOUI_MCP_PORT=9250` 启动；首屏状态为
   `phase=ready`，点击“开始游戏”后 `phase=playing`，调用
-  `autoui_keyboard ArrowLeft` 后 `store.px: 3 → 2`。生成的 Rust 源码包含
-  ArrowLeft/Right/Up/Down、Space、P/p 的绑定与消息映射。Vue 构建与
+  `autoui_keyboard ArrowLeft` 后 `store.px: 3 → 2`，随后 ArrowRight 恢复为
+  3；Space 使方块落到底部，P 使 `phase: playing → paused`。生成的 Rust
+  源码包含 ArrowLeft/Right/Up/Down、Space、P/p 的绑定与消息映射。Vue 构建与
   Playwright 3/3（含键盘硬降、Dialog 居中、10/4 列与零圆角盒模型）继续通过。
 - 限制：当前环境没有可供 Computer Use 直接注入物理键的桌面窗口，因此物理
   按键已完成源码/生成物路径核验，Rust MCP 已完成实际状态变化核验；B1 仍保留
