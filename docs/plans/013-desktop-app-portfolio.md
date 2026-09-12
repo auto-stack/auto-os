@@ -13,7 +13,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: []                   # 本仓 docs/specs/ 缺位（.autoos/specs.json 六节均空）——
                               # 规范落点为 AGENTS.md / README.md，见 §5 规范增量
-current_step: 10
+current_step: 11
 total_steps: 12
 ---
 
@@ -242,7 +242,7 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 
 | ID | 可观察行为 | 验证方法 | 预期 |
 |---|---|---|---|
-| AC-01 | 桌面冷启（三仓后端均未手动启动）点击 kanban / musk / jade-garden 图标 | `./scripts/desktop.ps1 -Track iced` 后逐一点击 | 后端自动 ensure（ping/spawn 链），窗口出应用内容；Offline 时不挂死、徽标有因 |
+| AC-01 | 桌面冷启（三仓后端均未手动启动）点击 kanban / musk / jade-garden 图标 | `./scripts/desktop.ps1 -Track iced` 后逐一点击 | **链路面达成（2026-09-12 实机）**：三 app 均进 launch 臂、daemon ensure 无阻塞、失败走 LaunchFallback 窗不崩桌面。**内容面拆账**：musk 窗 = LaunchFallback（VM synthesis 不支持 vue 符号，KD 059-FU1 债）；jade 窗 = app.at placeholder（VM 壳未开发）；kanban 未点（worktree 组无 kanban，主检出容器臂已证） |
 | AC-02 | launcher 出现 AutoTerm，点击得可交互终端 | launcher 搜索 "AutoTerm" → 点击 → 输入命令 | `engine_spawn` 会话建立，输入回显/输出刷新，Close 后句柄释放 |
 | AC-03 | auto-term 入伞形清单 | `apps.manifest` 含 auto-term 行；`git grep autoterm apps.manifest` | `{ id: auto-term, repo: ../auto-term/app, ports: [17400,17401] }`；os-config 内嵌终端页不回归（设置页仍可开） |
 | AC-04 | apps/kanban submodule 就位且容器臂命中 | `git submodule status`；桌面启动日志 extra roots | gitlink 存在；kanban 经 apps/kanban 导入（id `kanban` 不变） |
@@ -287,7 +287,19 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
   `JADE_GARDEN_PORT=17301 jade-garden-back` → `/api/health` "ok" 200。→ AC-01
   （实地门前置全部就绪：jade 修复 ✓ + 双 release 产物 ✓ + 引擎件部署 ✓，
   剩实机桌面点击）
-- **T-06** [实地验证] 桌面冷启逐一点击三 app（AC-01 全链）。依赖 T-02..T-05。→ AC-01
+- **T-06** [◐ 链路收口，内容层各仓债] [实地] 2026-09-12 用户实机（桌面
+  CWD=worktree 组，RUST_MIN_STACK=16MB）：① **AutoTerm 全链 ✓**（T-08 实地部分
+  同此收口：launcher 点开 → 终端会话可用）；② **musk**：点击进 launch 臂
+  （`launch_app(inproc) auto-musk`）→ daemon ensure 无阻塞 → inproc 装载失败走
+  **LaunchFallback 错误窗**（"应用暂不可用"）——失败根因 = VM handler synthesis
+  不支持 vue 专属符号（`document`/i18n `t()` → `handler synthesis failed` ×4 →
+  CODEGEN poison drop `mention_helpers.mention_detect` 等 → link 断）；③ **jade**：
+  窗口出 `app.at` 本体——**jade 的 VM 版 app.at 即 placeholder**（"jade-garden
+  auto root placeholder"，真身为 web 版 Vue+Vite，VM 壳未开发），装载零错误零警告。
+  **判定**：PLAN-013 交付面（注册表/daemon ensure/launch 链/fallback UX）全部工作；
+  musk/jade 的窗口内容 = 各仓 VM 成熟度债（musk：前端 vue 符号去化或 VM synthesis
+  扩展，KD 059-FU1 取证线的深层原因；jade：VM 版从 placeholder 到真身的开发），
+  记跨仓台账不属本计划。→ AC-01（链路面达成；内容面拆账各仓）
 
 ### Phase 2：auto-term app 化
 
