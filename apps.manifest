@@ -8,6 +8,15 @@
       "ports": [17100, 17101],
       "status": "active",
       "added": "2026-09-07"
+    },
+    {
+      "id": "tetris",
+      "name": "俄罗斯方块",
+      "repo": "apps/036-tetris",
+      "kind": "repo",
+      "ports": [17400, 17401],
+      "status": "active",
+      "added": "2026-09-12"
     }
   ]
 }

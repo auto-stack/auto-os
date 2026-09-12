@@ -1,0 +1,26 @@
+// Single-player record persistence. Tests set AUTO_TETRIS_RECORD explicitly.
+var current_best int = 0
+
+pub fn read_best() int {
+    // The native VM uses the same function body and can replace this read
+    // with a user-selected record path. Rust HTTP keeps the process-local
+    // value until the file API gains a typed JSON decoder in the generator.
+    return current_best
+}
+
+pub fn save_best(score int) int {
+    if score < 0 { return current_best }
+    var old int = read_best()
+    if score > old { current_best = score }
+    var content str = score.to_string()
+    File.write_text("records.json", content)
+    return current_best
+}
+
+pub fn all_scores() []int {
+    return [read_best()]
+}
+
+pub fn create_score(score int) int {
+    return save_best(score)
+}

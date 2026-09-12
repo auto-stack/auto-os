@@ -1,0 +1,17 @@
+// Backend contract. A small object keeps the JSON shape explicit for Vue,
+// HTTP VM, and merged Rust clients.
+use db
+
+// Kept as the public contract anchor for future typed score history. The
+// current endpoint intentionally returns the scalar best-score list because
+// that shape is supported by every AutoUI renderer.
+pub type Score = {
+    id: int
+    score: int
+}
+
+#[api(method = "GET", path = "/api/tetris/record")]
+pub fn list_scores() []int { return db.all_scores() }
+
+#[api(method = "POST", path = "/api/tetris/score")]
+pub fn create_score(score int) int { return db.create_score(score) }

@@ -1,0 +1,14 @@
+name: "tetris"
+version: "1.0.0"
+scene: "ui"
+render: "vue"
+icon: "blocks"
+title: "俄罗斯方块"
+theme: "dark"
+accent: "indigo"
+api: "rust"
+front_port: 17400
+back_port: 17401
+window: "fit"
+desktop: "true"
+category: "game"

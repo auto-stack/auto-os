@@ -38,6 +38,7 @@ auto-os/
 │   ├── 025-sys-monitor/ #   系统监视器（541 终态；tests/desktop_mcp 随目录）
 │   ├── 028-launcher/    #   桌面启动器（464；注册表型特权 app）
 │   ├── 038-minesweeper/ #   扫雷（games-wave1 基底）
+│   ├── 036-tetris/      #   俄罗斯方块（Plan 005；Vue/VM/Rust 双端）
 │   └── common/settings/ #   共享 SettingsPopover 组件（ui-gallery 消费）
 ├── ui-gallery/          # UI 示例画廊（顶层；收割 auto-lang examples/ui，
 │                        #   解析序 AUTO_GALLERY_APPS → ../auto-lang）
@@ -61,6 +62,7 @@ auto-os/
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
+| tetris | 俄罗斯方块 | `apps/036-tetris/` | repo | 17400 / 17401 | active (Plan 005) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md。in-repo `apps/` 为

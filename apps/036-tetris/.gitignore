@@ -1,0 +1,13 @@
+# Generated / runtime artifacts.
+gen/
+.auto/
+dist/
+build/
+.am/
+rust-workspace/
+node_modules/
+.cargo-*/
+*.log
+records.json
+src/back/*.a2r.rs
+tests/test-results/
