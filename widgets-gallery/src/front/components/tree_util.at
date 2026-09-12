@@ -193,3 +193,24 @@ pub fn flatten_tree(nodes List, expanded List, directory bool, selected str) Lis
     return outRows
 }
 
+
+/// 树过滤:保留命中节点(label 含 kw,大小写不敏感)与其全部祖先。
+/// kw 为空返回全量浅拷贝。递归实现——VM 轨递归能力经 P618 探针验证;
+/// 供搜索框场景:过滤后以 collect_ids(结果, false) 全展开。
+pub fn filter_tree(nodes List, kw str) List {
+    var out List = []
+    var i int = 0
+    while i < nodes.len() {
+        var nd = nodes[i]
+        var fk List = filter_tree(nd.children, kw)
+        // v1 大小写敏感(P618 实证):.lower() 链在 VM 轨沿嵌套帧返回空串
+        // (两步赋值在浅帧正常、深帧仍失效),故 contains 直用原串;引擎修复
+        // 后可恢复不区分大小写。
+        var selfHit bool = kw == "" || nd.label.contains(kw)
+        if selfHit || fk.len() > 0 {
+            out.push({ id: nd.id, label: nd.label, kind: nd.kind, icon: nd.icon, is_leaf: nd.is_leaf, badge: nd.badge, children: fk })
+        }
+        i = i + 1
+    }
+    return out
+}
