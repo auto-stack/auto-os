@@ -13,7 +13,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: []                   # 本仓 docs/specs/ 缺位（.autoos/specs.json 六节均空）——
                               # 规范落点为 AGENTS.md / README.md，见 §5 规范增量
-current_step: 5
+current_step: 7
 total_steps: 12
 ---
 
@@ -282,12 +282,22 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 
 ### Phase 2：auto-term app 化
 
-- **T-07** auto-term 仓新建 `app/pac.at` + `app/src/front/{app.at, autoterm_store.at,
-  autoterm_store 移植, autoterm_page.at}`（§5 Phase 2 设计；移植源 = auto-os-config
-  `auto/src/front/autoterm_{store,page}.at`，去 desktop_store 注册表分发层）。→ AC-02
-- **T-08** [实地验证] 桌面 launcher 点 AutoTerm 全链（Open/Send/回显/Close）。依赖 T-07。→ AC-02
-- **T-09** auto-os `apps.manifest` 登记 auto-term（17400/17401 转实）；README Apps 表
-  （SD-02 前半）。依赖 T-08。→ AC-03
+- **T-07** [✅ 已完成] auto-term 仓 `app/` 四件：pac.at（render vm / 17400-17401 预留 /
+  icon terminal / category system）+ front 三件（store/page 自 os-config OS-013 T3
+  升格移植，去 desktop_page 注册表分发层；App 根 200ms Tick 转发）。
+  commit 6f18c8c（worktree os-013-dev；含 .gitignore app 生成物规则）。→ AC-02
+- **T-08** [◐ 代码面完成，窗内交互留实机] 部署/冒烟前置已核实：`Term.engine_*`
+  shim dll 解析序（env AUTOTERM_ENGINE_DLL → 宿主 exe 同目录 → 祖先 target，缺席
+  spawn 返 0 优雅降级）；部署链现成 = auto-os-config `scripts/deploy-autoterm.sh`
+  （组布局感知，.wt/os-013/auto-term 自动命中；dll 现存 auto-term 主检出
+  target/debug）。注册表层短启动实证：ui_desktop CWD=worktree auto-os →
+  `[session] app registry: 41 entries (25 desktop-visible)`——auto-term 入可见集
+  （kanban skip 为 worktree 兄弟路径环境形态，主检出无此问题）。**剩余**：实机
+  launcher 点击 AutoTerm → New Session/Send/回显/Close 全链 + dll 部署执行。
+  → AC-02（实地部分）
+- **T-09** [✅ 已完成] manifest 登记 auto-term `{ repo: ../auto-term/app,
+  ports: [17400,17401] }`（无 daemon 字段：引擎进程内，无后端）。commit a599c68。
+  README Apps 表行随 merge 阶段补（SD-02）。→ AC-03
 
 ### Phase 3：kanban submodule
 
@@ -338,3 +348,10 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
    `cargo build --release -p musk`（backend/，产物 backend/target/release/musk.exe）、
    jade（base64 修复后）`cargo build --release`（back/server/）——桌面 spawn 发现序
    按 manifest bin 路径找 release 产物，debug 产物不命中（D2 定案）。
+6. **[work 阶段新增 2026-09-12]** T-08 实地剩余前置：① 引擎件部署——
+   `bash auto-os-config/scripts/deploy-autoterm.sh`（组布局感知；dll 须先在
+   auto-term 构建或 AUTO_TERM_ROOT 指主检出 target/debug，现成产物在
+   D:/autostack/auto-term/target/debug/autoterm_core.dll）；② `trans rust`
+   子命令对 AutoUI widget/store DSL 不可用（os-config 原版/013-todo 同样
+   E0099，实测对照在案）——.at 装载验证以桌面注册表短启动为准，trans 门
+   不作 UI 形态依据。
