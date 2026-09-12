@@ -36,6 +36,15 @@
         "bin": "../../back/server/target/release/jade-garden-back",
         "env_port": "JADE_GARDEN_PORT"
       }
+    },
+    {
+      "id": "auto-term",
+      "name": "AutoTerm（桌面终端）",
+      "repo": "../auto-term/app",
+      "kind": "repo",
+      "ports": [17400, 17401],
+      "status": "active",
+      "added": "2026-09-12"
     }
   ]
 }
