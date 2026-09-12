@@ -34,7 +34,9 @@ widget App {
                 col {
                     style: "w-72 h-[36rem] bg-slate-950 border border-slate-700 rounded-lg p-1"
                     grid {
-                        columns: 10
+                        cols: 10
+                        gap: 1
+                        style: "w-full h-full min-h-0"
                         for cell in .store.cells {
                             button { aria-label: cell.aria, onclick: .Start, class: cell.cell_class }
                         }
@@ -46,7 +48,8 @@ widget App {
                         style: "bg-card border border-border rounded-xl p-4 gap-2"
                         text "下一个" { style: "text-xs text-muted-foreground" }
                         grid {
-                            columns: 4
+                            cols: 4
+                            gap: 1
                             for cell in .store.next_cells { div { class: cell.cell_class } }
                         }
                     }

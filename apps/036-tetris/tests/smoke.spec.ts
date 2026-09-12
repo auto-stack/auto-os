@@ -13,6 +13,17 @@ async function openGame(page) {
 
 test('首屏显示棋盘、下一个方块和纪录面板', async ({ page }) => {
   await openGame(page)
+  const grids = page.locator('.grid')
+  await expect(grids).toHaveCount(2)
+  const boardColumns = await grids.nth(0).evaluate(el =>
+    getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length,
+  )
+  const nextColumns = await grids.nth(1).evaluate(el =>
+    getComputedStyle(el).gridTemplateColumns.trim().split(/\s+/).length,
+  )
+  expect(boardColumns).toBe(10)
+  expect(nextColumns).toBe(4)
+  await expect(grids.nth(0).locator('button')).toHaveCount(200)
   const body = await page.locator('body').innerText()
   expect(body).toContain('下一个')
   expect(body).toContain('最高纪录')

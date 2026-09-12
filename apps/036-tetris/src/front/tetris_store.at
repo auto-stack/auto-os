@@ -24,7 +24,6 @@ store TetrisStore {
         var py int = 0
         var seed int = 17
         var score int = 0
-        var best int = 0
         var lines int = 0
         var level int = 1
         var gravity_ms int = 600
@@ -73,23 +72,24 @@ store TetrisStore {
             .seed = 17
             .needs_rebuild = true
             .pending_lock = false
-            // The HTTP contract returns the current best as a scalar. Merged
-            // Rust may still return its generic default until typed API
-            // bridging is available; that remains an honest zero here.
-            var loaded_best int = list_scores()
-            .best = loaded_best
+            // Normalize both API clients through text: Vue returns a number,
+            // merged Rust returns a scalar, and Rust HTTP split returns
+            // serde_json::Value. String concatenation is supported by all
+            // renderers, while keeping the displayed best exact.
+            var loaded_best str = "" + list_scores()
+            if loaded_best == "" || loaded_best == "null" { loaded_best = "0" }
             .score_label = "0"
-            .best_label = .best.to_string()
+            .best_label = loaded_best
             .lines_label = "0"
             .level_label = "01"
             .progress_label = "升级还需 10 行"
-            if .best > 0 { .save_label = "已保存" } else { .save_label = "暂无纪录" }
+            if .best_label != "0" { .save_label = "已保存" } else { .save_label = "暂无纪录" }
             .cells = []
             var empty_i int = 0
             for empty_i < 200 {
                 var empty_col int = empty_i % 10
                 var empty_row int = empty_i / 10
-                .cells.push({ x: empty_col, y: empty_row, kind: "empty", cell_class: "h-full w-full border border-slate-800 bg-slate-950", aria: "棋盘第" + (empty_row + 1).to_string() + "行第" + (empty_col + 1).to_string() + "列" })
+                .cells.push({ x: empty_col, y: empty_row, kind: "empty", cell_class: "h-full w-full min-w-0 min-h-0 rounded-none p-0 border border-slate-800 bg-slate-950", aria: "棋盘第" + (empty_row + 1).to_string() + "行第" + (empty_col + 1).to_string() + "列" })
                 empty_i = empty_i + 1
             }
             .next_cells = []
@@ -249,7 +249,11 @@ store TetrisStore {
                 .px = 3
                 .py = 0
                 .elapsed_ms = 0
-                .save_pending = .score > .best
+                var candidate_is_best bool = false
+                var candidate_len int = .score.to_string().len()
+                if candidate_len > .best_label.len() { candidate_is_best = true }
+                else if candidate_len == .best_label.len() && .score.to_string() > .best_label { candidate_is_best = true }
+                .save_pending = candidate_is_best
                 if .save_pending { .save_label = "新纪录待保存" }
                 var spawn []int = .shapes[.piece * 4]
                 var valid_spawn bool = true
@@ -307,10 +311,10 @@ store TetrisStore {
                     var render_col int = render_i % 10
                     var render_row int = render_i / 10
                     var render_kind str = "empty"
-                    var render_class str = "h-full w-full border border-slate-800 bg-slate-950"
+                    var render_class str = "h-full w-full min-w-0 min-h-0 rounded-none p-0 border border-slate-800 bg-slate-950"
                     if .board[render_i] > 0 {
                         render_kind = "locked"
-                        render_class = "h-full w-full border-2 " + .colors[.board[render_i] - 1] + " brightness-90"
+                        render_class = "h-full w-full min-w-0 min-h-0 rounded-none p-0 border-2 " + .colors[.board[render_i] - 1] + " brightness-90"
                     }
                     var active_j int = 0
                     for active_j < 8 {
@@ -320,10 +324,10 @@ store TetrisStore {
                         var ghost_y2 int = ghost_y + render_active[active_j + 1]
                         if active_x == render_col && active_y == render_row {
                             render_kind = "active"
-                            render_class = "h-full w-full border-2 " + .colors[.piece] + " brightness-125 shadow-inner"
+                            render_class = "h-full w-full min-w-0 min-h-0 rounded-none p-0 border-2 " + .colors[.piece] + " brightness-125 shadow-inner"
                         } else if ghost_x2 == render_col && ghost_y2 == render_row && render_kind == "empty" {
                             render_kind = "ghost"
-                            render_class = "h-full w-full border-2 border-dashed " + .colors[.piece] + " bg-transparent opacity-80"
+                            render_class = "h-full w-full min-w-0 min-h-0 rounded-none p-0 border-2 border-dashed " + .colors[.piece] + " bg-transparent opacity-80"
                         }
                         active_j = active_j + 2
                     }
@@ -346,7 +350,6 @@ store TetrisStore {
                     preview_i = preview_i + 1
                 }
                 .score_label = .score.to_string()
-                .best_label = .best.to_string()
                 .lines_label = .lines.to_string()
                 .level_label = if .level < 10 { "0" + .level.to_string() } else { .level.to_string() }
                 var remain int = 10 - (.lines % 10)
@@ -385,7 +388,6 @@ store TetrisStore {
             .save_label = "纪录读取中…"
             .save_pending = false
             .score_label = "0"
-            .best_label = .best.to_string()
             .lines_label = "0"
             .level_label = "01"
             .progress_label = "升级还需 10 行"
@@ -396,9 +398,9 @@ store TetrisStore {
         .CloseHelp -> { if .phase == "help" { .phase = "paused"; .status_label = "已暂停"; .needs_rebuild = true } }
         .RetrySave -> {
             if .save_pending {
-                var save_ok bool = create_score(.score.to_string())
-                if save_ok {
-                    .best = .score
+            var save_ok_raw str = "result:" + create_score(.score.to_string())
+            if save_ok_raw == "result:true" {
+                    .best_label = .score.to_string()
                     .save_pending = false
                     .save_label = "已保存"
                 } else {
