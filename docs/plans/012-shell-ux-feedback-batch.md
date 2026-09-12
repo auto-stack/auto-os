@@ -639,6 +639,26 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   （实机/双端核验，AC-01..12 视觉与计时证据——见 review 记录解除动
   作：用户按 §7 走查或授权 autoui-verifier 环境）。next：F2 采集完成
   后复审（复用本计划全部确定性证据 + F2 补全）。
+- 2026-09-12 work F2 走查续（用户实机 AC-01/02 结果：**不通过**——
+  打开仍 >300ms + 主题切换无效 + UX 定向）：stage: work，outcome:
+  pass（本轮修复范围），status 保持 executing。**新 scope 授权**：
+  用户反馈即授权扩 auto-os-config 仓（原计划只读）——worktree
+  .wt/os-012/auto-os-config（分支 os-012-dev @ 5ba403f）三修已提交：
+  **F4** 缺省落地 Desktop 模块 + 概要页系统信息懒加载（Tick 门哨兵；
+  原 Init 无条件 system_info 全量探活含磁盘枚举 = 打开卡 ~1s 主因）；
+  **F6** 主题切换修复——PickTheme 原写 `cfg_theme` 幽灵字段（宿主不
+  读），改 Theme.SetMode 进程内即时 + `dark_theme`/`theme_source=
+  manual` config.at 双写（单写会被 system 派生回滚；实机 config.at
+  里躺着的 cfg_theme/cfg_transparency 即旧写污染证据）；**F5** 显示
+  页（原"外观"）缺省首置改名 + accent 五圆点置顶（PickAccent 中转
+  Theme.SetAccent）+ 全页字段名勘正（cfg_* 前缀全为幽灵键，bool 值
+  形 1/0↔true/false 转换）+ dock 固定提示按宿主 W4 语义更新。F2 采
+  集环境：桌面已按 os-012 分支启动（ui_desktop @ .wt/os-012，隔离
+  首启配置，extra_dirs 指 worktree front；注：ui_desktop 示例 +
+  desktop.ps1 iced 轨 CWD=os 根组合有存量 `use` 兄弟解析缺陷——
+  calculator 直挂 link 失败，launch 取 CWD=lang 根 + storage
+  extra_dirs 绝对路径绕开，另立观察项）。next：用户复检 AC-01/02
+  （⚙️ 体感 + 深浅色/accent 即时生效）→ 其余 AC 走查 → 复审收口。
 
 ## 10. 待澄清事项
 
