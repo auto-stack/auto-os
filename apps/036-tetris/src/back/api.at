@@ -3,15 +3,15 @@
 use db
 
 // Kept as the public contract anchor for future typed score history. The
-// current endpoint intentionally returns the scalar best-score list because
-// that shape is supported by every AutoUI renderer.
+// current endpoint returns the scalar best score so every AutoUI renderer can
+// consume it without a dynamic JSON collection.
 pub type Score = {
     id: int
     score: int
 }
 
 #[api(method = "GET", path = "/api/tetris/record")]
-pub fn list_scores() []int { return db.all_scores() }
+pub fn list_scores() int { return db.read_best() }
 
 #[api(method = "POST", path = "/api/tetris/score")]
-pub fn create_score(score int) int { return db.create_score(score) }
+pub fn create_score(score str) bool { return db.create_score(score) }

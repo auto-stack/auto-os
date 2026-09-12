@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test'
 
 async function openGame(page) {
   await page.route('**/api/tetris/record', route =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: '[0]' }),
+    route.fulfill({ status: 200, contentType: 'application/json', body: '0' }),
   )
   await page.route('**/api/tetris/score', route =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: '1' }),
+    route.fulfill({ status: 200, contentType: 'application/json', body: 'true' }),
   )
   await page.goto('/')
   await expect(page.getByText('俄罗斯方块').first()).toBeVisible()

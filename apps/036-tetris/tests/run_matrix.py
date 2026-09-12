@@ -194,13 +194,14 @@ def persistence() -> tuple[str, str]:
         else:
             return "blocked", "backend did not become ready"
 
-        lower = http_json(base + "/api/tetris/score", "POST", {"score": 10})
-        higher = http_json(base + "/api/tetris/score", "POST", {"score": 99})
+        lower = http_json(base + "/api/tetris/score", "POST", {"score": "10"})
+        after_lower = http_json(base + "/api/tetris/record")
+        if before != 42 or after_lower != 42:
+            return "blocked", f"lower score overwrote record: {before} -> {after_lower}"
+        higher = http_json(base + "/api/tetris/score", "POST", {"score": "99"})
         after = http_json(base + "/api/tetris/record")
-        if lower != 42 and before == [42]:
-            return "blocked", f"lower score overwrote record: {before} -> {lower}"
         persisted_text = record_file.read_text(encoding="utf-8")
-        if higher != 99 or after != [99]:
+        if higher is not True or after != 99:
             return "blocked", f"unexpected monotonic result: {higher}, {after}"
         if "schema_version" not in persisted_text or "\"best\":99" not in persisted_text:
             return "blocked", f"record file is not versioned JSON: {persisted_text!r}"
@@ -219,7 +220,7 @@ def persistence() -> tuple[str, str]:
                 time.sleep(0.2)
         else:
             return "blocked", "backend did not become ready after restart"
-        if restart != [99]:
+        if restart != 99:
             return "blocked", f"record did not survive restart: {restart}"
     finally:
         stop(restarted)
@@ -258,5 +259,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
-

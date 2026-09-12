@@ -53,4 +53,9 @@ pub fn save_best(score int) int {
 }
 
 pub fn all_scores() []int { return [read_best()] }
-pub fn create_score(score int) int { return save_best(score) }
+pub fn list_scores() int { return read_best() }
+pub fn create_score(score str) bool {
+    var parsed int = score.to_int() ?? 0
+    save_best(parsed)
+    return true
+}

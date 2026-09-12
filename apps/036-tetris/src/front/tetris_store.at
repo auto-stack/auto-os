@@ -73,16 +73,17 @@ store TetrisStore {
             .seed = 17
             .needs_rebuild = true
             .pending_lock = false
-            // Keep the request in the lifecycle so Vue/HTTP warms the record
-            // endpoint; the merged Rust shim currently exposes GET results as
-            // a generic list, so the local display starts at zero there.
-            var ignored_record = list_scores()
-            .best = 0
+            // The HTTP contract returns the current best as a scalar. Merged
+            // Rust may still return its generic default until typed API
+            // bridging is available; that remains an honest zero here.
+            var loaded_best int = list_scores()
+            .best = loaded_best
             .score_label = "0"
             .best_label = .best.to_string()
             .lines_label = "0"
             .level_label = "01"
             .progress_label = "升级还需 10 行"
+            if .best > 0 { .save_label = "已保存" } else { .save_label = "暂无纪录" }
             .cells = []
             var empty_i int = 0
             for empty_i < 200 {
@@ -248,7 +249,7 @@ store TetrisStore {
                 .px = 3
                 .py = 0
                 .elapsed_ms = 0
-                .save_pending = .score > 0
+                .save_pending = .score > .best
                 if .save_pending { .save_label = "新纪录待保存" }
                 var spawn []int = .shapes[.piece * 4]
                 var valid_spawn bool = true
@@ -277,7 +278,7 @@ store TetrisStore {
                         if fall_y >= 20 || (fall_y >= 0 && .board[fall_y * 10 + fall_x] > 0) { fall_ok = false }
                         fall_j = fall_j + 2
                     }
-                    if fall_ok { .py = .py + 1; .score = .score + 1; .needs_rebuild = true }
+                    if fall_ok { .py = .py + 1; .needs_rebuild = true }
                     else { .pending_lock = true }
                 }
             }
@@ -393,6 +394,18 @@ store TetrisStore {
         }
         .ShowHelp -> { if .phase == "playing" || .phase == "paused" { .phase = "help"; .status_label = "玩法说明"; .needs_rebuild = true } }
         .CloseHelp -> { if .phase == "help" { .phase = "paused"; .status_label = "已暂停"; .needs_rebuild = true } }
-        .RetrySave -> { if .save_pending { create_score(.score); .best = .score; .save_pending = false; .save_label = "已保存"; .needs_rebuild = true } }
+        .RetrySave -> {
+            if .save_pending {
+                var save_ok bool = create_score(.score.to_string())
+                if save_ok {
+                    .best = .score
+                    .save_pending = false
+                    .save_label = "已保存"
+                } else {
+                    .save_label = "纪录未保存 · 重试"
+                }
+                .needs_rebuild = true
+            }
+        }
     }
 }
