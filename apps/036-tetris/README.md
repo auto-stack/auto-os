@@ -13,7 +13,7 @@ $env:AUTO_LANG_ROOT = "D:/autostack/auto-lang"
 auto run --render vue --server rust --no-merge
 
 # VM/Rust 原生轨：可选 HTTP 后端或进程内 merged
-auto run -r vm --server rust --no-merge
+auto run -r vm --server vm --no-merge
 auto run -r vm --merged
 auto run -r rust --server rust --no-merge
 auto run -r rust --merged
@@ -32,8 +32,9 @@ auto run -r rust --merged
 - `src/front/tetris_store.at` 将形状和颜色表、碰撞、消行、计分、重力和
   render cell 字段集中管理。棋子颜色固定，`pac.at` 的 `accent: "indigo"`
   只影响标题/主按钮等品牌控件，不改变棋盘的色彩语义。
-- `src/back/db.at` / `src/back/api.at` 定义最高分读写接口。HTTP 后端以
-  `records.json` 写入当前分数；merged Rust 使用生成器的进程内 API shim。
+- `src/back/db.at` / `src/back/api.at` 定义最高分读写接口。HTTP 后端以带
+  `schema_version`/`best` 的版本化 JSON 写入 `records.json`，同时兼容早期裸整数；
+  merged Rust 仍使用生成器的进程内 API shim，需待框架能力补齐后再验证真实落盘。
 
 ## 测试
 
@@ -42,6 +43,10 @@ cd apps/036-tetris
 pnpm --dir tests install
 pnpm --dir tests test
 python tests/desktop_mcp.py
+# capability probe and evidence (native legs stay blocked without a driver)
+python tests/run_matrix.py --probe
+# persistence leg after building the backend
+python tests/run_matrix.py --suite persistence
 ```
 
 Playwright 测试会 mock 纪录 API，覆盖首屏、开始/暂停、键盘硬降和说明

@@ -1,10 +1,42 @@
-// Single-player record persistence. Tests set AUTO_TETRIS_RECORD explicitly.
+// Single-player record persistence. Tests use an isolated working directory.
 var current_best int = 0
 
+fn persisted_value(raw str) int {
+    if raw == "" { return 0 }
+    var first int = raw[0].to_int() ?? 0
+    var i int = 0
+    var number int = 0
+    var in_num bool = false
+    var value int = 0
+    var count int = 0
+    while i < raw.len() {
+        var ch int = raw[i].to_int() ?? 0
+        if ch >= 48 && ch <= 57 {
+            number = number * 10 + ch - 48
+            in_num = true
+        } else if in_num {
+            value = number
+            number = 0
+            in_num = false
+            count = count + 1
+        }
+        i = i + 1
+    }
+    if in_num {
+        value = number
+        count = count + 1
+    }
+    // Versioned JSON has schema_version and best. A raw integer remains
+    // readable for one-way compatibility with records created by early builds.
+    if first == 123 && count < 2 { return 0 }
+    return value
+}
+
 pub fn read_best() int {
-    // The native VM uses the same function body and can replace this read
-    // with a user-selected record path. Rust HTTP keeps the process-local
-    // value until the file API gains a typed JSON decoder in the generator.
+    // Keep the file as the source of truth across backend restarts.
+    var raw str = File.read_text("records.json")
+    var persisted int = persisted_value(raw)
+    if persisted > current_best { current_best = persisted }
     return current_best
 }
 
@@ -12,15 +44,13 @@ pub fn save_best(score int) int {
     if score < 0 { return current_best }
     var old int = read_best()
     if score > old { current_best = score }
-    var content str = score.to_string()
+    // Write the maximum, never the incoming lower score. This preserves
+    // monotonicity after a process restart as well as within one process.
+    var persisted_best int = current_best
+    var content str = "{\"schema_version\":1,\"best\":" + persisted_best.to_string() + "}"
     File.write_text("records.json", content)
     return current_best
 }
 
-pub fn all_scores() []int {
-    return [read_best()]
-}
-
-pub fn create_score(score int) int {
-    return save_best(score)
-}
+pub fn all_scores() []int { return [read_best()] }
+pub fn create_score(score int) int { return save_best(score) }
