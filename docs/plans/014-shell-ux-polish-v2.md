@@ -24,15 +24,17 @@ total_steps: 14
 
 虚拟桌面 shell UX 打磨第二批。2026-09-14 代码+设计评审产出两轮建议（视觉缺陷
 /交互闭环/信息架构/协议债），mock 定稿四张（`docs/plans/evidence/014/`，
-**深/浅双主题同版式**——浅色沿用既有 shadcn 浅色主题色调：近白卡片/深
-foreground 文字/主题紫强调色不变，形式与深色完全统一；用户 2026-09-14
-审定）：
+**深/浅双主题同版式**——浅色按项目实际默认主题 **stella light** 实测 token
+映射（`auto-lang design_tokens/registry.rs`：背景 #F5F1E8 暖奶油纸色 /
+card #FBF8F2 / foreground #2A2723 / primary #6466F1 indigo / destructive
+#EF4444；深色 primary #9394F5 同色相提亮），形式与深色完全统一；用户
+2026-09-14 审定，浅色第一轮误画 shadcn 粉紫通用浅色已纠偏）：
 
 | 图 | 主题 | 标注 | 内容 |
 |----|------|------|------|
 | `014-mock-desktop.png` | 深色 | ①-⑦ | ①桌面图标紧凑左上+单击选中态 ②启动中指示 ③空白菜单扩充（含恢复入口） ④launcher 独立字形 ⑤运行/聚焦指示 ⑥未读角标圆形化 ⑦时钟+日期两行 |
 | `014-mock-panels.png` | 深色 | ⑧-⑩ | ⑧通知整行点击跳来源 ⑨时间戳/分组 ⑩切换器预选第 2 项 |
-| `014-mock-desktop-light.png` | 浅色 | ①-⑦ | 同上（浅色映射：选中块浅灰底/预选行紫底白字/hover 8% 黑底/引线深色档） |
+| `014-mock-desktop-light.png` | 浅色 | ①-⑦ | 同上（stella 浅色映射：选中块 #E3DDD1 半透明底/预选行 indigo 底白字/hover 8% 黑底/角标 #EF4444 不变） |
 | `014-mock-panels-light.png` | 浅色 | ⑧-⑩ | 同上 |
 
 与 **PLAN-012（shell-ux-feedback-batch）** 的关系：**串行，本计划排在 012 之后**
@@ -229,9 +231,12 @@ launcher 三处平行列表 + while 重建收敛为直接消费合同面（`__wm
 ## 测试设计
 
 - **双端纪律**：每个改动的验收 = auto-lang autoui-verifier 双端（Vue 轨 +
-  VM 轨）× **深/浅双主题**截图对照 mock（`evidence/014/` 四张——语义态
-  浅色映射口径：选中块浅灰底 / 预选行紫底白字 / hover 8% 黑底 / 角标与
-  语义色不变）+ 实机装配冒烟（`bash scripts/desktop.sh` / `desktop.ps1`）。
+  VM 轨）× **深/浅双主题**截图对照 mock（`evidence/014/` 四张——浅色一律
+  按 stella light token 验收，语义态浅色映射口径：选中块 #E3DDD1 半透明
+  底 / 预选行 #6466F1 底白字 / hover 8% 黑底 / 角标 #EF4444 与语义色不变）
+  + 实机装配冒烟（`bash scripts/desktop.sh` / `desktop.ps1`）。
+  注：Vue 轨运行时默认主题为 scaffold（白底），VM 轨默认 stella（奶油底）
+  ——双端截图各按本轨实际主题对拍，若要两轨统一默认主题另行裁定。
 - **宿主改动**（W-05 显示桌面臂 / W-06 日期注入 / W-08 app 记录 / W-11
   标题兜底 / W-12 注入面）：auto-lang 侧 hand 测试或既有宿主冒烟脚本，
   不在 auto-lang 跑 `cargo t`（Category A）。
@@ -311,3 +316,7 @@ launcher 三处平行列表 + while 重建收敛为直接消费合同面（`__wm
 - Q4（W-09）：~~若 PLAN-012 先行落地外点 dismiss~~ **已澄清**——012
   execution_done 时外点关闭已落（popover ondismiss 模式），W-09 按退化
   执行（核对补死角）。
+- Q5（主题基调，2026-09-14 主题 token 调查新增）：双轨默认主题不一致——
+  VM 轨缺省 **stella**（theme/mod.rs:42-45），Vue 轨运行时缺省 **scaffold**
+  （ui_gen/vue.rs:16480，白底）。本计划验收两轨各按本轨实际主题对拍；是否
+  统一默认主题（如 Vue 轨也归 stella）不在本计划范围，留用户裁定。

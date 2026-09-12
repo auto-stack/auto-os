@@ -49,41 +49,44 @@ THEMES = {
         "preselect_fill": ACCENT_DEEP + (150,), "preselect_border": ACCENT + (220,), "preselect_text": WHITE,
         "thumb_fill": (255, 255, 255, 16), "thumb_border": (255, 255, 255, 45), "thumb_hatch": (255, 255, 255, 16),
         "fg": WHITE, "sub": (168, 168, 184),
+        "accent": ACCENT,
         "accent_text": ACCENT,
         "display_border": None,
         "leader": (255, 255, 255, 110), "leader_dot": (255, 255, 255, 170),
         "caption": (255, 255, 255, 105),
     },
     "light": {
-        "wall_c1": (236, 230, 250), "wall_c2": (249, 232, 243),
-        "blob_a": (196, 141, 235, 22), "blob_b": (244, 114, 182, 16),
-        "dot_pink": (244, 114, 182), "dot_white": (167, 139, 250),
-        "glass": (255, 255, 255, 230), "glass_border": (110, 100, 150, 85),
+        # stella light tokens（事实源 auto-lang design_tokens/registry.rs）
+        "wall_c1": (245, 241, 232), "wall_c2": (239, 233, 221),  # background #F5F1E8 → accent #EFE9DD
+        "blob_a": (226, 205, 165, 25), "blob_b": (210, 190, 160, 20),
+        "dot_pink": (222, 184, 135), "dot_white": (125, 119, 109),
+        "glass": (251, 248, 242, 230), "glass_border": (227, 221, 209, 235),  # card #FBF8F2 / border #E3DDD1
         "shadow_alpha": 60,
-        "titlebar_strip": (0, 0, 0, 7),
-        "sep": (0, 0, 0, 50),
-        "win_dot": (0, 0, 0, 70), "win_dot_close": (220, 60, 60, 190),
-        "display_bg": (255, 255, 255, 215), "display_fg": (28, 28, 40),
-        "key": (233, 233, 240), "key_fg": (35, 35, 50), "key_orange": (228, 124, 50), "key_orange_fg": WHITE,
-        "taskbar": (253, 253, 255, 235), "taskbar_line": (0, 0, 0, 35),
-        "btn_fill": (0, 0, 0, 9), "btn_fg": (35, 35, 50),
-        "entry_fill": (0, 0, 0, 7), "bar_blur": (150, 150, 165),
-        "clock_fg": (30, 30, 44), "clock_sub": (105, 105, 120),
-        "menu_bg": (255, 255, 255, 248), "hover": (0, 0, 0, 9),
-        "sel_block": (120, 120, 150, 60), "sel_block_border": (120, 120, 150, 120),
-        "launch_dot": (125, 125, 140), "launch_bar": (0, 0, 0, 70),
-        "note_line": (0, 0, 0, 65),
-        "status_bg": (0, 0, 0, 8), "status_border": (0, 0, 0, 60),
-        "ok": (22, 163, 74), "err": (220, 38, 38), "info": (100, 100, 116),
-        "close": (0, 0, 0, 110),
+        "titlebar_strip": (42, 39, 35, 10),
+        "sep": (42, 39, 35, 50),
+        "win_dot": (42, 39, 35, 70), "win_dot_close": (239, 68, 68, 200),  # destructive #EF4444
+        "display_bg": (251, 248, 242, 215), "display_fg": (42, 39, 35), "display_border": (227, 221, 209, 235),
+        "key": (227, 221, 209), "key_fg": (42, 39, 35), "key_orange": (228, 124, 50), "key_orange_fg": WHITE,
+        "taskbar": (251, 248, 242, 235), "taskbar_line": (42, 39, 35, 35),
+        "btn_fill": (42, 39, 35, 9), "btn_fg": (42, 39, 35),
+        "entry_fill": (42, 39, 35, 7), "bar_blur": (125, 119, 109),
+        "clock_fg": (42, 39, 35), "clock_sub": (125, 119, 109),  # foreground / muted-foreground #7D776D
+        "menu_bg": (251, 248, 242, 248), "hover": (0, 0, 0, 9),
+        "sel_block": (227, 221, 209, 120), "sel_block_border": (125, 119, 109, 100),
+        "launch_dot": (125, 119, 109), "launch_bar": (42, 39, 35, 70),
+        "note_line": (42, 39, 35, 65),
+        "status_bg": (42, 39, 35, 8), "status_border": (42, 39, 35, 60),
+        "ok": (34, 197, 94), "err": (239, 68, 68), "info": (59, 130, 246),  # #22C55E / #EF4444 / #3B82F6
+        "close": (42, 39, 35, 110),
         "hover_row": (0, 0, 0, 8),
-        "preselect_fill": ACCENT_DEEP + (215,), "preselect_border": ACCENT_DEEP + (255,), "preselect_text": WHITE,
-        "thumb_fill": (0, 0, 0, 10), "thumb_border": (0, 0, 0, 70), "thumb_hatch": (0, 0, 0, 20),
-        "fg": (28, 28, 40), "sub": (100, 100, 116),
-        "accent_text": ACCENT_DEEP,
-        "display_border": (110, 100, 150, 85),
-        "leader": (50, 50, 75, 160), "leader_dot": (50, 50, 75, 220),
-        "caption": (28, 28, 40, 120),
+        "preselect_fill": (100, 102, 241, 225), "preselect_border": (100, 102, 241, 255),
+        "preselect_text": (248, 250, 252),  # primary #6466F1 / primary-foreground #F8FAFC
+        "thumb_fill": (42, 39, 35, 10), "thumb_border": (42, 39, 35, 70), "thumb_hatch": (42, 39, 35, 20),
+        "fg": (42, 39, 35), "sub": (125, 119, 109),  # #2A2723 / #7D776D
+        "accent": (100, 102, 241),  # primary indigo
+        "accent_text": (100, 102, 241),
+        "leader": (60, 55, 45, 160), "leader_dot": (60, 55, 45, 220),
+        "caption": (125, 119, 109),  # #7D776D
     },
 }
 T = THEMES["dark"]
@@ -179,7 +182,7 @@ def annotate(base, num, cx, cy, tx, ty):
     sx, sy = cx + dx / dist * 12, cy + dy / dist * 12
     d.line([sx, sy, tx, ty], fill=T["leader"], width=1)
     d.ellipse([tx - 2, ty - 2, tx + 2, ty + 2], fill=T["leader_dot"])
-    d.ellipse([cx - 11, cy - 11, cx + 11, cy + 11], fill=ACCENT, outline=(255, 255, 255, 220), width=1)
+    d.ellipse([cx - 11, cy - 11, cx + 11, cy + 11], fill=T["accent"], outline=(255, 255, 255, 220), width=1)
     d.text((cx, cy - 0.5), str(num), font=F12B, fill=WHITE, anchor="mm")
     base.alpha_composite(ov)
 
@@ -375,7 +378,7 @@ def notes_window(base, box):
     for wln in widths:
         d.rounded_rectangle([x1 + 20, ly, x1 + 20 + wln, ly + 6], radius=3, fill=T["note_line"])
         ly += 24
-    d.rectangle([x1 + 20, y1 + 56, x1 + 23, y1 + 68], fill=ACCENT)
+    d.rectangle([x1 + 20, y1 + 56, x1 + 23, y1 + 68], fill=T["accent"])
     base.alpha_composite(ov)
 
 
@@ -416,7 +419,7 @@ def taskbar_entry(base, x, name, focused, glyph_fn):
     d.rounded_rectangle([x + 12, y + 16, x + 36, y + 40], radius=7, fill=CHIP[name] if name in CHIP else ACCENT_DEEP)
     glyph_fn(d, x + 24, y + 28)
     text(d, (x + 42, y + 28), name, F10, T["fg"], anchor="lm")
-    bar_col = ACCENT if focused else T["bar_blur"]
+    bar_col = T["accent"] if focused else T["bar_blur"]
     d.rounded_rectangle([x + 12, y + 52, x + w - 12, y + 55], radius=1.5, fill=bar_col)
     base.alpha_composite(ov)
     return x + w + 8
