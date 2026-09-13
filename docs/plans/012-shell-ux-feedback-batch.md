@@ -792,3 +792,10 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   dock）。另：桌面图标 storage 写入 `shell.desktop.icons`（用户可测
   拖拽）。code_commit：auto-os cce46ec / auto-lang 85faa0610。
   next：用户终验（面板顶 gap/布局钮高亮/拖拽）→ 复审。
+  **二次点击关闭清偿（2026-09-14 晨）**：用户复验"点一下高亮，再点一
+  下没有关闭"定性 = 装配级 scrim 与铃铛 notes_toggle 事件双达（铃铛后
+  执行重开盖掉 scrim 关闭）。修复 = scrim 回归 .at 内 N6d 模式（卡片
+  守卫 mouse-area + scrim 外点关闭，用户走查已验证的事件优先序）+
+  justify-start 挂顶保留。活体验证：notes_toggle 开→visible=1→关→
+  ""，双 toggle 翻转正常。code_commit：auto-os c12a346 / auto-lang
+  599a2c3c2 + 538a2b17d（p012_o3 探针适配顶对齐架构）。
