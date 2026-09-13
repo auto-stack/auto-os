@@ -598,6 +598,40 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   `D:/autostack/auto-os/.git/index.lock`（Permission denied）失败，未触碰其他工作区改动。
 - next: 保持 Plan `executing`，先处理 `R-001` 至 `R-004`，完成依赖落地、Spec 准备和 M1–M7 原生/持久化证据，再重新运行 `/auto-plan:review`；本次不进入 `/auto-plan:merge`。
 
+### 2026-09-13 — execution follow-up / completeness acceptance
+
+- 本轮证据以应用提交 `d6d31d022a2b6dd420a94efc4a644478be57daef` 为基线，
+  运行产物放在隔离验收副本 `D:/autostack/auto-os/tetris-vm-check`，未回写应用
+  或框架源码；依赖仍以 `D:/autostack/.wt/lang-tetris` 的
+  `5dda39f6b8362ba0165f2372d1d4f885623ff506` 为参考，工作区仍有未提交改动。
+- Vue HTTP（M1）：Rust HTTP 后端 `17411` 与 Vite `17410` 联调，Playwright
+  `3 passed (3.8s)`；`python -B tests/run_matrix.py --suite persistence` 在
+  隔离副本通过单调更新及跨进程重启读取。
+- VM：`auto run -r vm --server vm --no-merge` 已启动真实 HTTP API `17401`，
+  `GET /api/tetris/record` 返回 200；merged 日志确认后端进程内运行。两条 VM
+  原生腿均无法取得 MCP/窗口交互证据，原因是本机回环监听返回 WinError 10013，
+  Computer Use 也没有可控制的原生桌面窗口。
+- Rust merged（M6）：已用 Iced MCP 实测 ready→playing、方向键、旋转、空格硬降、
+  P 暂停、玩法说明/返回；重试保存写入 `records.json`（`schema_version=1`）并在
+  重启后读回最高分。该结果证明状态与落盘路径可工作，但仍不替代原生像素/失焦矩阵。
+- Rust no-merge（M7）：隔离 `CARGO_TARGET_DIR` 的生成前端 Cargo build 已通过；
+  手工启动生成前端 + Rust HTTP `17401` 后，MCP 实测开始、方向键、旋转、空格硬降、
+  P、帮助层及重启读分数均通过。标准 `auto run -r rust --server rust --no-merge`
+  仍在工具链强制使用 `D:/autostack/auto-lang/target` 时因 `os error 5` 失败，
+  因此官方命令腿仍不能记为 pass。
+- 本轮还发现生成 Rust no-merge API 客户端的 `create_score` 只返回本地 JSON，
+  没有把后端 bool 结果传回 Store；后端实际已写入分数，但界面会保留
+  “纪录未保存 · 重试”。这是 M7/AC-06 的生成器契约缺口，需在框架前置修复或
+  明确降级前重新复验，不能用手工后端写入替代保存反馈验收。
+- 本轮结论：AC-01、AC-04、AC-05、AC-06、AC-07、AC-08 仍为 partial/blocked；
+  Vue、Rust merged 和手工 Rust no-merge 的可观察状态证据已增加，但完整 M1–M7
+  官方命令矩阵、原生窗口截图、按住/失焦、损坏/只读/并发持久化、桌面/画廊开局、
+  canonical `docs/specs/apps/tetris.md`、依赖落地与干净工作树尚未完成。
+- 新增执行阻断：`R-005`（VM/native MCP 回环权限与无原生窗口）；`R-006`（Rust
+  no-merge 官方 CLI target 权限及生成客户端保存返回值契约）。Plan 保持
+  `executing`，先处理 `R-001`–`R-006` 后再重新运行 `/auto-plan:review`，本轮不进入
+  `/auto-plan:merge`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
