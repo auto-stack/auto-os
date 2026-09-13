@@ -5,9 +5,9 @@ A `blocked` row is an explicit missing capability or driver, never a pass.
 
 | leg | status | evidence |
 |---|---|---|
-| `backend.transpile` | `supported` | {"status":"success","result":"[trans] src/back/db.at -> src/back/db.a2r.rs (8 fragments tracked)"} |
+| `backend.transpile` | `supported` | {"status":"success","result":"[trans] src/back/db.at -> src/back/db.a2r.rs (9 fragments tracked)"} |
 | `cli.help` | `supported` |       --apps <APPS><br>          Plan 465: apps directory for the desktop registry (default <workspace>/examples/ui)<br>      --merged<br>          Plan 547: explicitly select Rust merged in-process mode (already the default for --render=rust)<br>  -h, --help<br>          Print help (see a summary with '-h') |
-| `rust.backend` | `supported` | .cargo-back-target2\debug\app-036-tetris-back.exe |
+| `rust.backend` | `supported` | external executable |
 | `rust.generated` | `supported` | rust-workspace\036-tetris\src\main.rs |
 | `source.api` | `supported` | src/back/api.at and src/back/db.at present |
 | `source.app` | `supported` | src/front/app.at and src/front/tetris_store.at present |

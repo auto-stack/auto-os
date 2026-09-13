@@ -409,8 +409,12 @@ store TetrisStore {
         .CloseHelp -> { if .phase == "help" { .phase = "paused"; .status_label = "已暂停"; .needs_rebuild = true } }
         .RetrySave -> {
             if .save_pending {
-            var save_ok_raw str = "result:" + create_score(.score.to_string())
-            if save_ok_raw == "result:true" {
+            // Keep the API result typed as bool across Vue, VM HTTP, and
+            // merged Rust. String concatenation formats booleans differently
+            // between renderers, which made VM no-merge report a false
+            // failure even after the backend accepted the score.
+            var save_ok bool = create_score(.score.to_string())
+            if save_ok {
                     .best_label = .score.to_string()
                     .save_pending = false
                     .save_label = "已保存"
