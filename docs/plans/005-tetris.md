@@ -632,6 +632,28 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   `executing`，先处理 `R-001`–`R-006` 后再重新运行 `/auto-plan:review`，本轮不进入
   `/auto-plan:merge`。
 
+### 2026-09-13 — execution follow-up / Rust no-merge save return fix
+
+- 依赖工作树：`D:/autostack/.wt/lang-tetris`；提交 `ddb5cda98` 修复 Rust UI
+  生成器的布尔 HTTP API 返回值。`bool` 端点现在生成同步请求并解析
+  `json::<bool>()`，不再返回本地占位 JSON；`auto-man` 定向单测通过（1 passed，
+  292 filtered）。依赖工作树中 Popover/renderer/layout 浮动改动仍未合并，故该
+  提交只作为可绑定的前置修复证据，不改变本 Plan 的依赖落地阻断。
+- 官方 no-merge 命令已使用修复后的 CLI 重新生成源码；生成物确认
+  `create_score(score: String) -> bool` 且同步读取后端布尔响应。官方命令仍因工具链
+  强制写入 `D:/autostack/auto-lang/target` 而触发 Windows `os error 5`，R-006 的
+  target 权限部分保持阻断。
+- 在隔离验收副本 `D:/autostack/auto-os/tetris-vm-check` 使用独立 Cargo target
+  编译生成前端/后端并启动 Rust no-merge：MCP 实测 ready→playing、ArrowLeft、
+  硬降、保存和重启读取；将记录置为 0 后硬降得到 36 分，点击“重试保存”使
+  `save_pending: true → false`、`save_label: 新纪录待保存 → 已保存`、
+  `best_label: 0 → 36`，HTTP 记录为 36，重启后仍读回 36。该证据关闭生成客户端
+  保存返回值这一子缺口，但不能替代官方命令、原生像素、按住/失焦及 VM 回环权限
+  证据。
+- 本轮不改变应用 worktree；Plan 仍为 `executing`。R-005（VM/native MCP 与
+  原生窗口不可用）及 R-001–R-004、R-006 的 CLI target 权限和其余完整性验收项
+  继续交由后续复审处理，本轮不进入 `/auto-plan:review` 或 `/auto-plan:merge`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
