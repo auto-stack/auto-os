@@ -766,6 +766,21 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: Plan 保持 `executing`，先解除 `R-001`/`R-005`，完成依赖独立 landing 和
   M1–M7/桌面/视觉/持久化全量复验；复审未通过，不进入 `/auto-plan:merge`。
 
+### 2026-09-14 — execution follow-up / auto-lang dependency landing
+
+- `R-002` 已完成：从当前 auto-lang 主线新建独立 landing worktree，干净应用
+  `ddb5cda98` 与 `6b228524e`，并复跑 auto-man 定向测试 `1 passed`；Iced 主线
+  现有 Modal 实现（`ee2fafa76`）连同 Tetris 所需无触发器回归复跑为 `5 passed`。
+  两个生成器修复已落到 auto-lang 主线提交 `697718962`（bool HTTP ACK）和
+  `af28b48fa`（尊重显式 `CARGO_TARGET_DIR`）。
+- 以 auto-lang 主线为 `AUTO_LANG_ROOT` 在 app worktree 重跑
+  `python -B tests/run_matrix.py --all-modes`：source/transpile/Vue/Rust/Cargo/
+  persistence 均为 `supported`，仅 `vm.mcp` 与 native/gameplay/visual 保持环境
+  阻断；Playwright 冒烟实际 `3 passed (3.1s)`。测试生成物已清理，app worktree
+  保持干净。
+- `R-002` 状态改为 resolved；`R-001` 与 `R-005` 仍是完整性验收的阻断项。主线
+  其它计划在本轮并行推进，依赖最终提交以当前 auto-lang `master` 的包含关系为准。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
