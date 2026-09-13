@@ -765,6 +765,20 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   状态图标高亮应单一代码路径维护）/ tick 饿死根治。code_commit：
   auto-os cb26882 / auto-lang 4f4efa822。
   next：用户复验（含面板顶 gap 与 dock 点击反馈）→ 复审。
+  **复验反馈终解轮（2026-09-14 凌晨）**：用户复验定位两遗留 + 一 UX
+  裁定——①"第2、3个图标" = 任务栏右侧布局切换钮（grid/master-stack）
+  无高亮态 → `__wm_layout` 派生标量 + 两钮等式高亮（活体验证 ✓）；
+  用户"高亮统一维护"方向在 DEBTS icon 族条目内。②面板锚定终解：
+  装配级 scrim mouse-area（外点关闭）+ .at 根 = 紧凑卡片本体（max-h
+  560 滚动）+ **justify-start 顶对齐**——根因链闭环 = dynamic_view
+  根 Fill×Fill toast-Stack 使 .at 内 mt-auto/根高类/col-reverse 全部
+  不可依赖（463 T5 注记"装配层 align 无从发力"同源；justify 系列列
+  align_y 为真实链验证机制）。③用户 UX 裁定：面板锚定 **右上角**
+  （原 G2 右下裁定废止，SD-04 语义随复审更新）。④全特权层
+  window_size tick 镜像（launcher/switcher/notification——零尺寸上
+  下文根因与截图守卫同源）。⑤桌面图标 storage 写入
+  `shell.desktop.icons`（拖拽复验解锁）。code_commit：auto-os
+  9e9eed0 / auto-lang d3ed66865。next：用户终验 → 复审。
   **复验反馈终轮（2026-09-13 晚）**：用户两反馈的最终定位与修复——
   ①"第2、3个图标无高亮" = 任务栏右侧**布局切换钮**（grid/master-stack）
   无高亮态（切换行为正确）→ `__wm_layout` 派生标量 + 两钮等式高亮
