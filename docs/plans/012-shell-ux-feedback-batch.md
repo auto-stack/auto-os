@@ -754,3 +754,14 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   bounds 回填未覆盖非 primary 层；③ F2 档案 boot 无指令自启 recent
   app 现象未定界。next：用户 O4 复验 + AC-10 终裁 → 复审（复用全部
   确定性证据）。
+  **复验反馈轮（2026-09-13 同日）**：用户复验三件——
+  ①dock 点击不聚焦/不切高亮 = tick 臂 fit/快照早返饿死命令排空（确定
+  性复现：首 launch 后 activate 记录全丢）→ 修复 = drain 前置 tick 臂
+  顶部 + 早退任务合批（复验 focused_app 翻转 ✓）；②通知面板顶 gap 感
+  知贴顶 → 扣减 124→148（max-h 滚动已生效；根列 `h-[${...}]` 插值未
+  生效差异暂以显式 px 落地、记 DEBTS icon 族）；③用户裁定三项入
+  DEBTS（auto-lang DEBTS.md，012-候选 ×3）：dock 多窗聚合 Win11 UX
+  计划候选 / icon 问题族计划候选（字形残留 + 高亮机制统一——用户方向：
+  状态图标高亮应单一代码路径维护）/ tick 饿死根治。code_commit：
+  auto-os cb26882 / auto-lang 4f4efa822。
+  next：用户复验（含面板顶 gap 与 dock 点击反馈）→ 复审。
