@@ -683,6 +683,23 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   R-004 可标记为 needs_fix 已处理；Plan 继续保持 `executing`，等待原生驱动和
   依赖独立复审后再进入 `/auto-plan:review`。
 
+### 2026-09-14 — execution follow-up / official Rust no-merge recovery
+
+- 依赖工作树 `D:/autostack/.wt/lang-tetris` 新增提交 `6b228524e`：Rust UI
+  运行器的共享 Cargo target 现在尊重调用方显式设置的 `CARGO_TARGET_DIR`，不再
+  强制覆盖到不可写的 `auto-lang/target`。与 `ddb5cda98`、`6cefb21cf` 一样，
+  该提交保持独立依赖边界，工作树已干净。
+- 使用该修复版 CLI 执行官方
+  `auto run -r rust --server rust --no-merge`，隔离 target 下前端/后端均成功
+  编译并启动（业务 HTTP `17401`、Rust UI MCP `9254`）。实测 `ready → playing`、
+  `ArrowLeft`（`px: 3 → 2`）、两次硬降，以及新纪录保存（分数 `66`：
+  `save_pending: true → false`、`新纪录待保存 → 已保存`、后端记录 `66`）均通过。
+  这同时关闭了 R-006 的 CLI target 权限和生成客户端 bool 返回值两个子阻断。
+- 官方命令腿现可复跑，但 M1–M7 的完整业务矩阵、原生窗口像素/物理按键、按住与
+  失焦、故障/并发持久化和桌面/画廊开局仍受 R-001/R-005 的驱动与环境条件限制。
+  Plan 继续保持 `executing`；依赖提交和 Spec 需独立复审绑定后，才可进入
+  `/auto-plan:merge`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
