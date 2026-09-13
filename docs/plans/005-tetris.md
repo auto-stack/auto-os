@@ -5,13 +5,13 @@ status: executing
 feature_name: tetris
 author: [zhaopuming]
 created_at: 2026-09-05
-updated_at: 2026-09-12
+updated_at: 2026-09-13
 plan_revision: 2
 supersedes_spec_components: []
 new_spec_components: [docs/specs/apps/tetris.md]
 touched_goals: []
 affects: [auto-os/apps/036-tetris]
-current_step: 5
+current_step: 1
 total_steps: 6
 ---
 
@@ -545,6 +545,58 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - 限制：当前环境没有可供 Computer Use 直接注入物理键的桌面窗口，因此物理
   按键已完成源码/生成物路径核验，Rust MCP 已完成实际状态变化核验；B1 仍保留
   原生窗口截图和完整按键重复/失焦矩阵。
+
+### 2026-09-12 — execution follow-up / triggerless VM modal centering
+
+- 根因：`dialog` 没有触发器时，标准转换会生成
+  `PopoverAnchor::Widget(View::Empty)`；Iced 的零尺寸 flex 子项不会注册 overlay，
+  面板因此从模态层退回普通布局并落到窗口角落。
+- 修复：Modal Popover 对 Empty anchor 保留 1×1 的隐形基座，并由 generic/dynamic
+  两条原生渲染路径传递 `anchor_is_empty`；有真实触发器的普通 Popover 保持原有锚点
+  尺寸与定位。应用五个 `dialog` 声明无需增加绝对定位或应用专用 workaround。
+- 证据：`cargo test -p auto-lang --features iced-layout-tests popover_modal_ -- --nocapture`
+  通过，覆盖 Empty anchor 居中、常规居中、遮罩外点、Esc 关闭和面板点击；新构建的
+  VM merged 在 9255 端口启动，`tests/desktop_mcp.py` 返回 `Tetris VM MCP snapshot OK`，
+  首屏“开始游戏”动作使 `phase: ready → playing`。截图接口在当前沙箱会产生窄长窗口，
+  仅作为启动证据，不替代原生窗口像素验收。
+
+### 2026-09-13 — review / revision 2
+
+- stage: review
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: blocked
+- reviewed_commit: `d6d31d022a2b6dd420a94efc4a644478be57daef`
+- base_commit: `6fb69564d81591c8666b1485de2aaaa97342d77a`
+- dependency_revisions: `auto-lang` main `012b30832c59cc9bc34b25fa017b3276535a60ab`（工作区含未提交改动）；
+  Rust 键盘隔离工作树 `5dda39f6b8362ba0165f2372d1d4f885623ff506`（Popover/renderer/layout_tests 仍有未提交改动）
+- spec_inputs: Plan SHA-256 `369EA9834D8607E738F5C34098E0A8221B821ECB4FE4A0563F5DF5E69C50A6CD`；
+  `.autoos/specs.json` SHA-256 `F7B87F8E1B313FA8B264E53AED024C709345EC4A987A42F53BBB43B1BF97BD85`；
+  `docs/specs/apps/tetris.md` 缺失；应用能力证据
+  `apps/036-tetris/tests/evidence/capabilities.md`（worktree hash
+  `E9FE9B510033B4D1DDACB910BF6135D85FFA4252B48D2C06AC768CCA57BF52DF`）
+- acceptance_results:
+  - AC-01: partial — 应用源代码、Vue/Rust 生成物及若干构建通过；M1–M7 的真实进程/网络/业务等价矩阵未完成，M6 merged 未证明。
+  - AC-02: partial — 已有实现和 Vue 受控消行回归；`rules.at`、完整 1/2/3/4 行 golden 与三轨零差异尚未建立。
+  - AC-03: partial — 20ms Tick、状态机和绑定已实现；按住重复、keyup/失焦、三轨真实计时及原生输入仍未验收。
+  - AC-04: partial — Vue 棋盘几何、Dialog 居中和 Iced 五项 Popover 布局测试通过；VM/Rust 原生窗口截图、窄窗和深浅主题夹具缺失。
+  - AC-05: partial — Vue 交互与 VM MCP 首屏动作有证据；完整 VM/Rust merged/no-merge 状态覆盖、焦点和背景输入拦截未证明。
+  - AC-06: partial — Rust HTTP 的低分保护、版本化 JSON 和重启读取有证据；M6 原生 merged、损坏/只读/并发及跨模式数据根未证明。
+  - AC-07: blocked — manifest 登记已存在，但桌面/05-games 画廊真实打开和开局未验收。
+  - AC-08: blocked — canonical `docs/specs/apps/tetris.md` 尚不存在；应用 worktree 有未跟踪运行产物，依赖 worktree 有未提交实现改动。
+- findings:
+  - `R-001` blocker（AC-01/03/04/05/06/07；T1/T5/T6，B1/B2）：计划自己仍记录完整 VM/Rust 矩阵、原生视觉、失焦/重复键和 M6 持久化为 blocked。当前唯一新增原生证据是 VM merged MCP 结构冒烟和 Iced 布局单测，不能替代这些用户可观察验收。修复：接入可复跑的原生驱动，逐项运行 M1–M7，保存进程/网络/窗口/文件证据后复审。
+  - `R-002` blocker（AC-08）：reviewed behavior 依赖 auto-lang 的 Popover/renderer/layout 浮动改动，当前既未落在依赖主线提交，也未形成可绑定的依赖 SHA；应用 worktree 还含未跟踪截图和嵌套构建产物。修复：在依赖仓单独完成 review/landing，清理或隔离运行产物，重新绑定应用与依赖提交并复跑回归。
+  - `R-003` blocker（SD-01..03/AC-08）：提议的 `docs/specs/apps/tetris.md` 不存在，不能在 merge 阶段验证 frozen Spec delta。修复：在专用 worktree 准备三项规范增量，按当前实现和已批准裁定复审后再合并。
+  - `R-004` needs_fix（AC-08）：本次复跑 `python -B tests/run_matrix.py --all-modes`/`--probe` 因 `tests/evidence/capabilities.md` 写入被拒而失败；`pnpm exec playwright test --list` 在当前工作树未找到可执行的 Playwright。修复：解除文件/运行时锁定并确认测试依赖入口，再提交新的可复跑证据。
+- evidence:
+  - 应用分支 `plan-005-dev` 的实现提交链为 `dae3951`、`5f47f8b`、`63e1556`、`3c9e39f`、`9783016`、`ada3c94`、`7ef2880`、`4759a25`、`d6d31d0`。
+  - `cargo test -p auto-lang --features iced-layout-tests popover_modal_ -- --nocapture` 已通过 5 项；该结果仅覆盖 Iced Popover 几何/关闭语义。
+  - 已提交的 `capabilities.md` 明确 `vm.mcp: blocked`；当前复跑还暴露证据文件写入阻断。
+  - 应用 worktree：`D:/autostack/.wt/os-005/auto-os`；依赖 worktree：`D:/autostack/.wt/lang-tetris`。
+- review_record_persistence: 复审记录已写入主检出 `docs/plans/005-tetris.md`；尝试仅提交该计划时，Git 因无法创建
+  `D:/autostack/auto-os/.git/index.lock`（Permission denied）失败，未触碰其他工作区改动。
+- next: 保持 Plan `executing`，先处理 `R-001` 至 `R-004`，完成依赖落地、Spec 准备和 M1–M7 原生/持久化证据，再重新运行 `/auto-plan:review`；本次不进入 `/auto-plan:merge`。
 
 ## 10. 待澄清事项
 
