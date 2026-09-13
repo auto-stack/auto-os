@@ -667,3 +667,50 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
 | Q1 | W1 hide 语义落地形态：wm 增 hidden 字段（方案 a）vs 拦截为最小化（方案 b） | T1 实现路径与改动量 | **已结（work T1）**：定案方案 a——VWinState.hidden 真隐藏；理由：win_min 形态任务栏/__wm_running 保留 os-config，W7 齿轮高亮语义断裂（AC-12） |
 | Q2 | W5 拖拽交互形态（自由 vs 磁吸；按下 vs 长按） | T11 实现范围 | **已结（work T11）**：按工件推荐执行——press-press 两段式 + 格子磁吸 + spacer 交换；自由落点/拖拽幽灵延后 v1.1（工件 scratch/p012/w5-dnd.md） |
 | Q3 | 通知面板"闲置自动收起"是否保留为后续需求（本 v1 裁定不做，SD-04） | 潜在 v1.1 增量 | 用户复审本计划时确认 |
+- 2026-09-12 work F2 走查续二（用户实机逐项验收）：stage: work，
+  outcome: pass（本轮范围），status 保持 executing。**AC 判定更新**：
+  AC-01/02 ✓（打开提速+主题切换，用户确认）；AC-11 ✓ 三态；侧栏滚动 ✓、
+  目录枚举失败 ✓、底部圆角 ✓（三轮修复用户确认）。**新 findings 与修
+  复**：
+  - F7（✓已修）：os-config 打开慢 residual = front Init 无条件
+    system_info 全量探活（含磁盘枚举）——已改缺省落 Desktop + 概要页
+    懒加载；主题无效根因 = PickTheme 写幽灵字段 cfg_theme——已改
+    Theme.SetMode 进程内 + dark_theme/theme_source=manual 双写；显示
+    页（原外观）缺省首置改名 + accent 五圆点置顶；desktop_page 全页
+    字段名勘正（cfg_* 前缀全为幽灵键，实机 config.at 污染在案）。
+  - F8（✓已修）：os-config 侧栏滚动容器结构——重排时 Overview/groups
+    被留在 sidebar_content 外，已重构全导航同容器（用户二轮定位）；
+    provider vm 臂高度链修复（transparent passthrough 丢 flex-1，
+    styled 变体补 Height(Fill)——auto-lang f722a0c3e）+ aside 补
+    h-full；顶部 AutoOS Settings 标题栏 + 底部 Settings 钮删除（用户
+    裁定，空间让给导航）。
+  - F9（✓已修）：目录枚举失败——WallpaperPicker 空目录跳过扫描（错
+    误经共享根状态污染整页）；content 圆角——bg+rounded-b-2xl 上移至
+    不滚动父列（滚动容器的底色列在滚动内容层视口底不可见）。
+  - F10（✓已修）：⚙️ 二态补全（visible → CloseWindow 走 W1 hide；
+    hidden/异分区才拉起）+ 错误通知图标 circle-alert ❗（原 x 与关闭
+    钮混淆，lucide 注册）+ **dock/桌面分离**（用户裁定：桌面图标 =
+    仅 shell.desktop.icons 自定义列表，pinned 不再并入）。
+  - F11（✓已修）：真拖拽重实现（用户裁定 UX）——desktop_icon_drag_start
+    置位宿主 icon_drag + 全局 __mouse_released 臂松手落格（光标格磁吸/
+    占位挤下一空格 行主序 + positions 全量重写 + inject + 清视觉态）；
+    iced mouse_area 跨件 release 不可达，收尾必须在宿主全局臂。
+  **open items**（下一轮）：
+  - O1 AC-10 字形居中：真实应用任务栏图标偏移，headless 探针通过——
+    复刻链与真实链有出入，需真实应用 devtools/MCP bounds 探针。
+  - O2 dock 重复图标：pinned 后运行窗未去重（用户截图：固定图标 +
+    运行图标并存）——去重条件 `__dock_pinned_csv.contains(w.app)` 未
+    命中原因需活体状态探针（疑 w.app 与 pinned id 不一致）；用户 UX
+    附加裁定：同类 app 共享一图标。
+  - O3 通知面板贴顶：mt-auto 探针通过但真实 overlay 挂载链未生效——
+    需查 notification overlay 装配臂（renderer 装配层）高度链。
+  - O4 真拖拽 + F7-F10 全部待用户下一轮复验（运行实例 23708 已含
+    全部修复；前端 .at 每次 ⚙️ 点击时重读，宿主侧已随 23708 生效）。
+  F2 环境（复验用）：ui_desktop @ .wt/os-012/auto-lang/target/debug/
+  examples（CWD=.wt/os-012/auto-os worktree 根；**注意 CWD 必须=os
+  worktree 根**，back_root/apps 容器探测基于它；calculator 直挂的
+  `use` 解析已加 lang 仓根回退基 ac849f63f）；隔离档案
+  %TEMP%/os012-f2/{config.at,storage.json}（storage 含 extra_dirs 指
+  worktree front + daemon release exe 覆盖键）；auto-os-config
+  worktree .wt/os-012/auto-os-config（os-012-dev，front 修复在此，
+  F2 走查授权扩仓）；back cdylib 已构建（worktree target/debug）。
