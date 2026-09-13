@@ -36,6 +36,11 @@
           "id": "P007-5",
           "title": "P534 债批一（origin PLAN-577）— 变更摘要",
           "content": "os-007：①avatar 家族补齐（三臂+props 形态 desugar+w-10 h-10 默认尺寸）——/avatar 页两 40x40 圆实机渲染、/hovercard 触发器 hit area 非零+真 hover 进/出 state 翻转不借语料工程（534 G3 补全,P534-D4 结案）；②breadcrumb 栈溢出根因偿还（widget 自名折叠环守卫,P530-D1+P534-D5 结案）——直达页 ALIVE+全站扫描 68/68 零异常；③schema 再生成滞留清偿（419 元素真名登记/P3 显式拆册/kitchen-sink 50 节随生,三围栏 2/2+4/4+7/7）。KNOWN-DEBT 三条✅ 结案回写；gallery README avatar 行更新。代码落 auto-lang os-007-dev （49c75d2e4..af07c9d37 六提交）;auto-os os-007-dev（84ff922 kitchen-sink+d6a48d2 README）。"
+        },
+        {
+          "id": "PLAN-013-report",
+          "title": "PLAN-013 desktop-app-portfolio 交付报告 — daemon 泛化/auto-term app 化/kanban submodule",
+          "content": "交付（2026-09-12，merge 96e1875）：① daemon 键泛化——apps.manifest 条目 daemon{port,bin,env_port} 驱动 GenericDaemon ensure 链（ping /api/health→发现序 spawn→<NAME>_DAEMON env 注入；autoos 零回归门），musk/jade pac 端口 17xxx 转实+MUSK_SERVE_PORT/JADE_GARDEN_PORT 配合；② auto-term app 壳落地 （app/ pac.at render vm+store/page 升格移植，Term.engine_* 进程内引擎免 back），manifest 登记 17400/17401；③ kanban submodule 首例（apps/kanban，容器臂/manifest 臂 id 去重，降级双形态实证）+ AGENTS §4 混合形态/§2 submodule 纪律/§3 daemon schema 定稿。归档路径 docs/plans/archive/013-desktop-app-portfolio.md。内容债跨仓台账：musk VM 化（059-FU1）、jade VM 壳开发（064 邻线）。"
         }
       ]
     },
@@ -257,6 +262,11 @@
           "last_modified": "2026-09-11",
           "title": "vwin-stack-hit-testing 复审 pass + 链折叠复跑门 — 复审注记",
           "content": "r2 复审 outcome: pass(同会话复审,独立性限制声明,六项证据行号独立复核)——AC-01..06 6/6;tf 3480 唯一红=charts 存量;组合门=f010n/f011n 22=22 名单级全等。链折叠复跑门:os-011-dev→master d3527d811(merge-tree 零冲突,renderer.rs 三方 608/611/链自动归位)+N6d 摘桃 2204274e8;iced 档 183/184(dock_pager_hover_popovers 随链测试更新转绿)+全量失败集 21=21 折叠前基线逐一全等+hash-lock 四件全等。findings:F-R1 blank 菜单落屏幕左下(锚=全域既有语义,KNOWN-DEBT 候选)/F-R2 拖拽缩放合成光标断言不可靠(列入用户实机复核清单)/F-R3 探针已撤回归门在撤探针构建复跑。"
+        },
+        {
+          "id": "PLAN-013-r1",
+          "title": "PLAN-013 desktop-app-portfolio r1 复审 — pass（五仓基线冻结/AC-01..06 全 pass/测试门还原实验定责）",
+          "content": "复审 pass（2026-09-12，rev1，review commit 3eaa186）。基线：auto-os plan-013-dev 19aab6f→main 96e1875；auto-lang os-013-dev 608099985；auto-musk 751d2d4；auto-down 0e5e3e9；auto-term 0770f3f。AC-01 链路面实机（daemon ensure/LaunchFallback UX 不崩桌面；musk/jade 内容面拆账：musk VM synthesis vue 符号债 KD 059-FU1、jade VM 壳 placeholder）AC-02 AutoTerm 实机全链 ✓；AC-03 manifest 登记+os-config 内嵌页零回归；AC-04 容器臂 kanban 42/26 零 skipped；AC-05 降级双形态实证；AC-06 文档-实现四项核对。测试门：daemon 29/29×2；全量 199 败经还原实验实证为 859c31710 基线错位（615/616 交接）+并行 flaky，非本计划回归。findings F-01..04 非阻塞（calculator 615 回归容错/musk+jade 内容债/debug 桌面内存/全量基线红治理）。"
         }
       ]
     }
