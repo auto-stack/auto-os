@@ -5,7 +5,7 @@ status: executing
 feature_name: tetris
 author: [zhaopuming]
 created_at: 2026-09-05
-updated_at: 2026-09-13
+updated_at: 2026-09-14
 plan_revision: 2
 supersedes_spec_components: []
 new_spec_components: [docs/specs/apps/tetris.md]
