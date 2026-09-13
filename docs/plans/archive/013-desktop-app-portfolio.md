@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-013
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
                                # （work 进入时未翻 executing 属流程疏漏；executing 期
                                #  全程有 work/实机/复审记录为证，review pass 直落 reviewed）
 feature_name: desktop-app-portfolio
@@ -342,6 +342,21 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
 实地门前并行启动，冲突面为零（不同仓不同文件）。
 
 ## 复审记录
+
+- 2026-09-12 `/auto-plan:merge`（stage: merge, PLAN-013:r1, outcome: pass）。
+  **receipt**：prepared = 五仓基线冻结（review 3eaa186）+ Spec delta 落点
+  AGENTS/README（docs/specs/ 目录缺位，review 已 justification；勘误：早先
+  "specs.json 六节均空"系误读顶层键——ledger 实有 architecture=8/reports=5 等，
+  本仓缺的是 docs/specs/ canonical 文件，不缺派生台账）；landed = auto-os main
+  96e1875 + auto-lang master + auto-musk main + auto-down master f45db2e +
+  auto-term main（五分支 os-013-dev/plan-013-dev 全合，auto-down 经 stash/pop
+  与 064 线 sysinfo lock 变更叠加零丢失）；ledger_refreshed = .autoos/specs.json
+  reviews=6/reports=5（PLAN-013-r1 + PLAN-013-report，f46e23a）；archived =
+  docs/plans/archive/013-desktop-app-portfolio.md（status: archived，
+  completion_kind: delivered）；cleaned = 组 .wt/os-013/ 六 worktree
+  （auto-os/auto-lang/auto-musk/auto-down/auto-term/auto-ai）wt-guard 过后
+  remove+分支删+组目录删（receipt 见 git log 归档后提交）。
+  **completion_kind: delivered**
 
 - 2026-09-12 `/auto-plan:new` 起草（stage: new, PLAN-013 rev1）。outcome: pass——
   12 任务覆盖 AC-01..06 与 SD-01..03；T-01 为 bounded investigation（决策 artifact =
