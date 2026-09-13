@@ -714,3 +714,43 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   worktree front + daemon release exe 覆盖键）；auto-os-config
   worktree .wt/os-012/auto-os-config（os-012-dev，front 修复在此，
   F2 走查授权扩仓）；back cdylib 已构建（worktree target/debug）。
+- 2026-09-13 work F2 走查续三（MCP 活体探针收口 O1-O3）：stage: work，
+  outcome: pass（本轮范围），status 保持 executing（O4 用户复验 +
+  AC-10 残留终裁待复审）。**方式**：ui_desktop + MCP :9348
+  （AUTOUI_ACCEPTANCE=1）活体探针；primary 锚点迁移后 autoui_state/
+  autoui_vtree/截图直达 shell 投影面（见下）。**O2 判定与修复**：
+  宿主数据活体全对（csv=",012-stopwatch,016-calendar,"、窗
+  registry_id=Some("012-stopwatch")）仍双图标 → 根因 = `.at` view
+  条件求值器无方法调用臂，`.contains(...)` 静默塌缩恒 false（T9 ②
+  实锤升级；同族死点三处：dock 去重/pinned 灰条/齿轮高亮）。修复 =
+  宿主派生判据面 + 等式消费：`__wm_wins.pinned`/`dup_app`（后者兼承
+  "同类 app 共享一图标"裁定）、`__dock_pinned.running`、标量
+  `__wm_settings_open`；活体验证单组 dock 无重复、pinned 聚焦/灰条、
+  齿轮/铃铛高亮随开合（截图 evidence/012/）。**O3 判定与修复**：
+  diff 复现卡片 y 0..798 满高——双因子：① 列表无 max-h（6 条 ~110px
+  ≈ 790 > 744 可用，mt-auto 空间归零）；② 真实链 Stack 子层 h-full
+  约束传递失效（headless 真组件链全复刻通过而实机塌缩）。修复 =
+  注入 `__panel_h`/`__panel_max_h` + 列表 max-h 滚动；活体验证贴底
+  （dock 上 60px）、有界、滚动、铃铛高亮同步。**O1 判定与部分修复**：
+  像素定案真实链字形一致性偏左上 ~3px（边框锚定 + 底条锚定互证）；
+  机制① iced 0.14 button content 左上放置无居中（源码实读）——已修
+  （icon-only 臂 Fill+center 容器）；机制② 残留 3px = iced 0.14.2
+  svg 绘制管线 quirk（Fixed/content_fit 行为均背离源码语义）——移交
+  iced 升级/预栅格化管线有界后续，AC-10 不记 pass。**附带**：desktop
+  模式 primary 锚点迁移特权 shell（boot 分配序 + shell 层 MCP 同步 +
+  shell window_size tick 镜像）——MCP 验收通道自此直达 shell 投影面。
+  **门档**：scoped 13+33 全过（p012_o3 双金样新增）；全量 iced 档
+  4620/196 = review 基线零新增回归；hash-lock 四件全等（pin
+  31b591bcad/63b36c4101/bee9ea8dc8/1258f3eb90——**sync 必须
+  AUTO_LANG_ROOT 指 worktree，主检出跑 sync 会同步错源**）。
+  code_commit：auto-os da7904e / auto-lang 543726655。证据：
+  docs/plans/evidence/012/（前后对照截图 ×8 + F2-WALKTHROUGH-ROUND3
+  摘要 + 测量脚本）。**open items 更新**：O2 ✓（活体验证，用户复验
+  待）；O3 ✓（同）；O1 部分（按钮级已修，残留 3px svg quirk 移交有
+  界后续，AC-10 终裁待用户）；O4 待用户复验（拖拽/⚙️二态/❗/dock-桌面
+  分离——实例含全部修复，前端 .at 每次齿轮点击重读）。**新观察项**
+  （移交基建，非本计划修复面）：① ServiceTick 臂 fit/快照早退可饿死
+  注入排空（MCP 验收通道间歇失效 + 一次宿主窗 13×13）；② styled_vtree
+  bounds 回填未覆盖非 primary 层；③ F2 档案 boot 无指令自启 recent
+  app 现象未定界。next：用户 O4 复验 + AC-10 终裁 → 复审（复用全部
+  确定性证据）。
