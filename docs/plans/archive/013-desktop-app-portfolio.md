@@ -355,7 +355,7 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
   docs/plans/archive/013-desktop-app-portfolio.md（status: archived，
   completion_kind: delivered）；cleaned = 组 .wt/os-013/ 六 worktree
   （auto-os/auto-lang/auto-musk/auto-down/auto-term/auto-ai）wt-guard 过后
-  remove+分支删+组目录删（receipt 见 git log 归档后提交）。
+  remove+分支删+组目录删（已确认：wt-guard 六连 clean、git worktree remove ×6、分支 plan-013-dev/os-013-dev×5 删除（19aab6f/608099985/751d2d4/0e5e3e9/0770f3f/9d2102c）、组目录 .wt/os-013/ 空删，worktree list 零残留。）
   **completion_kind: delivered**
 
 - 2026-09-12 `/auto-plan:new` 起草（stage: new, PLAN-013 rev1）。outcome: pass——
