@@ -799,3 +799,7 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   justify-start 挂顶保留。活体验证：notes_toggle 开→visible=1→关→
   ""，双 toggle 翻转正常。code_commit：auto-os c12a346 / auto-lang
   599a2c3c2 + 538a2b17d（p012_o3 探针适配顶对齐架构）。
+  **右 gap 补刀（2026-09-14）**：守卫层 `mr-3` 外边距类静默丢弃
+  （margin 系仅图标出口消费——PLAN-054 A11 同族），改 `pr-3` 内边距
+  （顶/右 12px 对称，实测右 gap 12 ✓）。code_commit：auto-os 894cc00 /
+  auto-lang c848976e8。
