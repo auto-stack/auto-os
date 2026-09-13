@@ -1,6 +1,8 @@
 ---
 plan_id: PLAN-013
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
+                               # （work 进入时未翻 executing 属流程疏漏；executing 期
+                               #  全程有 work/实机/复审记录为证，review pass 直落 reviewed）
 feature_name: desktop-app-portfolio
 author: [agent]
 created_at: 2026-09-12
@@ -371,8 +373,38 @@ App 侧（api.at `daemon_base()` 同类读取）自行消费派生键。
   42/26 零 skipped（容器臂 kanban 命中 AC-04）；降级双形态短启动（裸跑
   skip 警告可见不炸 / AUTO_OS_ROOT 权威零 skipped，AC-05 实测措辞修正——
   原设计"manifest 臂主检出回退"不成立，组 worktree 的 repo rel 解析组内
-  兄弟，标准入口 AUTO_OS_ROOT 权威为恒完整路径）。next：T-06/T-08 实地门
-  （用户实机 + jade base64 修复 + release 构建），全绿后 execution_done → review。
+  兄弟，标准入口 AUTO_OS_ROOT 权威为恒完整路径）。
+- 2026-09-12 `/auto-plan:work` 实机验证收口（stage: work, rev1）。T-08 实地
+  完成（AutoTerm 全链 ✓ 用户确认）；T-06 链路面完成/内容面拆账（详见 T-06
+  任务行与 AC-01 判定）。desktop 日志：launch 臂三 app 全进、LaunchFallback
+  UX 工作、daemon ensure 无阻塞。
+- 2026-09-12 `/auto-plan:review`（stage: review, PLAN-013 rev1, **outcome: pass**,
+  status → reviewed）。**独立性声明**：复审在实现会话内进行，判定全部从工件重建。
+  **基线**：auto-os plan-013-dev 19aab6f（base 6fb6956→merge 5f708ea）；auto-lang
+  os-013-dev 608099985（base 859c31710 + d57d8c486 + ui_desktop 容错）；auto-musk
+  751d2d4；auto-down 0e5e3e9（含 base64 修复 c71e48b + daemon 引号 1ffdec0）；
+  auto-term 0770f3f；依赖 worktree auto-ai 9d2102c（纯解析）。主检出 main 补充
+  abb0bee（submodule）+ c7db604（进度）。**复审补提交**：ui_desktop 容错
+  608099985、jade Cargo.lock 0e5e3e9（原脏文件归位）。
+  **acceptance_results**：AC-01 pass（链路面实机 + 内容面拆账有据——musk VM
+  synthesis vue 符号债 KD 059-FU1 / jade VM 壳 placeholder，各仓台账）；
+  AC-02 pass（AutoTerm 实机全链：launcher→终端会话，用户确认）；AC-03 pass
+  （manifest auto-term 行 + os-config 内嵌页文件未动、launch 正常）；AC-04 pass
+  （主检出短启动 42/26 零 skipped，容器臂 kanban 命中）；AC-05 pass（降级双形态
+  短启动实证，措辞按实测修正）；AC-06 pass（AGENTS §4 无残留/§3 schema 与
+  ManifestDaemon 字段一致/README 七行表/env 派生键文档-实现同构，四项 grep 核对）。
+  **测试门**：daemon 组 29/29×2 连跑绿；全量 lib(ui-iced) worktree 4611 passed/
+  199 failed vs master 工作区 4613/206——**失败为基线既有**：worktree 独有 4 个中
+  3 个（plan370_015 d2/d8/z6）经还原实验实证为 859c31710 基线测试-src 错位
+  （615/616 交接期，master 全过系在飞工作区配套改动，非本计划回归），1 个
+  desktop_surface 为并行调度 flaky（--exact 单跑过）；osconfig 共享 fixture 竞态
+  在 master（无唯一化修复）更频发，反向佐证随带修复有效。
+  **findings**（均非阻塞、范围外）：F-01 calculator 聚装回归（615 线）——本计划
+  随带 ui_desktop 降级容错；F-02 musk/jade VM 内容债（059-FU1 / auto-down 立项）；
+  F-03 debug 桌面 inproc 大 app 装载内存分配崩溃一次（release 或内存治理另议）；
+  F-04 auto-lang 全量基线红治理（859c31710 错位家族 + 并行 flaky 家族）——
+  框架基线线。evidence：/tmp/os013-full-{wt,master}.log + worktree 各 commit
+  + 桌面日志摘录已录 §8/待澄清。**next: merge**。
 
 ## 待澄清事项
 
