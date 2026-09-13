@@ -700,6 +700,72 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   Plan 继续保持 `executing`；依赖提交和 Spec 需独立复审绑定后，才可进入
   `/auto-plan:merge`。
 
+### 2026-09-14 — review / revision 2（复审重建）
+
+- stage: review
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: blocked
+- reviewed_commit: `31caca2caea61586df7bd363f62151ded6eddfb5`
+- base_commit: `6fb69564d81591c8666b1485de2aaaa97342d77a`
+- dependency_revisions: `auto-lang` 隔离工作树
+  `D:/autostack/.wt/lang-tetris`=`6b228524ed6eddccfc8f5e7017f33916f4d5f180`，
+  包含 `ddb5cda98`（Rust bool HTTP 返回值）、`6cefb21cf`（无触发器 Modal
+  overlay）和 `6b228524e`（尊重显式 `CARGO_TARGET_DIR`）；依赖工作树干净。
+- spec_inputs: `docs/specs/apps/tetris.md` 已在 reviewed commit 中存在，SHA-256
+  `596B7E0884F53B56C2834E22F7E2CA14B98CE6D06BDA614AAF0B27A09432AB70`；本次仅
+  复核既有 Spec，不在复审阶段发布新的规范内容。
+- independence: 本次复审在同一执行会话内完成，非独立审查会话；结论由当前
+  worktree、提交、生成物和测试工件重建。
+- acceptance_results:
+  - AC-01: partial — Vue HTTP、Rust merged/no-merge 官方命令和核心状态动作均有
+    实测；`run_matrix.py --all-modes` 的源代码/转译/生成/Cargo/持久化能力均为
+    supported，但完整 M1–M7 真实进程、VM 两腿和三轨业务等价矩阵仍不完整。
+  - AC-02: partial — 10×20 棋盘、ghost、消行上方方块下落及受控 Vue 回归已验证；
+    7×4 形态与 1/2/3/4 行 golden 及三轨零差异仍未建立。
+  - AC-03: partial — 20ms Tick、键盘映射和 Rust MCP 单键动作通过；按住重复、
+    keyup/失焦清理、三轨真实计时和物理键仍没有可复跑证据。
+  - AC-04: partial — Vue 棋盘 10/4 列、零圆角盒模型和 Dialog 居中，及 Iced
+    Modal 五项布局回归通过；VM/Rust 原生窗口像素、窄窗/深浅主题夹具仍缺失。
+  - AC-05: partial — Vue Playwright 冒烟实际 `3 passed (3.2s)`，Rust no-merge
+    MCP 已验证开始、方向键、硬降和暂停；VM/native MCP、焦点和背景输入拦截
+    的完整覆盖仍缺失。
+  - AC-06: partial — HTTP 与 Rust no-merge 已验证低分保护、版本化记录、保存 ACK
+    和跨进程重启读取；merged 原生重启、损坏/只读、并发最大值及跨模式数据根
+    尚未完成。
+  - AC-07: blocked — manifest 条目存在，但桌面和 `05-games` 画廊的真实发现、
+    打开与开局仍没有可控环境证据。
+  - AC-08: partial — Spec、依赖提交、干净 app/dependency worktree、能力矩阵和
+    Playwright 可复跑入口已具备；完整 M1–M7 与桌面/原生视觉门仍未闭合。
+- findings:
+  - `R-001` blocker（AC-01/02/03/04/05/06/07）：完整 VM/Rust merged/no-merge
+    实机矩阵、规则 golden、按住/失焦、原生截图和桌面/画廊门仍未完成。现有 MCP
+    状态冒烟与 Iced 几何单测不能替代用户可观察的全量验收。下一步需要可复跑的
+    原生驱动，逐项保存进程、业务端口、窗口、输入和数据文件证据。
+  - `R-005` blocker（AC-01/03/04/05/07）：本机 VM/native MCP 回环仍受
+    WinError 10013/无可控制原生窗口限制，因而无法完成 VM 两腿物理交互和像素
+    验收。需在具备 loopback 权限和原生窗口驱动的环境复验，不能将 HTTP 或结构
+    快照升级为原生通过。
+  - `R-002` needs_fix（AC-08）：Popover/renderer、bool API 和 target 目录修复已
+    形成独立依赖提交并通过定向回归，但尚未进入依赖主线并绑定到本仓可合并提交；
+    merge 前必须完成依赖侧独立 review/landing 与应用最终 SHA 复跑。
+  - `R-003` resolved-for-review（AC-08）：canonical Spec 已在 reviewed commit
+    中落地并覆盖 SD-01..03；进入 merge 时仍须把该文件随应用提交沉淀到主线。
+  - `R-004` resolved（AC-08）：干净 worktree 的 `run_matrix.py --all-modes` 和
+    Playwright 列表均可复跑，实际 Vue Playwright 三用例已通过；本次测试生成物
+    已清理。
+  - `R-006` resolved（AC-01/06）：显式 Cargo target 修复后，官方
+    `auto run -r rust --server rust --no-merge` 已在隔离 target 成功编译/启动，
+    并完成方向键、硬降和分数保存 ACK 验证。
+- evidence: app worktree `D:/autostack/.wt/os-005/auto-os`（clean，reviewed
+  commit `31caca2`）；dependency worktree `D:/autostack/.wt/lang-tetris`
+  （clean，HEAD `6b228524e`）；`python -B tests/run_matrix.py --all-modes`、
+  `.\\node_modules\\.bin\\playwright.cmd test --reporter=line`（tests 目录，
+  `3 passed (3.2s)`）、`popover_modal_`（5 passed）及官方 Rust no-merge MCP
+  记录均已在执行记录中留存。
+- next: Plan 保持 `executing`，先解除 `R-001`/`R-005`，完成依赖独立 landing 和
+  M1–M7/桌面/视觉/持久化全量复验；复审未通过，不进入 `/auto-plan:merge`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
