@@ -105,7 +105,7 @@ HTTP 服务；同端口代理、同时启动两个服务不算 merged，MCP 端�
 | M1 | Vue / Rust，HTTP | `auto run -r vue --server rust --no-merge` | 标准 Web 模式，真实 API 与重启恢复 |
 | M2 | Vue / VM，HTTP | `auto run -r vue --server vm --no-merge` | 与 M1 同 API、同持久化 |
 | M3 | VM / VM，merged | `auto run -r vm --merged` | 当前直接链接 .at 后端，无独立业务服务 |
-| M4 | VM / VM，HTTP | `auto run -r vm --server vm --no-merge` | 必须证明 HTTP 及真实业务执行 |
+| M4 | VM / VM，HTTP | `AUTO_BACKEND_IMPL=vm auto run -r vm --no-merge` | 前端 VM + AutoVM HTTP；`--server vm` 是仅启动后端服务的入口 |
 | M5 | VM / Rust，HTTP | `auto run -r vm --server rust --no-merge` | Rust 后端与 M3/M4 结果一致 |
 | M6 | Rust / Rust，merged | `auto run -r rust --server rust --merged` | scalar API 已生成 db 吸收委托；仍需原生实机证明真实落盘与重启 |
 | M7 | Rust / Rust，HTTP | `auto run -r rust --server rust --no-merge` | 转译 UI 真实验证，不能以 VM 截图替代 |
@@ -780,6 +780,32 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   保持干净。
 - `R-002` 状态改为 resolved；`R-001` 与 `R-005` 仍是完整性验收的阻断项。主线
   其它计划在本轮并行推进，依赖最终提交以当前 auto-lang `master` 的包含关系为准。
+
+### 2026-09-14 — execution follow-up / final cross-renderer matrix
+
+- 应用最终修复已提交 `989c0be`：记录路径通过 `AUTO_PROJECT_DIR` 与
+  `AUTO_RENDER` 在 Vue、VM、Rust 间保持一致；VM 前端在 `src/front` 运行时使用
+  `../../records.json`，Rust/Vue 使用应用根路径。成绩解析拒绝负数和非法输入，
+  Rust/VM/Vue 共用版本化 `records.json`；RetrySave 直接消费 typed `bool` 回执。
+- auto-lang 主线已提交 `183e358cc`，在既有 `697718962`（bool HTTP 回执）、
+  `af28b48fa`（显式 Cargo target）等修复之上，补齐 `AUTO_RENDER`/非扩展路径注入，
+  并使 `a2r_std` 生成前缀幂等；Rust no-merge 官方入口可从源码重新生成并编译。
+- 最终可复跑证据：Vue HTTP Playwright `3 passed (2.3s)`；VM merged 与 no-merge
+  原生 MCP 均完成 ready→playing、左移、硬降，no-merge 完成重试保存并读回
+  `records.json`；Rust merged 与 no-merge 原生 MCP 均完成开始、左移、硬降、重试
+  保存，生成后端可编译；持久化矩阵通过低分保护、负分/非法分数拒绝、版本化写入
+  与跨进程重启读取。VM no-merge 原生键盘实测 `ArrowLeft`（`px: 3→2`）、
+  `ArrowRight`（恢复 3）和 `P`（`playing→paused`）。
+- `AUTOUI_MCP_PORT` 高端口回环现可用；VM 初始原生截图已取得，`准备好了吗`
+  Dialog 位于窗口中央。截图接口仍受当前窗口捕获尺寸影响，无法替代窄窗、深浅
+  主题和逐像素 golden。M4 的实际前端+HTTP 入口是上表命令；`--server vm` 仅用于
+  启动 AutoVM 后端服务，避免后续复验把服务模式误当完整 UI 模式。
+- 阻断收窄但不关闭：`R-001` 仍缺 7×4 形态及 1/2/3/4 行规则 golden、三轨零差异
+  全量矩阵、按住/keyup/失焦和物理输入；`R-005` 仍缺可控物理窗口驱动、桌面与
+  `05-games` 画廊真实发现/开局及稳定像素夹具。MCP 结构/状态证据不升级这些门。
+  `R-002` 已 resolved，依赖主线与应用提交均有可绑定 SHA。
+- Plan 继续保持 `executing`；只有在具备上述原生/桌面验收能力并完成独立复审后，
+  才能转 `reviewed` 并进入 `/auto-plan:merge`。
 
 ## 10. 待澄清事项
 
