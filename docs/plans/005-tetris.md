@@ -670,6 +670,19 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   不在本轮直接合并。R-001/R-005 原生驱动与回环权限、R-004 可复跑入口、R-006
   官方 CLI target 权限以及 M1–M7 完整性矩阵继续阻断，Plan 保持 `executing`。
 
+### 2026-09-13 — execution follow-up / clean matrix rerun
+
+- 在干净应用 worktree `D:/autostack/.wt/os-005/auto-os/apps/036-tetris` 重跑
+  `python -B tests/run_matrix.py --all-modes`，能力证据文件可正常写入；源码、
+  转译、Vue/Rust 生成、Playwright 包、Rust 后端和持久化均为 supported。
+  `pnpm exec playwright test --list` 正常列出 3 个冒烟用例。之前 R-004 的证据
+  写入/测试入口问题不再复现。
+- 同一轮仍明确报告 `vm.mcp: blocked`（未配置 `AUTOUI_MCP_URL`）及
+  `native/gameplay/visual: blocked`（缺少可连接的 VM MCP/浏览器），因此不把
+  R-001/R-005 的原生交互、视觉、失焦/重复键和 M1–M7 完整矩阵误记为通过。
+  R-004 可标记为 needs_fix 已处理；Plan 继续保持 `executing`，等待原生驱动和
+  依赖独立复审后再进入 `/auto-plan:review`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
