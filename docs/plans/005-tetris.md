@@ -654,6 +654,22 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   原生窗口不可用）及 R-001–R-004、R-006 的 CLI target 权限和其余完整性验收项
   继续交由后续复审处理，本轮不进入 `/auto-plan:review` 或 `/auto-plan:merge`。
 
+### 2026-09-13 — execution follow-up / dependency and Spec cleanup
+
+- 依赖工作树 `D:/autostack/.wt/lang-tetris` 已将三个 Iced Modal 文件提交为
+  `6cefb21cf`，与布尔 API 生成器提交 `ddb5cda98` 分开可审；两项均保留独立
+  变更边界，工作树已干净。`popover_modal_` 回归为 5 passed，覆盖无触发器居中、
+  普通居中、遮罩外点、Esc 关闭和面板点击。
+- 应用 worktree `D:/autostack/.wt/os-005/auto-os` 已清理截图临时目录和误生成的
+  嵌套 `apps/autostack` target，当前工作树干净；新增 canonical Spec
+  `docs/specs/apps/tetris.md`，提交 `31caca2`，覆盖 SD-01（规则/状态/输入/UI）、
+  SD-02（DTO/纪录/幂等保存/模式矩阵）和 SD-03（应用路径、端口、桌面/画廊入口、
+  复验门）。该 Spec 是产品合同，实际通过项仍以本节证据为准。
+- R-002 的“依赖未提交/应用产物污染”与 R-003 的“Spec 缺失”已具备可绑定的
+  修复提交；它们仍需独立 `/auto-plan:review` 绑定依赖 SHA 后才能进入 merge，
+  不在本轮直接合并。R-001/R-005 原生驱动与回环权限、R-004 可复跑入口、R-006
+  官方 CLI target 权限以及 M1–M7 完整性矩阵继续阻断，Plan 保持 `executing`。
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
