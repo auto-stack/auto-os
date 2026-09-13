@@ -47,6 +47,12 @@ python tests/desktop_mcp.py
 python tests/run_matrix.py --probe
 # persistence leg after building the backend
 python tests/run_matrix.py --suite persistence
+# generated Rust rules golden (opening/lock + 1..4 line clears)
+cargo test -p tetris --test rules_golden --no-default-features --features ui-iced
+# real Windows key-down/key-up, long-press and blur acceptance (needs a visible window)
+python tests/native_physical.py --mcp-url http://127.0.0.1:9247/mcp --blur
+# desktop manifest and 05-games gallery contract audit
+python tests/gallery_contract.py
 ```
 
 Playwright 测试会 mock 纪录 API，覆盖首屏、开始/暂停、键盘硬降和说明

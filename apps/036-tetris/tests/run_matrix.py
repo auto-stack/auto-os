@@ -75,6 +75,19 @@ def probe() -> dict[str, tuple[str, str]]:
         "blocked",
         "Playwright test package is incomplete",
     )
+    result["native.input-driver"] = (
+        "supported",
+        "tests/native_physical.py can send Windows key-down/key-up, long-press and blur events",
+    ) if (TESTS / "native_physical.py").is_file() else (
+        "blocked",
+        "physical Windows input driver is missing",
+    )
+    result["gallery.contract"] = run_cmd(
+        [sys.executable, str(TESTS / "gallery_contract.py")], timeout=30
+    ) if (TESTS / "gallery_contract.py").is_file() else (
+        "blocked",
+        "gallery contract audit is missing",
+    )
 
     binary = auto_bin()
     if binary is None:
@@ -236,6 +249,40 @@ def persistence() -> tuple[str, str]:
     return "supported", "monotonic update and cross-process restart read passed"
 
 
+def rust_rules_golden() -> tuple[str, str]:
+    """Run the generated Rust fixture against the actual TetrisStore code."""
+
+    workspace = ROOT / "rust-workspace"
+    fixture = workspace / "036-tetris" / "tests" / "rules_golden.rs"
+    if not fixture.is_file():
+        return "blocked", "Rust rules fixture is missing; regenerate or restore tests/rules_golden.rs"
+    try:
+        proc = subprocess.run(
+            [
+                "cargo",
+                "test",
+                "-p",
+                "tetris",
+                "--test",
+                "rules_golden",
+                "--no-default-features",
+                "--features",
+                "ui-iced",
+            ],
+            cwd=workspace,
+            text=True,
+            capture_output=True,
+            timeout=300,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return "blocked", f"Rust golden runner unavailable: {exc}"
+    if proc.returncode != 0:
+        detail = (proc.stdout + proc.stderr).splitlines()
+        return "blocked", "Rust golden failed: " + (detail[-1] if detail else "no output")
+    return "supported", "generated TetrisStore golden passed (opening/lock + 1..4 line clears)"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--probe", action="store_true", help="write capability evidence")
@@ -257,8 +304,14 @@ def main() -> int:
         print(f"persistence: {status} — {detail}")
         if status != "supported" and not args.all_modes:
             return 2
-    if args.suite in {"rules", "gameplay", "visual"} or args.all_modes:
-        print("native/gameplay/visual: blocked — run with a connected VM MCP or browser URL")
+    if args.suite == "rules" or args.all_modes:
+        status, detail = rust_rules_golden()
+        print(f"rules.rust-golden: {status} — {detail}")
+        if status != "supported" and args.suite == "rules":
+            return 2
+        print("rules.vm-golden: blocked — VM fixture injection is not exposed by AutoUI MCP")
+    if args.suite in {"gameplay", "visual"} or args.all_modes:
+        print("native/gameplay/visual: blocked — run with a connected native window or browser URL")
     return 0
 
 

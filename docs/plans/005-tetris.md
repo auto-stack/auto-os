@@ -160,6 +160,27 @@ category: "game"  render: "vue"  desktop: "true"  window: "fit"
 
 ## 复审记录
 
+### 2026-09-14 — execution follow-up / acceptance drivers
+
+- 新增 `tests/native_physical.py`：Windows 原生 `SendInput` 驱动，明确发送
+  key-down/key-up、可配置长按、切换第二窗口验证失焦，并在前后调用 AutoUI MCP
+  快照。无可见标题为“俄罗斯方块”的顶层窗口时返回 `BLOCKED`，不把结构快照或
+  逻辑按键冒充物理验收。
+- 新增 `tests/gallery_contract.py`：检查 `apps.manifest`、`pac.at`、画廊扫描根
+  和 `05-games` 分类；当前 manifest/pac 已通过，但画廊扫描仍只指向
+  `auto-lang/examples/ui`，产品 app 不在扫描根，生成器也没有 `05-games`，故该门
+  仍为 blocked。
+- 新增生成 Rust 组件的 `rules_golden.rs`，直接 include `TetrisStore` 并覆盖开局、
+  位移、旋转、软/硬降、锁定、1/2/3/4 行消除、计分和压缩；
+  `cargo test -p tetris --test rules_golden --no-default-features --features ui-iced`
+  结果为 **2 passed**。VM 仍缺可注入棋盘的 fixture/test hook，不能宣称三轨 golden
+  已闭合。
+- `tests/run_matrix.py --probe` 已记录 `native.input-driver: supported` 和
+  `gallery.contract: blocked`；实际物理驱动在当前宿主返回
+  `BLOCKED: no visible native window matching '俄罗斯方块'; matches: none`。
+  因此 R-001/R-005 保持 blocked，下一步仍需具备可接管原生窗口的桌面环境，并补齐
+  VM fixture 注入与画廊注册后再做独立复审。
+
 ## 待澄清事项
 
 1. 7-bag 均衡抽取 vs 独立 LCG：v1 LCG（简单）；7-bag 远期。
