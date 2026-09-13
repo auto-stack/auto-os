@@ -765,3 +765,16 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   状态图标高亮应单一代码路径维护）/ tick 饿死根治。code_commit：
   auto-os cb26882 / auto-lang 4f4efa822。
   next：用户复验（含面板顶 gap 与 dock 点击反馈）→ 复审。
+  **复验反馈终轮（2026-09-13 晚）**：用户两反馈的最终定位与修复——
+  ①"第2、3个图标无高亮" = 任务栏右侧**布局切换钮**（grid/master-stack）
+  无高亮态（切换行为正确）→ `__wm_layout` 派生标量 + 两钮等式高亮
+  （活体验证 grid 亮 ✓）；用户"高亮应统一维护"方向已登记 DEBTS icon
+  族。②面板顶 gap 根因链终定位：dynamic_view 根 = Fill×Fill
+  toast-Stack（463 T5 注记"装配层 align 无从发力"）→ .at 内一切锚定
+  （mt-auto/flex-1/根高类/col-reverse）在真实链失效而 headless 全通
+  （O1 同族分叉）。终解 = 三层联动：装配级 scrim mouse-area（外点关
+  闭）+ .at 根改紧凑卡片本体（max-h 560 滚动）+ **justify-end 列贴底**
+  （iced 列 align_y，packs 已验证机制；实测顶 gap 278px/底 740 贴
+  dock）。另：桌面图标 storage 写入 `shell.desktop.icons`（用户可测
+  拖拽）。code_commit：auto-os cce46ec / auto-lang 85faa0610。
+  next：用户终验（面板顶 gap/布局钮高亮/拖拽）→ 复审。
