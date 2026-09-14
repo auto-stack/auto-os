@@ -81,6 +81,29 @@ auto-os/
 > auto-os-config `scripts/deploy-autoterm.sh`）；os-config 内嵌终端页
 > 保留。
 
+## 图标资产（PLAN-018）
+
+桌面 app 图标的唯一设计源是 `assets/icons.png`（浅）/ `assets/icons_dark.png`
+（深）两张精灵表（7×4=28，浅深同序不同位移）。运行时只吃切片：
+
+```
+assets/icons/{light,dark}/<stem>.png   # 切片产物（RGBA，≈152×148）
+assets/icons/mapping.json              # registry id → stem（27 条；browser 预留位不入映射）
+assets/icons/preview.png               # 蒙太奇预览（人眼复核用）
+```
+
+再生成与校验（改设计源后必跑）：
+
+```
+python scripts/slice_icons.py            # 切片 + 写 mapping + preview + 自校验
+python scripts/slice_icons.py --verify   # 只校验（像素级往返 + mapping 恰等）
+```
+
+运行时链路：桌面 boot 读 mapping 把命中 id 的 `entry.icon` 改写为
+`iconfile:<stem>`，渲染端（iced/vue）按当前主题选 `{light,dark}/<stem>.png`；
+未映射 app 自动落回 lucide（回退链契约见 auto-lang `docs/specs/` icon
+字符串协议族节）。
+
 ## 关联
 
 - 框架根：[../auto-lang](../auto-lang)（语言/编译器/VM/AutoUI/examples）
