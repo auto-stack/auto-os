@@ -484,6 +484,17 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 桌面内实机验收补充（R7 构建宿主实测）
+
+- **AC-01 ✅**：桌面切浅色（set_theme 0）后 027 完整跟随浅色（stella
+  light 全 token：工具栏/侧栏/行/状态栏），真实目录 67 项同屏——
+  evidence/016/ac01-light-desktop.png。
+- **AC-10 桌面腿 ✅**：bus 注入 open_with 031-image-viewer + photo.png →
+  031 启动聚焦、缩略图/大图渲染（testdata 1x1 红图按缩放呈现）——
+  **031 back.api 桌面轨可用性疑虑解除**（D-2 残留闭合）。031 为浅色
+  主题（pac theme 既有）。
+- 证据：ac01-light-desktop.png、ac10-image-open-desktop.png。
+
 ### 2026-09-14 修复轮 7（R7）：open_with 桌面可达性分流（用户实机反馈）
 
 - 现象：独立窗口（auto run -r vm）双击 .jpg 无反应——命中 image-viewer
