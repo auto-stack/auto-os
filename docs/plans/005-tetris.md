@@ -865,6 +865,38 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: Plan 保持 `executing`；先解除 `R-001`/`R-005`，完成完整规则与模式矩阵、
   原生物理/像素和桌面画廊验收后，再重新复审；本次不进入 `/auto-plan:merge`。
 
+### 2026-09-14 — execution follow-up / native VM focus and input gate
+
+- stage: work
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: partial
+- code_commits: app `df4ee1f`, evidence refresh `44f6933`; auto-lang prerequisite
+  `86dae6ba4` (`fix(ui): route opt-in app blur lifecycle events`)
+- task_ids: T1, T5, T6
+- evidence:
+  - `cargo check -p auto-lang` and full `cargo build -p auto` pass on the
+    dependency revision.
+  - A real VM merged window on MCP `9273` passed
+    `python -B tests/native_focus_probe.py --mcp-url http://127.0.0.1:9273/mcp`:
+    six physical key-down packets during a 750 ms hold, explicit key-up,
+    `px=3→0`, and focus transfer to another visible window resulting in
+    `phase="paused"`. Focus restoration did not resume play.
+  - `tests/evidence/vm-ready-modal-live.png` shows the ready Dialog centered
+    over the dimmed board; `tests/evidence/capabilities.md` binds the live MCP
+    endpoint and native driver.
+  - Rust `rules_golden` now passes 3 tests, including all seven pieces × four
+    rotations and one through four line-clear score/compaction cases.
+- blockers:
+  - VM fixture injection is still unavailable through AutoUI MCP, so the same
+    full rules golden cannot yet be run against the VM implementation.
+  - The complete M1–M7 cross-mode business matrix, persistence fault/concurrency
+    cases, and stable narrow-window/theme pixel fixtures remain unexecuted.
+  - Desktop discovery and the `05-games` gallery are still external to the
+    current app scan root/category and remain blocked by `gallery_contract.py`.
+- next: keep Plan `executing`; independently review/land auto-lang `86dae6ba4`,
+  then run the remaining mode and gallery gates before `/auto-plan:review`.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
