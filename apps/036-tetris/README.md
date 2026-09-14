@@ -9,7 +9,7 @@
 cd apps/036-tetris
 $env:AUTO_LANG_ROOT = "D:/autostack/auto-lang"
 
-# Vue 前端通过 HTTP 调用后端（17400 / 17401）
+# Vue 前端通过 HTTP 调用后端（17500 / 17501）
 auto run --render vue --server rust --no-merge
 
 # VM/Rust 原生轨：可选 HTTP 后端或进程内 merged

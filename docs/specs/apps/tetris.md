@@ -19,13 +19,13 @@ combo/B2B、会话续玩或手写 Vue/JS/Rust 业务替身。
 
 | 模式 | 前端 | 后端 | 部署 | 端口/入口 |
 |---|---|---|---|---|
-| M1 | Vue | Rust | HTTP | `17400` / `17401` |
-| M2 | Vue | VM | HTTP | `17400` / `17401` |
+| M1 | Vue | Rust | HTTP | `17500` / `17501` |
+| M2 | Vue | VM | HTTP | `17500` / `17501` |
 | M3 | VM | VM | merged | 原生 AutoUI |
-| M4 | VM | VM | no-merge HTTP | 原生 AutoUI + `17401` |
-| M5 | VM | Rust | no-merge HTTP | 原生 AutoUI + `17401` |
+| M4 | VM | VM | no-merge HTTP | 原生 AutoUI + `17501` |
+| M5 | VM | Rust | no-merge HTTP | 原生 AutoUI + `17501` |
 | M6 | Rust | Rust | merged | 原生 AutoUI |
-| M7 | Rust | Rust | no-merge HTTP | 原生 AutoUI + `17401` |
+| M7 | Rust | Rust | no-merge HTTP | 原生 AutoUI + `17501` |
 
 Vue 始终通过 HTTP 调用后端；VM 与 Rust 必须分别支持 `merged` 和 `no-merge`。
 Vue 的进程内合并不属于本应用范围。桌面登记 id 为 `tetris`，标题为“俄罗斯方块”，

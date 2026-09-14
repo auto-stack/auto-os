@@ -193,7 +193,7 @@ def persistence() -> tuple[str, str]:
         except subprocess.TimeoutExpired:
             process.kill()
 
-    port = int(os.environ.get("TETRIS_TEST_PORT", "17411"))
+    port = int(os.environ.get("TETRIS_TEST_PORT", "17511"))
     record_file.write_text("42", encoding="utf-8")
     process = start(port)
     try:
