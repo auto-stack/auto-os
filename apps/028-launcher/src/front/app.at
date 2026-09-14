@@ -433,6 +433,18 @@ widget App {
                         }
                     }
                     if tier == 99 {
+                        // 前缀（id 同档——PLAN-015 回归修复：展示名转中文
+                        // （title_zh locale 链）后 lt 失去拉丁形态，"term"
+                        // 等 id 子串查询仅剩整 id 精确匹配可命中；ln=id
+                        // 预小写键宿主恒注入（renderer 464 接缝），补入
+                        // 三档模糊。)
+                        if ln.len() >= ql.len() {
+                            if ln.slice(0, ql.len()) == ql {
+                                tier = 1
+                            }
+                        }
+                    }
+                    if tier == 99 {
                         // 词首（位置 0 或 空格/-/_ 之后）
                         var p int = 0
                         while p < lt.len() {
@@ -456,6 +468,29 @@ widget App {
                         }
                     }
                     if tier == 99 {
+                        // 词首（id 同档——"term" 命中 "auto-term" 的 '-' 后词首）
+                        var p2 int = 0
+                        while p2 < ln.len() {
+                            var hit2 int = 0
+                            if p2 == 0 {
+                                hit2 = 1
+                            } else {
+                                var pc2 str = ln.slice(p2 - 1, p2)
+                                if pc2 == " " || pc2 == "-" || pc2 == "_" {
+                                    hit2 = 1
+                                }
+                            }
+                            if hit2 == 1 {
+                                if ln.len() - p2 >= ql.len() {
+                                    if ln.slice(p2, p2 + ql.len()) == ql {
+                                        tier = 2
+                                    }
+                                }
+                            }
+                            p2 = p2 + 1
+                        }
+                    }
+                    if tier == 99 {
                         // 子序列（双指针）
                         var qi int = 0
                         var sj int = 0
@@ -468,6 +503,22 @@ widget App {
                             sj = sj + 1
                         }
                         if qi == ql.len() {
+                            tier = 3
+                        }
+                    }
+                    if tier == 99 {
+                        // 子序列（id 同档）
+                        var qi2 int = 0
+                        var sj2 int = 0
+                        while sj2 < ln.len() {
+                            if qi2 < ql.len() {
+                                if ln.slice(sj2, sj2 + 1) == ql.slice(qi2, qi2 + 1) {
+                                    qi2 = qi2 + 1
+                                }
+                            }
+                            sj2 = sj2 + 1
+                        }
+                        if qi2 == ql.len() {
                             tier = 3
                         }
                     }

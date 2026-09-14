@@ -936,6 +936,35 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: finish the remaining acceptance evidence, then run an independent
   revision-2 review before merge/archive.
 
+### 2026-09-14 — execution follow-up / VM fixture rules golden
+
+- stage: work
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: partial
+- code_commits: `2bf5050` and `31ad06c` on `plan-005-dev`
+- task_ids: T1, T5, T6
+- delivered: added `tests/vm_rules_golden.py`, wired it into `run_matrix.py`,
+  fixed the Windows gallery audit path crash, and refreshed the rules/capability
+  evidence. The runner uses the opt-in AutoUI MCP `autoui_fixture` channel and
+  drives the public `App` handlers; it does not add a debug control to Tetris.
+- evidence: live merged VM MCP `http://127.0.0.1:9292/mcp` passed opening/lock,
+  all seven pieces × four rotations (via collision checks of every occupied
+  coordinate), and 1/2/3/4-line score/compaction cases. Python AST parsing and
+  `git diff --check` passed. `gallery_contract.py --json` now emits explicit
+  findings instead of crashing.
+- blockers: native physical keydown/keyup, long-press/repeat, blur/focus,
+  narrow-window/theme pixels, desktop discovery, and `05-games` gallery remain
+  manual/framework acceptance items. Rust Cargo was rerun successfully with an
+  explicit writable `CARGO_TARGET_DIR` and is no longer blocked. A fresh
+  VM no-merge launch in this environment stops in the AutoVM server with
+  `Module not found: auto.env`; the no-merge cross-mode leg therefore remains
+  open. The physical driver also found no visible `俄罗斯方块` window to take
+  over, while the merged MCP endpoint itself was reachable.
+- next: perform the native and desktop/gallery manual matrix and request an
+  independent revision-2 review;
+  keep Plan status `executing` until those gates close.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |

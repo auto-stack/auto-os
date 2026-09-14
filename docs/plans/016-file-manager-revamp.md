@@ -1,7 +1,8 @@
 ---
 plan_id: PLAN-016
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived（r2 Phase 2 执行中）
 feature_name: file-manager-revamp
+plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
 created_at: 2026-09-14
 updated_at: 2026-09-14
@@ -25,8 +26,8 @@ affects:
   - auto-lang/schema/projection-protocol-v1.md           # 协议 v1.7
   - auto-os/docs/plans/016-file-manager-revamp.md
 
-current_step: 0
-total_steps: 11
+current_step: 10
+total_steps: 18
 ---
 
 # [PLAN-016] file-manager-revamp
@@ -35,6 +36,15 @@ total_steps: 11
 > auto-lang 侧改动（examples/ui + crates + stdlib）按 AGENTS §1 经 auto-lang
 > 仓 plan/工作区分账互链，或由 auto-plan:work 组内多仓模式执行。
 > 执行 worktree 布局：`.wt/os-016/auto-os`（Plan 529 组目录）。
+
+> **执行环境（2026-09-14 work 进入时记录）**：worktree
+> `D:/autostack/.wt/os-016/auto-os`（branch `os-016-dev`，base = auto-os main
+> `08f81b8`）＋ 依赖组 worktree `D:/autostack/.wt/os-016/auto-lang`
+> （branch `os-016-dev`，base = auto-lang master `8c3b4db57`，沿 os-015 组
+> 命名先例）。auto-lang 主检出存在他人未提交改动（i18n_lookup.rs 等）不纳入。
+> PLAN-015 尚未 merge（worktree os-015 在途）——本计划 pac.at 触面
+> （027/041/031 加 theme/opens 键）与其 title_zh 批量为不同行，接受合并期
+> trivial 解冲突；PLAN-014 无 worktree，renderer.rs 无在途竞争。
 
 ## 0. 变更摘要
 
@@ -474,6 +484,63 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 Phase 2（r2）work 记录：UX 反馈批 9 项全实施
+
+- `code_commit`（auto-lang os-016-dev）：`beb1ad124`（T-12..T-18 单提交）。
+- AC-15..22 全部实机验证：列表/网格双态截图（p2-list-final.png、
+  p2-grid-final.png）；双击打开结构就位（ondblclick，交互留用户实机）。
+- F-1（中文字体家族）/F-2（popover closed 泄漏）记框架债；F-2 的用户可见
+  面已随卡内 popover 移除消除。
+- tf/tv：按用户指示暂缓（首次失败 = D 盘瞬时空满 + ffi oracle 二进制
+  缺失，oracle ×5 已补构建；重跑待用户示下）。
+- 附加交付：盘符切换（侧栏「此电脑」组，C..Z exists 探测，用户修订需求）。
+
+### 2026-09-14 修复轮 2（用户实机反馈：重复项 + 侧栏形态）
+
+- **重复项根因**：T-05 排序块的选择排序交换漏回写——`out[filled] = out[best]`
+  未先把旧 `out[filled]` 存走，造成条目复制 + 丢失（实机 AppData×4/
+  Documents×2）。重写为直接对象比较 + 真三行交换，平行键数组退役。
+- **侧栏换装**（用户裁定）：手搓 button 列 → Sidebar 组件族（015-notes
+  NavTree 同款：sidebar_provider/header/content/group/menu/menu_button
+  active 高亮）。
+- Tick 错峰 20→8（引导加载态 5s→2s）。
+- 实证：实机截图无重复（AppData/Documents 各一次，字母序）+ Sidebar
+  渲染 active 高亮 → evidence/016/repair-sidebar-dedup.png；
+  commit b70185cd8。
+- 注：列表中 `Application Data`/`Cookies`/`Local Settings` 等为 Windows
+  用户目录真实 junction 条目（非重复 bug）；Explorer 默认隐藏，本应用
+  stdlib 无属性面暂不区分，已记 SPEC。
+
+### 2026-09-14 work 执行 handoff（T-01..T-11 全量执行；10/11 步达成）
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 1`
+- `outcome: blocked`（保持 executing）——**唯一残留 = T-10 全绿整跑**被
+  框架级 MCP 服务器线程偶发静默失联阻塞（进程存活、socket 消失；mock 时代
+  同机制，非本计划 app 改动引入；三轮修复尝试后按上限停）。套件本体已
+  重写对齐并提交，各流程已单点交互实证；解除动作见 §10 #0。
+- `code_commit`（auto-lang `os-016-dev`，base 8c3b4db57）：
+  `522857d33`(T-01..04) → `1073db0f6`(T-05/06+crates 修复) →
+  `4a5f5e27d`(T-07/08/09 协议 v1.7) → `8b1631058`(T-10 套件) →
+  `cea828063`(T-11 SPEC)。worktree `.wt/os-016/auto-os`（无实现改动）与
+  `.wt/os-016/auto-lang` + 依赖 auto-down detached 检出。
+- `task_ids`: T-01..T-09、T-11 ✅；T-10 部分完成（套件就位，绿跑被阻塞）。
+- `evidence`: docs/plans/evidence/016/（d1 右键锚定定案、d3 JsonValue None
+  级联 + 轨口径 + fs native id 撞号迁移、d4 目录删除口径、t01 深色列表、
+  t03 重命名模态、t05 真实主目录快照、t07 open_with 端到端截图）。
+- AC 状态：AC-01–07 结构与交互实证（AC-01 浅色视觉留复审桌面实测；
+  AC-02 快照零 emoji + 截图；AC-03/04 模态/锚定菜单/创建/删除/重命名
+  实证）；AC-08/09 端到端实证（bus 注入 → 041 启动消费，截图）；AC-10
+  发送面完成、031 消费臂就位（back.api 桌面轨形态留 D-2 残留实测）；
+  AC-11 部分被阻（见上）；AC-12 vue 轨留复审；AC-13 文档三处一致 ✅。
+- 设计调整（授权范围内，证据已记录）：D-1 定案锚定 popover（shell 先例，
+  免坐标）；D-2 定案 write_state `auto_open_path` + 目标 Tick 消费（双臂
+  统一，未用 acceptance 放宽/纯 toast 收缩）；D-4 定案非空目录拒绝；
+  新增 `fs.mtime` native（2986）与 `fs.rename/canonical/ext` id 迁移
+  2983-2985（撞号修复）——crates 面超出原 T-05 预期，属等价实现范围内的
+  必要修复，全部三表一致 + 提交注记。
+- `next`: review（复审时裁定 T-10 残留是否随 AC-11 一并延展，或按
+  blocked 项单独追踪）。
+
 ### 2026-09-14 起草 handoff（draft）
 
 - `stage: new`，`plan_id: PLAN-016`，`plan_revision: 1`。
@@ -489,9 +556,69 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 | # | 事项 | 状态/去向 |
 |---|---|---|
-| 1 | D-1：`.at` 事件是否暴露指针坐标（右键菜单真实锚定的前提） | T-04 bounded 调查，回退设计已备（行内锚定/居中 modal），不阻塞 |
-| 2 | D-2：已运行 app 的 open_with 送达臂（handler 直调泛化 vs v1 收缩）+ 031 桌面轨 back 前置形态（image stdlib front 直调 vs `back: { project }`） | T-07/T-08 调查定案；两个候选均有既有管线锚点；若选 b 收缩不削减 AC-10（031 走启动路径） |
+| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动 | **blocked**（唯一残留；其余 T-01..T-09/T-11 完成） |
+| 1 | D-1：✅ 已定案——锚定 popover + placement（shell dock 菜单范式，免坐标）；`.at` 事件无坐标面也不再需要 | 已闭合（evidence/016/d1-context-menu.md） |
+| 2 | D-2：已运行 app 的 open_with 送达臂 + 031 桌面轨 back 前置 | ✅ 主链定案——双臂统一 `write_state(auto_open_path)` + 目标 Tick 消费（免 handler 直调放宽）；031 消费臂已挂 SettleTick（open_file 同 OpenFile 流程），**桌面轨 back.api 实际可用性留实测**（opens 声明与启动路径不受阻） | 部分闭合（d3/d2 注记） |
 | 3 | 虚拟桌面图标（storage 策展）与文件系统"桌面"合一展示 | 非目标（本计划）；桌面程序后续设计议题，建议届时在桌面程序台账另立条目 |
 | 4 | 027 是否收编独立仓/apps 容器臂（PLAN-013 混合形态） | 非目标；待 app 成熟后另行计划 |
-| 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探；后续可提 stdlib `fs.drives` 提案 |
+| 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探（**T-10 已实现地址栏**，可编辑回车跳转 + canonical 剥 `\?\` 前缀）；后续可提 stdlib `fs.drives` 提案 |
 | 6 | 与 PLAN-014/015 的开工顺序 | 依赖既有授权范围内排程：015 merge 后开工；014 错峰——不需用户新授权，若用户指定并行则接受 renderer.rs 冲突面人工协调 |
+
+---
+
+# Phase 2：UX 反馈批（plan_revision 2 · 2026-09-14 用户实机反馈 9 项）
+
+> 触发：用户实机观察反馈（截图 4 张），用户直接下达。设计/验证约束：VM 轨
+> flex-wrap 不支持（P614 纪律）→ 图标模式改 grid 类（025 performance 先例）；
+> `ondblclick` 支持（桌面图标同款）；button `title:` prop = 悬停 tooltip
+> （PLAN-053）；`.at` 无 blur 事件 → 地址编辑退出用显式确认/取消钮；字体
+> 家族框架面仅 serif/sans/mono（指定中文黑体需 renderer default_font 工作
+> → 记 finding F-1，本轮做字号提升）。
+
+| # | 用户反馈 | 分析 | 任务 |
+|---|---|---|---|
+| 1 | 右上 path input 与最右挤扁图标无用；取路径应在地址栏（点击变 input） | 独立地址栏与面包屑功能重复；挤扁体 = 布局压缩牺牲品 | T-12 |
+| 2 | 面包屑层级 `/` 换行、三层阶梯错位；模拟地址栏过高 | row 内混排 button/text 高度不一致；分隔符独立节点被挤下行 | T-12 |
+| 3 | 隐藏/+文件夹/+文件改纯图标（tooltip 文字）；小窗不压扁、地址栏可伸缩、右侧控件定宽 | 右侧控件全部 shrink-0 + icon-only + title tooltip；面包屑区 flex-1 独占伸缩 | T-13 |
+| 4 | 大小与类型贴死；类型列应居中 | 两列间无间距（pr 缺失）；类型内容列左对齐与表头居中不一致 | T-14 |
+| 5 | 中文默认字体太小、字型不对（期望黑体/系统默认） | 027 正文 text-xs(12px) 偏小 → 名列/侧栏升 text-sm；字体家族 = F-1 框架项 | T-15 |
+| 6 | 快捷访问 icon 应差异化 | home/monitor/file-text/download/image/music 字面量分支（TreeIcon 范式） | T-16 |
+| 7 | 图标模式未成 grid（VM flex-wrap 降级单行），溢出隐藏 | `row flex-wrap` → `grid grid-cols-4 md:grid-cols-6 xl:grid-cols-8`（025 先例） | T-17 |
+| 8 | 图标卡只有名称可点 | 卡整体 mouse-area（onclick 选中 + ondblclick 打开）；grid popover 内容泄漏 bug 一并消除（卡内 popover 移除） | T-17 |
+| 9 | 单击打开 → 应双击打开 | ondblclick 已支持；列表名列 onclick=选中 / ondblclick=打开；··· 菜单不变 | T-18 |
+
+## 7.P2 验收标准（Phase 2 增量）
+
+| ID | 可观察行为 | 验证方法 |
+|---|---|---|
+| AC-15 | 无独立地址栏 input；点击面包屑区变输入态，回车跳转、✕ 取消 | 实机操作 + 截图 |
+| AC-16 | 面包屑各层同一行水平对齐、无换行分隔符；胶囊高与 input 一致（h-9） | 截图对照 |
+| AC-17 | 隐藏/+文件夹/+文件为纯图标按钮（title 悬停出文字），定宽不压扁；搜索框/面包屑伸缩正常 | 窄窗 + 最大化截图 |
+| AC-18 | 大小列与类型列有间距；类型内容列居中 | 截图对照 |
+| AC-19 | 名称列与侧栏字号 text-sm | 截图对照 |
+| AC-20 | 快捷访问五项图标各异（monitor/file-text/download/image/music） | 截图 |
+| AC-21 | 图标模式为多列 grid；整卡可点（单击选中/双击打开）；卡内无泄漏菜单 | 实机操作 + 截图 |
+| AC-22 | 列表行单击=选中、双击=打开；··· 菜单行为不变 | 实机操作 |
+
+## 8.P2 Phase 2 执行步骤
+
+- **T-12 〔lang〕面包屑点击编辑 + 去独立地址栏**（AC-15/16）：msg 增
+  AddrEdit/AddrCancel；view 面包屑区 mouse-area 包裹 → addr_editing 切换
+  input（值同步 current_path）；crumbs 全按钮化（去独立分隔符、统一 h-7）。
+- **T-13 〔lang〕工具栏图标化 + 定宽**（AC-17）：隐藏/＋文件夹/＋文件 →
+  icon-only + title tooltip + w-8 shrink-0；右区全部 shrink-0。
+- **T-14 〔lang〕列表列距 + 类型居中**（AC-18）。
+- **T-15 〔lang〕字号提升**（AC-19）：名列/侧栏 text-sm；字体家族记 F-1。
+- **T-16 〔lang〕快捷图标差异化**（AC-20）：monitor/file-text/download/
+  image/music 字面量分支。
+- **T-17 〔lang〕grid 图标模式 + 整卡点击**（AC-21）：grid 类容器、mouse-area
+  整卡 onclick/ondblclick、卡内 popover 移除（泄漏 bug 消除，记录框架
+  popover 网格子树泄漏现象）。
+- **T-18 〔lang〕双击打开**（AC-22）：名列 onclick=选中/ondblclick=打开。
+
+## 10.P2 Phase 2 新增 finding
+
+| ID | 事项 | 去向 |
+|---|---|---|
+| F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
+| F-2 | VM popover 在 grid/flex 子树内 closed 态内容泄漏参与布局（实机截图："打开"菜单项内联渲染）——aura popover 布局面 bug，另立框架债 | 框架债 |

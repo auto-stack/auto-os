@@ -63,6 +63,18 @@
      "id": "P015-1",
      "title": "PLAN-015 变更摘要 — app-naming-schema（pac.at 四名称契约）",
      "content": "桌面 21+ app 名称混杂三源（pac title 未定版语言 / manifest name 死字段 / kebab 兜底）。\n定版 pac.at 四字段契约：name（工程标识，不动）/ exe_name（rust 轨产物名，Plan 014 升格标准）/\ntitle（英文展示名）/ title_zh（中文展示名，新增）。展示名解析链加 locale 臂（AUTO_LOCALE\n缺省 zh：title_zh→title→name→目录名；en：title→name→目录名）。apps.manifest name 键退役\n（dead_code），展示名唯一事实源归 pac.at。44 pac.at 双字段补齐（examples/ui 33、auto-os 5、\nkanban/musk/os-config/jade-garden/term×2）。\n跨仓交付：auto-lang d5acac7fd（merge os-015-dev）、auto-os 2152dc1、五兄弟仓各自 merge。\ncanonical：auto-lang docs/specs/auto-man/project.md §pac.at 四名称契约。"
+    },
+    {
+     "id": "PLAN-017-report",
+     "title": "PLAN-017 038-minesweeper 现代化深色 UI/UX 改造交付报告 — 高对比数字/LCD 状态栏/无缝网格/Chord 快速探测",
+     "content": "交付（2026-09-14，merge）：① 数字可读性根治：解决 VM View Builder 构建单一 text 子节点 button 时丢弃内联 text 样式的底层限制，将高对比文本色与字体粗细（text-blue-400 等）直接挂载至 button 的 cell_class，彻底告别白字白底隐形缺陷，达成 VM 原生桌面与 Vue Web 跨端绝对同构；② 状态栏复古 LCD 仪表板：剩余雷数与计时器采用独立的数码管内嵌盒（bg-zinc-950 font-mono text-rose-500/text-amber-400），中间集成经典三态表情指示器（🙂 游戏中 / 😵 触雷 / 😎 胜利）；③ 分段控件式难度切换栏：紧凑胶囊底座消除 9×9 窄棋盘下的文本折行破框，克制未激活样式；④ 棋盘网格重构：消除孤立圆角（rounded-none）与孔洞，精致卡片底座包裹，触雷格精准高亮红底（bg-rose-950 border-rose-500）；⑤ Chord 快速探测：已翻开数字格支持快速探测周围未标旗邻居；⑥ 规范沉淀 docs/specs/apps/minesweeper.md（SD-01..02）；⑦ 验证门：tests/desktop_mcp.py 25/25 PASS，归档路径 docs/plans/archive/017-minesweeper-ui-revamp.md。",
+     "file": "docs/plans/archive/017-minesweeper-ui-revamp.md",
+     "related": [
+      "PLAN-017"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14"
     }
    ]
   },
@@ -211,6 +223,18 @@
      "id": "P015-2",
      "title": "展示名 locale 解析链与消费面收口（display_title）",
      "content": "解析收口三处纯判定 + env 壳：app_registry AppRegistryEntry::display_title(_in)\n（crates/auto-lang/src/ui/app_registry.rs）、Pac::display_title_in + Automan::pac_display_title\n（crates/auto-man/src/{pac,automan}.rs）、vue parse_pac_display_title（document.title）。\n消费读点：renderer launcher titles/lts、桌面格 label、LaunchSpec 填充×2（iced/renderer.rs）、\nAUTO_VM_TITLE 注入臂（auto/src/main.rs）。locale 判定 AUTO_LOCALE zh 前缀命中（缺省 zh），\ni18n_lookup::locale_prefers_zh 为约定属主（auto-man 持同款私有副本——ui 模块对 auto-man\n非默认在编）。标识链不挂展示名：dock pinned/hidden/recent/os-config config.at 全按 id/name。\napps.manifest schema = id/repo/kind/ports/status/daemon（OsManifestApp.name 已删）。"
+    },
+    {
+     "id": "P017-arch-1",
+     "file": "docs/specs/apps/minesweeper.md",
+     "status": "stable",
+     "related": [
+      "PLAN-017"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "038-minesweeper 按钮样式穿透与无缝网格 — 架构注记 (SD-01)",
+     "content": "① 单文本按钮样式穿透规约：针对 VM View Builder 单 text 节点丢弃内联样式机制，将文本颜色、字重、背景与边框统一声明于 button 自身的 class 属性中（通过 Store 的 cell.cell_class 暴露），实现 AutoVM 与 Vue 双端高对比色彩完全一致；② 无缝网格卡片架构：消除单格圆角（rounded-none），外层由精致卡片底座（border-zinc-800 shadow-2xl）包裹，规避孔洞与视觉割裂；触雷引爆点由 exploded_idx 精准驱动高亮。"
     }
    ]
   },
@@ -243,6 +267,18 @@
      "id": "P015-3",
      "title": "SD-01/SD-02 规范增量定稿 — 四名称契约节",
      "content": "SD-01 add：auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」——\n四字段语义表 + locale 解析链 + exe_name 白名单（[A-Za-z0-9_-]，非法告警忽略，唯一消费点\nrust_ui::generate_cargo_toml [[bin]]）。SD-02 modify：同节边界段——apps.manifest 不承载展示名。\n反向钉：test_plan015_title_zh_never_enters_cargo_toml（展示名不进 Cargo.toml）。"
+    },
+    {
+     "id": "P017-design-1",
+     "file": "docs/specs/apps/minesweeper.md",
+     "status": "stable",
+     "related": [
+      "PLAN-017"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "038-minesweeper LCD 仪表板、表情状态机与 Chord 探测 — 设计注记 (SD-02)",
+     "content": "① LCD 数码管与表情交互：mines_str 与 timer_str 统一三位等宽格式化（如 010/000），居中集成 face_icon 表情状态机（ready/playing: 🙂, lost: 😵, won: 😎），重击表情快速复位；② 胶囊分段难度切换器（Segmented Control）：紧凑布局（text-xs px-2.5 py-1）杜绝 9×9 折行；③ Chord 快速探测机制：点击翻开数字格时校验周围插旗数，当 flag_count == cell.adjacent 时自动连带翻开周围未标旗邻居，并串联 Flood Fill 蔓延逻辑。"
     }
    ]
   },
@@ -319,6 +355,18 @@
      "id": "P015-4",
      "title": "PLAN-015 验证矩阵 — 定点+全量门+四 locale 实机",
      "content": "定点：auto-man 4 用例（title_zh 解析/display 链/document.title/反向钉）；app_registry 模块\n23/23（ui-iced 档，含策展集恰等 17 与 launch resolver e2e）。全量门（nextest 串行）：\ncargo tv 3691/3691；快档 4857 例 11 失败=10 layout 家族+1 plan492 m4（master 双侧复现，\nbase 既有，另立债务）；ui-iced 档 8 失败全 layout；auto 11/11；auto-man 287/287——零新增红。\n实机：VM 窗标题四 locale（缺省/en/zh_TW/fr），证据 docs/plans/evidence/plan015-vm-title-locales.md。\n策展集 base 既有红修齐：9c6c27e86 补 desktop:true 漏更 want，031-image-viewer 入 want（16→17）。"
+    },
+    {
+     "id": "P017-test-1",
+     "file": "docs/plans/archive/017-minesweeper-ui-revamp.md",
+     "status": "verified",
+     "related": [
+      "PLAN-017"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "038-minesweeper Desktop MCP 自动化套件与实机回归 — 测试注记",
+     "content": "① tests/desktop_mcp.py：覆盖 Snapshot 结构（mines/timer 仪表盒、🙂 重开按钮、三难度按键）、初始状态、首击揭开与数字渲染、触雷引爆与 😵 表情、重开复原、Fit 窗口收缩等 6 大场景共 25 项断言全绿通过；② 实机与视觉验证：scratch/test_chord.py 验证 Chord 快速双击连带揭开安全邻格；更新 mines_vm_fit_initial.png 视觉基线；双端零 panic 零崩溃。"
     }
    ]
   },
@@ -398,6 +446,18 @@
      "id": "P015-R1",
      "title": "PLAN-015 复审 pass + merge 收据（六仓 landed + auto-lang 并行落地）",
      "content": "review pass（同会话复审，工件独立重建）：AC-1..6 全 pass；七仓 reviewed 基线全 clean。\nmerge：六仓 landed（auto-os 2152dc1、kanban/term/down/musk/os-config 各 merge 提交）；\nauto-lang landing 三次有界重试被并行会话占用阻断（收据 602ec31），后由并行会话完成\n（master d5acac7fd merge os-015-dev，cdc3ed46d 在祖先）——核实祖先链成立，本收据闭合。"
+    },
+    {
+     "id": "P017-review-1",
+     "file": "docs/plans/archive/017-minesweeper-ui-revamp.md",
+     "status": "stable",
+     "related": [
+      "PLAN-017"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "PLAN-017 扫雷 UI/UX 现代化重构独立复审 — 审查注记",
+     "content": "2026-09-14 独立复审结论 PASS（reviewed commit 5563fa5）：AC-01..AC-06 全部 6 项验收准则 100% 通过；SD-01..SD-02 规范增量全部通过并沉淀至 docs/specs/apps/minesweeper.md；零临时 hack、零未处理警告、测试全绿，批准合入主干并归档。"
     }
    ]
   }
