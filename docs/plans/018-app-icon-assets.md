@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-018
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-14 work T1-T6 全落，见 §9）
+status: executing             # drafting → executing → …（rev2：T7 launcher 真图标已实施，视觉复核待——见 §9 rev2）
 feature_name: app-icon-assets
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -232,6 +232,7 @@ assets/icons/{light,dark}/<stem>.png ×28×2   +   mapping.json（id→stem）
 | T4 | W4 boot 接线（mapping 改写 + AUTO_OS_ICON_ROOT 注入） | T1, T2 | auto-os 桌面 session boot 侧 | 接线单测 + fixture | AC-4 |
 | T5 | W5 实机双主题四消费面走查 + 证据 | T2-T4 | 本仓 docs/plans/evidence/ | 截图/指针成文 | AC-4 |
 | T6 | W6 spec 成文 + 测试对齐收口 | T2 | auto-lang docs/specs/ | spec diff | AC-5 |
+| T7 | rev2 追加：launcher palette/grid 行真图标——`icon (name: r.icon/g.icon)` 节点替换色章+首字母假图标；row4 补 icon 字段 | T4 | auto-os apps/028-launcher/src/front/app.at | 实机截图复核（launcher 打开态） | AC-4 |
 
 执行载体：组 worktree `D:/autostack/.wt/os-018/auto-os`（`os-018-dev`，
 Plan 529 布局）+ auto-lang 依赖 worktree `D:/autostack/.wt/os-018/auto-lang`
@@ -294,3 +295,21 @@ Plan 529 布局）+ auto-lang 依赖 worktree `D:/autostack/.wt/os-018/auto-lang
   等价实现不触契约。
   **blockers**: 无。遗留 review 复核：vue 宿主 .dark class 机制实测（Q1）、
   主干全量桌面（含 kanban/musk/term manifest 项）图标复核、全量门。
+
+### rev2（2026-09-14，用户需求追加）：launcher 真图标
+
+用户裁定：launcher 调色板/网格不应显示品牌色章假图标，应显示各 app 真实
+icon（PLAN-018 位图）。AC-4 的 launcher 消费面在 rev1 中只验证了 dock——
+palette/grid 的行视图从未渲染 icon 字段（色章 + 首字母为 463 时代占位设计）。
+
+- **T7 已实施**（auto-os worktree `d82594c`）：palette 两处 + grid 两处
+  行渲染以 `icon (name: r.icon/g.icon)` 替换 `text r.mg` 首字母；gridrows
+  行对象补 `icon: .apps_icons[gi2]`。icon 值 = boot 接线后的
+  `iconfile:<stem>`（位图臂）或裸 lucide 名（svg 臂）——回退链自动覆盖。
+- **视觉复核待**：三轮实机截图受环境噪音阻断（①前台应用污染；②MCP
+  9247 被并行会话 VM 实例占用致 FATAL，改 `AUTOUI_MCP_PORT=9461` 私有
+  端口解决；③用户正实时使用桌面，反复起停叫停）。诊断探针已清除，
+  实现已提交；复核动作 = 正常启动桌面 + 打开 launcher 截一张
+  （或 review 阶段实机门一并走查）。
+- 环境教训入库：桌面 MCP 端口用 `AUTOUI_MCP_PORT` 私有化，避免并行
+  会话 9247 争用（9247 为固定缺省，无 pick-free 逻辑）。
