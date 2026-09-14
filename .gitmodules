@@ -1,0 +1,3 @@
+[submodule "apps/kanban"]
+	path = apps/kanban
+	url = git@github.com:auto-stack/auto-kanban.git

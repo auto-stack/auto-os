@@ -32,12 +32,14 @@
 auto-os/
 ├── README.md            # 本文件
 ├── AGENTS.md            # agent 工作规约（app 仓约定/解析序/wt-guard 纪律）
-├── apps.manifest        # 伞形 app 清单（JSON，虚拟伞形唯一事实源）
+├── apps.manifest        # 伞形 app 清单（JSON，唯一事实源；daemon 字段可选）
 ├── apps/                # in-repo 桌面 app（Stage B P-5 随迁；含 pac.at 的
 │                        #   子目录 = local app root，P-3 容器探测注册）
 │   ├── 025-sys-monitor/ #   系统监视器（541 终态；tests/desktop_mcp 随目录）
 │   ├── 028-launcher/    #   桌面启动器（464；注册表型特权 app）
 │   ├── 038-minesweeper/ #   扫雷（games-wave1 基底）
+│   ├── kanban/          #   gitlink → auto-kanban（PLAN-013 首例 submodule，
+│   │                    #   容器臂/manifest 臂 id 去重，内容同源）
 │   └── common/settings/ #   共享 SettingsPopover 组件（ui-gallery 消费）
 ├── ui-gallery/          # UI 示例画廊（顶层；收割 auto-lang examples/ui，
 │                        #   解析序 AUTO_GALLERY_APPS → ../auto-lang）
@@ -57,15 +59,24 @@ auto-os/
 
 | id | name | repo / 目录 | kind | ports | status |
 |---|---|---|---|---|---|
-| kanban | 通用看板（v1 计划板） | [../auto-kanban](../auto-kanban) | repo | 17100 / 17101 | active (Plan 579) |
+| kanban | 通用看板（v1 计划板） | [../auto-kanban](../auto-kanban)（submodule `apps/kanban/`，PLAN-013 首例） | repo | 17100 / 17101 | active (Plan 579) |
+| auto-musk | Auto Musk（Coding Agent） | [../auto-musk](../auto-musk) | repo | 17200 / 17201 | active (2026-09-11；daemon 链 PLAN-013) |
+| jade-garden | Jade Garden（类 Obsidian 知识库） | [../auto-down](../auto-down)`/jade-garden/front/auto` | repo | 17300 / 17301 | active (2026-09-11；daemon 链 PLAN-013) |
+| auto-term | AutoTerm（桌面终端） | [../auto-term](../auto-term)`/app` | repo | 17400 / 17401（端口占位：无 back，引擎进程内） | active (PLAN-013 T7) |
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
-> examples/ui 归 demo。app 仓结构约定见 AGENTS.md。in-repo `apps/` 为
-> Stage B 随迁的桌面域 app（沿 examples 的 30NN/80NN 端口带；升格独立仓
-> 时改 17xxx 带）。
+> examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；
+> §4 混合形态/submodule 双写纪律）。in-repo `apps/` 为 Stage B 随迁的桌面
+> 域 app（沿 examples 的 30NN/80NN 端口带；升格独立仓时改 17xxx 带）。
+> demo 升格流水线：examples demo 独立为外部仓 → manifest repo 条目 →
+> git submodule 收编 `apps/<id>/`（首个样板 kanban，PLAN-013）。
+> AutoTerm 独立 app 已落地（PLAN-013 T7：`../auto-term/app`，引擎经
+> auto.term.* catalog shim 进程内加载 autoterm_core.dll；部署件用
+> auto-os-config `scripts/deploy-autoterm.sh`）；os-config 内嵌终端页
+> 保留。
 
 ## 关联
 

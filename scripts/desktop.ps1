@@ -70,7 +70,8 @@ if ($Track -eq 'vue') {
     if (Test-Path $osConfig) { $extra += $osConfig }
     # PLAN-008：顶层画廊两件随 EXTRA 显式注入（env 全替换语义下脚本化
     # vue 轨的画廊供给；widgets-gallery render=vm 由注册表 vue 过滤自然
-    # 排除——设计行为）。
+    # 排除——设计行为）。2026-09-12 用户裁定：画廊属于桌面常驻成员，
+    # 勿以整洁性为由移除。
     foreach ($g in @('ui-gallery', 'widgets-gallery')) {
         $gdir = Join-Path $OsRoot $g
         if (Test-Path $gdir) { $extra += $gdir }

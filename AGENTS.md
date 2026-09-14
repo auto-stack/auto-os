@@ -37,6 +37,16 @@
 `bash D:/autostack/wt-guard.sh <worktree 路径>`（reparse point 扫描，
 非空即拒）。本仓 worktree 组目录布局沿 Plan 529：`.wt/os-<NNN>/auto-os`。
 
+**Submodule 纪律（PLAN-013 起，混合形态）**：本仓 submodule（现
+apps/kanban）在 worktree 中默认不检出（gitlink 空目录）——桌面注册表
+apps/ 容器臂按 pac.at 门静默跳过，不炸启动。组内开发需 kanban 时二选一：
+组内补依赖 worktree（`.wt/os-<NNN>/auto-kanban`，manifest 臂兄弟解析命中）
+或 `git submodule update --init`（容器臂命中）。标准桌面入口
+`scripts/desktop.{sh,ps1}` 注入 `AUTO_OS_ROOT`=本仓根（主检出），注册表
+与 submodule 检出状态无关恒完整。`git worktree remove` 会删 worktree 内
+submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）——wt-guard
+扫 reparse point 不拦 gitlink，移除组前 `git submodule deinit` 更干净。
+
 ## 3. app 仓结构约定
 
 登记入 `apps.manifest` 的真实 app 仓（examples/ui 归 demo，真实 app
@@ -53,7 +63,14 @@
 ```
 
 - **端口带**：真实 app 统一 17xxx（front 17N00 / back 17N01，与 examples
-  的 30NN/80NN 带区分；auto-os-config=17700/17701，auto-kanban=17100/17101）。
+  的 30NN/80NN 带区分；auto-os-config=17700/17701，auto-kanban=17100/17101，
+  auto-musk=17200/17201，jade-garden=17300/17301，auto-term=17400/17401）。
+- **daemon 键（PLAN-013 定案）**：pac `daemon: <manifest-id>` 声明桌面
+  launch 前置后端依赖——桌面 ensure 链按 apps.manifest 条目的 `daemon`
+  对象（`port`/`bin`/`env_port`）ping :port（`GET /api/health` 契约固定）
+  → 发现序 spawn → 注入 `<NAME大写蛇形>_DAEMON=<url>` env 到 App 会话。
+  `daemon: autoos` 为历史特例（os-config 旧链原样，零回归门）；无独立
+  后端的 app（如 auto-term，引擎进程内）不声明。
 - **双端纪律**：Vue 轨（`auto run`）与 VM 轨（`auto run -r vm`）双端一致
   （验证走 auto-lang 的 autoui-verifier 技能）。
 - **验证门档**：不改 auto-lang `crates/` 的工作，严禁在 auto-lang 跑
@@ -61,16 +78,25 @@
 
 ## 4. 伞形清单（apps.manifest）
 
-`apps.manifest` 是伞形的唯一事实源（虚拟伞形，无 submodule——Stage C
-出现"CI 钉树构建 OS 镜像"类真实需求再评估机制升级）。每 app 一行：
+`apps.manifest` 是伞形的唯一事实源。物理承载自 PLAN-013 起为**混合形态**：
+repo 条目默认虚拟伞形（兄弟检出解析），产品 app 可叠加 git submodule
+物理收编（首个样板 kanban = `apps/kanban`；examples demo 升格为独立仓后
+沿此统一管理）——两臂按 id 去重，容器臂（apps/ 检出）先于 manifest 臂
+（兄弟检出），同一 app 双形态并存时容器臂胜、内容同源零行为差。每 app 一行：
 
 ```json
 { "id": "...", "name": "...", "repo": "../<repo>", "kind": "repo",
-  "ports": [17100, 17101], "status": "active", "added": "YYYY-MM-DD" }
+  "ports": [17100, 17101], "status": "active", "added": "YYYY-MM-DD",
+  "daemon": { "port": 17101, "bin": "<repo 相对二进制>",
+              "env_port": "<DAEMON 端口覆盖 env 键>" } }
 ```
 
-`kind` 字段为 Stage C 预留（`repo` | `subtree` | `submodule`）。增删 app
-时同步本仓 README 的 Apps 表。
+`kind` 字段为 Stage C 预留（`repo` | `subtree` | `submodule`——submodule
+物理形态落 `apps/<id>/` 时 kind 仍记 `repo`，容器臂按目录名展开）。
+`daemon` 对象可选（schema 见 §3 daemon 键；`bin` 缺席 = 只探不孵；健康
+探针固定 `GET /api/health`）。增删 app 时同步本仓 README 的 Apps 表；
+submodule 收编/解除用 `git submodule add/deinit` 双写纪律（manifest 行 +
+gitlink 同一提交）。
 
 ## 5. 桌面（Stage B 后）
 

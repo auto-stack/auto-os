@@ -1,264 +1,320 @@
 {
-  "sections": [
+ "sections": [
+  {
+   "id": "reports",
+   "items": [
     {
-      "id": "reports",
-      "items": [
-        {
-          "id": "P001-1",
-          "title": "Stage B P-1 计划随迁批 — 变更摘要（七项桌面域计划 auto-lang → auto-os）",
-          "content": "Design 01（Plan 584 定案）§7 实施拆解第一批：§1-A2 七项桌面域在途计划\n（535-desktop-ux-followups / 554-clock-app / 556-games-wave1 / 557-tetris /\n558-klondike / 577-p534-debt-batch-1 / 578-desktop-gallery-apps，均 drafting、\n无 worktree）整体随迁本仓，纯文件零冲突（§5 推论），Category A 免 worktree\n（沿 Plan 584 先例）。\n\n编号映射（§5 迁移机制，重编保 drafting 原状、状态机续用）：535→os-002、\n554→003、556→004、557→005、558→006、577→007、578→008；frontmatter 增\norigin: PLAN-5xx 溯源，正文加随迁横幅（互链 Design 01 §5 与 auto-lang\nINDEX）；正文 auto-lang 相对路径不回改，推迟 P-6 开工时按本仓 AGENTS §2\n解析序换算。007 带编号消歧注记（与 auto-lang archive 既有\n577-emitter-gaps-batch 无关；auto-lang 活动区编号冲突随 git rm 消解）。\n\nauto-lang 侧收口：docs/plans/INDEX.md 新建（去向指针行 + 577 消歧 +\n545/570 留守注记 + P-5 台账指针预留），七源文件 git rm（git 历史留档；\n577 补账提交 42219a602 即为保全其历史）。Design 01 §5 处置表七行回填\n去向 + 迁移机制节补执行注记。\n\n顺带清偿：new-plan.sh 取号补零缺陷（.next-id 算术自增丢 3 位 padding；\n10#$ID 防八进制 + printf %03d，隔离副本冒烟 009→010）。\n\n验证：反向变换保真 diff 7/7 空（git show HEAD 源对照）；V7 搬迁零残留\n（auto-lang 活动面命中仅 INDEX 指针行 + archive 历史三件，归档不回改）；\nfrontmatter 结构 7/7。V8（随迁计划可执行性冒烟）属 P-6 开工批。\n两仓提交：auto-os 0c775a5/e0ae86d（+本 merge）、auto-lang 8a57f3f3b。"
-        },
-        {
-          "id": "P009-1",
-          "title": "Stage B P-6：桌面启动引导批 — 变更摘要",
-          "content": "Design 01 §7 P-6 承载批（PLAN-009）。四件：①§3-a 包装脚本 scripts/desktop.{ps1,sh}\n（解析序定位 auto-lang；vue 轨三 env 注入=主注册表 AUTO_DESKTOP_APPS+EXTRA 单 app\n根路径表〔容器脚本侧展开〕+AUTO_OS_ROOT；iced 轨 lang 侧 build+本仓 CWD 直 exec\n〔cargo 按调用方 CWD 读 .cargo/config——跨仓 cargo run 丢 /STACK:32MB 即栈溢出〕；\nDESKTOP_OS_ROOT 覆盖臂）。②V1/V2/V3 实机验收（590-R1 移交收拢）：V2 零漂移\n（025=13/0〔541 基线〕/028=24/0〔464〕/038=22/0；框架侧 calculator/charts 预存红）；\nV3 双端三截图；V1 五面实机（launcher→038 启动端到端）。③R4 CI 保活（lang\nvm-files-ci：auto-os sparse checkout+AUTO_OS_ROOT+围栏真跑步，双向实证 11.3s/\n0.02s）。④画廊部署触发端双侧 workflow（token 待配降级在案）。V8 冒烟先行为\nos-003 开工 T1（PLAN-554 Tick 契约探针）。复审打回-修复-复证：vue 轨三缺陷。",
-          "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
-          "related": [
-            "PLAN-009"
-          ],
-          "status": "published",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P003-1",
-          "title": "Clock 四 tab 应用（origin PLAN-554）— 变更摘要",
-          "content": "os-003（V8 冒烟项）：012-stopwatch 原地升级 Clock——秒表（真走表：.Tick\n250ms 累计法修复原不走表缺陷+5 计圈槽）/计时器（步进器设定+倒数+到零横幅+\nDismiss）/世界时钟（8 城固定偏移+Time.now_sec 换算+本地城●高亮）/闹钟\n（5 槽 storage 持久化+分钟比对触发横幅+fired 当日防重）。registry id 保持\n012-stopwatch 稳定；pac title Clock/icon clock/category tool。框架侧交付\nts_adapter Time 模块 vue 桥（时间类 app 双端能力基建）。desktop_mcp 四断言\n组 12/12+vue 三 tab 截图。",
-          "file": "docs/plans/archive/003-clock-app.md",
-          "related": [
-            "PLAN-003"
-          ],
-          "status": "published",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P007-5",
-          "title": "P534 债批一（origin PLAN-577）— 变更摘要",
-          "content": "os-007：①avatar 家族补齐（三臂+props 形态 desugar+w-10 h-10 默认尺寸）——/avatar 页两 40x40 圆实机渲染、/hovercard 触发器 hit area 非零+真 hover 进/出 state 翻转不借语料工程（534 G3 补全,P534-D4 结案）；②breadcrumb 栈溢出根因偿还（widget 自名折叠环守卫,P530-D1+P534-D5 结案）——直达页 ALIVE+全站扫描 68/68 零异常；③schema 再生成滞留清偿（419 元素真名登记/P3 显式拆册/kitchen-sink 50 节随生,三围栏 2/2+4/4+7/7）。KNOWN-DEBT 三条✅ 结案回写；gallery README avatar 行更新。代码落 auto-lang os-007-dev （49c75d2e4..af07c9d37 六提交）;auto-os os-007-dev（84ff922 kitchen-sink+d6a48d2 README）。"
-        }
-      ]
+     "id": "P001-1",
+     "title": "Stage B P-1 计划随迁批 — 变更摘要（七项桌面域计划 auto-lang → auto-os）",
+     "content": "Design 01（Plan 584 定案）§7 实施拆解第一批：§1-A2 七项桌面域在途计划\n（535-desktop-ux-followups / 554-clock-app / 556-games-wave1 / 557-tetris /\n558-klondike / 577-p534-debt-batch-1 / 578-desktop-gallery-apps，均 drafting、\n无 worktree）整体随迁本仓，纯文件零冲突（§5 推论），Category A 免 worktree\n（沿 Plan 584 先例）。\n\n编号映射（§5 迁移机制，重编保 drafting 原状、状态机续用）：535→os-002、\n554→003、556→004、557→005、558→006、577→007、578→008；frontmatter 增\norigin: PLAN-5xx 溯源，正文加随迁横幅（互链 Design 01 §5 与 auto-lang\nINDEX）；正文 auto-lang 相对路径不回改，推迟 P-6 开工时按本仓 AGENTS §2\n解析序换算。007 带编号消歧注记（与 auto-lang archive 既有\n577-emitter-gaps-batch 无关；auto-lang 活动区编号冲突随 git rm 消解）。\n\nauto-lang 侧收口：docs/plans/INDEX.md 新建（去向指针行 + 577 消歧 +\n545/570 留守注记 + P-5 台账指针预留），七源文件 git rm（git 历史留档；\n577 补账提交 42219a602 即为保全其历史）。Design 01 §5 处置表七行回填\n去向 + 迁移机制节补执行注记。\n\n顺带清偿：new-plan.sh 取号补零缺陷（.next-id 算术自增丢 3 位 padding；\n10#$ID 防八进制 + printf %03d，隔离副本冒烟 009→010）。\n\n验证：反向变换保真 diff 7/7 空（git show HEAD 源对照）；V7 搬迁零残留\n（auto-lang 活动面命中仅 INDEX 指针行 + archive 历史三件，归档不回改）；\nfrontmatter 结构 7/7。V8（随迁计划可执行性冒烟）属 P-6 开工批。\n两仓提交：auto-os 0c775a5/e0ae86d（+本 merge）、auto-lang 8a57f3f3b。"
     },
     {
-      "id": "goals",
-      "items": []
+     "id": "P009-1",
+     "title": "Stage B P-6：桌面启动引导批 — 变更摘要",
+     "content": "Design 01 §7 P-6 承载批（PLAN-009）。四件：①§3-a 包装脚本 scripts/desktop.{ps1,sh}\n（解析序定位 auto-lang；vue 轨三 env 注入=主注册表 AUTO_DESKTOP_APPS+EXTRA 单 app\n根路径表〔容器脚本侧展开〕+AUTO_OS_ROOT；iced 轨 lang 侧 build+本仓 CWD 直 exec\n〔cargo 按调用方 CWD 读 .cargo/config——跨仓 cargo run 丢 /STACK:32MB 即栈溢出〕；\nDESKTOP_OS_ROOT 覆盖臂）。②V1/V2/V3 实机验收（590-R1 移交收拢）：V2 零漂移\n（025=13/0〔541 基线〕/028=24/0〔464〕/038=22/0；框架侧 calculator/charts 预存红）；\nV3 双端三截图；V1 五面实机（launcher→038 启动端到端）。③R4 CI 保活（lang\nvm-files-ci：auto-os sparse checkout+AUTO_OS_ROOT+围栏真跑步，双向实证 11.3s/\n0.02s）。④画廊部署触发端双侧 workflow（token 待配降级在案）。V8 冒烟先行为\nos-003 开工 T1（PLAN-554 Tick 契约探针）。复审打回-修复-复证：vue 轨三缺陷。",
+     "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
+     "related": [
+      "PLAN-009"
+     ],
+     "status": "published",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
     },
     {
-      "id": "architecture",
-      "items": [
-        {
-          "id": "P009-2",
-          "title": "§3-a 桌面薄包装契约 — 架构注记",
-          "content": "scripts/desktop.{ps1,sh}：轨道 vue（缺省）/iced。解析序 AUTO_LANG_ROOT env→兄弟\n../auto-lang→主检出（探针=crates/auto-lang+examples/desktop-host）。vue 轨：CWD=\n<lang>/examples/desktop-host+AUTO_DESKTOP_APPS=<lang>/examples/ui（缺省解析\n<project>/examples/ui 必败）+AUTO_DESKTOP_APPS_EXTRA=容器展开的单 app 根 ';'\n路径表+os-config 单根（**全替换语义**：不并 manifest/kanban——vue 宿主 v1\nfront-only 本就跳过后端 app）+AUTO_OS_ROOT。iced 轨：lang 侧 cargo build（config\n旗标生效）+CWD=<os-root> 直接 exec exe（../auto-os/apps 兄弟探测自命中=容器注册\n零 env）。DESKTOP_OS_ROOT env 覆盖 os 根（指向主检出/另一伞形检出）。三教训：\n①cargo 按调用方 CWD 发现 .cargo/config；②Git-Bash /d/ 路径对 Windows 进程\nis_dir() 恒假（cygpath -m 转 D:/）；③vue 轨跑过的 worktree 留 pnpm junction\n残骸——wt-guard 拦截拆除（cmd rmdir /s 清自包含 .pnpm 树，禁 rm -rf）。",
-          "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
-          "related": [
-            "PLAN-009"
-          ],
-          "status": "stable",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P003-2",
-          "title": "Time 模块 vue 桥 + Tick 契约实践 — 架构注记",
-          "content": "①ts_adapter builtin 表增 Time 臂：Time.now_sec()→Math.floor(Date.now()/\n1000)、now_ms→Date.now()（VM 侧 stdlib 实存而 vue 轨无桥=此前缺口；TDD 锁\ntime_module_bridges_to_date_now）。②Tick 契约（T1 探针）：interval 字面量\n被 aura/extract 取走（.Tick 存在时）；vue 轨 watch(running) 自动门控——开关\n命名避 running（sw_on）。③横幅形态：VM 轨 Tick 后仅文本重绑重渲染（结构/\n样式 if 不重评估）→ 恒结构顶栏+文本绑定。④VM 渲染/引擎债候选 P003-R1..R3：\n状态 str .to_int() 接收者坏（垃圾值）；Tick 后重渲染面；Lap 消息名被内置\n动词劫持（自动 'Lap {n}: ' 前缀→改名 DoLap）。",
-          "file": "docs/plans/archive/003-clock-app.md",
-          "related": [
-            "PLAN-003"
-          ],
-          "status": "stable",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P007-1",
-          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
-          "status": "stable",
-          "related": [
-            "PLAN-007"
-          ],
-          "created": "2026-09-09",
-          "last_modified": "2026-09-09",
-          "title": "avatar 家族 VM 渲染语义 — 架构注记",
-          "content": "avatar（容器,有子件经 convert_node_with 同表分发/无子件灰圆占位）/avatar-image（复用 convert_image_or_icon 图臂）/avatar-fallback（convert_text_element 文本臂）三臂,untracked/tracked 双镜像接线;props 形态 avatar (src/alt/fallback) 对齐 vue 端 desugar 为 AvatarImage+AvatarFallback。**持久规则**：centering 容器（center_x/center_y）无显式宽高时被 apply_container_style 设为 Fill×Fill,shrink 上下文（Popover 锚/行内）解析为零高——新增 centering 容器组件必须带默认尺寸类（对齐 vue 端 avatar 恒注入 w-10 h-10;534 期 hovercard 触发器零高根因）。圆形裁剪以 bg+rounded-full+尺寸类近似（VM 无 clip 原语,待澄清③口径）。"
-        },
-        {
-          "id": "P007-2",
-          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
-          "status": "stable",
-          "related": [
-            "PLAN-007",
-            "PLAN-530",
-            "PLAN-534"
-          ],
-          "created": "2026-09-09",
-          "last_modified": "2026-09-09",
-          "title": "widget 子件渲染环守卫（自名折叠递归防护）— 架构注记",
-          "content": "widget_registry 折叠兜底（P435 P8-6:剥 -/_+小写）使未知 tag 可命中组件自身名——gallery 路由页 BreadcrumbPage 的 demo 用 breadcrumb-page tag,fold 后同名 → render_child_widget 无限自递归栈溢出（新会话直达 breadcrumb 页 100% 复现;P534-D5 连续导航溢出=扫描序列首踩病源页,非累积深度）。修法:AuraViewBuilder 持 active_child_widgets 进行中集合（按分支克隆传递,兄弟复用不受影响）,双胎 render_child_widget 入口命中环渲染 Empty（A→B→A 互递归同防）。**命名约束**：路由页 widget 名与 demo 内 shadcn tag 折叠同名时触发,页面命名避免与所演示组件折叠名相撞。"
-        },
-        {
-          "id": "P007-3",
-          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
-          "status": "stable",
-          "related": [
-            "PLAN-007"
-          ],
-          "created": "2026-09-09",
-          "last_modified": "2026-09-09",
-          "title": "远程图源同步抓取 3s 超时上界 — 架构注记",
-          "content": "load_image_bytes（iced renderer）远程 URL 同步抓取在渲染线程上加 3s 超时——裸 reqwest::blocking::get 网络不可达时挂死渲染线程（bounds 不更新/截图超时/导航无响应,avatar 家族接通网络图源后实机复现）。结果按 URL 进程内缓存,阻塞每 URL 至多一次。真异步管线（ticket 化后台加载）为后续升格方向。"
-        },
-        {
-          "id": "P007-4",
-          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
-          "status": "stable",
-          "related": [
-            "PLAN-007",
-            "PLAN-534"
-          ],
-          "created": "2026-09-09",
-          "last_modified": "2026-09-09",
-          "title": "schema 全量再生成滞留清偿形态 — 架构注记",
-          "content": "SCHEMA_DRIFT_GENERATE_AT=1 全量再生成入账口径：regen 真名登记（连字符/Pascal 翻转,NavDestination→nav-destination/Swiper→swiper/sidebar 系连字符）,旧下划线孪生与 Pascal 行退役,coverage 双向净（414=414）;P3 档位冲突显式拆册（vue 同件 iced 档不同——561 真值 sub=full/button=partial,regen 别名合并丢区分 → sidebar_menu_sub_button 独立立册）;kitchen-sink 38→50 节+core.md 随生;DOC_EXCLUDE+2（折叠键）。三围栏 schema_drift/queue_coverage/docs_gen 绿。"
-        },
-        {
-          "id": "P008-1",
-          "file": "docs/plans/archive/008-desktop-gallery-apps.md",
-          "status": "stable",
-          "related": [
-            "PLAN-008",
-            "PLAN-578"
-          ],
-          "created": "2026-09-11",
-          "last_modified": "2026-09-11",
-          "title": "桌面注册表画廊根契约 — 架构注记",
-          "content": "画廊两件（ui-gallery/widgets-gallery，auto-os 顶层随迁资产）经 resolve_os_top_dir 解析序（AUTO_OS_ROOT env 设置即权威→兄弟 parent/auto-os→主检出 D:/autostack/auto-os）按名探测入桌面注册面 extra roots，双轨同律（vm host_extra_roots / vue desktop_extra_app_roots 缺省臂，三轨 parity 测试钉死）；目录缺席静默跳过（solo 检出不炸）；vm 轨 storage shell.apps.scan_galleries=false 整体关断（对称 scan_siblings，纯函数 gallery_extra_roots_from 参数化），vue 轨关断=AUTO_DESKTOP_APPS_EXTRA 全替换既有语义（desktop 脚本 EXTRA 显式注入画廊两件）；外部自含根 opt-out 缺省可见（PLAN-552 语义），展示字段 pac title:/icon:（image/layout-grid）。锚定不变式：P-5 随迁后画廊与主根示例的共置由解析序承载（apps_dir 兄弟锚退役）。vue 前台 materialize 受 Plan 465 v1 限制（@/ext/ 导入者跳过，ui-gallery 首例）——KNOWN-DEBT 候选 ext-materialize。"
-        },
-        {
-          "id": "P011-1",
-          "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
-          "status": "stable",
-          "related": [
-            "PLAN-011",
-            "PLAN-010",
-            "PLAN-002"
-          ],
-          "created": "2026-09-11",
-          "last_modified": "2026-09-11",
-          "title": "mouse_area 命中带=内容盒持久规则 — 架构注记(SD-01)",
-          "content": "iced mouse_area 命中带恒为内容盒(style 尺寸类只落外层包装 container,对命中几何 no-op)——desktop.at 空白菜单 popover 以全桌面 mouse-area 为锚件时命中带仅图标条带高,条带以下全桌面 BlankPress/BlankMenu 死区(P010-F1)。修复不变式:内容包 w-full h-full col 使命中带随之全屏(锚件几何不变/popover 放置语义不变/视觉零变化,46a07cf 最小结构改造)。规则文本已落 canonical:docs/specs/auto-lang/ui/overview.md §已知坑(SD-01,51eb14b1c 随链折叠 d3527d811)。P010-F1 先例+P007-1 同族互链;转换器级根治(命中带与样式盒解耦)登记 KNOWN-DEBT 候选。"
-        }
-      ]
+     "id": "P003-1",
+     "title": "Clock 四 tab 应用（origin PLAN-554）— 变更摘要",
+     "content": "os-003（V8 冒烟项）：012-stopwatch 原地升级 Clock——秒表（真走表：.Tick\n250ms 累计法修复原不走表缺陷+5 计圈槽）/计时器（步进器设定+倒数+到零横幅+\nDismiss）/世界时钟（8 城固定偏移+Time.now_sec 换算+本地城●高亮）/闹钟\n（5 槽 storage 持久化+分钟比对触发横幅+fired 当日防重）。registry id 保持\n012-stopwatch 稳定；pac title Clock/icon clock/category tool。框架侧交付\nts_adapter Time 模块 vue 桥（时间类 app 双端能力基建）。desktop_mcp 四断言\n组 12/12+vue 三 tab 截图。",
+     "file": "docs/plans/archive/003-clock-app.md",
+     "related": [
+      "PLAN-003"
+     ],
+     "status": "published",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
     },
     {
-      "id": "designs",
-      "items": []
+     "id": "P007-5",
+     "title": "P534 债批一（origin PLAN-577）— 变更摘要",
+     "content": "os-007：①avatar 家族补齐（三臂+props 形态 desugar+w-10 h-10 默认尺寸）——/avatar 页两 40x40 圆实机渲染、/hovercard 触发器 hit area 非零+真 hover 进/出 state 翻转不借语料工程（534 G3 补全,P534-D4 结案）；②breadcrumb 栈溢出根因偿还（widget 自名折叠环守卫,P530-D1+P534-D5 结案）——直达页 ALIVE+全站扫描 68/68 零异常；③schema 再生成滞留清偿（419 元素真名登记/P3 显式拆册/kitchen-sink 50 节随生,三围栏 2/2+4/4+7/7）。KNOWN-DEBT 三条✅ 结案回写；gallery README avatar 行更新。代码落 auto-lang os-007-dev （49c75d2e4..af07c9d37 六提交）;auto-os os-007-dev（84ff922 kitchen-sink+d6a48d2 README）。"
     },
     {
-      "id": "tests",
-      "items": [
-        {
-          "id": "P009-3",
-          "title": "P-6 验证矩阵与门禁口径 — 测试注记",
-          "content": "V5 经 wrapper=38 entries/22 desktop-visible（33+3+os-config+kanban 三源；worktree\n形态 36/20=组内无外兄弟 solo 语义）。V2 七套对账：迁移三件全绿零漂移+todo/notes\n绿；calculator 12P/5F、charts 12P/7F=master 预存红（590 零代码路径交集，P009-R2）。\n迁移注记：desktop_mcp 套件 auto 二进制相对定位迁址失效→AUTO_BIN env 必设；\nlauncher nres 断言随注册表组成漂移 4→5 更新（fresh .am 落点环境敏感注记）。\nR4 双向：AUTO_OS_ROOT 命中 11.3s 真编译/指空 0.02s SKIP（显式关断语义）。\nvue 首装 huawei 镜象未同步 virtual-core@3.17.9→--registry=registry.npmjs.org。\nV1 采集法：桌面 MCP autoui_keyboard 逐键（find/type 只及聚焦 app，shell 面输入\n必须键盘级）+autoui_screenshot{name}（落桌面进程 CWD tmp/）。",
-          "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
-          "related": [
-            "PLAN-009"
-          ],
-          "status": "verified",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P003-3",
-          "title": "Clock 验证矩阵 — 测试注记",
-          "content": "tests/desktop_mcp.py 四断言组（013 惯例自举）：T1 秒表（走表≥1000ms/\nMM:SS.cc 形态/计圈/复位）；T2 计时器（缺省 1s/运行/到零横幅/Dismiss——横幅\n按钮恒在经 press_sequence）；T3 世界时钟（≥8 城+北京/伦敦 8h±60s 时差\n断言）；T4 闹钟（步进器唯一标签时±/分± 设定+入列+AUTO_VM_STORAGE_FILE\n隔离跨重启恢复）。**12/12 全绿（复审档重跑）**。vue 轨=build+playwright\n三 tab 截图（tests/clock_vue_{timer,world}.png）。tf 门禁 22 红=master 预存\n集逐名全等零新增。步进器取模回绕（%24/%60）跨午夜可设。",
-          "file": "docs/plans/archive/003-clock-app.md",
-          "related": [
-            "PLAN-003"
-          ],
-          "status": "verified",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P007-6",
-          "file": "docs/plans/archive/007-p534-debt-batch-1.md",
-          "status": "verified",
-          "related": [
-            "PLAN-007"
-          ],
-          "created": "2026-09-09",
-          "last_modified": "2026-09-09",
-          "title": "P534 债批一验证矩阵 — 测试注记",
-          "content": "plan577_avatar 探针 3 用例+plan577_breadcrumb_cycle 环回归（红灯验证:摘守卫 STATUS_STACK_OVERFLOW 实测在案）=4/4;三围栏（AUTO_OS_ROOT 三仓跑法）2/2+4/4+7/7;实机：/avatar 像素密度（content 0.79×2,gray 0.70）+/hovercard 触发器 @rect(781,496,40,40) h=40+OS 级真 hover 进 true/出 false（t4hc 双轮 ALL PASS）;直达 breadcrumb ALIVE（len=33598）;全站扫描 68/68 零异常存活（p577_fullscan.py）;tf no-fail-fast 唯一红=charts,master 同命令集合全等;iced 唯一红=lucide 存量（master 集合全等）;tv 唯一红=charts 存量。证据:auto-lang 主检出 scratch/p577/（快照/bounds/截图/报告全套）。"
-        },
-        {
-          "id": "P008-2",
-          "file": "docs/plans/archive/008-desktop-gallery-apps.md",
-          "status": "stable",
-          "related": [
-            "PLAN-008",
-            "PLAN-552"
-          ],
-          "created": "2026-09-11",
-          "last_modified": "2026-09-11",
-          "title": "注册表画廊验证矩阵 — 测试注记",
-          "content": "真实材料门控四单测（probes_repo_galleries/scan_galleries_off/entries_visible/render_filter_matrix，resolve 未解析 SKIP）+ vue 轨缺省臂/env 全替换两腿 + 三轨 parity（fixture 含画廊目录防主检出兜底泄入，同序同集含 ui-gallery/widgets-gallery 尾部两位）；boot 计数受控基线语义：worktree 组内 36(20)→38(21)=+2/+1，组构成差（auto-os-config/auto-kanban 检出缺席）须同组对照禁跨组直比（P009-3 同律）；策展恰等断言 C 档 16（022-kanban 退策展，恰等特性双向钉死）+ ≥33 扫描数不变；实机腿经验收注入通道复现（launcher 21 徽标/双 launch 真渲染/storage 关断 36(19)）。"
-        }
-      ]
+     "id": "PLAN-013-report",
+     "title": "PLAN-013 desktop-app-portfolio 交付报告 — daemon 泛化/auto-term app 化/kanban submodule",
+     "content": "交付（2026-09-12，merge 96e1875）：① daemon 键泛化——apps.manifest 条目 daemon{port,bin,env_port} 驱动 GenericDaemon ensure 链（ping /api/health→发现序 spawn→<NAME>_DAEMON env 注入；autoos 零回归门），musk/jade pac 端口 17xxx 转实+MUSK_SERVE_PORT/JADE_GARDEN_PORT 配合；② auto-term app 壳落地 （app/ pac.at render vm+store/page 升格移植，Term.engine_* 进程内引擎免 back），manifest 登记 17400/17401；③ kanban submodule 首例（apps/kanban，容器臂/manifest 臂 id 去重，降级双形态实证）+ AGENTS §4 混合形态/§2 submodule 纪律/§3 daemon schema 定稿。归档路径 docs/plans/archive/013-desktop-app-portfolio.md。内容债跨仓台账：musk VM 化（059-FU1）、jade VM 壳开发（064 邻线）。"
     },
     {
-      "id": "reviews",
-      "items": [
-        {
-          "id": "P001-R1",
-          "title": "PLAN-001 复审记录 — P-1 计划随迁批（C1–C6 全过）",
-          "content": "verify-don't-trust 对账：C1 七文件就位（frontmatter 7/7）／C2 正文保真\n（反向 diff 7/7 空）／C3 auto-lang 收口（8a57f3f3b：INDEX + git rm）／\nC4 Design 01 §5 回填（e0ae86d）／C5 V7 零残留（活动面仅指针行）／\nC6 两仓提交+归档（本 merge）。\n\n遗漏/延后/workaround 扫描：V8 属 P-6 开工批非本批遗漏；台账接棒前置\n= A1 台账迁移（P-5），INDEX 已埋预留注记；new-plan.sh 补零修正为顺手\n清偿基建缺陷（有冒烟证据）非绕行；无未批准延后。健康检查：无代码面，\n校验脚本一次性 heredoc 未落盘，两仓 docs/ 面干净。\n裁定合规：Category A 免 worktree 沿 Plan 584 先例（b173c9b51）；编号\n映射沿 Design 01 §5 待澄清 #1 默认裁定。\nspec-impact：new_spec_components = reports/P001-1 + reviews/P001-R1\n（本仓 specs.json 首两笔）；supersedes/touched_goals 空。"
-        },
-        {
-          "id": "P009-4",
-          "title": "PLAN-009 复审记录 — 六项全过（vue 轨打回-修复-复证）",
-          "content": "六项验收全过。复审抓回执行期遗漏：vue 轨仅 dry-run 即报 ✅——真跑暴露三缺陷\n（主注册表漏注/EXTRA 全替换语义/POSIX 路径 is_dir 假）→ 9d960fe 修复复证\n（host 起+三 extra root 命中 23 apps+iced 38/22 确定性）。R 候选四项：R1 通知\n中心面板深交互未注入（面存在性在案）；R2 calculator/charts master 预存红；\nR3 vue 宿主 v1 front-only 跳过 sys-monitor/kanban（框架 465 登记限制）；\nR4 vue 轨 EXTRA 不并 manifest（Stage C auto desktop 子命令动机+1）。spec-impact：\nP009-1..4+GOAL-010。合并注记：pnpm junction 残骸经守卫拦截-自包含清理拆除。",
-          "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
-          "related": [
-            "PLAN-009"
-          ],
-          "status": "published",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P003-4",
-          "title": "os-003 复审记录 — 六项全过（偏离显式在案）",
-          "content": "六项验收全过（12/12 复跑/boot title Clock 实证/curation 复跑/tf 零新增红）。\n偏离三项（执行期裁定+实测依据）：步进器替代 input（VM 状态 str to_int 坏）；\n恒结构顶栏替代覆盖层（Tick 后重渲染面）；DoLap 改名（劫持）。延后两项：\nnotify 叠加 v2（T1 已证动词在 session.rs:1486）；DST 固定偏移 v1。债候选\nP003-R1..R3 移交框架侧。spec-impact：Time 桥+Clock app+GOAL-010。",
-          "file": "docs/plans/archive/003-clock-app.md",
-          "related": [
-            "PLAN-003"
-          ],
-          "status": "published",
-          "created": "2026-09-08",
-          "last_modified": "2026-09-08"
-        },
-        {
-          "id": "P007-R1",
-          "title": "os-007 复审记录 — 六项全过（格式漂移已修）",
-          "content": "六项验收全过（avatar 渲染像素/触发器 hover 行为双轮/三围栏/breadcrumb ALIVE+68-68/KNOWN-DEBT 三条/tf-tv-iced 对账零新增红）。执行期偏差四项显式在案（props desugar 补臂/Fill 零高与图源超时两根因修复构成验收必要面/病源修正为自名折叠递归/D5 根因同 P530-D1 直接结案非另立）。F1 新增代码 3 处 rustfmt 偏好差异 review 中修正（净漂移与 master 持平 637）,行为零变化+实机对最终 HEAD 重验。独立性声明:执行会话内以工件重建判定。reviewed_commit af07c9d37/auto-os d6a48d2。"
-        },
-        {
-          "id": "P011-R1",
-          "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
-          "status": "stable",
-          "related": [
-            "PLAN-011",
-            "PLAN-010"
-          ],
-          "created": "2026-09-11",
-          "last_modified": "2026-09-11",
-          "title": "vwin-stack-hit-testing 复审 pass + 链折叠复跑门 — 复审注记",
-          "content": "r2 复审 outcome: pass(同会话复审,独立性限制声明,六项证据行号独立复核)——AC-01..06 6/6;tf 3480 唯一红=charts 存量;组合门=f010n/f011n 22=22 名单级全等。链折叠复跑门:os-011-dev→master d3527d811(merge-tree 零冲突,renderer.rs 三方 608/611/链自动归位)+N6d 摘桃 2204274e8;iced 档 183/184(dock_pager_hover_popovers 随链测试更新转绿)+全量失败集 21=21 折叠前基线逐一全等+hash-lock 四件全等。findings:F-R1 blank 菜单落屏幕左下(锚=全域既有语义,KNOWN-DEBT 候选)/F-R2 拖拽缩放合成光标断言不可靠(列入用户实机复核清单)/F-R3 探针已撤回归门在撤探针构建复跑。"
-        }
-      ]
+     "id": "P012-1",
+     "title": "PLAN-012 变更摘要 — shell-ux-feedback-batch（七项 UX 反馈批 + F2 走查 + 复验反馈收口）",
+     "content": "用户实机反馈七项全收口：①os-config 打开提速（Init 懒加载+close→hide 常驻）②通知面板右上角紧凑卡（gap/滚动/二次点击关闭）③切换器外点关闭+整桌面预览 workspace_preview ④dock 去重+聚合单图标+固定/取消固定 ⑤桌面图标紧凑+拖拽 ⑥launcher 去自列 ⑦图标三态/两态高亮。F2 走查多轮：view 条件 contains 死点清偿（派生判据面模式）、tick 饿死缓解（drain 前置）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
     }
-  ]
+   ]
+  },
+  {
+   "id": "goals",
+   "items": []
+  },
+  {
+   "id": "architecture",
+   "items": [
+    {
+     "id": "P009-2",
+     "title": "§3-a 桌面薄包装契约 — 架构注记",
+     "content": "scripts/desktop.{ps1,sh}：轨道 vue（缺省）/iced。解析序 AUTO_LANG_ROOT env→兄弟\n../auto-lang→主检出（探针=crates/auto-lang+examples/desktop-host）。vue 轨：CWD=\n<lang>/examples/desktop-host+AUTO_DESKTOP_APPS=<lang>/examples/ui（缺省解析\n<project>/examples/ui 必败）+AUTO_DESKTOP_APPS_EXTRA=容器展开的单 app 根 ';'\n路径表+os-config 单根（**全替换语义**：不并 manifest/kanban——vue 宿主 v1\nfront-only 本就跳过后端 app）+AUTO_OS_ROOT。iced 轨：lang 侧 cargo build（config\n旗标生效）+CWD=<os-root> 直接 exec exe（../auto-os/apps 兄弟探测自命中=容器注册\n零 env）。DESKTOP_OS_ROOT env 覆盖 os 根（指向主检出/另一伞形检出）。三教训：\n①cargo 按调用方 CWD 发现 .cargo/config；②Git-Bash /d/ 路径对 Windows 进程\nis_dir() 恒假（cygpath -m 转 D:/）；③vue 轨跑过的 worktree 留 pnpm junction\n残骸——wt-guard 拦截拆除（cmd rmdir /s 清自包含 .pnpm 树，禁 rm -rf）。",
+     "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
+     "related": [
+      "PLAN-009"
+     ],
+     "status": "stable",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P003-2",
+     "title": "Time 模块 vue 桥 + Tick 契约实践 — 架构注记",
+     "content": "①ts_adapter builtin 表增 Time 臂：Time.now_sec()→Math.floor(Date.now()/\n1000)、now_ms→Date.now()（VM 侧 stdlib 实存而 vue 轨无桥=此前缺口；TDD 锁\ntime_module_bridges_to_date_now）。②Tick 契约（T1 探针）：interval 字面量\n被 aura/extract 取走（.Tick 存在时）；vue 轨 watch(running) 自动门控——开关\n命名避 running（sw_on）。③横幅形态：VM 轨 Tick 后仅文本重绑重渲染（结构/\n样式 if 不重评估）→ 恒结构顶栏+文本绑定。④VM 渲染/引擎债候选 P003-R1..R3：\n状态 str .to_int() 接收者坏（垃圾值）；Tick 后重渲染面；Lap 消息名被内置\n动词劫持（自动 'Lap {n}: ' 前缀→改名 DoLap）。",
+     "file": "docs/plans/archive/003-clock-app.md",
+     "related": [
+      "PLAN-003"
+     ],
+     "status": "stable",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P007-1",
+     "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+     "status": "stable",
+     "related": [
+      "PLAN-007"
+     ],
+     "created": "2026-09-09",
+     "last_modified": "2026-09-09",
+     "title": "avatar 家族 VM 渲染语义 — 架构注记",
+     "content": "avatar（容器,有子件经 convert_node_with 同表分发/无子件灰圆占位）/avatar-image（复用 convert_image_or_icon 图臂）/avatar-fallback（convert_text_element 文本臂）三臂,untracked/tracked 双镜像接线;props 形态 avatar (src/alt/fallback) 对齐 vue 端 desugar 为 AvatarImage+AvatarFallback。**持久规则**：centering 容器（center_x/center_y）无显式宽高时被 apply_container_style 设为 Fill×Fill,shrink 上下文（Popover 锚/行内）解析为零高——新增 centering 容器组件必须带默认尺寸类（对齐 vue 端 avatar 恒注入 w-10 h-10;534 期 hovercard 触发器零高根因）。圆形裁剪以 bg+rounded-full+尺寸类近似（VM 无 clip 原语,待澄清③口径）。"
+    },
+    {
+     "id": "P007-2",
+     "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+     "status": "stable",
+     "related": [
+      "PLAN-007",
+      "PLAN-530",
+      "PLAN-534"
+     ],
+     "created": "2026-09-09",
+     "last_modified": "2026-09-09",
+     "title": "widget 子件渲染环守卫（自名折叠递归防护）— 架构注记",
+     "content": "widget_registry 折叠兜底（P435 P8-6:剥 -/_+小写）使未知 tag 可命中组件自身名——gallery 路由页 BreadcrumbPage 的 demo 用 breadcrumb-page tag,fold 后同名 → render_child_widget 无限自递归栈溢出（新会话直达 breadcrumb 页 100% 复现;P534-D5 连续导航溢出=扫描序列首踩病源页,非累积深度）。修法:AuraViewBuilder 持 active_child_widgets 进行中集合（按分支克隆传递,兄弟复用不受影响）,双胎 render_child_widget 入口命中环渲染 Empty（A→B→A 互递归同防）。**命名约束**：路由页 widget 名与 demo 内 shadcn tag 折叠同名时触发,页面命名避免与所演示组件折叠名相撞。"
+    },
+    {
+     "id": "P007-3",
+     "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+     "status": "stable",
+     "related": [
+      "PLAN-007"
+     ],
+     "created": "2026-09-09",
+     "last_modified": "2026-09-09",
+     "title": "远程图源同步抓取 3s 超时上界 — 架构注记",
+     "content": "load_image_bytes（iced renderer）远程 URL 同步抓取在渲染线程上加 3s 超时——裸 reqwest::blocking::get 网络不可达时挂死渲染线程（bounds 不更新/截图超时/导航无响应,avatar 家族接通网络图源后实机复现）。结果按 URL 进程内缓存,阻塞每 URL 至多一次。真异步管线（ticket 化后台加载）为后续升格方向。"
+    },
+    {
+     "id": "P007-4",
+     "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+     "status": "stable",
+     "related": [
+      "PLAN-007",
+      "PLAN-534"
+     ],
+     "created": "2026-09-09",
+     "last_modified": "2026-09-09",
+     "title": "schema 全量再生成滞留清偿形态 — 架构注记",
+     "content": "SCHEMA_DRIFT_GENERATE_AT=1 全量再生成入账口径：regen 真名登记（连字符/Pascal 翻转,NavDestination→nav-destination/Swiper→swiper/sidebar 系连字符）,旧下划线孪生与 Pascal 行退役,coverage 双向净（414=414）;P3 档位冲突显式拆册（vue 同件 iced 档不同——561 真值 sub=full/button=partial,regen 别名合并丢区分 → sidebar_menu_sub_button 独立立册）;kitchen-sink 38→50 节+core.md 随生;DOC_EXCLUDE+2（折叠键）。三围栏 schema_drift/queue_coverage/docs_gen 绿。"
+    },
+    {
+     "id": "P008-1",
+     "file": "docs/plans/archive/008-desktop-gallery-apps.md",
+     "status": "stable",
+     "related": [
+      "PLAN-008",
+      "PLAN-578"
+     ],
+     "created": "2026-09-11",
+     "last_modified": "2026-09-11",
+     "title": "桌面注册表画廊根契约 — 架构注记",
+     "content": "画廊两件（ui-gallery/widgets-gallery，auto-os 顶层随迁资产）经 resolve_os_top_dir 解析序（AUTO_OS_ROOT env 设置即权威→兄弟 parent/auto-os→主检出 D:/autostack/auto-os）按名探测入桌面注册面 extra roots，双轨同律（vm host_extra_roots / vue desktop_extra_app_roots 缺省臂，三轨 parity 测试钉死）；目录缺席静默跳过（solo 检出不炸）；vm 轨 storage shell.apps.scan_galleries=false 整体关断（对称 scan_siblings，纯函数 gallery_extra_roots_from 参数化），vue 轨关断=AUTO_DESKTOP_APPS_EXTRA 全替换既有语义（desktop 脚本 EXTRA 显式注入画廊两件）；外部自含根 opt-out 缺省可见（PLAN-552 语义），展示字段 pac title:/icon:（image/layout-grid）。锚定不变式：P-5 随迁后画廊与主根示例的共置由解析序承载（apps_dir 兄弟锚退役）。vue 前台 materialize 受 Plan 465 v1 限制（@/ext/ 导入者跳过，ui-gallery 首例）——KNOWN-DEBT 候选 ext-materialize。"
+    },
+    {
+     "id": "P011-1",
+     "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
+     "status": "stable",
+     "related": [
+      "PLAN-011",
+      "PLAN-010",
+      "PLAN-002"
+     ],
+     "created": "2026-09-11",
+     "last_modified": "2026-09-11",
+     "title": "mouse_area 命中带=内容盒持久规则 — 架构注记(SD-01)",
+     "content": "iced mouse_area 命中带恒为内容盒(style 尺寸类只落外层包装 container,对命中几何 no-op)——desktop.at 空白菜单 popover 以全桌面 mouse-area 为锚件时命中带仅图标条带高,条带以下全桌面 BlankPress/BlankMenu 死区(P010-F1)。修复不变式:内容包 w-full h-full col 使命中带随之全屏(锚件几何不变/popover 放置语义不变/视觉零变化,46a07cf 最小结构改造)。规则文本已落 canonical:docs/specs/auto-lang/ui/overview.md §已知坑(SD-01,51eb14b1c 随链折叠 d3527d811)。P010-F1 先例+P007-1 同族互链;转换器级根治(命中带与样式盒解耦)登记 KNOWN-DEBT 候选。"
+    },
+    {
+     "id": "P012-2",
+     "title": "SD-01 协议 v1.6 — 判据面派生模式与动词",
+     "content": "投影协议 v1.6：__wm_wins.pinned/dup_app、__dock_pinned.running、__wm_settings_open、__wm_layout、__wm_focused_app/__wm_notes_visible——**view 条件无方法调用臂，.contains(...) 静默恒 false（实机定性），判据一律宿主派生+等式消费**。动词 dock_pin/dock_unpin/refresh_desktop_icons。指纹段 |pinned:/:v。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P012-3",
+     "title": "SD-02 workspace_preview 合同面 — 整桌面预览宿主合成件",
+     "content": "workspace_preview(ws,fallback) 布局件：宿主合成（壁纸基色+逐窗 snapshot 等比贴片，miss=占位+icon+SWR 预抓）。已入库 schema/aura.at（SCHEMA_DRIFT_GENERATE_AT 再生）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P012-4",
+     "title": "SD-03/SD-05 dock_pinned 缺省空 + os-config close→hide",
+     "content": "DEFAULT_DOCK_PINNED=[]（缺键=显式空=空表，回退语义退役）；os-config 窗 close→hide（VWinState.hidden，投影/布局/命中全链排除，focus unhide）——重开零编译。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P012-5",
+     "title": "O3 终解 — 通知面板锚定机制学（真实链约束）",
+     "content": "dynamic_view 根 = Fill×Fill toast-Stack（463 T5）：.at 内 mt-auto 填充条/根高类/flex-1 顶垫在真实 Stack 子层**不可依赖**（headless 全链通过而实机塌缩=头模/实机分叉，O1 同族）。**可靠机制 = justify-*（列 align_y，真实链验证）+ 装配级 scrim mouse-area**。卡片挂顶 justify-start + pt-3/pr-3 12px 对称 gap（用户裁定右上角）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    }
+   ]
+  },
+  {
+   "id": "designs",
+   "items": [
+    {
+     "id": "P012-6",
+     "title": "SD-04 通知面板关闭模型与锚定 — 右上角紧凑卡（用户裁定）",
+     "content": "面板 = 通知中心语义：不做定时自动关；人工关闭三路径 = × / scrim 外点 / Esc（铃铛 toggle 同效）。锚定 = **右上角**（用户裁定 2026-09-14，原右下废止）：justify-start 顶对齐 + 顶/右 12px gap + 紧凑 max-h 滚动。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P012-7",
+     "title": "SD-06 任务栏状态指示定型 — 三态/两态（统一机制 → DEBTS）",
+     "content": "左 app 图标三态（无条=关/灰条=开/主色条+底色高亮=聚焦，Win11 形态）；右开关钮两态（切换器/电源=本地态；齿轮=__wm_settings_open；铃铛=__wm_notes_visible；布局钮=__wm_layout）。**高亮机制统一 → DEBTS 012-候选 icon 族**（现存多套判据，用户裁定应单一代码路径）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    }
+   ]
+  },
+  {
+   "id": "tests",
+   "items": [
+    {
+     "id": "P009-3",
+     "title": "P-6 验证矩阵与门禁口径 — 测试注记",
+     "content": "V5 经 wrapper=38 entries/22 desktop-visible（33+3+os-config+kanban 三源；worktree\n形态 36/20=组内无外兄弟 solo 语义）。V2 七套对账：迁移三件全绿零漂移+todo/notes\n绿；calculator 12P/5F、charts 12P/7F=master 预存红（590 零代码路径交集，P009-R2）。\n迁移注记：desktop_mcp 套件 auto 二进制相对定位迁址失效→AUTO_BIN env 必设；\nlauncher nres 断言随注册表组成漂移 4→5 更新（fresh .am 落点环境敏感注记）。\nR4 双向：AUTO_OS_ROOT 命中 11.3s 真编译/指空 0.02s SKIP（显式关断语义）。\nvue 首装 huawei 镜象未同步 virtual-core@3.17.9→--registry=registry.npmjs.org。\nV1 采集法：桌面 MCP autoui_keyboard 逐键（find/type 只及聚焦 app，shell 面输入\n必须键盘级）+autoui_screenshot{name}（落桌面进程 CWD tmp/）。",
+     "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
+     "related": [
+      "PLAN-009"
+     ],
+     "status": "verified",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P003-3",
+     "title": "Clock 验证矩阵 — 测试注记",
+     "content": "tests/desktop_mcp.py 四断言组（013 惯例自举）：T1 秒表（走表≥1000ms/\nMM:SS.cc 形态/计圈/复位）；T2 计时器（缺省 1s/运行/到零横幅/Dismiss——横幅\n按钮恒在经 press_sequence）；T3 世界时钟（≥8 城+北京/伦敦 8h±60s 时差\n断言）；T4 闹钟（步进器唯一标签时±/分± 设定+入列+AUTO_VM_STORAGE_FILE\n隔离跨重启恢复）。**12/12 全绿（复审档重跑）**。vue 轨=build+playwright\n三 tab 截图（tests/clock_vue_{timer,world}.png）。tf 门禁 22 红=master 预存\n集逐名全等零新增。步进器取模回绕（%24/%60）跨午夜可设。",
+     "file": "docs/plans/archive/003-clock-app.md",
+     "related": [
+      "PLAN-003"
+     ],
+     "status": "verified",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P007-6",
+     "file": "docs/plans/archive/007-p534-debt-batch-1.md",
+     "status": "verified",
+     "related": [
+      "PLAN-007"
+     ],
+     "created": "2026-09-09",
+     "last_modified": "2026-09-09",
+     "title": "P534 债批一验证矩阵 — 测试注记",
+     "content": "plan577_avatar 探针 3 用例+plan577_breadcrumb_cycle 环回归（红灯验证:摘守卫 STATUS_STACK_OVERFLOW 实测在案）=4/4;三围栏（AUTO_OS_ROOT 三仓跑法）2/2+4/4+7/7;实机：/avatar 像素密度（content 0.79×2,gray 0.70）+/hovercard 触发器 @rect(781,496,40,40) h=40+OS 级真 hover 进 true/出 false（t4hc 双轮 ALL PASS）;直达 breadcrumb ALIVE（len=33598）;全站扫描 68/68 零异常存活（p577_fullscan.py）;tf no-fail-fast 唯一红=charts,master 同命令集合全等;iced 唯一红=lucide 存量（master 集合全等）;tv 唯一红=charts 存量。证据:auto-lang 主检出 scratch/p577/（快照/bounds/截图/报告全套）。"
+    },
+    {
+     "id": "P008-2",
+     "file": "docs/plans/archive/008-desktop-gallery-apps.md",
+     "status": "stable",
+     "related": [
+      "PLAN-008",
+      "PLAN-552"
+     ],
+     "created": "2026-09-11",
+     "last_modified": "2026-09-11",
+     "title": "注册表画廊验证矩阵 — 测试注记",
+     "content": "真实材料门控四单测（probes_repo_galleries/scan_galleries_off/entries_visible/render_filter_matrix，resolve 未解析 SKIP）+ vue 轨缺省臂/env 全替换两腿 + 三轨 parity（fixture 含画廊目录防主检出兜底泄入，同序同集含 ui-gallery/widgets-gallery 尾部两位）；boot 计数受控基线语义：worktree 组内 36(20)→38(21)=+2/+1，组构成差（auto-os-config/auto-kanban 检出缺席）须同组对照禁跨组直比（P009-3 同律）；策展恰等断言 C 档 16（022-kanban 退策展，恰等特性双向钉死）+ ≥33 扫描数不变；实机腿经验收注入通道复现（launcher 21 徽标/双 launch 真渲染/storage 关断 36(19)）。"
+    },
+    {
+     "id": "P012-8",
+     "title": "PLAN-012 验证矩阵 — 门档口径与活体探针",
+     "content": "cargo tf（nextest ui-iced+schema_drift+docs_gen）3534 全过（含金样再生/schema 再生/coverage 真名化清偿）；iced 档全量 4620/196（=基线存量零回归）；VM 档 3523/0。活体：MCP :9348 双 toggle 开关、布局钮高亮、右上 gap 12px、dock 去重。教训：**实例运行锁 exe → 重链接静默失败 = 陈旧二进制验证陷阱**（先杀实例再构建）；schema/docs/金样栅栏须入日常档。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    }
+   ]
+  },
+  {
+   "id": "reviews",
+   "items": [
+    {
+     "id": "P001-R1",
+     "title": "PLAN-001 复审记录 — P-1 计划随迁批（C1–C6 全过）",
+     "content": "verify-don't-trust 对账：C1 七文件就位（frontmatter 7/7）／C2 正文保真\n（反向 diff 7/7 空）／C3 auto-lang 收口（8a57f3f3b：INDEX + git rm）／\nC4 Design 01 §5 回填（e0ae86d）／C5 V7 零残留（活动面仅指针行）／\nC6 两仓提交+归档（本 merge）。\n\n遗漏/延后/workaround 扫描：V8 属 P-6 开工批非本批遗漏；台账接棒前置\n= A1 台账迁移（P-5），INDEX 已埋预留注记；new-plan.sh 补零修正为顺手\n清偿基建缺陷（有冒烟证据）非绕行；无未批准延后。健康检查：无代码面，\n校验脚本一次性 heredoc 未落盘，两仓 docs/ 面干净。\n裁定合规：Category A 免 worktree 沿 Plan 584 先例（b173c9b51）；编号\n映射沿 Design 01 §5 待澄清 #1 默认裁定。\nspec-impact：new_spec_components = reports/P001-1 + reviews/P001-R1\n（本仓 specs.json 首两笔）；supersedes/touched_goals 空。"
+    },
+    {
+     "id": "P009-4",
+     "title": "PLAN-009 复审记录 — 六项全过（vue 轨打回-修复-复证）",
+     "content": "六项验收全过。复审抓回执行期遗漏：vue 轨仅 dry-run 即报 ✅——真跑暴露三缺陷\n（主注册表漏注/EXTRA 全替换语义/POSIX 路径 is_dir 假）→ 9d960fe 修复复证\n（host 起+三 extra root 命中 23 apps+iced 38/22 确定性）。R 候选四项：R1 通知\n中心面板深交互未注入（面存在性在案）；R2 calculator/charts master 预存红；\nR3 vue 宿主 v1 front-only 跳过 sys-monitor/kanban（框架 465 登记限制）；\nR4 vue 轨 EXTRA 不并 manifest（Stage C auto desktop 子命令动机+1）。spec-impact：\nP009-1..4+GOAL-010。合并注记：pnpm junction 残骸经守卫拦截-自包含清理拆除。",
+     "file": "docs/plans/archive/009-p6-desktop-bootstrap.md",
+     "related": [
+      "PLAN-009"
+     ],
+     "status": "published",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P003-4",
+     "title": "os-003 复审记录 — 六项全过（偏离显式在案）",
+     "content": "六项验收全过（12/12 复跑/boot title Clock 实证/curation 复跑/tf 零新增红）。\n偏离三项（执行期裁定+实测依据）：步进器替代 input（VM 状态 str to_int 坏）；\n恒结构顶栏替代覆盖层（Tick 后重渲染面）；DoLap 改名（劫持）。延后两项：\nnotify 叠加 v2（T1 已证动词在 session.rs:1486）；DST 固定偏移 v1。债候选\nP003-R1..R3 移交框架侧。spec-impact：Time 桥+Clock app+GOAL-010。",
+     "file": "docs/plans/archive/003-clock-app.md",
+     "related": [
+      "PLAN-003"
+     ],
+     "status": "published",
+     "created": "2026-09-08",
+     "last_modified": "2026-09-08"
+    },
+    {
+     "id": "P007-R1",
+     "title": "os-007 复审记录 — 六项全过（格式漂移已修）",
+     "content": "六项验收全过（avatar 渲染像素/触发器 hover 行为双轮/三围栏/breadcrumb ALIVE+68-68/KNOWN-DEBT 三条/tf-tv-iced 对账零新增红）。执行期偏差四项显式在案（props desugar 补臂/Fill 零高与图源超时两根因修复构成验收必要面/病源修正为自名折叠递归/D5 根因同 P530-D1 直接结案非另立）。F1 新增代码 3 处 rustfmt 偏好差异 review 中修正（净漂移与 master 持平 637）,行为零变化+实机对最终 HEAD 重验。独立性声明:执行会话内以工件重建判定。reviewed_commit af07c9d37/auto-os d6a48d2。"
+    },
+    {
+     "id": "P011-R1",
+     "file": "docs/plans/archive/011-vwin-stack-hit-testing.md",
+     "status": "stable",
+     "related": [
+      "PLAN-011",
+      "PLAN-010"
+     ],
+     "created": "2026-09-11",
+     "last_modified": "2026-09-11",
+     "title": "vwin-stack-hit-testing 复审 pass + 链折叠复跑门 — 复审注记",
+     "content": "r2 复审 outcome: pass(同会话复审,独立性限制声明,六项证据行号独立复核)——AC-01..06 6/6;tf 3480 唯一红=charts 存量;组合门=f010n/f011n 22=22 名单级全等。链折叠复跑门:os-011-dev→master d3527d811(merge-tree 零冲突,renderer.rs 三方 608/611/链自动归位)+N6d 摘桃 2204274e8;iced 档 183/184(dock_pager_hover_popovers 随链测试更新转绿)+全量失败集 21=21 折叠前基线逐一全等+hash-lock 四件全等。findings:F-R1 blank 菜单落屏幕左下(锚=全域既有语义,KNOWN-DEBT 候选)/F-R2 拖拽缩放合成光标断言不可靠(列入用户实机复核清单)/F-R3 探针已撤回归门在撤探针构建复跑。"
+    },
+    {
+     "id": "PLAN-013-r1",
+     "title": "PLAN-013 desktop-app-portfolio r1 复审 — pass（五仓基线冻结/AC-01..06 全 pass/测试门还原实验定责）",
+     "content": "复审 pass（2026-09-12，rev1，review commit 3eaa186）。基线：auto-os plan-013-dev 19aab6f→main 96e1875；auto-lang os-013-dev 608099985；auto-musk 751d2d4；auto-down 0e5e3e9；auto-term 0770f3f。AC-01 链路面实机（daemon ensure/LaunchFallback UX 不崩桌面；musk/jade 内容面拆账：musk VM synthesis vue 符号债 KD 059-FU1、jade VM 壳 placeholder）AC-02 AutoTerm 实机全链 ✓；AC-03 manifest 登记+os-config 内嵌页零回归；AC-04 容器臂 kanban 42/26 零 skipped；AC-05 降级双形态实证；AC-06 文档-实现四项核对。测试门：daemon 29/29×2；全量 199 败经还原实验实证为 859c31710 基线错位（615/616 交接）+并行 flaky，非本计划回归。findings F-01..04 非阻塞（calculator 615 回归容错/musk+jade 内容债/debug 桌面内存/全量基线红治理）。"
+    },
+    {
+     "id": "P012-R1",
+     "title": "PLAN-012 复审记录 — pass（F2 实机走查多轮 + 复验反馈收口）",
+     "content": "reviewed @ auto-os 894cc00 / auto-lang c848976e8。12 AC 全收口（用户逐项复验 + 活体探针）；AC-10 残留 ~3px iced svg quirk 用户裁定移交 DEBTS icon 族。门档修复 ×4（a2vue 金样/schema 再生/docs_gen 三栅栏/coverage 真名化）。归档：docs/plans/archived/012-shell-ux-feedback-batch.md。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    }
+   ]
+  }
+ ]
 }
