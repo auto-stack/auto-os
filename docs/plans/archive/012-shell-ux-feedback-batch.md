@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-012
 plan_revision: 2              # rev2 = 追加问题7（图标居中 + 任务栏状态指示，2026-09-11）
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-14 review pass，F2 实机走查 + 复验反馈全部收口）
+status: archived             # 2026-09-14 merge 落地三仓（auto-os 6e25d1b、auto-lang master 5c444818f、auto-os-config a60c6bc），review pass 全 AC 收口
 feature_name: shell-ux-feedback-batch
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -843,6 +843,18 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   docs/plans/evidence/012/（前后对照 ×8 + F2-WALKTHROUGH-ROUND3 +
   探针脚本）；tmp 探针脚本副本随档。next：merge（三仓收口，PLAN-011
   先例）——用户令下即行。
+- 2026-09-14 merge（/auto-plan:merge，consolidation receipt
+  PLAN-012:r2）：**prepared** ✓（reviewed 基线 + spec delta 冻结 +
+  投影目标 .autoos/specs.json）；**landed** ✓（auto-os main
+  4a55c09→7008eb8→97634b6→48414ae→6e25d1b 全量含 ledger/kitchen-sink
+  生成页；auto-lang master e04425f10→22ae10dbf→21c988aeb→f7e26e6e1→
+  5c444818f 七项修复+金样再生+schema 再生+circle-alert 别名+栅栏对
+  齐；auto-os-config main a60c6bc；主检出冒烟 build ✓ +
+  schema_drift/docs_gen 围栏绿）；**ledger_refreshed** ✓（
+  .autoos/specs.json P012-1..8/R1 九条，json 校验过）；**archived**
+  ✓（本件 git mv archive/ + status:archived）；**cleaned** → 见文
+  末收据补记。环境备注：.wt/os-012/auto-down 由 plan064 merge 授权
+  清理（本会话误判"意外丢失"重建，合并完成后随组清理再删）。
   **二次点击关闭清偿（2026-09-14 晨）**：用户复验"点一下高亮，再点一
   下没有关闭"定性 = 装配级 scrim 与铃铛 notes_toggle 事件双达（铃铛后
   执行重开盖掉 scrim 关闭）。修复 = scrim 回归 .at 内 N6d 模式（卡片
