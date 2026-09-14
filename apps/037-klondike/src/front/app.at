@@ -126,7 +126,7 @@ widget App {
                         // 发牌堆 (Stock)
                         button {
                             onclick: .ClickStock
-                            style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                            style: "w-[76px] h-[106px] p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none cursor-pointer"
                             col {
                                 if .store.stock_count > 0 {
                                     col {
@@ -155,7 +155,7 @@ widget App {
                             button {
                                 onclick: .ClickWaste
                                 ondblclick: .AutoSendWaste
-                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                style: "w-[76px] h-[106px] p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none cursor-pointer"
                                 col {
                                     class: .store.waste_card.card_class
                                     CardFace (
@@ -187,7 +187,7 @@ widget App {
                             button {
                                 key: slot.idx
                                 onclick: .ClickFoundation(slot.idx)
-                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                style: "w-[76px] h-[106px] p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none cursor-pointer"
                                 col {
                                     class: slot.slot_class
                                     if slot.has_card {
