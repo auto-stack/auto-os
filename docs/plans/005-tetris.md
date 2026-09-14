@@ -908,7 +908,7 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - plan_id: PLAN-005
 - plan_revision: 2
 - outcome: partial
-- code_commit: e18b791 (fix(tetris): move app ports off autoterm band)
+- code_commits: e18b791 (runtime/test port fix) and 81dcdf8 (manifest/README port alignment)
 - change: Tetris pac.at now uses 17500/17501; README, Playwright default,
   persistence probe default, and the canonical app Spec matrix use the same
   ports. Repository search found no existing 17500/17501 registration.
@@ -931,3 +931,4 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 | Q4（框架观察） | `grid` schema 的 `columns` 与 Vue 生成器的 `cols` 存在别名漂移；本次用 `cols` 规避，未改 auto-lang | 若其他 app 需要 `columns` 在 Vue 生效，另立 auto-lang 前置 Plan 同步 schema/生成器；本 app 以已验证产物为准 |
 
 旧待澄清项已明确：v1 LCG 独立抽样、无踢墙保留；ghost 升为必验 UI 改善。
+
