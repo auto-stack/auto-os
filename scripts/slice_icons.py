@@ -134,6 +134,36 @@ def fill_ratio_local(im: np.ndarray, rect, pad: int = 10) -> float:
     return float((np.abs(inner - bg).sum(axis=2) > 90).mean())
 
 
+def key_background(tile: np.ndarray, lo: float = 8.0, hi: float = 28.0) -> np.ndarray:
+    """纸色抠底——PLAN-018-FU1（用户实机反馈：桌面 tile 在 badge 色块上
+    四角露白）。根因 = 源表为 RGB 海报（无 alpha），切片烘焙了画布底。
+    bg = **本 tile 四角 6×6 中值**（圆角 tile 设计保证 rect 四角必露画布；
+    表级全局取样被海报渐变带打穿、边环取样被贴边 tile 面污染——FU1 两版
+    教训）。只抠「与边缘连通的 bg-近似区」；阈值 (lo,hi)=8/28 收在画布
+    渐变带内、且低于暗表面色距（实测 70+），tile 面与内部浅色体不受伤；
+    软边按色距线性 alpha 过渡防硬锯齿。"""
+    h, w = tile.shape[:2]
+    rgb = tile[:, :, :3].astype(int)
+    p = 6
+    corners = np.concatenate([
+        rgb[:p, :p].reshape(-1, 3), rgb[:p, -p:].reshape(-1, 3),
+        rgb[-p:, :p].reshape(-1, 3), rgb[-p:, -p:].reshape(-1, 3),
+    ])
+    bg = np.median(corners, axis=0)
+    dist = np.abs(rgb - bg).sum(axis=2)
+    bgish = dist < hi
+    lab, _ = ndimage.label(bgish)
+    border = set(lab[0]) | set(lab[-1]) | set(lab[:, 0]) | set(lab[:, -1])
+    border.discard(0)
+    flood = np.isin(lab, list(border)) if border else np.zeros_like(bgish)
+    # flood 连通区（画布 + baked 投影渐变）：alpha 随色距渐升——纸底→0、
+    # 投影→半透明暗影（贴 badge 色块后呈自然 drop shadow），封顶 150 防
+    # 深影变实心；非连通（tile 面与内部）恒不透明。
+    out = tile.copy()
+    out[:, :, 3] = np.where(flood, np.clip(dist - lo, 0, 150).astype(np.uint8), 255)
+    return out, bg
+
+
 def slice_all() -> list[tuple[int, int, int, int]]:
     # 每表各自拟合网格——深表行位与浅表有几 px 偏移（T1 实测：浅表 rect
     # 用于深表会把标签文字切进图块底部）。
@@ -149,10 +179,21 @@ def slice_all() -> list[tuple[int, int, int, int]]:
     (OUT_DIR / "light").mkdir(exist_ok=True)
     (OUT_DIR / "dark").mkdir(exist_ok=True)
     imgs = {t: Image.open(p).convert("RGBA") for t, p in SHEETS.items()}
+    opaque_corners = []
     for i, stem in enumerate(STEMS):
         for theme, img in imgs.items():
             x, y, w, h = rects_by_theme[theme][i]
-            img.crop((x, y, x + w, y + h)).save(OUT_DIR / theme / f"{stem}.png")
+            tile = np.asarray(img.crop((x, y, x + w, y + h))).copy()
+            keyed, bg = key_background(tile)
+            a = keyed[:, :, 3]
+            rgb = tile[:, :, :3].astype(int)
+            tags = ((1, 1, "TL"), (h - 2, 1, "BL"), (1, w - 2, "TR"), (h - 2, w - 2, "BR"))
+            for cy, cx, tag in tags:
+                if a[cy, cx] == 255:
+                    d = int(np.abs(rgb[cy, cx] - bg).sum())
+                    if d >= 28:  # 设计色到角（满幅/不对称 plate）——合法不透明
+                        opaque_corners.append(f"{theme}/{stem}:{tag}")
+            Image.fromarray(keyed).save(OUT_DIR / theme / f"{stem}.png")
     # 蒙太奇预览（上浅下深）供人眼复核
     tw, th = rects_by_theme["light"][0][2], rects_by_theme["light"][0][3]
     pad = 6
@@ -164,15 +205,17 @@ def slice_all() -> list[tuple[int, int, int, int]]:
             canvas.paste(imgs[theme].crop((x, y, x + w, y + h)),
                          (pad + c * (tw + pad), pad + (trow * ROWS + r) * (th + pad)))
     canvas.save(OUT_DIR / "preview.png")
-    mapping = {"_comment": "PLAN-018 桌面图标映射：registry id → 图标 stem；browser 为预留位不入映射", **{i: s for i, s in zip(IDS, STEMS[:27])}}
+    mapping = {"_comment": "PLAN-018 桌面图标映射：registry id → 图标 stem；browser 为预留位不入映射",
+               "_opaque_corners": sorted(opaque_corners),
+               **{i: s for i, s in zip(IDS, STEMS[:27])}}
     MAPPING_PATH.write_text(json.dumps(mapping, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"sliced {len(STEMS)}×2 -> {OUT_DIR}/{{light,dark}}; mapping {len(IDS)} ids; preview -> preview.png")
     return rects_by_theme["light"]
 
 
 def verify() -> None:
-    # 重新拟合网格（每表各自），与源表裁剪逐像素比对（切片烘焙海报底色，
-    # 非透明 PNG，alpha 校验无意义——PLAN-018 T1）。
+    # 重新拟合网格（每表各自），与源表裁剪逐像素比对（RGB 通道；alpha
+    # 通道 PLAN-018-FU1 起单查：四角必须抠穿，防回归退回烘焙白底）。
     imgs = {t: Image.open(p).convert("RGBA") for t, p in SHEETS.items()}
     rects_by_theme = {}
     for theme, path in SHEETS.items():
@@ -180,13 +223,16 @@ def verify() -> None:
         rects_by_theme[theme] = rects_from_grid(*fit_grid(tile_mask(im)))
     ref = None
     problems = []
+    _mp = json.loads(MAPPING_PATH.read_text(encoding="utf-8")) if MAPPING_PATH.is_file() else {}
+    mp_exc = set(_mp.get("_opaque_corners", []))
     for i, stem in enumerate(STEMS):
         for theme, img in imgs.items():
             p = OUT_DIR / theme / f"{stem}.png"
             if not p.is_file():
                 problems.append(f"missing {p}"); continue
             x, y, w, h = rects_by_theme[theme][i]
-            got = np.asarray(Image.open(p).convert("RGB"))
+            got_img = Image.open(p)
+            got = np.asarray(got_img.convert("RGB"))
             want = np.asarray(img.crop((x, y, x + w, y + h)).convert("RGB"))
             if ref is None:
                 ref = (w, h)
@@ -194,6 +240,14 @@ def verify() -> None:
                 problems.append(f"size drift {p}: {got.shape[:2]} vs {(h, w)}"); continue
             if int(np.abs(got - want).sum()) > 0:
                 problems.append(f"pixel drift {p}")
+            if got_img.mode != "RGBA":
+                problems.append(f"not RGBA {p}"); continue
+            al = np.asarray(got_img)[:, :, 3]
+            gw, gh = got_img.size
+            if stem != "browser":  # 预留位不入映射，未接线不查
+                for cx, cy, tag in ((1, 1, "TL"), (gw - 2, 1, "TR"), (1, gh - 2, "BL"), (gw - 2, gh - 2, "BR")):
+                    if al[cy, cx] == 255 and f"{theme}/{stem}:{tag}" not in mp_exc:
+                        problems.append(f"corner not keyed {p} {tag}=opaque"); break
     mp = json.loads(MAPPING_PATH.read_text(encoding="utf-8"))
     ids = [k for k in mp if not k.startswith("_")]
     if sorted(ids) != sorted(IDS):
