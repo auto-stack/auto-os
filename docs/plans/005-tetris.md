@@ -125,6 +125,18 @@ category: "game"  render: "vue"  desktop: "true"  window: "fit"
    守恒：200 = 空格 + 占格 + 当前方块）；
 5. 撞顶 game over 覆盖层（连续硬降至顶，超时轮询）。
 
+Plan 623 完成后，VM 的确定性 golden 使用 AutoUI MCP 的
+`autoui_fixture`，不在 app 中加入调试控件。测试进程需设置
+`AUTOUI_TEST_FIXTURES=1`，先注入 `board/piece/rotation/px/py/pending_lock/phase`
+等已声明字段，再通过 `trigger: {widget: "App", event: "Tick"}` 推进一次
+真实 handler，并等待 `status: "applied"` 回执。merged 启动命令为
+`auto run -r vm --merged`；no-merge 启动命令为
+`auto run -r vm --no-merge`（后端实现默认为 VM，可用 `-B/-F` 覆盖端口，
+不传 `--server vm`，否则 CLI 只启动后端服务而不会进入前端窗口）。同一份
+fixture case JSON 应分别驱动两种 VM，按 `autoui_state` 比较 board/score/lines/
+level/phase/feedback；Rust 轨对同名工具返回 `backend_unsupported`，继续由
+生成 Rust `rules_golden.rs` 覆盖业务规则。
+
 ## 验收标准
 
 1. 双端完整可玩：移动/旋转/软硬降/消行/计分/升级加速/next/暂停/重开/best。
@@ -154,8 +166,8 @@ category: "game"  render: "vue"  desktop: "true"  window: "fit"
   `bind` 全键位 + P 暂停 + next 预览 + best storage。
   验证：`auto run` 键盘流 + best 重开保留
 - [ ] **T6 测试与回写**
-  `tests/desktop_mcp.py` 五断言组（双端）；vm 轨全流程；README 036 行 +
-  SPEC 双端注记。
+  `tests/desktop_mcp.py` 五断言组（双端）；接入 Plan 623 fixture runner
+  驱动 VM merged/no-merge 规则 case；README 036 行 + SPEC 双端注记。
   验证：mcp 双轨绿 + `auto run -r vm` 冒烟
 
 ## 复审记录

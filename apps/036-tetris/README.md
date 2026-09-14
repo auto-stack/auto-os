@@ -13,7 +13,8 @@ $env:AUTO_LANG_ROOT = "D:/autostack/auto-lang"
 auto run --render vue --server rust --no-merge
 
 # VM/Rust 原生轨：可选 HTTP 后端或进程内 merged
-auto run -r vm --server vm --no-merge
+# VM no-merge 的后端实现默认是 VM；不要传 --server vm（该参数会只启动后端服务）
+auto run -r vm --no-merge
 auto run -r vm --merged
 auto run -r rust --server rust --no-merge
 auto run -r rust --merged
