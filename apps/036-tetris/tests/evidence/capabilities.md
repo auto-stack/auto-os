@@ -14,5 +14,5 @@ A `blocked` row is an explicit missing capability or driver, never a pass.
 | `source.api` | `supported` | src/back/api.at and src/back/db.at present |
 | `source.app` | `supported` | src/front/app.at and src/front/tetris_store.at present |
 | `tests.playwright` | `supported` | Playwright package and smoke.spec.ts present |
-| `vm.mcp` | `supported` | MCP endpoint configured: http://127.0.0.1:9271/mcp |
+| `vm.mcp` | `supported` | MCP endpoint configured: http://127.0.0.1:9272/mcp |
 | `vue.generated` | `supported` | gen\front\vue\package.json |

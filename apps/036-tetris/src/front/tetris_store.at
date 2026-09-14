@@ -46,7 +46,7 @@ store TetrisStore {
     msg {
         Init, Start, Tick, Rebuild, Lock, MoveLeft, MoveRight, Rotate,
         SoftDrop, HardDrop, TogglePause, RestartAsk, RestartConfirm,
-        RestartCancel, ShowHelp, CloseHelp, RetrySave
+        RestartCancel, ShowHelp, CloseHelp, RetrySave, Blur
     }
 
     on {
@@ -105,6 +105,15 @@ store TetrisStore {
                 .phase = "playing"
                 .status_label = "进行中"
                 .feedback = "空心轮廓是硬降落点"
+            }
+        }
+
+        .Blur -> {
+            if .phase == "playing" {
+                .phase = "paused"
+                .status_label = "已暂停"
+                .feedback = "窗口失焦，已自动暂停"
+                .elapsed_ms = 0
             }
         }
 

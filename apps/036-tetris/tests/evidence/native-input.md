@@ -18,3 +18,12 @@ full before/after snapshot and event record is in
 
 The same live VM run produced `tests/evidence/vm-ready-modal.png`; the ready
 dialog is centered in the window with a dimmed game surface behind it.
+
+The follow-up probe `tests/native_focus_probe.py` also sends repeated physical
+key-down packets during a 750 ms hold and a distinct key-up. Six packets moved
+the active piece from `px=3` to `px=0`, so the repeat and release path is
+observable. Moving focus to a second visible window now dispatches the opt-in
+`Blur` lifecycle message and leaves the game in `phase="paused"`; focus
+restoration does not resume play. A later physical/MCP `P` control pause is
+idempotent while paused. The exact state record is in
+`tests/evidence/native-focus-repeat-live.json`.

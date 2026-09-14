@@ -4,7 +4,7 @@ widget App {
     msg {
         Init, Start, Tick, MoveLeft, MoveRight, Rotate, SoftDrop, HardDrop,
         TogglePause, RestartAsk, RestartConfirm, RestartCancel, ShowHelp,
-        CloseHelp, RetrySave
+        CloseHelp, RetrySave, Blur
     }
 
     model { var interval int = 20 }
@@ -171,5 +171,9 @@ widget App {
         .ShowHelp -> { store.ShowHelp() }
         .CloseHelp -> { store.CloseHelp() }
         .RetrySave -> { store.RetrySave() }
+        // Native window focus loss is delivered by the VM/Iced session as an
+        // opt-in Blur lifecycle message. Pause immediately and clear the
+        // gravity accumulator; focus restoration never resumes implicitly.
+        .Blur -> { store.Blur() }
     }
 }
