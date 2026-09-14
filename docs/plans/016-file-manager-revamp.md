@@ -626,9 +626,25 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
   popover 网格子树泄漏现象）。
 - **T-18 〔lang〕双击打开**（AC-22）：名列 onclick=选中/ondblclick=打开。
 
+## 9.P2 修复轮 4（用户实机反馈第二批 8 项，2026-09-14）
+
+| # | 反馈 | 根因 | 修复 |
+|---|---|---|---|
+| 1 | "编辑路径"图标钮多余；点地址栏空白应切 input | mouse-area 多子件结构命中不可靠 | 删图标钮；mouse-area 包单行子件重构（空白点击→AddrEdit） |
+| 2 | chevron 掉到按钮下方 | 循环体内条件节点（if !last icon）被 VM 纵向布局 | sep 进 crumb 对象字段，恒渲染 `text c.sep`（末层空串零宽） |
+| 3 | 路径常态显示成按钮状 | 无 bg 类时按钮默认底色透出 | crumbs 改 variant="ghost"（常态透明、hover 显底） |
+| 4 | 双击进不去目录；"选定：xxx"错位 | ondblclick 挂在 button 上（aura dblclick 通路在 mouse-area）；行 id 排序前编号致 files_view[id] 错位 | 整行 mouse-area（onclick 选中/ondblclick 打开/右键菜单）；排序后重编 id |
+| 5 | 右键仅名称区可出菜单、不跟随鼠标 | oncontextmenu 挂名称钮；事件不携带坐标 | oncontextmenu 提升到整行（mouse-area）；菜单行内锚定；鼠标精确跟随 = F-3 框架债 |
+| 6 | 名称列单独高亮多余 | 名称钮 hover 底 | 名称去按钮化（纯文本），整行高亮 |
+| 7 | 右键菜单首项应为"打开"（=双击） | 已是 CtxOpen→OpenItem，行级重构后保持 | 复核 |
+| 8 | 选中 + Enter = 双击 | 无键盘面 | actions DSL `shortcut: "Enter"`（弹层打开时守卫跳过） |
+
+（任务并入 T-19 行级交互重构 / T-20 面包屑 r3 / T-21 Enter 打开。）
+
 ## 10.P2 Phase 2 新增 finding
 
 | ID | 事项 | 去向 |
 |---|---|---|
 | F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
 | F-2 | VM popover 在 grid/flex 子树内 closed 态内容泄漏参与布局（实机截图："打开"菜单项内联渲染）——aura popover 布局面 bug，另立框架债 | 框架债 |
+| F-3 | 右键菜单无法精确跟随鼠标：`.at` 事件不携带指针坐标（D-1 同源），popover 仅锚件/坐标态定位 | 框架债（需事件坐标面） |
