@@ -10,6 +10,7 @@ A `blocked` row is an explicit missing capability or driver, never a pass.
 | `gallery.contract` | `blocked` | manifest.tetris: supported — apps.manifest registers tetris<br>pac.desktop-game: supported — pac.at declares category=game and desktop=true<br>gallery.tetris: blocked — tetris is outside gallery scan root (D:\autostack\auto-lang\examples\ui); product app is D:\autostack\.wt\os-005\auto-os\apps\036-tetris<br>gallery.05-games: blocked — no 05-games category in current gallery generator; it falls back to 04-systems |
 | `native.input-driver` | `supported` | tests/native_physical.py can send Windows key-down/key-up, long-press and blur events |
 | `rules.vm-golden` | `supported` | VM rules golden passed: opening/lock + 7x4 rotations + 1..4 line clears on MCP http://127.0.0.1:9292/mcp |
+| `rules.rust-golden` | `supported` | Cargo test: 3 passed (opening/lock, all 7x4 rotations, 1..4 line clears) with explicit writable CARGO_TARGET_DIR |
 | `rust.backend` | `supported` | .cargo-back-target2\debug\app-036-tetris-back.exe |
 | `rust.generated` | `supported` | rust-workspace\036-tetris\src\main.rs |
 | `source.api` | `supported` | src/back/api.at and src/back/db.at present |

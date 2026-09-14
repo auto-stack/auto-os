@@ -2,10 +2,9 @@
 
 `cargo test -p tetris --test rules_golden --no-default-features --features ui-iced`
 
-Rust result on 2026-09-14: **3 passed in the recorded baseline**.  The current
-worktree's Cargo invocation is blocked by the Windows generated-workspace
-target-directory permission error, so it must be rerun in a writable Cargo
-environment before this leg can be marked current.
+Rust result on 2026-09-14: **3 passed**.  The generated workspace was run with
+`CARGO_TARGET_DIR=D:/autostack/auto-os/.target-tetris-rules --offline` so Cargo
+uses a writable target directory outside the plan worktree.
 
 - `opening_and_lock_golden`: deterministic spawn, move, rotate, soft drop,
   hard drop, lock and next-piece transition.
