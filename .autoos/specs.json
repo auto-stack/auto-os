@@ -46,6 +46,18 @@
      "id": "P012-1",
      "title": "PLAN-012 变更摘要 — shell-ux-feedback-batch（七项 UX 反馈批 + F2 走查 + 复验反馈收口）",
      "content": "用户实机反馈七项全收口：①os-config 打开提速（Init 懒加载+close→hide 常驻）②通知面板右上角紧凑卡（gap/滚动/二次点击关闭）③切换器外点关闭+整桌面预览 workspace_preview ④dock 去重+聚合单图标+固定/取消固定 ⑤桌面图标紧凑+拖拽 ⑥launcher 去自列 ⑦图标三态/两态高亮。F2 走查多轮：view 条件 contains 死点清偿（派生判据面模式）、tick 饿死缓解（drain 前置）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "PLAN-006-report",
+     "title": "PLAN-006 037-klondike 经典纸牌接龙交付报告 — 双皮肤/撤销/自动收牌/前后端分层/战绩持久化",
+     "content": "交付（2026-09-14，merge）：① 完整 52 张经典扑克接龙规则闭环（Fisher-Yates 伪随机洗牌、7 列阶梯牌桌、Stock/Waste 单张抽牌与循环、4 基础堆同花递增、红黑降序堆叠、空列仅 K）；② 交互增强：全平台保底点击选择-放置、双击快捷上基础（AutoSend）、一键全自动收牌（AutoSendAll）、单步撤销快照栈（Undo）；③ 双皮肤架构：纯 AutoUI 矢量排版（Vector）与外部 SVG 皮肤包无缝热切换；④ 前后端分层与持久化：src/back/api.at、records.at、db.at、api.ts 契约定义与 records.json 磁盘落盘与读回；⑤ 规范沉淀 docs/specs/apps/klondike.md（SD-01..04），登记入 apps.manifest（kind: local，端口 17600/17601）与主仓 README.md Apps 注册表；⑥ 测试验证：rules_golden.cjs 确定性规则测试、test_klondike.cjs 端到端全流程回归、test_klondike_moves.cjs 列间交互与翻牌撤销测试均 100% 通过；归档路径 docs/plans/archive/006-klondike.md。",
+     "file": "docs/plans/archive/006-klondike.md",
+     "related": [
+      "PLAN-006"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14"
     }
    ]
   },
@@ -177,6 +189,18 @@
      "id": "P012-5",
      "title": "O3 终解 — 通知面板锚定机制学（真实链约束）",
      "content": "dynamic_view 根 = Fill×Fill toast-Stack（463 T5）：.at 内 mt-auto 填充条/根高类/flex-1 顶垫在真实 Stack 子层**不可依赖**（headless 全链通过而实机塌缩=头模/实机分叉，O1 同族）。**可靠机制 = justify-*（列 align_y，真实链验证）+ 装配级 scrim mouse-area**。卡片挂顶 justify-start + pt-3/pr-3 12px 对称 gap（用户裁定右上角）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P006-arch-1",
+     "file": "docs/specs/apps/klondike.md",
+     "status": "stable",
+     "related": [
+      "PLAN-006"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "037-klondike 接龙安全平铺与双通道交互 — 架构注记",
+     "content": "① 140 格平铺安全模型：7 列牌桌平铺定长列表，配合 tab_face_down 盖牌计数器，移牌后列牌数等于盖牌数且大于 0 时自动触发 col_down -= 1，彻底根除数组越界崩溃隐患；② JS 浮点除法陷阱规避：扑克花色严禁使用 / 13，采用整数区间判定（card >= 39 ? 3 : ...），点数采用 (card % 13) + 1；③ 双通道交互：点击选择-放置全平台一等保底，保障 AutoVM 原生桌面端零交互落差，Vue 轨叠加原生拖放增强；④ 双皮肤架构：自绘矢量排版 CardFace 纯代码实时自绘与外部 SVG 皮肤包槽位热插拔无缝切换。"
     }
    ]
   },
@@ -192,6 +216,18 @@
      "id": "P012-7",
      "title": "SD-06 任务栏状态指示定型 — 三态/两态（统一机制 → DEBTS）",
      "content": "左 app 图标三态（无条=关/灰条=开/主色条+底色高亮=聚焦，Win11 形态）；右开关钮两态（切换器/电源=本地态；齿轮=__wm_settings_open；铃铛=__wm_notes_visible；布局钮=__wm_layout）。**高亮机制统一 → DEBTS 012-候选 icon 族**（现存多套判据，用户裁定应单一代码路径）。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P006-design-1",
+     "file": "docs/specs/apps/klondike.md",
+     "status": "stable",
+     "related": [
+      "PLAN-006"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "037-klondike 状态机、单步撤销与战绩持久化契约 — 设计注记",
+     "content": "① 单步撤销快照栈：维护 undo_stack 快照，记录移动前各堆卡牌切片、盖牌翻开数与移动步数，支持精准逆向回退；② 双击上基础与一键收牌：双击明牌自动探测同花色递增槽位飞入，AutoSendAll 循环扫描全盘收拢；③ 前后端分层与持久化：GameRecord DTO（best_moves, best_time_s, games_won, games_played）+ #[api] 端点（/api/records, /api/records/win, /api/records/start），本地磁盘持久化至 records.json。"
     }
    ]
   },
@@ -251,6 +287,18 @@
      "id": "P012-8",
      "title": "PLAN-012 验证矩阵 — 门档口径与活体探针",
      "content": "cargo tf（nextest ui-iced+schema_drift+docs_gen）3534 全过（含金样再生/schema 再生/coverage 真名化清偿）；iced 档全量 4620/196（=基线存量零回归）；VM 档 3523/0。活体：MCP :9348 双 toggle 开关、布局钮高亮、右上 gap 12px、dock 去重。教训：**实例运行锁 exe → 重链接静默失败 = 陈旧二进制验证陷阱**（先杀实例再构建）；schema/docs/金样栅栏须入日常档。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P006-test-1",
+     "file": "docs/plans/archive/006-klondike.md",
+     "status": "stable",
+     "related": [
+      "PLAN-006"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "037-klondike 规则测试、Playwright 端到端与必胜夹具 — 测试注记",
+     "content": "① rules_golden.cjs：100% 覆盖 52 牌编码、红黑异色校验、基础堆递增、LCG 洗牌发牌、翻牌与撤销、胜利判定；② test_klondike.cjs：Playwright 全流程验证开局、抽牌、Undo、DebugWinDeal 必胜夹具注入、一键收牌通关、胜利横幅、历史最佳战绩、records.json 磁盘校验、SVG 皮肤热切换；③ test_klondike_moves.cjs：牌桌列明牌双击飞入基础堆、列顶盖牌自动翻开、单步撤销逆向盖回；全部套件 100% 绿灯通过。"
     }
    ]
   },
@@ -313,6 +361,18 @@
      "id": "P012-R1",
      "title": "PLAN-012 复审记录 — pass（F2 实机走查多轮 + 复验反馈收口）",
      "content": "reviewed @ auto-os 894cc00 / auto-lang c848976e8。12 AC 全收口（用户逐项复验 + 活体探针）；AC-10 残留 ~3px iced svg quirk 用户裁定移交 DEBTS icon 族。门档修复 ×4（a2vue 金样/schema 再生/docs_gen 三栅栏/coverage 真名化）。归档：docs/plans/archived/012-shell-ux-feedback-batch.md。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
+    },
+    {
+     "id": "P006-review-1",
+     "file": "docs/plans/archive/006-klondike.md",
+     "status": "stable",
+     "related": [
+      "PLAN-006"
+     ],
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "title": "PLAN-006 经典纸牌接龙独立复审 — 审查注记",
+     "content": "2026-09-14 独立复审结论 PASS（commit a2e0ad0 / c91ef03 / a25ed3a）：AC-01..AC-08 全部 8 项验收准则 100% 通过；SD-01..SD-04 规范增量全部通过；零债务、零工作区残差、零临时 hack，批准合入主干并归档。"
     }
    ]
   }

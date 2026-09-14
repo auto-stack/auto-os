@@ -41,6 +41,14 @@
       "ports": [17400, 17401],
       "status": "active",
       "added": "2026-09-12"
+    },
+    {
+      "id": "037-klondike",
+      "repo": "apps/037-klondike",
+      "kind": "local",
+      "ports": [17600, 17601],
+      "status": "active",
+      "added": "2026-09-14"
     }
   ]
 }

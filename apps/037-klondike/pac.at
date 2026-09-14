@@ -1,0 +1,14 @@
+name: "klondike"
+version: "1.0.0"
+scene: "ui"
+render: "vue"
+icon: "layers"
+title: "Klondike"
+title_zh: "纸牌接龙"
+theme: "dark"
+accent: "indigo"
+front_port: 17600
+back_port: 17601
+window: "fit"
+desktop: "true"
+category: "game"

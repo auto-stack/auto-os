@@ -1,0 +1,574 @@
+use klondike_store: KlondikeStore
+
+widget App {
+    msg {
+        Init,
+        NewGame,
+        DebugWinDeal,
+        SetSkinVector,
+        SetSkinSvg,
+        ClickStock,
+        ClickWaste,
+        ClickFoundation(int),
+        ClickColCard(int, int),
+        ClickEmptyCol(int),
+        AutoSendWaste,
+        AutoSendCol(int),
+        AutoSendAll,
+        Undo,
+        Tick
+    }
+
+    model {
+        var interval int = 1000
+    }
+
+    view {
+        col {
+            style: "min-h-screen bg-slate-950 text-slate-100 p-5 gap-5 select-none"
+
+            // 顶栏：标题、用时/步数、控制按钮与皮肤切换
+            row {
+                style: "items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex-wrap gap-4"
+                row {
+                    style: "items-center gap-3"
+                    icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
+                    col {
+                        text "AutoOS 纸牌接龙 (Klondike Solitaire)" { style: "text-lg font-bold text-slate-100" }
+                        text "双通道交互 · 52张标准接龙 · 自动收牌与单步撤销" { style: "text-xs text-slate-400" }
+                    }
+                }
+
+                // 状态指标：用时 & 步数 & 最佳纪录
+                row {
+                    style: "items-center gap-6 bg-slate-950/60 border border-slate-800 rounded-lg px-4 py-1.5"
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
+                        text "用时: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
+                    }
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
+                        text "步数: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
+                    }
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
+                        text "最佳: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
+                    }
+                }
+
+                // 操作按钮组
+                row {
+                    style: "items-center gap-2"
+                    button "撤销 (Undo)" {
+                        onclick: .Undo
+                        class: .store.undo_btn_class
+                    }
+                    button "自动收牌 (Auto)" {
+                        onclick: .AutoSendAll
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
+                    }
+                    button "新对局" {
+                        onclick: .NewGame
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
+                    }
+                    button "必胜测试" {
+                        onclick: .DebugWinDeal
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+                    }
+                }
+
+                // 皮肤包切换
+                row {
+                    style: "items-center gap-2"
+                    button "自绘矢量 (Vector)" {
+                        onclick: .SetSkinVector
+                        class: .store.btn_vector_class
+                    }
+                    button "SVG皮肤包" {
+                        onclick: .SetSkinSvg
+                        class: .store.btn_svg_class
+                    }
+                }
+            }
+
+            // 胜利结算横幅 (仅在获胜时展示)
+            if .store.game_state == "won" {
+                col {
+                    style: "bg-emerald-900/90 border-2 border-emerald-400 rounded-2xl p-6 items-center justify-center gap-3 shadow-2xl text-center"
+                    text "🏆 恭喜通关！所有 52 张纸牌已集齐归位！" { style: "text-2xl font-bold text-amber-300" }
+                    text "完赛耗时: " + .store.timer_label + "  |  总用步数: " + .store.moves_label { style: "text-sm text-emerald-100 font-mono" }
+                    text "历史最佳: " + .store.best_record_label + "  |  累计胜场: " + .store.games_won_label + " 局" { style: "text-xs text-amber-200 font-mono" }
+                    button "开启新对局 (Play Again)" {
+                        onclick: .NewGame
+                        class: "mt-2 px-6 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg cursor-pointer text-sm"
+                    }
+                }
+            }
+
+            // 主牌桌：祖母绿毛毡绿桌背景
+            col {
+                style: "bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-6 gap-6 shadow-2xl flex-1"
+
+                // 顶排：发牌堆/弃牌堆 (左) + 4 基础堆 (右)
+                row {
+                    style: "items-start justify-between"
+
+                    // 左侧：发牌堆与弃牌堆
+                    row {
+                        style: "gap-4 items-center"
+
+                        // 发牌堆 (Stock)
+                        button {
+                            onclick: .ClickStock
+                            style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                            col {
+                                if .store.stock_count > 0 {
+                                    col {
+                                        style: "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative cursor-pointer select-none"
+                                        col {
+                                            style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/50"
+                                            icon (name: "layers", class: "w-6 h-6 text-indigo-200") {}
+                                        }
+                                        text .store.stock_count_label {
+                                            style: "absolute bottom-1 right-1.5 text-[10px] font-mono font-bold bg-black/60 text-white rounded px-1.5 py-0.5"
+                                        }
+                                    }
+                                }
+                                if .store.stock_count == 0 {
+                                    col {
+                                        style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/40 bg-emerald-950/20 items-center justify-center relative cursor-pointer select-none"
+                                        icon (name: "refresh-cw", class: "w-6 h-6 text-emerald-400/60") {}
+                                        text "循环发牌" { style: "text-[9px] text-emerald-400/60 font-medium mt-1" }
+                                    }
+                                }
+                            }
+                        }
+
+                        // 弃牌堆 (Waste)
+                        if .store.has_waste {
+                            button {
+                                onclick: .ClickWaste
+                                ondblclick: .AutoSendWaste
+                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                col {
+                                    class: .store.waste_card.card_class
+                                    CardFace (
+                                        rank: .store.waste_card.rank,
+                                        rank_text: .store.waste_card.rank_text,
+                                        suit: .store.waste_card.suit,
+                                        color_class: .store.waste_card.color_class,
+                                        is_court: .store.waste_card.is_court,
+                                        court_badge: .store.waste_card.court_badge,
+                                        is_face_down: false,
+                                        skin_mode: .store.skin_mode,
+                                        svg_src: .store.waste_card.svg_src
+                                    ) {}
+                                }
+                            }
+                        }
+                        if !.store.has_waste {
+                            col {
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/20 bg-emerald-950/10 items-center justify-center"
+                                text "弃牌堆" { style: "text-[10px] text-emerald-600/40" }
+                            }
+                        }
+                    }
+
+                    // 右侧：4 个基础堆 (Foundations ♠, ♥, ♦, ♣)
+                    row {
+                        style: "gap-3 items-center"
+                        for slot in .store.foundation_slots {
+                            button {
+                                key: slot.idx
+                                onclick: .ClickFoundation(slot.idx)
+                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                col {
+                                    class: slot.slot_class
+                                    if slot.has_card {
+                                        CardFace (
+                                            rank: slot.rank,
+                                            rank_text: slot.rank_text,
+                                            suit: slot.suit,
+                                            color_class: slot.color_class,
+                                            is_court: slot.is_court,
+                                            court_badge: slot.court_badge,
+                                            is_face_down: false,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: slot.svg_src
+                                        ) {}
+                                    }
+                                    if !slot.has_card {
+                                        col {
+                                            style: "w-full h-full items-center justify-center opacity-25 text-slate-400 pointer-events-none"
+                                            CardSuit (suit: slot.suit, style: "w-8 h-8") {}
+                                            text slot.suit_name { style: "text-[9px] mt-1 text-emerald-400 font-medium" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 底排：7 列牌桌 (Tableau)
+                row {
+                    style: "gap-4 items-start justify-center pt-2 min-h-[380px]"
+
+                    // 列 0
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col0.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(0)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col0.len() > 0 {
+                            for card in .store.col0 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(0, card.idx)
+                                        ondblclick: .AutoSendCol(0)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 1
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col1.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(1)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col1.len() > 0 {
+                            for card in .store.col1 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(1, card.idx)
+                                        ondblclick: .AutoSendCol(1)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 2
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col2.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(2)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col2.len() > 0 {
+                            for card in .store.col2 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(2, card.idx)
+                                        ondblclick: .AutoSendCol(2)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 3
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col3.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(3)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col3.len() > 0 {
+                            for card in .store.col3 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(3, card.idx)
+                                        ondblclick: .AutoSendCol(3)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 4
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col4.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(4)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col4.len() > 0 {
+                            for card in .store.col4 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(4, card.idx)
+                                        ondblclick: .AutoSendCol(4)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 5
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col5.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(5)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col5.len() > 0 {
+                            for card in .store.col5 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(5, card.idx)
+                                        ondblclick: .AutoSendCol(5)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 6
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col6.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(6)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col6.len() > 0 {
+                            for card in .store.col6 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(6, card.idx)
+                                        ondblclick: .AutoSendCol(6)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 附带区域：典型牌面自绘与外部皮肤展台 (Gallery Showcase)
+            col {
+                style: "bg-slate-900/60 border border-slate-800 rounded-xl p-4 gap-3 shadow-sm"
+                row {
+                    style: "items-center justify-between"
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "sparkles", class: "w-4 h-4 text-amber-400") {}
+                        text "牌面设计与皮肤规范展台 (Showcase)" { style: "text-xs font-semibold text-slate-300" }
+                        text "（供卡牌视觉对齐与 SVG 素材包热插拔比对）" { style: "text-[10px] text-slate-400" }
+                    }
+                }
+
+                row {
+                    style: "gap-3 items-center flex-wrap pt-1"
+                    for scard in .store.showcase_cards {
+                        col {
+                            class: scard.card_class
+                            CardFace (
+                                rank: scard.rank,
+                                rank_text: scard.rank_text,
+                                suit: scard.suit,
+                                color_class: scard.color_class,
+                                is_court: scard.is_court,
+                                court_badge: scard.court_badge,
+                                is_face_down: scard.is_face_down,
+                                skin_mode: .store.skin_mode,
+                                svg_src: scard.svg_src
+                            ) {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    on {
+        .Init -> {
+            store.Init()
+        }
+
+        .NewGame -> {
+            store.NewGame()
+        }
+
+        .DebugWinDeal -> {
+            store.DebugWinDeal()
+        }
+
+        .SetSkinVector -> {
+            store.SetSkinMode("vector")
+        }
+
+        .SetSkinSvg -> {
+            store.SetSkinMode("svg")
+        }
+
+        .ClickStock -> {
+            store.ClickStock()
+        }
+
+        .ClickWaste -> {
+            store.ClickWaste()
+        }
+
+        .ClickFoundation(f_idx) -> {
+            store.ClickFoundation(f_idx)
+        }
+
+        .ClickColCard(col_idx, card_idx) -> {
+            store.ClickColCard(col_idx, card_idx)
+        }
+
+        .ClickEmptyCol(col_idx) -> {
+            store.ClickEmptyCol(col_idx)
+        }
+
+        .AutoSendWaste -> {
+            store.AutoSendCard("waste", 0)
+        }
+
+        .AutoSendCol(col_idx) -> {
+            store.AutoSendCard("col", col_idx)
+        }
+
+        .AutoSendAll -> {
+            store.AutoSendAll()
+        }
+
+        .Undo -> {
+            store.Undo()
+        }
+
+        .Tick -> {
+            store.Tick()
+        }
+    }
+}

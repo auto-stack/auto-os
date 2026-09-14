@@ -1,0 +1,15 @@
+// src/back/db.at — Klondike database delegation layer
+use api: GameRecord
+use records
+
+pub fn get_records() GameRecord {
+    return records.get_records()
+}
+
+pub fn record_win(moves: int, time_s: int) GameRecord {
+    return records.record_win(moves, time_s)
+}
+
+pub fn record_start() GameRecord {
+    return records.record_start()
+}

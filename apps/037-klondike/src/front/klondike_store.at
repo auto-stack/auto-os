@@ -1,0 +1,1255 @@
+store KlondikeStore {
+    model {
+        var skin_mode str = "vector"
+        var skin_label str = "自绘矢量排版 (Vector)"
+        var btn_vector_class str = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm"
+        var btn_svg_class str = "px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+
+        var seed int = 12345
+        var stock_cards = []
+        var waste_cards = []
+        var col0_cards = []
+        var col1_cards = []
+        var col2_cards = []
+        var col3_cards = []
+        var col4_cards = []
+        var col5_cards = []
+        var col6_cards = []
+        var col0_down int = 0
+        var col1_down int = 1
+        var col2_down int = 2
+        var col3_down int = 3
+        var col4_down int = 4
+        var col5_down int = 5
+        var col6_down int = 6
+        var f0_cards = []
+        var f1_cards = []
+        var f2_cards = []
+        var f3_cards = []
+
+        var sel_source str = ""
+        var sel_col int = 0
+        var sel_idx int = 0
+        var selected_card_id int = 0
+
+        var moves int = 0
+        var moves_label str = "0 步"
+        var timer_s int = 0
+        var timer_m int = 0
+        var timer_label str = "00:00"
+        var game_state str = "playing"
+
+        var best_moves int = 0
+        var best_time_s int = 0
+        var best_record_label str = "--"
+        var games_won int = 0
+        var games_won_label str = "0"
+        var games_played int = 1
+        var games_played_label str = "1"
+
+        var undo_stack = []
+        var can_undo bool = false
+        var undo_btn_class str = "px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-500 cursor-not-allowed opacity-50"
+
+        var stock_count int = 24
+        var stock_count_label str = "24"
+        var has_waste bool = false
+        var waste_card = {
+            id: 0,
+            rank: 0,
+            rank_text: "",
+            suit: "",
+            color_class: "",
+            is_court: false,
+            court_badge: "",
+            is_face_down: false,
+            is_selected: false,
+            card_class: "",
+            svg_src: ""
+        }
+
+        var foundation_slots = []
+        var col0 = []
+        var col1 = []
+        var col2 = []
+        var col3 = []
+        var col4 = []
+        var col5 = []
+        var col6 = []
+        var showcase_cards = []
+    }
+
+    msg {
+        Init,
+        NewGame,
+        NewGameWithSeed(int),
+        DebugWinDeal,
+        SetSkinMode(str),
+        ClickStock,
+        ClickWaste,
+        ClickFoundation(int),
+        ClickColCard(int, int),
+        ClickEmptyCol(int),
+        AutoSendCard(str, int),
+        AutoSendAll,
+        Undo,
+        Tick,
+        RebuildCards,
+        PushUndoSnapshot,
+        ClearSelection,
+        RecordWin
+    }
+
+    on {
+        .Init -> {
+            .skin_mode = "vector"
+            .NewGameWithSeed(12345)
+        }
+
+        .NewGame -> {
+            var next_seed int = (.seed * 37 + 101) % 997
+            if next_seed < 0 {
+                next_seed = next_seed + 997
+            }
+            .NewGameWithSeed(next_seed)
+        }
+
+        .NewGameWithSeed(s) -> {
+            .seed = s
+            .moves = 0
+            .moves_label = "0 步"
+            .timer_s = 0
+            .timer_m = 0
+            .timer_label = "00:00"
+            .game_state = "playing"
+            .undo_stack = []
+            .can_undo = false
+            .undo_btn_class = "px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-500 cursor-not-allowed opacity-50"
+            .ClearSelection()
+
+            // 1. 初始化 52 张标准牌
+            var deck = []
+            var i int = 0
+            for i < 52 {
+                deck.push(i)
+                i = i + 1
+            }
+
+            // 2. Fisher-Yates 伪随机洗牌 (确定性 LCG，防止 i32 溢出)
+            var cur_s int = .seed
+            var k int = 51
+            for k > 0 {
+                cur_s = (cur_s * 37 + 101) % 997
+                if cur_s < 0 {
+                    cur_s = cur_s + 997
+                }
+                var j int = cur_s % (k + 1)
+                var tmp int = deck[k]
+                deck[k] = deck[j]
+                deck[j] = tmp
+                k = k - 1
+            }
+            .seed = cur_s
+
+            // 3. 发牌至 7 列 Tableau (共 28 张，阶梯发牌)
+            .col0_cards = [deck[0]]
+            .col0_down = 0
+
+            .col1_cards = [deck[1], deck[2]]
+            .col1_down = 1
+
+            .col2_cards = [deck[3], deck[4], deck[5]]
+            .col2_down = 2
+
+            .col3_cards = [deck[6], deck[7], deck[8], deck[9]]
+            .col3_down = 3
+
+            .col4_cards = [deck[10], deck[11], deck[12], deck[13], deck[14]]
+            .col4_down = 4
+
+            .col5_cards = [deck[15], deck[16], deck[17], deck[18], deck[19], deck[20]]
+            .col5_down = 5
+
+            .col6_cards = [deck[21], deck[22], deck[23], deck[24], deck[25], deck[26], deck[27]]
+            .col6_down = 6
+
+            // 4. 剩余 24 张进入发牌堆 Stock
+            .stock_cards = []
+            var idx int = 28
+            for idx < 52 {
+                .stock_cards.push(deck[idx])
+                idx = idx + 1
+            }
+
+            .waste_cards = []
+            .f0_cards = []
+            .f1_cards = []
+            .f2_cards = []
+            .f3_cards = []
+
+            .RebuildCards()
+        }
+
+        .DebugWinDeal -> {
+            // 专为自动化测试预留的必胜测试桩：
+            // 4 个基础堆各放 12 张牌 (A..Q)
+            // 牌桌前 4 列各放 1 张 K
+            // 双击或点击自动收牌即可在 4 步内通关！
+            .moves = 48
+            .moves_label = "48 步"
+            .timer_s = 0
+            .timer_m = 2
+            .timer_label = "02:00"
+            .game_state = "playing"
+            .undo_stack = []
+            .can_undo = false
+            .undo_btn_class = "px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-500 cursor-not-allowed opacity-50"
+            .ClearSelection()
+
+            .stock_cards = []
+            .waste_cards = []
+
+            // 黑桃 ♠ A..Q (0..11)
+            .f0_cards = []
+            var i0 int = 0
+            for i0 < 12 {
+                .f0_cards.push(i0)
+                i0 = i0 + 1
+            }
+
+            // 红桃 ♥ A..Q (13..24)
+            .f1_cards = []
+            var i1 int = 13
+            for i1 < 25 {
+                .f1_cards.push(i1)
+                i1 = i1 + 1
+            }
+
+            // 方块 ♦ A..Q (26..37)
+            .f2_cards = []
+            var i2 int = 26
+            for i2 < 38 {
+                .f2_cards.push(i2)
+                i2 = i2 + 1
+            }
+
+            // 梅花 ♣ A..Q (39..50)
+            .f3_cards = []
+            var i3 int = 39
+            for i3 < 51 {
+                .f3_cards.push(i3)
+                i3 = i3 + 1
+            }
+
+            // 牌桌放置 4 张 K：黑桃 K(12), 红桃 K(25), 方块 K(38), 梅花 K(51)
+            .col0_cards = [12]
+            .col0_down = 0
+
+            .col1_cards = [25]
+            .col1_down = 0
+
+            .col2_cards = [38]
+            .col2_down = 0
+
+            .col3_cards = [51]
+            .col3_down = 0
+
+            .col4_cards = []
+            .col4_down = 0
+
+            .col5_cards = []
+            .col5_down = 0
+
+            .col6_cards = []
+            .col6_down = 0
+
+            .RebuildCards()
+        }
+
+        .SetSkinMode(mode) -> {
+            .skin_mode = mode
+            if mode == "vector" {
+                .skin_label = "自绘矢量排版 (Vector)"
+                .btn_vector_class = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm"
+                .btn_svg_class = "px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+            } else {
+                .skin_label = "外部 SVG 素材包 (SVG Skin)"
+                .btn_vector_class = "px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+                .btn_svg_class = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm"
+            }
+            .RebuildCards()
+        }
+
+        .ClearSelection -> {
+            .sel_source = ""
+            .sel_col = 0
+            .sel_idx = 0
+            .selected_card_id = 999
+        }
+
+        .PushUndoSnapshot -> {
+            var sc = []
+            for item in .stock_cards { sc.push(item) }
+            var wc = []
+            for item in .waste_cards { wc.push(item) }
+            var c0 = []
+            for item in .col0_cards { c0.push(item) }
+            var c1 = []
+            for item in .col1_cards { c1.push(item) }
+            var c2 = []
+            for item in .col2_cards { c2.push(item) }
+            var c3 = []
+            for item in .col3_cards { c3.push(item) }
+            var c4 = []
+            for item in .col4_cards { c4.push(item) }
+            var c5 = []
+            for item in .col5_cards { c5.push(item) }
+            var c6 = []
+            for item in .col6_cards { c6.push(item) }
+            var f0 = []
+            for item in .f0_cards { f0.push(item) }
+            var f1 = []
+            for item in .f1_cards { f1.push(item) }
+            var f2 = []
+            for item in .f2_cards { f2.push(item) }
+            var f3 = []
+            for item in .f3_cards { f3.push(item) }
+
+            .undo_stack.push({
+                stock: sc,
+                waste: wc,
+                c0: c0,
+                c1: c1,
+                c2: c2,
+                c3: c3,
+                c4: c4,
+                c5: c5,
+                c6: c6,
+                d0: .col0_down,
+                d1: .col1_down,
+                d2: .col2_down,
+                d3: .col3_down,
+                d4: .col4_down,
+                d5: .col5_down,
+                d6: .col6_down,
+                f0: f0,
+                f1: f1,
+                f2: f2,
+                f3: f3,
+                moves: .moves
+            })
+            .can_undo = true
+            .undo_btn_class = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700 cursor-pointer shadow-sm"
+        }
+
+        .Undo -> {
+            if .undo_stack.len() == 0 {
+                return
+            }
+            var snap = .undo_stack.pop()
+            .stock_cards = snap.stock
+            .waste_cards = snap.waste
+            .col0_cards = snap.c0
+            .col1_cards = snap.c1
+            .col2_cards = snap.c2
+            .col3_cards = snap.c3
+            .col4_cards = snap.c4
+            .col5_cards = snap.c5
+            .col6_cards = snap.c6
+            .col0_down = snap.d0
+            .col1_down = snap.d1
+            .col2_down = snap.d2
+            .col3_down = snap.d3
+            .col4_down = snap.d4
+            .col5_down = snap.d5
+            .col6_down = snap.d6
+            .f0_cards = snap.f0
+            .f1_cards = snap.f1
+            .f2_cards = snap.f2
+            .f3_cards = snap.f3
+            .moves = snap.moves
+            .moves_label = .moves.to_string() + " 步"
+            .ClearSelection()
+
+            if .undo_stack.len() == 0 {
+                .can_undo = false
+                .undo_btn_class = "px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-700 text-slate-500 cursor-not-allowed opacity-50"
+            }
+            .RebuildCards()
+        }
+
+        .ClickStock -> {
+            if .stock_cards.len() > 0 {
+                .PushUndoSnapshot()
+                var c int = .stock_cards.pop()
+                .waste_cards.push(c)
+                .moves = .moves + 1
+                .moves_label = .moves.to_string() + " 步"
+            } else {
+                if .waste_cards.len() > 0 {
+                    .PushUndoSnapshot()
+                    for .waste_cards.len() > 0 {
+                        var card_back int = .waste_cards.pop()
+                        .stock_cards.push(card_back)
+                    }
+                    .moves = .moves + 1
+                    .moves_label = .moves.to_string() + " 步"
+                }
+            }
+            .ClearSelection()
+            .RebuildCards()
+        }
+
+        .ClickWaste -> {
+            if .waste_cards.len() == 0 {
+                return
+            }
+            if .sel_source == "waste" {
+                .ClearSelection()
+            } else {
+                .sel_source = "waste"
+                .sel_col = 0
+                .sel_idx = .waste_cards.len() - 1
+                .selected_card_id = .waste_cards[.waste_cards.len() - 1]
+            }
+            .RebuildCards()
+        }
+
+        .ClickFoundation(f_idx) -> {
+            // Case 1: 已有选中卡牌，尝试移动到 Foundation[f_idx]
+            if .sel_source != "" {
+                var moving_card int = 999
+                var is_single bool = false
+
+                if .sel_source == "waste" {
+                    if .waste_cards.len() > 0 {
+                        moving_card = .waste_cards[.waste_cards.len() - 1]
+                        is_single = true
+                    }
+                }
+                if .sel_source == "col" {
+                    var col_len int = 0
+                    if .sel_col == 0 { col_len = .col0_cards.len() }
+                    if .sel_col == 1 { col_len = .col1_cards.len() }
+                    if .sel_col == 2 { col_len = .col2_cards.len() }
+                    if .sel_col == 3 { col_len = .col3_cards.len() }
+                    if .sel_col == 4 { col_len = .col4_cards.len() }
+                    if .sel_col == 5 { col_len = .col5_cards.len() }
+                    if .sel_col == 6 { col_len = .col6_cards.len() }
+
+                    // 只有顶牌单张可以进基础堆
+                    if .sel_idx == col_len - 1 {
+                        if .sel_col == 0 { moving_card = .col0_cards[.sel_idx] }
+                        if .sel_col == 1 { moving_card = .col1_cards[.sel_idx] }
+                        if .sel_col == 2 { moving_card = .col2_cards[.sel_idx] }
+                        if .sel_col == 3 { moving_card = .col3_cards[.sel_idx] }
+                        if .sel_col == 4 { moving_card = .col4_cards[.sel_idx] }
+                        if .sel_col == 5 { moving_card = .col5_cards[.sel_idx] }
+                        if .sel_col == 6 { moving_card = .col6_cards[.sel_idx] }
+                        is_single = true
+                    }
+                }
+
+                if is_single && moving_card <= 51 {
+                    var m_suit int = 0
+                    if moving_card >= 39 { m_suit = 3 } else { if moving_card >= 26 { m_suit = 2 } else { if moving_card >= 13 { m_suit = 1 } else { m_suit = 0 } } }
+                    var m_rank int = (moving_card % 13) + 1
+
+                    // 花色必须与基础堆槽位一致 (0:♠, 1:♥, 2:♦, 3:♣)
+                    if m_suit == f_idx {
+                        var f_count int = 0
+                        if f_idx == 0 { f_count = .f0_cards.len() }
+                        if f_idx == 1 { f_count = .f1_cards.len() }
+                        if f_idx == 2 { f_count = .f2_cards.len() }
+                        if f_idx == 3 { f_count = .f3_cards.len() }
+
+                        var valid bool = false
+                        if f_count == 0 && m_rank == 1 {
+                            valid = true
+                        }
+                        if f_count > 0 && m_rank == f_count + 1 {
+                            valid = true
+                        }
+
+                        if valid {
+                            .PushUndoSnapshot()
+                            // 从源中移除
+                            if .sel_source == "waste" {
+                                .waste_cards.pop()
+                            }
+                            if .sel_source == "col" {
+                                if .sel_col == 0 {
+                                    .col0_cards.pop()
+                                    if .col0_cards.len() == .col0_down && .col0_down > 0 { .col0_down = .col0_down - 1 }
+                                }
+                                if .sel_col == 1 {
+                                    .col1_cards.pop()
+                                    if .col1_cards.len() == .col1_down && .col1_down > 0 { .col1_down = .col1_down - 1 }
+                                }
+                                if .sel_col == 2 {
+                                    .col2_cards.pop()
+                                    if .col2_cards.len() == .col2_down && .col2_down > 0 { .col2_down = .col2_down - 1 }
+                                }
+                                if .sel_col == 3 {
+                                    .col3_cards.pop()
+                                    if .col3_cards.len() == .col3_down && .col3_down > 0 { .col3_down = .col3_down - 1 }
+                                }
+                                if .sel_col == 4 {
+                                    .col4_cards.pop()
+                                    if .col4_cards.len() == .col4_down && .col4_down > 0 { .col4_down = .col4_down - 1 }
+                                }
+                                if .sel_col == 5 {
+                                    .col5_cards.pop()
+                                    if .col5_cards.len() == .col5_down && .col5_down > 0 { .col5_down = .col5_down - 1 }
+                                }
+                                if .sel_col == 6 {
+                                    .col6_cards.pop()
+                                    if .col6_cards.len() == .col6_down && .col6_down > 0 { .col6_down = .col6_down - 1 }
+                                }
+                            }
+
+                            // 放入基础堆
+                            if f_idx == 0 { .f0_cards.push(moving_card) }
+                            if f_idx == 1 { .f1_cards.push(moving_card) }
+                            if f_idx == 2 { .f2_cards.push(moving_card) }
+                            if f_idx == 3 { .f3_cards.push(moving_card) }
+
+                            .moves = .moves + 1
+                            .moves_label = .moves.to_string() + " 步"
+                            .ClearSelection()
+
+                            // 胜利判定：4 个基础堆各集齐 13 张
+                            if .f0_cards.len() == 13 && .f1_cards.len() == 13 && .f2_cards.len() == 13 && .f3_cards.len() == 13 {
+                                .RecordWin()
+                            }
+                            .RebuildCards()
+                            return
+                        }
+                    }
+                }
+                .ClearSelection()
+                .RebuildCards()
+                return
+            }
+
+            // Case 2: 无选中卡牌，选择基础堆顶牌（支持回退至牌桌）
+            var f_len int = 0
+            var f_top int = 999
+            if f_idx == 0 { f_len = .f0_cards.len(); if f_len > 0 { f_top = .f0_cards[f_len - 1] } }
+            if f_idx == 1 { f_len = .f1_cards.len(); if f_len > 0 { f_top = .f1_cards[f_len - 1] } }
+            if f_idx == 2 { f_len = .f2_cards.len(); if f_len > 0 { f_top = .f2_cards[f_len - 1] } }
+            if f_idx == 3 { f_len = .f3_cards.len(); if f_len > 0 { f_top = .f3_cards[f_len - 1] } }
+
+            if f_top <= 51 {
+                .sel_source = "foundation"
+                .sel_col = f_idx
+                .sel_idx = f_len - 1
+                .selected_card_id = f_top
+            }
+            .RebuildCards()
+        }
+
+        .ClickColCard(col_idx, card_idx) -> {
+            var col_down int = 0
+            if col_idx == 0 { col_down = .col0_down }
+            if col_idx == 1 { col_down = .col1_down }
+            if col_idx == 2 { col_down = .col2_down }
+            if col_idx == 3 { col_down = .col3_down }
+            if col_idx == 4 { col_down = .col4_down }
+            if col_idx == 5 { col_down = .col5_down }
+            if col_idx == 6 { col_down = .col6_down }
+
+            // 盖牌无法选中
+            if card_idx < col_down {
+                return
+            }
+
+            var card_id int = 0
+            if col_idx == 0 { card_id = .col0_cards[card_idx] }
+            if col_idx == 1 { card_id = .col1_cards[card_idx] }
+            if col_idx == 2 { card_id = .col2_cards[card_idx] }
+            if col_idx == 3 { card_id = .col3_cards[card_idx] }
+            if col_idx == 4 { card_id = .col4_cards[card_idx] }
+            if col_idx == 5 { card_id = .col5_cards[card_idx] }
+            if col_idx == 6 { card_id = .col6_cards[card_idx] }
+
+            // Case 1: 已经有选中牌
+            if .sel_source != "" {
+                // 点击同列已选中的牌：取消选中
+                if .sel_source == "col" && .sel_col == col_idx {
+                    if .sel_idx == card_idx {
+                        .ClearSelection()
+                    } else {
+                        // 换选同列其他明牌
+                        .sel_idx = card_idx
+                        .selected_card_id = card_id
+                    }
+                    .RebuildCards()
+                    return
+                }
+
+                // 尝试放置到 col_idx
+                .ClickEmptyCol(col_idx)
+                return
+            }
+
+            // Case 2: 无选中牌，选中此卡片及上方整段
+            .sel_source = "col"
+            .sel_col = col_idx
+            .sel_idx = card_idx
+            .selected_card_id = card_id
+            .RebuildCards()
+        }
+
+        .ClickEmptyCol(col_idx) -> {
+            if .sel_source == "" {
+                return
+            }
+            if .sel_source == "col" && .sel_col == col_idx {
+                .ClearSelection()
+                .RebuildCards()
+                return
+            }
+
+            // 1. 获取移动根牌
+            var moving_root int = 999
+            if .sel_source == "waste" {
+                if .waste_cards.len() > 0 {
+                    moving_root = .waste_cards[.waste_cards.len() - 1]
+                }
+            }
+            if .sel_source == "foundation" {
+                if .sel_col == 0 && .f0_cards.len() > 0 { moving_root = .f0_cards[.f0_cards.len() - 1] }
+                if .sel_col == 1 && .f1_cards.len() > 0 { moving_root = .f1_cards[.f1_cards.len() - 1] }
+                if .sel_col == 2 && .f2_cards.len() > 0 { moving_root = .f2_cards[.f2_cards.len() - 1] }
+                if .sel_col == 3 && .f3_cards.len() > 0 { moving_root = .f3_cards[.f3_cards.len() - 1] }
+            }
+            if .sel_source == "col" {
+                if .sel_col == 0 { moving_root = .col0_cards[.sel_idx] }
+                if .sel_col == 1 { moving_root = .col1_cards[.sel_idx] }
+                if .sel_col == 2 { moving_root = .col2_cards[.sel_idx] }
+                if .sel_col == 3 { moving_root = .col3_cards[.sel_idx] }
+                if .sel_col == 4 { moving_root = .col4_cards[.sel_idx] }
+                if .sel_col == 5 { moving_root = .col5_cards[.sel_idx] }
+                if .sel_col == 6 { moving_root = .col6_cards[.sel_idx] }
+            }
+
+            if moving_root > 51 {
+                .ClearSelection()
+                .RebuildCards()
+                return
+            }
+
+            var m_suit int = 0
+            if moving_root >= 39 { m_suit = 3 } else { if moving_root >= 26 { m_suit = 2 } else { if moving_root >= 13 { m_suit = 1 } else { m_suit = 0 } } }
+            var m_rank int = (moving_root % 13) + 1
+            var m_is_red bool = (m_suit == 1 || m_suit == 2)
+
+            // 2. 获取目标列顶牌与长度
+            var target_len int = 0
+            var target_top int = 0
+            if col_idx == 0 { target_len = .col0_cards.len(); if target_len > 0 { target_top = .col0_cards[target_len - 1] } }
+            if col_idx == 1 { target_len = .col1_cards.len(); if target_len > 0 { target_top = .col1_cards[target_len - 1] } }
+            if col_idx == 2 { target_len = .col2_cards.len(); if target_len > 0 { target_top = .col2_cards[target_len - 1] } }
+            if col_idx == 3 { target_len = .col3_cards.len(); if target_len > 0 { target_top = .col3_cards[target_len - 1] } }
+            if col_idx == 4 { target_len = .col4_cards.len(); if target_len > 0 { target_top = .col4_cards[target_len - 1] } }
+            if col_idx == 5 { target_len = .col5_cards.len(); if target_len > 0 { target_top = .col5_cards[target_len - 1] } }
+            if col_idx == 6 { target_len = .col6_cards.len(); if target_len > 0 { target_top = .col6_cards[target_len - 1] } }
+
+            // 3. 校验规则：
+            // - 若空列：必须是 K (rank == 13)
+            // - 若非空：必须异色且比顶牌小 1 点 (m_rank == t_rank - 1)
+            var valid bool = false
+            if target_len == 0 {
+                if m_rank == 13 {
+                    valid = true
+                }
+            } else {
+                var t_suit int = 0
+                if target_top >= 39 { t_suit = 3 } else { if target_top >= 26 { t_suit = 2 } else { if target_top >= 13 { t_suit = 1 } else { t_suit = 0 } } }
+                var t_rank int = (target_top % 13) + 1
+                var t_is_red bool = (t_suit == 1 || t_suit == 2)
+
+                if (m_is_red != t_is_red) && (m_rank == t_rank - 1) {
+                    valid = true
+                }
+            }
+
+            if valid {
+                .PushUndoSnapshot()
+
+                // 提取要移动的段
+                var moving_stack = []
+                if .sel_source == "waste" {
+                    moving_stack.push(.waste_cards.pop())
+                }
+                if .sel_source == "foundation" {
+                    if .sel_col == 0 { moving_stack.push(.f0_cards.pop()) }
+                    if .sel_col == 1 { moving_stack.push(.f1_cards.pop()) }
+                    if .sel_col == 2 { moving_stack.push(.f2_cards.pop()) }
+                    if .sel_col == 3 { moving_stack.push(.f3_cards.pop()) }
+                }
+                if .sel_source == "col" {
+                    var s_col int = .sel_col
+                    var s_idx int = .sel_idx
+                    if s_col == 0 {
+                        var k0 int = s_idx
+                        for k0 < .col0_cards.len() { moving_stack.push(.col0_cards[k0]); k0 = k0 + 1 }
+                        for .col0_cards.len() > s_idx { .col0_cards.pop() }
+                        if .col0_cards.len() == .col0_down && .col0_down > 0 { .col0_down = .col0_down - 1 }
+                    }
+                    if s_col == 1 {
+                        var k1 int = s_idx
+                        for k1 < .col1_cards.len() { moving_stack.push(.col1_cards[k1]); k1 = k1 + 1 }
+                        for .col1_cards.len() > s_idx { .col1_cards.pop() }
+                        if .col1_cards.len() == .col1_down && .col1_down > 0 { .col1_down = .col1_down - 1 }
+                    }
+                    if s_col == 2 {
+                        var k2 int = s_idx
+                        for k2 < .col2_cards.len() { moving_stack.push(.col2_cards[k2]); k2 = k2 + 1 }
+                        for .col2_cards.len() > s_idx { .col2_cards.pop() }
+                        if .col2_cards.len() == .col2_down && .col2_down > 0 { .col2_down = .col2_down - 1 }
+                    }
+                    if s_col == 3 {
+                        var k3 int = s_idx
+                        for k3 < .col3_cards.len() { moving_stack.push(.col3_cards[k3]); k3 = k3 + 1 }
+                        for .col3_cards.len() > s_idx { .col3_cards.pop() }
+                        if .col3_cards.len() == .col3_down && .col3_down > 0 { .col3_down = .col3_down - 1 }
+                    }
+                    if s_col == 4 {
+                        var k4 int = s_idx
+                        for k4 < .col4_cards.len() { moving_stack.push(.col4_cards[k4]); k4 = k4 + 1 }
+                        for .col4_cards.len() > s_idx { .col4_cards.pop() }
+                        if .col4_cards.len() == .col4_down && .col4_down > 0 { .col4_down = .col4_down - 1 }
+                    }
+                    if s_col == 5 {
+                        var k5 int = s_idx
+                        for k5 < .col5_cards.len() { moving_stack.push(.col5_cards[k5]); k5 = k5 + 1 }
+                        for .col5_cards.len() > s_idx { .col5_cards.pop() }
+                        if .col5_cards.len() == .col5_down && .col5_down > 0 { .col5_down = .col5_down - 1 }
+                    }
+                    if s_col == 6 {
+                        var k6 int = s_idx
+                        for k6 < .col6_cards.len() { moving_stack.push(.col6_cards[k6]); k6 = k6 + 1 }
+                        for .col6_cards.len() > s_idx { .col6_cards.pop() }
+                        if .col6_cards.len() == .col6_down && .col6_down > 0 { .col6_down = .col6_down - 1 }
+                    }
+                }
+
+                // 压入目标列
+                for c_item in moving_stack {
+                    if col_idx == 0 { .col0_cards.push(c_item) }
+                    if col_idx == 1 { .col1_cards.push(c_item) }
+                    if col_idx == 2 { .col2_cards.push(c_item) }
+                    if col_idx == 3 { .col3_cards.push(c_item) }
+                    if col_idx == 4 { .col4_cards.push(c_item) }
+                    if col_idx == 5 { col_idx == 5; .col5_cards.push(c_item) }
+                    if col_idx == 6 { .col6_cards.push(c_item) }
+                }
+
+                .moves = .moves + 1
+                .moves_label = .moves.to_string() + " 步"
+            }
+
+            .ClearSelection()
+            .RebuildCards()
+        }
+
+        .AutoSendCard(src_type, col_idx) -> {
+            var card int = 999
+            if src_type == "waste" {
+                if .waste_cards.len() > 0 {
+                    card = .waste_cards[.waste_cards.len() - 1]
+                }
+            }
+            if src_type == "col" {
+                var c_len int = 0
+                if col_idx == 0 { c_len = .col0_cards.len(); if c_len > 0 { card = .col0_cards[c_len - 1] } }
+                if col_idx == 1 { c_len = .col1_cards.len(); if c_len > 0 { card = .col1_cards[c_len - 1] } }
+                if col_idx == 2 { c_len = .col2_cards.len(); if c_len > 0 { card = .col2_cards[c_len - 1] } }
+                if col_idx == 3 { c_len = .col3_cards.len(); if c_len > 0 { card = .col3_cards[c_len - 1] } }
+                if col_idx == 4 { c_len = .col4_cards.len(); if c_len > 0 { card = .col4_cards[c_len - 1] } }
+                if col_idx == 5 { c_len = .col5_cards.len(); if c_len > 0 { card = .col5_cards[c_len - 1] } }
+                if col_idx == 6 { c_len = .col6_cards.len(); if c_len > 0 { card = .col6_cards[c_len - 1] } }
+            }
+
+            if card <= 51 {
+                var c_suit int = 0
+                if card >= 39 { c_suit = 3 } else { if card >= 26 { c_suit = 2 } else { if card >= 13 { c_suit = 1 } else { c_suit = 0 } } }
+                var c_rank int = (card % 13) + 1
+                var f_len int = 0
+                if c_suit == 0 { f_len = .f0_cards.len() }
+                if c_suit == 1 { f_len = .f1_cards.len() }
+                if c_suit == 2 { f_len = .f2_cards.len() }
+                if c_suit == 3 { f_len = .f3_cards.len() }
+
+                var can_send bool = false
+                if f_len == 0 && c_rank == 1 {
+                    can_send = true
+                }
+                if f_len > 0 && c_rank == f_len + 1 {
+                    can_send = true
+                }
+
+                if can_send {
+                    .PushUndoSnapshot()
+                    if src_type == "waste" {
+                        .waste_cards.pop()
+                    }
+                    if src_type == "col" {
+                        if col_idx == 0 { .col0_cards.pop(); if .col0_cards.len() == .col0_down && .col0_down > 0 { .col0_down = .col0_down - 1 } }
+                        if col_idx == 1 { .col1_cards.pop(); if .col1_cards.len() == .col1_down && .col1_down > 0 { .col1_down = .col1_down - 1 } }
+                        if col_idx == 2 { .col2_cards.pop(); if .col2_cards.len() == .col2_down && .col2_down > 0 { .col2_down = .col2_down - 1 } }
+                        if col_idx == 3 { .col3_cards.pop(); if .col3_cards.len() == .col3_down && .col3_down > 0 { .col3_down = .col3_down - 1 } }
+                        if col_idx == 4 { .col4_cards.pop(); if .col4_cards.len() == .col4_down && .col4_down > 0 { .col4_down = .col4_down - 1 } }
+                        if col_idx == 5 { .col5_cards.pop(); if .col5_cards.len() == .col5_down && .col5_down > 0 { .col5_down = .col5_down - 1 } }
+                        if col_idx == 6 { .col6_cards.pop(); if .col6_cards.len() == .col6_down && .col6_down > 0 { .col6_down = .col6_down - 1 } }
+                    }
+
+                    if c_suit == 0 { .f0_cards.push(card) }
+                    if c_suit == 1 { .f1_cards.push(card) }
+                    if c_suit == 2 { .f2_cards.push(card) }
+                    if c_suit == 3 { .f3_cards.push(card) }
+
+                    .moves = .moves + 1
+                    .moves_label = .moves.to_string() + " 步"
+                    .ClearSelection()
+
+                    if .f0_cards.len() == 13 && .f1_cards.len() == 13 && .f2_cards.len() == 13 && .f3_cards.len() == 13 {
+                        .RecordWin()
+                    }
+                    .RebuildCards()
+                }
+            }
+        }
+
+        .AutoSendAll -> {
+            // 自动收牌循环：最多扫描 52 轮
+            var loop_idx int = 0
+            var moved_any bool = false
+            for loop_idx < 52 {
+                var made_move bool = false
+
+                // 尝试从弃牌堆上基础
+                if .waste_cards.len() > 0 {
+                    var w_card int = .waste_cards[.waste_cards.len() - 1]
+                    var ws int = 0
+                    if w_card >= 39 { ws = 3 } else { if w_card >= 26 { ws = 2 } else { if w_card >= 13 { ws = 1 } else { ws = 0 } } }
+                    var wr int = (w_card % 13) + 1
+                    var w_flen int = 0
+                    if ws == 0 { w_flen = .f0_cards.len() }
+                    if ws == 1 { w_flen = .f1_cards.len() }
+                    if ws == 2 { w_flen = .f2_cards.len() }
+                    if ws == 3 { w_flen = .f3_cards.len() }
+
+                    if (w_flen == 0 && wr == 1) || (w_flen > 0 && wr == w_flen + 1) {
+                        if !moved_any {
+                            .PushUndoSnapshot()
+                            moved_any = true
+                        }
+                        .waste_cards.pop()
+                        if ws == 0 { .f0_cards.push(w_card) }
+                        if ws == 1 { .f1_cards.push(w_card) }
+                        if ws == 2 { .f2_cards.push(w_card) }
+                        if ws == 3 { .f3_cards.push(w_card) }
+                        made_move = true
+                        .moves = .moves + 1
+                    }
+                }
+
+                // 尝试从 7 列牌桌顶牌上基础
+                var ci int = 0
+                for ci < 7 {
+                    var c_card int = 999
+                    if ci == 0 && .col0_cards.len() > 0 { c_card = .col0_cards[.col0_cards.len() - 1] }
+                    if ci == 1 && .col1_cards.len() > 0 { c_card = .col1_cards[.col1_cards.len() - 1] }
+                    if ci == 2 && .col2_cards.len() > 0 { c_card = .col2_cards[.col2_cards.len() - 1] }
+                    if ci == 3 && .col3_cards.len() > 0 { c_card = .col3_cards[.col3_cards.len() - 1] }
+                    if ci == 4 && .col4_cards.len() > 0 { c_card = .col4_cards[.col4_cards.len() - 1] }
+                    if ci == 5 && .col5_cards.len() > 0 { c_card = .col5_cards[.col5_cards.len() - 1] }
+                    if ci == 6 && .col6_cards.len() > 0 { c_card = .col6_cards[.col6_cards.len() - 1] }
+
+                    if c_card <= 51 {
+                        var cs int = 0
+                        if c_card >= 39 { cs = 3 } else { if c_card >= 26 { cs = 2 } else { if c_card >= 13 { cs = 1 } else { cs = 0 } } }
+                        var cr int = (c_card % 13) + 1
+                        var c_flen int = 0
+                        if cs == 0 { c_flen = .f0_cards.len() }
+                        if cs == 1 { c_flen = .f1_cards.len() }
+                        if cs == 2 { c_flen = .f2_cards.len() }
+                        if cs == 3 { c_flen = .f3_cards.len() }
+
+                        if (c_flen == 0 && cr == 1) || (c_flen > 0 && cr == c_flen + 1) {
+                            if !moved_any {
+                                .PushUndoSnapshot()
+                                moved_any = true
+                            }
+                            if ci == 0 { .col0_cards.pop(); if .col0_cards.len() == .col0_down && .col0_down > 0 { .col0_down = .col0_down - 1 } }
+                            if ci == 1 { .col1_cards.pop(); if .col1_cards.len() == .col1_down && .col1_down > 0 { .col1_down = .col1_down - 1 } }
+                            if ci == 2 { .col2_cards.pop(); if .col2_cards.len() == .col2_down && .col2_down > 0 { .col2_down = .col2_down - 1 } }
+                            if ci == 3 { .col3_cards.pop(); if .col3_cards.len() == .col3_down && .col3_down > 0 { .col3_down = .col3_down - 1 } }
+                            if ci == 4 { .col4_cards.pop(); if .col4_cards.len() == .col4_down && .col4_down > 0 { .col4_down = .col4_down - 1 } }
+                            if ci == 5 { .col5_cards.pop(); if .col5_cards.len() == .col5_down && .col5_down > 0 { .col5_down = .col5_down - 1 } }
+                            if ci == 6 { .col6_cards.pop(); if .col6_cards.len() == .col6_down && .col6_down > 0 { .col6_down = .col6_down - 1 } }
+
+                            if cs == 0 { .f0_cards.push(c_card) }
+                            if cs == 1 { .f1_cards.push(c_card) }
+                            if cs == 2 { .f2_cards.push(c_card) }
+                            if cs == 3 { .f3_cards.push(c_card) }
+                            made_move = true
+                            .moves = .moves + 1
+                        }
+                    }
+                    ci = ci + 1
+                }
+
+                if !made_move {
+                    break
+                }
+                loop_idx = loop_idx + 1
+            }
+
+            if moved_any {
+                .moves_label = .moves.to_string() + " 步"
+                .ClearSelection()
+                if .f0_cards.len() == 13 && .f1_cards.len() == 13 && .f2_cards.len() == 13 && .f3_cards.len() == 13 {
+                    .RecordWin()
+                }
+                .RebuildCards()
+            }
+        }
+
+        .Tick -> {
+            if .game_state == "playing" {
+                .timer_s = .timer_s + 1
+                if .timer_s == 60 {
+                    .timer_s = 0
+                    .timer_m = .timer_m + 1
+                }
+                var mstr str = .timer_m.to_string()
+                if .timer_m < 10 {
+                    mstr = "0" + mstr
+                }
+                var sstr str = .timer_s.to_string()
+                if .timer_s < 10 {
+                    sstr = "0" + sstr
+                }
+                .timer_label = mstr + ":" + sstr
+            }
+        }
+
+        .RecordWin -> {
+            .game_state = "won"
+            .games_won = .games_won + 1
+            .games_won_label = .games_won.to_string()
+            if .best_moves == 0 || .moves < .best_moves {
+                .best_moves = .moves
+            }
+            var cur_time_s int = .timer_m * 60 + .timer_s
+            if .best_time_s == 0 || cur_time_s < .best_time_s {
+                .best_time_s = cur_time_s
+            }
+            .best_record_label = .best_moves.to_string() + " 步 / " + .timer_label
+        }
+
+        .RebuildCards -> {
+            // 1. 发牌堆与弃牌堆状态
+            .stock_count = .stock_cards.len()
+            .stock_count_label = .stock_count.to_string()
+            if .waste_cards.len() > 0 {
+                .has_waste = true
+                var w_id int = .waste_cards[.waste_cards.len() - 1]
+                var w_suit_idx int = 0
+                if w_id >= 39 { w_suit_idx = 3 } else { if w_id >= 26 { w_suit_idx = 2 } else { if w_id >= 13 { w_suit_idx = 1 } else { w_suit_idx = 0 } } }
+                var w_rank int = (w_id % 13) + 1
+                var w_rtext str = w_rank.to_string()
+                if w_rank == 1 { w_rtext = "A" }
+                if w_rank == 11 { w_rtext = "J" }
+                if w_rank == 12 { w_rtext = "Q" }
+                if w_rank == 13 { w_rtext = "K" }
+
+                var w_suit str = "spade"
+                var w_color str = "text-slate-900"
+                if w_suit_idx == 1 { w_suit = "heart"; w_color = "text-red-600" }
+                if w_suit_idx == 2 { w_suit = "diamond"; w_color = "text-red-600" }
+                if w_suit_idx == 3 { w_suit = "club"; w_color = "text-slate-900" }
+
+                var w_badge str = ""
+                if w_rank == 11 { w_badge = "shield" }
+                if w_rank == 12 { w_badge = "sparkles" }
+                if w_rank == 13 { w_badge = "crown" }
+
+                var w_sel bool = (.sel_source == "waste")
+                var w_cclass str = if w_sel {
+                    "w-[76px] h-[106px] rounded-lg bg-white border-2 border-indigo-600 text-slate-900 p-1.5 justify-between shadow-2xl relative cursor-pointer select-none ring-4 ring-indigo-400/60 -translate-y-2 z-30 transition-all"
+                } else {
+                    "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300 hover:shadow-lg transition-shadow"
+                }
+
+                .waste_card = {
+                    id: w_id,
+                    rank: w_rank,
+                    rank_text: w_rtext,
+                    suit: w_suit,
+                    color_class: w_color,
+                    is_court: (w_rank >= 11),
+                    court_badge: w_badge,
+                    is_face_down: false,
+                    is_selected: w_sel,
+                    card_class: w_cclass,
+                    svg_src: "/assets/cards/classic/" + w_rtext + "_" + w_suit + ".svg"
+                }
+            } else {
+                .has_waste = false
+                .waste_card = {
+                    id: 0,
+                    rank: 0,
+                    rank_text: "",
+                    suit: "",
+                    color_class: "",
+                    is_court: false,
+                    court_badge: "",
+                    is_face_down: false,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center relative p-1.5",
+                    svg_src: ""
+                }
+            }
+
+            // 2. 基础堆槽位 (4 堆)
+            var new_slots = []
+            var fi int = 0
+            for fi < 4 {
+                var s_name str = "黑桃"
+                var s_suit str = "spade"
+                if fi == 1 { s_name = "红桃"; s_suit = "heart" }
+                if fi == 2 { s_name = "方块"; s_suit = "diamond" }
+                if fi == 3 { s_name = "梅花"; s_suit = "club" }
+
+                var f_card_cnt int = 0
+                var f_top_id int = 0
+                if fi == 0 { f_card_cnt = .f0_cards.len(); if f_card_cnt > 0 { f_top_id = .f0_cards[f_card_cnt - 1] } }
+                if fi == 1 { f_card_cnt = .f1_cards.len(); if f_card_cnt > 0 { f_top_id = .f1_cards[f_card_cnt - 1] } }
+                if fi == 2 { f_card_cnt = .f2_cards.len(); if f_card_cnt > 0 { f_top_id = .f2_cards[f_card_cnt - 1] } }
+                if fi == 3 { f_card_cnt = .f3_cards.len(); if f_card_cnt > 0 { f_top_id = .f3_cards[f_card_cnt - 1] } }
+
+                if f_card_cnt > 0 {
+                    var f_rank int = f_card_cnt
+                    var f_rtext str = f_rank.to_string()
+                    if f_rank == 1 { f_rtext = "A" }
+                    if f_rank == 11 { f_rtext = "J" }
+                    if f_rank == 12 { f_rtext = "Q" }
+                    if f_rank == 13 { f_rtext = "K" }
+
+                    var f_color str = "text-slate-900"
+                    if fi == 1 || fi == 2 { f_color = "text-red-600" }
+
+                    var f_badge str = ""
+                    if f_rank == 11 { f_badge = "shield" }
+                    if f_rank == 12 { f_badge = "sparkles" }
+                    if f_rank == 13 { f_badge = "crown" }
+
+                    var f_sel bool = (.sel_source == "foundation" && .sel_col == fi)
+                    var f_class str = if f_sel {
+                        "w-[76px] h-[106px] rounded-lg bg-white border-2 border-indigo-600 text-slate-900 p-1.5 justify-between relative shadow-xl ring-4 ring-indigo-400/60 select-none cursor-pointer"
+                    } else {
+                        "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between relative shadow-md select-none cursor-pointer"
+                    }
+
+                    new_slots.push({
+                        idx: fi,
+                        suit_name: s_name,
+                        suit: s_suit,
+                        has_card: true,
+                        rank: f_rank,
+                        rank_text: f_rtext,
+                        color_class: f_color,
+                        is_court: (f_rank >= 11),
+                        court_badge: f_badge,
+                        slot_class: f_class,
+                        svg_src: "/assets/cards/classic/" + f_rtext + "_" + s_suit + ".svg"
+                    })
+                } else {
+                    new_slots.push({
+                        idx: fi,
+                        suit_name: s_name,
+                        suit: s_suit,
+                        has_card: false,
+                        rank: 0,
+                        rank_text: "",
+                        color_class: "",
+                        is_court: false,
+                        court_badge: "",
+                        slot_class: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 items-center justify-center relative p-1.5 cursor-pointer",
+                        svg_src: ""
+                    })
+                }
+                fi = fi + 1
+            }
+            .foundation_slots = new_slots
+
+            // 3. 构建 7 列 Tableau
+            var c_idx int = 0
+            for c_idx < 7 {
+                var raw_list = []
+                var c_down int = 0
+                if c_idx == 0 { raw_list = .col0_cards; c_down = .col0_down }
+                if c_idx == 1 { raw_list = .col1_cards; c_down = .col1_down }
+                if c_idx == 2 { raw_list = .col2_cards; c_down = .col2_down }
+                if c_idx == 3 { raw_list = .col3_cards; c_down = .col3_down }
+                if c_idx == 4 { raw_list = .col4_cards; c_down = .col4_down }
+                if c_idx == 5 { raw_list = .col5_cards; c_down = .col5_down }
+                if c_idx == 6 { raw_list = .col6_cards; c_down = .col6_down }
+
+                var built_col = []
+                var i int = 0
+                for i < raw_list.len() {
+                    var cid int = raw_list[i]
+                    var is_down bool = (i < c_down)
+
+                    var s_idx int = 0
+                    if cid >= 39 { s_idx = 3 } else { if cid >= 26 { s_idx = 2 } else { if cid >= 13 { s_idx = 1 } else { s_idx = 0 } } }
+                    var r_num int = (cid % 13) + 1
+                    var r_txt str = r_num.to_string()
+                    if r_num == 1 { r_txt = "A" }
+                    if r_num == 11 { r_txt = "J" }
+                    if r_num == 12 { r_txt = "Q" }
+                    if r_num == 13 { r_txt = "K" }
+
+                    var s_txt str = "spade"
+                    var clr_txt str = "text-slate-900"
+                    if s_idx == 1 { s_txt = "heart"; clr_txt = "text-red-600" }
+                    if s_idx == 2 { s_txt = "diamond"; clr_txt = "text-red-600" }
+                    if s_idx == 3 { s_txt = "club"; clr_txt = "text-slate-900" }
+
+                    var bdg_txt str = ""
+                    if r_num == 11 { bdg_txt = "shield" }
+                    if r_num == 12 { bdg_txt = "sparkles" }
+                    if r_num == 13 { bdg_txt = "crown" }
+
+                    var is_selected bool = false
+                    if !is_down && .sel_source == "col" && .sel_col == c_idx && i >= .sel_idx {
+                        is_selected = true
+                    }
+
+                    var wrap_str str = ""
+                    if i > 0 {
+                        if i <= c_down {
+                            wrap_str = "-mt-21"
+                        } else {
+                            wrap_str = "-mt-18"
+                        }
+                    }
+
+                    var card_style str = ""
+                    if is_down {
+                        card_style = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative select-none"
+                    } else {
+                        if is_selected {
+                            card_style = "w-[76px] h-[106px] rounded-lg bg-white border-2 border-indigo-600 text-slate-900 p-1.5 justify-between shadow-2xl relative cursor-pointer select-none ring-4 ring-indigo-400/60 -translate-y-2 z-30 transition-all"
+                        } else {
+                            card_style = "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300 hover:shadow-lg transition-shadow"
+                        }
+                    }
+
+                    built_col.push({
+                        id: cid,
+                        col: c_idx,
+                        idx: i,
+                        rank: r_num,
+                        rank_text: r_txt,
+                        suit: s_txt,
+                        color_class: clr_txt,
+                        is_court: (r_num >= 11),
+                        court_badge: bdg_txt,
+                        is_face_down: is_down,
+                        is_selected: is_selected,
+                        wrapper_class: wrap_str,
+                        card_class: card_style,
+                        svg_src: "/assets/cards/classic/" + r_txt + "_" + s_txt + ".svg"
+                    })
+                    i = i + 1
+                }
+
+                if c_idx == 0 { .col0 = built_col }
+                if c_idx == 1 { .col1 = built_col }
+                if c_idx == 2 { .col2 = built_col }
+                if c_idx == 3 { .col3 = built_col }
+                if c_idx == 4 { .col4 = built_col }
+                if c_idx == 5 { .col5 = built_col }
+                if c_idx == 6 { .col6 = built_col }
+
+                c_idx = c_idx + 1
+            }
+
+            // 4. 展台牌面保留 (供视觉规范和皮肤切换校验)
+            .showcase_cards = [
+                {
+                    id: 0,
+                    rank: 1,
+                    rank_text: "A",
+                    suit: "spade",
+                    color_class: "text-slate-900",
+                    is_court: false,
+                    court_badge: "",
+                    is_face_down: false,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300",
+                    svg_src: "/assets/cards/classic/A_spade.svg"
+                },
+                {
+                    id: 25,
+                    rank: 13,
+                    rank_text: "K",
+                    suit: "heart",
+                    color_class: "text-red-600",
+                    is_court: true,
+                    court_badge: "crown",
+                    is_face_down: false,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300",
+                    svg_src: "/assets/cards/classic/K_heart.svg"
+                },
+                {
+                    id: 37,
+                    rank: 12,
+                    rank_text: "Q",
+                    suit: "diamond",
+                    color_class: "text-red-600",
+                    is_court: true,
+                    court_badge: "sparkles",
+                    is_face_down: false,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300",
+                    svg_src: "/assets/cards/classic/Q_diamond.svg"
+                },
+                {
+                    id: 49,
+                    rank: 11,
+                    rank_text: "J",
+                    suit: "club",
+                    color_class: "text-slate-900",
+                    is_court: true,
+                    court_badge: "shield",
+                    is_face_down: false,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg bg-white border border-slate-200 text-slate-900 p-1.5 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300",
+                    svg_src: "/assets/cards/classic/J_club.svg"
+                },
+                {
+                    id: 99,
+                    rank: 0,
+                    rank_text: "",
+                    suit: "",
+                    color_class: "",
+                    is_court: false,
+                    court_badge: "",
+                    is_face_down: true,
+                    is_selected: false,
+                    card_class: "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative cursor-pointer select-none",
+                    svg_src: "/assets/cards/classic/card_back.svg"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,29 @@
+// src/back/api.at — Klondike Game Records API
+// Contract and endpoints for statistics and game records.
+
+pub type GameRecord = {
+    best_moves: int
+    best_time_s: int
+    games_won: int
+    games_played: int
+}
+
+use records
+
+/// GET /api/records — 获取当前历史战绩
+#[api(method = "GET", path = "/api/records")]
+pub fn get_records() GameRecord {
+    return records.get_records()
+}
+
+/// POST /api/records/win — 结算胜利局并刷新最高纪录
+#[api(method = "POST", path = "/api/records/win")]
+pub fn record_win(moves: int, time_s: int) GameRecord {
+    return records.record_win(moves, time_s)
+}
+
+/// POST /api/records/start — 记录新对局开始
+#[api(method = "POST", path = "/api/records/start")]
+pub fn record_start() GameRecord {
+    return records.record_start()
+}

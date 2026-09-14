@@ -1,0 +1,18 @@
+widget CourtBadge (badge: str = "", style: str = "") {
+    view {
+        col {
+            class: .style
+            if .badge == "crown" {
+                icon (name: "crown", style: "w-full h-full") {}
+            } else {
+                if .badge == "sparkles" {
+                    icon (name: "sparkles", style: "w-full h-full") {}
+                } else {
+                    if .badge == "shield" {
+                        icon (name: "shield", style: "w-full h-full") {}
+                    }
+                }
+            }
+        }
+    }
+}
