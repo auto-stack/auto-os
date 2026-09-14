@@ -4,6 +4,18 @@
    "id": "reports",
    "items": [
     {
+     "related": [
+      "PLAN-005"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "id": "P005-1",
+     "title": "PLAN-005 俄罗斯方块 AutoUI 交付报告",
+     "content": "标准 AutoUI 俄罗斯方块 app：Vue 通过 HTTP；VM/Rust 支持 merged 与 no-merge；棋盘网格、ghost、next、Dialog、键盘与持久化均已交付。源码位于 apps/036-tetris，规范位于 docs/specs/apps/tetris.md，端口为 17500/17501。"
+    },
+
+    {
      "id": "P001-1",
      "title": "Stage B P-1 计划随迁批 — 变更摘要（七项桌面域计划 auto-lang → auto-os）",
      "content": "Design 01（Plan 584 定案）§7 实施拆解第一批：§1-A2 七项桌面域在途计划\n（535-desktop-ux-followups / 554-clock-app / 556-games-wave1 / 557-tetris /\n558-klondike / 577-p534-debt-batch-1 / 578-desktop-gallery-apps，均 drafting、\n无 worktree）整体随迁本仓，纯文件零冲突（§5 推论），Category A 免 worktree\n（沿 Plan 584 先例）。\n\n编号映射（§5 迁移机制，重编保 drafting 原状、状态机续用）：535→os-002、\n554→003、556→004、557→005、558→006、577→007、578→008；frontmatter 增\norigin: PLAN-5xx 溯源，正文加随迁横幅（互链 Design 01 §5 与 auto-lang\nINDEX）；正文 auto-lang 相对路径不回改，推迟 P-6 开工时按本仓 AGENTS §2\n解析序换算。007 带编号消歧注记（与 auto-lang archive 既有\n577-emitter-gaps-batch 无关；auto-lang 活动区编号冲突随 git rm 消解）。\n\nauto-lang 侧收口：docs/plans/INDEX.md 新建（去向指针行 + 577 消歧 +\n545/570 留守注记 + P-5 台账指针预留），七源文件 git rm（git 历史留档；\n577 补账提交 42219a602 即为保全其历史）。Design 01 §5 处置表七行回填\n去向 + 迁移机制节补执行注记。\n\n顺带清偿：new-plan.sh 取号补零缺陷（.next-id 算术自增丢 3 位 padding；\n10#$ID 防八进制 + printf %03d，隔离副本冒烟 009→010）。\n\n验证：反向变换保真 diff 7/7 空（git show HEAD 源对照）；V7 搬迁零残留\n（auto-lang 活动面命中仅 INDEX 指针行 + archive 历史三件，归档不回改）；\nfrontmatter 结构 7/7。V8（随迁计划可执行性冒烟）属 P-6 开工批。\n两仓提交：auto-os 0c775a5/e0ae86d（+本 merge）、auto-lang 8a57f3f3b。"
@@ -90,6 +102,18 @@
   {
    "id": "architecture",
    "items": [
+    {
+     "related": [
+      "PLAN-005"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "id": "P005-2",
+     "title": "PLAN-005 三轨模式与应用分层",
+     "content": "单一 .at App/Store/API 分层生成 Vue、VM/Iced 与 Rust；Vue 始终走 HTTP，VM/Rust 分别覆盖 merged/no-merge。游戏帧计算留在 Store，后端只承担最高分读取与保存。"
+    },
+
     {
      "id": "P009-2",
      "title": "§3-a 桌面薄包装契约 — 架构注记",
@@ -252,6 +276,18 @@
    "id": "designs",
    "items": [
     {
+     "related": [
+      "PLAN-005"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "id": "P005-3",
+     "title": "PLAN-005 棋盘与状态 UI 契约",
+     "content": "棋盘使用 10×20 严格网格与零圆角单格，active/locked/ghost 分层；next、摘要、控制按钮和 ready/paused/help/confirm/over 统一使用 AutoUI dialog。原生布局避免 nested styled columns 触发栈溢出。"
+    },
+
+    {
      "id": "P012-6",
      "title": "SD-04 通知面板关闭模型与锚定 — 右上角紧凑卡（用户裁定）",
      "content": "面板 = 通知中心语义：不做定时自动关；人工关闭三路径 = × / scrim 外点 / Esc（铃铛 toggle 同效）。锚定 = **右上角**（用户裁定 2026-09-14，原右下废止）：justify-start 顶对齐 + 顶/右 12px gap + 紧凑 max-h 滚动。源：auto-lang schema/projection-protocol-v1.md v1.6+复验增补；PLAN-012 归档 docs/plans/archived/012-shell-ux-feedback-batch.md"
@@ -300,6 +336,18 @@
   {
    "id": "tests",
    "items": [
+    {
+     "related": [
+      "PLAN-005"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "id": "P005-4",
+     "title": "PLAN-005 M1–M7 功能验收与规则 golden",
+     "content": "M1–M7 均已启动并由用户完成基本移动、旋转、软降、硬降、暂停和消行验收；Rust 与 VM fixture golden 覆盖 7×4 形态及 1/2/3/4 行消除计分/压缩。长按/失焦、像素夹具、桌面画廊和 merged 故障矩阵转入 DEBT-005-01..03。"
+    },
+
     {
      "id": "P009-3",
      "title": "P-6 验证矩阵与门禁口径 — 测试注记",
@@ -393,6 +441,18 @@
   {
    "id": "reviews",
    "items": [
+    {
+     "related": [
+      "PLAN-005"
+     ],
+     "status": "published",
+     "created": "2026-09-14",
+     "last_modified": "2026-09-14",
+     "id": "P005-R1",
+     "title": "PLAN-005 revision 3 review — pass",
+     "content": "用户批准将扩展原生输入/视觉、桌面画廊和 merged 持久化故障矩阵移交 DEBTS。M1–M7 基本功能阶段通过，reviewed_commit=a2eab26dc6f25821b48d5f051ef14d6121651b38，计划进入 merge/archive；后置项见 DEBTS.md。"
+    },
+
     {
      "id": "P001-R1",
      "title": "PLAN-001 复审记录 — P-1 计划随迁批（C1–C6 全过）",
