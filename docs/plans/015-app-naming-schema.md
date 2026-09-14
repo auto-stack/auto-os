@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-015
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing               # drafting → executing → execution_done → reviewed → archived（2026-09-14 work T1-T7 全落，见 §9）
 feature_name: app-naming-schema
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -14,7 +14,7 @@ touched_goals: []
 affects: [auto-lang/crates/auto-lang/src/ui/app_registry.rs, auto-lang/crates/auto-man/src/automan.rs,
           auto-lang/crates/auto/src/main.rs, auto-os/apps.manifest, auto-os/AGENTS.md,
           auto-os/apps/*/pac.at, auto-lang/examples/ui/*/pac.at]
-current_step: 0
+current_step: 7
 total_steps: 7
 ---
 
@@ -269,6 +269,28 @@ pub fn display_title(&self) -> &str
 auto-lang 仓对应分支/组内检出落地（Category A 门档：本计划改 crates，可在
 auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
 
+### 执行证据（2026-09-14，work 轮）
+
+- **[x] T1** [✅ 已完成] pac.rs `title_zh` 字段/解析/构造 + `Pac::display_title_in`；
+  automan `pac_display_title`（env 壳）；app_registry `title_zh` + `display_title(_in)`；
+  main.rs `AUTO_VM_TITLE` 臂换用。auto-man 定点 4 用例绿（含 Plan-014 反向钉）。
+- **[x] T2** [✅ 已完成] renderer 五处读点（launcher titles/lts、桌面格 label、
+  LaunchSpec×2）换 `display_title`；session.rs 无需改（resolver 灌入即 display 值）。
+  手段注记：计划原列 session.rs:2315，实际填充点全在 renderer resolver（evidence §T2）。
+- **[x] T3** [✅ 已完成] `OsManifestApp` 删 `name`；apps.manifest 四行删；
+  AGENTS.md §4 样例与"展示名唯一事实源"注记。manifest 解析单测随 app_registry 23 绿。
+- **[x] T4** [✅ 已完成] 44 pac.at 双字段全补（examples/ui 33、auto-os 5、
+  kanban 1、musk 1、term 2、os-config 1、jade-garden 1——jade-garden 原缺
+  title，补 `Jade Garden`/`玉圃`；musk 中文名暂保留品牌 `Auto Musk`，Q2 可改）。
+- **[x] T5** [✅ 已完成] auto-lang `docs/specs/auto-man/project.md` 增
+  "pac.at 四名称契约"节（SD-01/SD-02 定稿锚）。
+- **[x] T6** [✅ 已完成] 反向钉用例（title_zh 不进 Cargo.toml）绿；
+  **策展集既有红修齐**：base 即红（9c6c27e86 漏更 want），按双向语义补
+  031-image-viewer 入 want（16→17），断言语义未放宽。app_registry 模块 23/23 绿。
+- **[x] T7** [✅ 已完成] VM 轨三 locale 实机（缺省=编辑器 / en=AutoEdit /
+  zh_CN=编辑器），证据 `evidence/plan015-vm-title-locales.md`；手段调整：
+  整桌面截图以 headless 等价成文（PLAN-012 先例），视觉复核留 review 实机门。
+
 ## 9. 复审记录
 
 - 2026-09-14 /auto-plan:new 起草（stage: new，PLAN-015 rev1）：
@@ -276,11 +298,19 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
   manifest name 退役三决定经用户认可（"OK"，2026-09-14）。outcome: pass，
   next: work（T1 可即刻开工）。jade-garden 中文名与 auto-musk 展示名两处
   执行期定名项见 §10，不阻塞 T1–T3。
+- 2026-09-14 /auto-plan:work（stage: work | plan_id: PLAN-015 | rev1 |
+  outcome: pass | next: review）。组 worktree：`.wt/os-015/{auto-os,auto-lang,
+  auto-kanban,auto-musk,auto-term,auto-os-config,auto-down}`（分支 os-015-dev，
+  auto-down detach@67bb508）。T1–T7 全落，各仓已 commit（commit hash 见各仓
+  os-015-dev 分支头）；定点验证全绿（证据 `evidence/plan015-vm-title-locales.md`）。
+  发现并修齐 base 既有红：策展集 want 漏更 031-image-viewer（9c6c27e86，
+  语义未放宽）。AC-6 以 headless 等价成文（VM 窗标题三 locale 实机 +
+  注入链单测），整桌面视觉截图留 review 实机门。blockers: 无。
 
 ## 10. 待澄清事项
 
 | # | 事项 | 影响 | 处置 |
 |---|---|---|---|
-| Q1 | jade-garden 中文名（"玉圃"为预设） | T4 一行数据 | 执行期与仓主确认，缺答则先落预设值可改 |
-| Q2 | auto-musk 英文展示名定型（`Auto Musk` vs `Musk`） | T4 一行数据 | 执行期按仓 README/既有一致性定，不阻塞 |
-| Q3 | auto-lang 侧是否独立开 plan 分账 | 流程账 | work 阶段按 auto-lang AGENTS 门槛实测判定；主导账始终是本计划 |
+| Q1 | jade-garden 中文名（"玉圃"为预设） | T4 一行数据 | **work 轮已落预设值**（可随时改 pac.at 一行） |
+| Q2 | auto-musk 英文展示名定型（`Auto Musk` vs `Musk`） | T4 一行数据 | **work 轮裁定**：英文 `Auto Musk`、中文暂保留品牌 `Auto Musk`（品牌不译，RealWorld 同款先例）；要改仅需 pac.at 一行 |
+| Q3 | auto-lang 侧是否独立开 plan 分账 | 流程账 | **work 轮判定**：改动面（4 crates 文件 + examples 数据 + spec 一节）随本计划组内 os-015-dev 分支落地，auto-lang 侧未单开 plan；merge 时按其 AGENTS 归账 |
