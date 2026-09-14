@@ -1078,6 +1078,27 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: merge and archive Plan 005 with `completion_kind: delivered`; future
   debt work should use a new Plan and reference the three DEBT IDs.
 
+### 2026-09-14 — merge receipt PLAN-005:r3
+
+- stage: merge
+- plan_id: PLAN-005
+- plan_revision: 3
+- outcome: in_progress
+- prepared: reviewed baseline `a2eab26dc6f25821b48d5f051ef14d6121651b38`,
+  canonical Spec `docs/specs/apps/tetris.md` revision 1, and approved debt
+  projection `DEBTS.md`; delivery preparation committed as `091e722`.
+- landed: the reviewed implementation tree and canonical Spec are ancestors of
+  the current main branch; the renderer-safe Tetris view is present and the
+  prepared Plan/debt/ledger delta is committed in `091e722`.
+- ledger_refreshed: `.autoos/specs.json` now contains `P005-1`, `P005-2`,
+  `P005-3`, `P005-4` and `P005-R1`, all pointing to the Plan and archived
+  evidence target.
+- archived: pending final `git mv` and status update.
+- cleaned: pending `wt-guard.sh` verification and removal of the dedicated
+  `plan-005-dev` worktree/branch.
+- next: archive the Plan, clean its worktree, then append the final archive and
+  cleanup receipts.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
