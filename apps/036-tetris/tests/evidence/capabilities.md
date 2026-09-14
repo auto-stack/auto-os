@@ -9,10 +9,11 @@ A `blocked` row is an explicit missing capability or driver, never a pass.
 | `cli.help` | `supported` |       --apps <APPS><br>          Plan 465: apps directory for the desktop registry (default <workspace>/examples/ui)<br>      --merged<br>          Plan 547: explicitly select Rust merged in-process mode (already the default for --render=rust)<br>  -h, --help<br>          Print help (see a summary with '-h') |
 | `gallery.contract` | `blocked` | manifest.tetris: supported — apps.manifest registers tetris<br>pac.desktop-game: supported — pac.at declares category=game and desktop=true<br>gallery.tetris: blocked — tetris is outside gallery scan root (D:\autostack\auto-lang\examples\ui); product app is D:\autostack\.wt\os-005\auto-os\apps\036-tetris<br>gallery.05-games: blocked — no 05-games category in current gallery generator; it falls back to 04-systems |
 | `native.input-driver` | `supported` | tests/native_physical.py can send Windows key-down/key-up, long-press and blur events |
+| `rules.vm-golden` | `supported` | VM rules golden passed: opening/lock + 7x4 rotations + 1..4 line clears on MCP http://127.0.0.1:9292/mcp |
 | `rust.backend` | `supported` | .cargo-back-target2\debug\app-036-tetris-back.exe |
 | `rust.generated` | `supported` | rust-workspace\036-tetris\src\main.rs |
 | `source.api` | `supported` | src/back/api.at and src/back/db.at present |
 | `source.app` | `supported` | src/front/app.at and src/front/tetris_store.at present |
 | `tests.playwright` | `supported` | Playwright package and smoke.spec.ts present |
-| `vm.mcp` | `supported` | MCP endpoint configured: http://127.0.0.1:9272/mcp |
+| `vm.mcp` | `supported` | MCP endpoint configured: http://127.0.0.1:9292/mcp |
 | `vue.generated` | `supported` | gen\front\vue\package.json |
