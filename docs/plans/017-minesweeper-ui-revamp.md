@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-017
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed           # drafting → executing → execution_done → reviewed → archived
 feature_name: minesweeper-ui-revamp
 author: [agent]
 created_at: 2026-09-14
@@ -8,7 +8,8 @@ updated_at: 2026-09-14
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
+new_spec_components:
+  - docs/specs/apps/minesweeper.md
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects:
@@ -152,8 +153,8 @@ total_steps: 4
 
 | delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | modify | `docs/specs/examples/038-minesweeper.md` | 按钮文字颜色与背景样式由子节点 `text` 的 inline `style:` 迁移至 `button` 自身的 `class:` | 解决 VM View Builder 丢弃内联 text 样式的机制限制，达成 VM 与 Vue 双端色彩一致 | AC-01, AC-02 |
-| SD-02 | add | `docs/specs/examples/038-minesweeper.md` | 新增已翻开数字单元格的快速探测（Chord）交互语义及表情状态指示器 | 补齐经典扫雷进阶操作体验与情感化微反馈 | AC-04, AC-05 |
+| SD-01 | add | `docs/specs/apps/minesweeper.md` | 按钮文字颜色与背景样式由子节点 `text` 的 inline `style:` 迁移至 `button` 自身的 `class:` | 解决 VM View Builder 丢弃内联 text 样式的机制限制，达成 VM 与 Vue 双端色彩一致 | AC-01, AC-02 |
+| SD-02 | add | `docs/specs/apps/minesweeper.md` | 新增已翻开数字单元格的快速探测（Chord）交互语义及表情状态指示器 | 补齐经典扫雷进阶操作体验与情感化微反馈 | AC-04, AC-05 |
 
 ## 6. 测试设计
 
@@ -197,6 +198,7 @@ total_steps: 4
 
 - stage: new | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | next: work (T-01)
 - stage: work | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | code_commit: 5563fa5 | task_ids: T-01, T-02, T-03, T-04 | evidence: desktop_mcp.py 25/25 PASS, VM visual screenshots verified | blockers: none | next: review
+- stage: review | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | reviewed_commit: 5563fa54a5d7b90085a67e7402c7a3cca148ab7c | base_commit: 216989f5a81d090eabe9bdefc796bf117c3761fa | dependency_revisions: none | spec_inputs: none | acceptance_results: AC-01 pass, AC-02 pass, AC-03 pass, AC-04 pass, AC-05 pass, AC-06 pass | findings: none | evidence: desktop_mcp.py 25/25 PASS, test_chord.py PASS, VM visual screenshots verified | next: merge
 
 ## 10. 待澄清事项
 
