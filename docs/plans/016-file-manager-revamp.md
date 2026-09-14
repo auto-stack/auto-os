@@ -484,6 +484,16 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 3（面包屑 Win11 风格 + 编辑入口实钮）
+
+- crumbs 加 chevron-right 分隔（末层无）；非 hover 态纯文本、hover 显按钮
+  底（用户要求）；左侧 folder-open 图标升级为「编辑路径」显式入口
+  （onclick AddrEdit，值=完整路径）。
+- 发现：mouse-area 空白区点击不可靠（MCP/实机均未触发 AddrEdit）——入口
+  以显式按钮为准，mouse-area 保留为增强。
+- commit f5dc845d9；证据 p2-breadcrumb-win11.png（chevron 分隔 + 单行
+  对齐实机截图）。
+
 ### 2026-09-14 Phase 2（r2）work 记录：UX 反馈批 9 项全实施
 
 - `code_commit`（auto-lang os-016-dev）：`beb1ad124`（T-12..T-18 单提交）。
