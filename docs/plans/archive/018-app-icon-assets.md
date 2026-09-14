@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-018
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（rev2 review pass，next=merge）
+status: archived              # drafting → executing → execution_done → reviewed → archived（2026-09-14 终态：delivered；merge 收据见 §9 末）
 feature_name: app-icon-assets
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -383,3 +383,15 @@ auto-man 287/287；auto 11/11。
 **spec_inputs**：`auto-lang/docs/specs/auto-lang/ui/overview.md` §「icon
 字符串协议族（PLAN-018）」（协议表/回退链/资产根解析序/主题目录，持久行为；
 SD-01 锚定此节；SD-02 = 本仓 README 图标资产节，随 T1 落）。
+
+### merge 收据（PLAN-018:r2 → 闭合，2026-09-14）
+
+| checkpoint | 证据 |
+|---|---|
+| prepared | rev2 reviewed 基线（复审记录）；canonical 目标 = auto-lang docs/specs/auto-lang/ui/overview.md §icon 字符串协议族（SD-01）+ 本仓 README 图标资产节（SD-02，随 T1 落） |
+| landed | auto-lang master `5cf18fea0`（merge os-018-dev，icon_file.rs/builder 透传/资产消费在 master ✓ 冒烟 2+1 绿）；auto-os main `a2eab26`（PLAN-018 merge：资产/工具/launcher 真图标/desktop.sh storage 固定）+ `307e526`（pyc 清理）；主检出冒烟 slice --verify 绿 |
+| ledger_refreshed | `.autoos/specs.json` P018-1..4 + P018-R1 五条目（+25 行最小 diff，indent=1 保形） |
+| archived | 本件 git mv → docs/plans/archive/018-app-icon-assets.md，status: archived（completion_kind: delivered） |
+| cleaned | 见下方补记（wt-guard + worktree/分支/组目录清理） |
+
+completion_kind: delivered
