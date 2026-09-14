@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-005
 origin: PLAN-557
-status: reviewed
+status: archived
 feature_name: tetris
 author: [zhaopuming]
 created_at: 2026-09-05
@@ -13,6 +13,7 @@ touched_goals: []
 affects: [auto-os/apps/036-tetris]
 current_step: 6
 total_steps: 6
+completion_kind: delivered
 ---
 
 > **迁移与修订历史**：本计划由 auto-lang `557-tetris.md` 随 PLAN-001 于
@@ -1093,7 +1094,8 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - ledger_refreshed: `.autoos/specs.json` now contains `P005-1`, `P005-2`,
   `P005-3`, `P005-4` and `P005-R1`, all pointing to the Plan and archived
   evidence target.
-- archived: pending final `git mv` and status update.
+- archived: `docs/plans/archive/005-tetris.md` via `git mv`; frontmatter now
+  records `status: archived` and `completion_kind: delivered`.
 - cleaned: pending `wt-guard.sh` verification and removal of the dedicated
   `plan-005-dev` worktree/branch.
 - next: archive the Plan, clean its worktree, then append the final archive and
