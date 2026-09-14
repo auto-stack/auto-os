@@ -26,9 +26,13 @@ VM handler 对 `write_state_vec` 注入的 Obj 元素字段读失效（013 audit
 ### 非空查询
 
 ```
-tier:  exact(ln==q 或 lt==q)=0 > prefix(lt 前缀)=1 > 词首=2 > 子序列=3；不匹配=剔除
+tier:  exact(ln==q 或 lt==q)=0 > prefix(lt 或 ln 前缀)=1 > 词首=2 > 子序列=3；不匹配=剔除
 词首:  位置 0，或前一字符 ∈ {空格, '-', '_'} 处开始的 prefix 命中
 子序列: 双指针顺序匹配 ql 全部字符
+
+PLAN-015 回归修复（2026-09-14）：prefix/词首/子序列三档对 ln 与 lt 各自
+独立判定、取更优档（此前仅 lt——展示名经 title_zh locale 链转中文后，
+"term"/"auto" 等拉丁 id 子串查询仅剩整 id 精确匹配可命中）。
 
 score = tier*100 + 注册表序号(si) - recent 折扣
 recent 折扣: 名称在 recent 列表第 rk 位（0 起）→ 减 max(5-rk, 1)
