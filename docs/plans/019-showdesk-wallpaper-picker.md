@@ -1,10 +1,11 @@
 ---
 plan_id: PLAN-019
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: executing             # drafting → executing → execution_done → reviewed → archived（复审 blocked——待实机走查，见 §9 末条）
 feature_name: showdesk-wallpaper-picker
 author: [zhaopuming]
 created_at: 2026-09-14
 updated_at: 2026-09-14
+plan_revision: 2              # rev1 = 起草+执行合同；rev2 = 复审期 SD-01/02 行对齐实现（nav/preview 动词与 __wp_preview 字段）
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -245,8 +246,8 @@ if .__wp_picker == "1" {
 
 | delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | auto-lang schema/projection-protocol-v1.md §4 | 动词词表 +show_desktop/showdesk_return/wallpaper_pick/wallpaper_close/wallpaper_browse_dir | 两操作一组合协议化，跨端合同 | AC-01..04,07 |
-| SD-02 | add | auto-lang schema/projection-protocol-v1.md §2 | 字段表 +__wm_showdesk/__wp_picker/__wp_dir/__wp_current/__wp_items(+wp_paths 平行面) | sliver/picker 投影面 | AC-03,09 |
+| SD-01 | add | auto-lang schema/projection-protocol-v1.md §4 | 动词词表 +show_desktop/showdesk_return/wallpaper_pick/wallpaper_close/wallpaper_browse_dir/wallpaper_nav/wallpaper_preview（rev2 对齐实现——nav/preview 为 T-04 期细化：.at 无列表下标算术，导航/预览数学生宿主收口） | 两操作一组合协议化，跨端合同 | AC-01..06 |
+| SD-02 | add | auto-lang schema/projection-protocol-v1.md §2 | 字段表 +__wm_showdesk/__wp_picker/__wp_preview（载荷=预览图路径，""=栅格态）/__wp_dir/__wp_current/__wp_items(+wp_paths 平行面) | sliver/picker 投影面 | AC-03,09 |
 | SD-03 | add | auto-os docs/specs/shell/showdesk-wallpaper.md | 新模块 spec：负一屏语义（排除规则/origin 簿记）、picker 交互合同、return 归属规则、每壁纸布局键控（fp 规则） | 沉淀本计划全部用户裁决 | AC-01..08 |
 
 本计划无 retire 项；`open_settings` 动词保留（「显示设置」臂仍用）。
@@ -400,6 +401,35 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   - **outcome: pass → status execution_done**。全部任务完成、范围调整
     （实机冒烟清单承载）与预存红清点均有案，无阻塞问题。next: review
     （`/auto-plan:review`）。
+- 2026-09-14 stage:review PLAN-019 **rev2** outcome:**blocked** —
+  - **基线**：reviewed_commit = auto-lang ef270c4c3 / auto-os c77d9b7；
+    base = a657a4e(auto-os) / a9d3b8c67(auto-lang)；依赖 auto-down
+    140775f(detached)；spec_inputs = schema/projection-protocol-v1.md v1.7
+    + docs/specs/shell/showdesk-wallpaper.md（c77d9b7 草案）。
+    两 worktree 复审时点零未提交实现。
+  - **独立性声明**：复审与实现同会话（无独立会话授权）——结论全部由
+    工件重建：scoped 组复跑 31/31 绿（wallpaper/showdesk/desktop_surface/
+    shell/w5/p010/desktop_injects）；全量日常档 --no-fail-fast 4883/4903，
+    20 失败**逐条在双仓真基线复跑实证为预存**（layout×14 = dock 几何
+    环境依赖；c2_param/plan606/plan055/desktop_protocol coverage/
+    external_config_poll[OS 主题派生] 环境敏感；p010 过期断言已在
+    ef270c4c3 顺带修正）；ffi_dual_019 = 负载抖动（基线与分支隔离均过，
+    全量并发偶发）。
+  - **acceptance**：AC-02/04/06/09/10 **pass**（状态机/归属两分支/导航
+    键面/协议对拍/vue 注记，全部自动化复现）；AC-01/03/05/07/08
+    **partial**——自动化侧（组合簿记/Esc 链/键控迁移/pack 编译/注入面）
+    全绿，实机侧（sliver 命中、popover 渲染、缩略图点选、原生对话框、
+    布局跟随肉眼确认）待走查。
+  - **findings**：F-01（已修正→rev2）SD-01/02 行滞后实现（缺
+    wallpaper_nav/wallpaper_preview/__wp_preview）——已对齐；F-02
+    （nonblocking，merge 前顺手）7 新动词缺 encode/parse roundtrip
+    专项单测（execute 臂与投影面已覆盖，词表回归保护缺一角）。
+  - **blockers（唯一）**：实机走查未执行——shell 宿主无 headless/MCP
+    通道。**unblock 动作**：worktree 组构建走查
+    `DESKTOP_OS_ROOT=D:/autostack/.wt/os-019/auto-os bash D:/autostack/.wt/os-019/auto-os/scripts/desktop.sh iced`
+    （组兄弟解析自命中新 shell pack），按 SD spec「验证」节六步清单走查
+    并回填结论；代码未变，快速复审复用本次自动化证据 + 走查结论即翻
+    pass → merge。
 
 ## 10. 待澄清事项
 
