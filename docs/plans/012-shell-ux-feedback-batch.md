@@ -8,8 +8,14 @@ created_at: 2026-09-11
 updated_at: 2026-09-12
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
-new_spec_components: []
+supersedes_spec_components:
+  - "G2 通知面板锚定语义：右下锚定 → 右上锚定（用户裁定 2026-09-14；紧凑卡片 + 顶/右 12px gap；SD-04 随复审更新）"
+  - "dock_pinned 缺省三枚 → 缺省空（SD-03；缺键=显式空=空表）"
+new_spec_components:
+  - "auto-lang schema/projection-protocol-v1.md v1.6+复验增补（§2 投影面 pinned/dup_app/running/__wm_settings_open/__wm_layout、§2.0.1 通知面板接缝 __panel_max_h、§4 动词、§6 变更记录）"
+  - "auto-lang schema/aura.at：workspace_preview 合同面登记（SD-02，SCHEMA_DRIFT_GENERATE 再生入库）"
+  - "通知面板关闭模型：scrim 外点关闭（.at 内 N6d）+ ×/Esc/铃铛 toggle（SD-04）"
+  - "任务栏状态指示：左 app 图标三态 + 布局钮/右开关钮两态（SD-06；高亮机制统一 → DEBTS 012-候选 icon 族）"
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui/session.rs, auto-lang/ui/iced/renderer.rs, auto-lang/ui/desktop_config.rs,
