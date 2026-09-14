@@ -12,8 +12,9 @@ returned:
 The lower-level driver was then run against an independently started visible
 VM window on 2026-09-14 with `--long-press-ms 600 --blur`; it completed with
 key-down/key-up events for `ArrowLeft, ArrowRight, ArrowDown, Space, P`,
-recorded a focus switch to a second visible window, and left the game paused
-after the `P` shortcut. The full before/after snapshot and event record is in
+recorded a focus switch to a second visible window, and completed the sequence
+with the final `P` toggling the auto-paused game back to playing. The full
+before/after snapshot and event record is in
 `tests/evidence/native-input-live.json`.
 
 The same live VM run produced `tests/evidence/vm-ready-modal-live.png`; the

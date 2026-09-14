@@ -20,6 +20,7 @@ from ctypes import wintypes
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import time
 import urllib.request
@@ -198,6 +199,32 @@ def mcp_snapshot(url: str | None) -> str | None:
     return "\n".join(item.get("text", "") for item in data.get("result", {}).get("content", []))
 
 
+def mcp_start_if_ready(url: str | None, snapshot: str | None) -> str | None:
+    """Start the game through its rendered Dialog button before physical input."""
+
+    if not url or not snapshot or "准备好了吗" not in snapshot:
+        return snapshot
+    match = re.search(r'button #(\S+) "开始游戏"', snapshot)
+    if not match:
+        return snapshot
+    payload = json.dumps(
+        {
+            "jsonrpc": "2.0",
+            "method": "tools/call",
+            "params": {
+                "name": "autoui_action",
+                "arguments": {"element_id": match.group(1), "action": "press"},
+            },
+            "id": 1,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(url, payload, {"Content-Type": "application/json"})
+    with urllib.request.urlopen(request, timeout=10):
+        pass
+    time.sleep(0.2)
+    return mcp_snapshot(url)
+
+
 def run(args: argparse.Namespace) -> int:
     if sys.platform != "win32":
         print("BLOCKED: native physical input requires Windows", file=sys.stderr)
@@ -224,6 +251,7 @@ def run(args: argparse.Namespace) -> int:
     events: list[dict[str, object]] = []
     try:
         before = mcp_snapshot(args.mcp_url)
+        before = mcp_start_if_ready(args.mcp_url, before)
     except Exception as exc:  # pragma: no cover - depends on external MCP host
         print(f"BLOCKED: AutoUI MCP snapshot failed before input: {exc}", file=sys.stderr)
         return 2
