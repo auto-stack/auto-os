@@ -48,6 +48,11 @@ if sys.platform == "win32":
 
     ULONG_PTR = ctypes.c_ulonglong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_ulong
 
+    user32.AllowSetForegroundWindow.argtypes = [wintypes.DWORD]
+    user32.AllowSetForegroundWindow.restype = wintypes.BOOL
+    user32.keybd_event.argtypes = [wintypes.BYTE, wintypes.BYTE, wintypes.DWORD, ULONG_PTR]
+    user32.keybd_event.restype = None
+
     class KEYBDINPUT(ctypes.Structure):
         _fields_ = [
             ("wVk", wintypes.WORD),
@@ -57,8 +62,28 @@ if sys.platform == "win32":
             ("dwExtraInfo", ULONG_PTR),
         ]
 
+    class MOUSEINPUT(ctypes.Structure):
+        _fields_ = [
+            ("dx", wintypes.LONG),
+            ("dy", wintypes.LONG),
+            ("mouseData", wintypes.DWORD),
+            ("dwFlags", wintypes.DWORD),
+            ("time", wintypes.DWORD),
+            ("dwExtraInfo", ULONG_PTR),
+        ]
+
+    class HARDWAREINPUT(ctypes.Structure):
+        _fields_ = [
+            ("uMsg", wintypes.DWORD),
+            ("wParamL", wintypes.WORD),
+            ("wParamH", wintypes.WORD),
+        ]
+
     class INPUT_UNION(ctypes.Union):
-        _fields_ = [("ki", KEYBDINPUT)]
+        # INPUT.cbSize is 40 bytes on 64-bit Windows. Including all three
+        # union arms preserves the required MOUSEINPUT alignment even though
+        # this driver only emits keyboard events.
+        _fields_ = [("mi", MOUSEINPUT), ("ki", KEYBDINPUT), ("hi", HARDWAREINPUT)]
 
     class INPUT(ctypes.Structure):
         _anonymous_ = ("u",)
@@ -145,6 +170,20 @@ def send_key(key: str, down: bool) -> None:
         raise OSError(error, f"SendInput failed for {key} ({'down' if down else 'up'})")
 
 
+def focus_window(hwnd: int) -> bool:
+    """Transfer foreground focus despite Windows' foreground-lock timeout."""
+
+    if sys.platform != "win32":
+        return False
+    # A benign Alt tap grants the current process a foreground-transfer
+    # opportunity. AllowSetForegroundWindow then makes the intended target
+    # explicit; this is the same user-visible focus transition as clicking it.
+    user32.AllowSetForegroundWindow(0xFFFFFFFF)
+    user32.keybd_event(0x12, 0, 0, 0)  # VK_MENU down
+    user32.keybd_event(0x12, 0, 0x0002, 0)  # VK_MENU up
+    return bool(user32.SetForegroundWindow(hwnd))
+
+
 def mcp_snapshot(url: str | None) -> str | None:
     if not url:
         return None
@@ -174,7 +213,7 @@ def run(args: argparse.Namespace) -> int:
     target = int(visible[0]["hwnd"])
     if not user32.ShowWindow(target, 9):  # SW_RESTORE; harmless for an ordinary window
         pass
-    if not user32.SetForegroundWindow(target):
+    if not focus_window(target):
         print(f"BLOCKED: SetForegroundWindow failed for hwnd {target}", file=sys.stderr)
         return 2
     time.sleep(0.15)
@@ -199,12 +238,12 @@ def run(args: argparse.Namespace) -> int:
         events.append({"key": key, "down_up": True, "held_ms": round((time.time() - started) * 1000)})
         if index == 0 and args.blur:
             other = other_visible_window(target)
-            if other is None or not user32.SetForegroundWindow(other):
+            if other is None or not focus_window(other):
                 print("BLOCKED: no second visible window available for blur/失焦", file=sys.stderr)
                 return 2
             time.sleep(0.15)
             events.append({"blur": True, "foreground_hwnd": int(user32.GetForegroundWindow())})
-            user32.SetForegroundWindow(target)
+            focus_window(target)
             time.sleep(0.15)
     try:
         after = mcp_snapshot(args.mcp_url)
