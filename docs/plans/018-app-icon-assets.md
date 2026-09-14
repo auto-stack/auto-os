@@ -320,6 +320,16 @@ palette/grid 的行视图从未渲染 icon 字段（色章 + 首字母为 463 �
   （或 review 阶段实机门一并走查）。
 - 环境教训入库：桌面 MCP 端口用 `AUTOUI_MCP_PORT` 私有化，避免并行
   会话 9247 争用（9247 为固定缺省，无 pick-free 逻辑）。
+- **T7 视觉复核完成 + 根修一笔（2026-09-14 晚）**：首轮 launcher 截图
+  仍为色章——根因 = aura_view_builder 对 `icon (name:)` 无条件拼
+  `lucide:` 前缀，iconfile 值被扭曲为 `lucide:iconfile:x` → 两后端皆不
+  识别 → 空白。根修：convert_image_or_icon 对带协议前缀（iconfile:/
+  hicon:/lucide:）的 name 原样透传（auto-lang `4b55dc7e1`）。复验：
+  acceptance 通道 summon launcher → 调色板每行真位图（深色切片）+
+  桌面网格全景位图（evidence/plan018-launcher-icons.png、
+  plan018-desktop-grid-bitmaps.png）；实机 iconfile HIT 1196 次。
+  baseline 债务另记：aura_view strips_tags 断言 master 同挂（并行会话
+  引入，非本计划）。
 - **桌面快捷方式全量固定（用户需求，2026-09-14）**：`shell.desktop.icons`
   storage 预置 27 id（~/.config/autoos/desktop-storage.json）+ desktop.sh
   固定 `AUTO_VM_STORAGE_FILE`（worktree `68814ba` + 主检出同步 `5a04e40`）。
