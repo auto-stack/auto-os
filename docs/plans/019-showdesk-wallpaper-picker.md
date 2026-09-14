@@ -442,6 +442,12 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   ≈+67%；框 h-10 / 行高 h-14 / layout 常量零影响），17 处按钮统一替换。
   提交：auto-os fc30a51 / auto-lang 047b584f7（assets pin 同步）；shell
   14 测绿。并入本计划 merge。
+- 2026-09-14 走查反馈批 PLAN-019-FU3（跨域根因，修在 PLAN-018 域）：
+  桌面 iconfile tile 在 badge 色块上四角露白——根因 = 018 源精灵表为
+  RGB 海报无 alpha，切片烘焙画布底。修 slice_icons.py 抠底（bg=本 tile
+  四角中值 + 边界连通 flood + 投影半透明保留；_opaque_corners 白名单
+  记满幅设计角），重切 28×2 verify ok。提交 main 8daabe1（018 已归档，
+  归档文档补历史补记不改状态）；用户在主检出桌面重启验证。
 
 ## 10. 待澄清事项
 

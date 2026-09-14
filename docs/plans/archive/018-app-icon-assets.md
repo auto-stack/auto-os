@@ -395,3 +395,13 @@ SD-01 锚定此节；SD-02 = 本仓 README 图标资产节，随 T1 落）。
 | cleaned | wt-guard 三 worktree 全 clean（auto-os/auto-lang/auto-down）→ remove --force（auto-os 内他属 tetris 脏文件已先以 `.wt/os-018-tetris-wip.patch` 安置，119 行 diff 可 `git apply` 恢复）→ 分支 os-018-dev ×2 删除（13a6d36/5cf18fea0 已在主干祖先）→ `.wt/os-018/` 组目录移除，全组零残留 |
 
 completion_kind: delivered
+
+---
+
+## 归档后补记（交付缺陷修复，不改状态）
+
+- 2026-09-14（随 PLAN-019 实机走查暴露）：切片 PNG 烘焙了海报画布底
+  （源表 RGB 无 alpha），iconfile tile 在桌面 badge 色块上四角露白。
+  修复 = slice_icons.py 增 key_background（bg=本 tile 四角中值 + 边界
+  连通 flood + baked 投影半透明保留），重切 28×2 verify ok（四角 alpha
+  门 + _opaque_corners 满幅白名单）。提交 main 8daabe1。
