@@ -11,6 +11,7 @@ render: "vm"
 // PLAN-008：桌面注册表展示字段（launcher/图标格标题与图标）。
 icon: "layout-grid"
 title: "Widgets Gallery"
+title_zh: "组件画廊"
 front_port: 3024
 // Plan 411: VM 原生窗口启动尺寸（逻辑像素，iced 会乘以系统 DPI 缩放）
 window: "1440x900"

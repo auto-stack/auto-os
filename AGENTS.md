@@ -85,7 +85,7 @@ repo 条目默认虚拟伞形（兄弟检出解析），产品 app 可叠加 git
 （兄弟检出），同一 app 双形态并存时容器臂胜、内容同源零行为差。每 app 一行：
 
 ```json
-{ "id": "...", "name": "...", "repo": "../<repo>", "kind": "repo",
+{ "id": "...", "repo": "../<repo>", "kind": "repo",
   "ports": [17100, 17101], "status": "active", "added": "YYYY-MM-DD",
   "daemon": { "port": 17101, "bin": "<repo 相对二进制>",
               "env_port": "<DAEMON 端口覆盖 env 键>" } }
@@ -94,7 +94,9 @@ repo 条目默认虚拟伞形（兄弟检出解析），产品 app 可叠加 git
 `kind` 字段为 Stage C 预留（`repo` | `subtree` | `submodule`——submodule
 物理形态落 `apps/<id>/` 时 kind 仍记 `repo`，容器臂按目录名展开）。
 `daemon` 对象可选（schema 见 §3 daemon 键；`bin` 缺席 = 只探不孵；健康
-探针固定 `GET /api/health`）。增删 app 时同步本仓 README 的 Apps 表；
+探针固定 `GET /api/health`）。**manifest 不承载展示名**（PLAN-015：`name`
+键已退役）——App 展示名（英/中）以各 app pac.at 的 `title`/`title_zh` 为
+唯一事实源。增删 app 时同步本仓 README 的 Apps 表；
 submodule 收编/解除用 `git submodule add/deinit` 双写纪律（manifest 行 +
 gitlink 同一提交）。
 
