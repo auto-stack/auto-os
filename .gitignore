@@ -9,3 +9,4 @@ widgets-gallery/src/front/tests/
 **/dist/
 **/rust-workspace/
 **/target/
+**/tmp/
