@@ -280,7 +280,7 @@ def rust_rules_golden() -> tuple[str, str]:
     if proc.returncode != 0:
         detail = (proc.stdout + proc.stderr).splitlines()
         return "blocked", "Rust golden failed: " + (detail[-1] if detail else "no output")
-    return "supported", "generated TetrisStore golden passed (opening/lock + 1..4 line clears)"
+    return "supported", "generated TetrisStore golden passed (opening/lock + 7x4 rotations + 1..4 line clears)"
 
 
 def main() -> int:
