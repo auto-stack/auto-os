@@ -14,7 +14,7 @@
       "name": "俄罗斯方块",
       "repo": "apps/036-tetris",
       "kind": "repo",
-      "ports": [17400, 17401],
+      "ports": [17500, 17501],
       "status": "active",
       "added": "2026-09-12"
     }

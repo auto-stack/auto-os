@@ -62,7 +62,7 @@ auto-os/
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
-| tetris | 俄罗斯方块 | `apps/036-tetris/` | repo | 17400 / 17401 | active (Plan 005) |
+| tetris | 俄罗斯方块 | `apps/036-tetris/` | repo | 17500 / 17501 | active (Plan 005) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md。in-repo `apps/` 为
