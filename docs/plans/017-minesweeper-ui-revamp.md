@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-017
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: reviewed           # drafting → executing → execution_done → reviewed → archived
 feature_name: minesweeper-ui-revamp
 author: [agent]
 created_at: 2026-09-14
@@ -8,7 +8,8 @@ updated_at: 2026-09-14
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
+new_spec_components:
+  - docs/specs/apps/minesweeper.md
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects:
@@ -16,7 +17,7 @@ affects:
   - auto-os/apps/038-minesweeper/src/front/minesweeper_store.at
   - auto-os/apps/038-minesweeper/tests/desktop_mcp.py
 
-current_step: 0
+current_step: 4
 total_steps: 4
 ---
 
@@ -152,8 +153,8 @@ total_steps: 4
 
 | delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | modify | `docs/specs/examples/038-minesweeper.md` | 按钮文字颜色与背景样式由子节点 `text` 的 inline `style:` 迁移至 `button` 自身的 `class:` | 解决 VM View Builder 丢弃内联 text 样式的机制限制，达成 VM 与 Vue 双端色彩一致 | AC-01, AC-02 |
-| SD-02 | add | `docs/specs/examples/038-minesweeper.md` | 新增已翻开数字单元格的快速探测（Chord）交互语义及表情状态指示器 | 补齐经典扫雷进阶操作体验与情感化微反馈 | AC-04, AC-05 |
+| SD-01 | add | `docs/specs/apps/minesweeper.md` | 按钮文字颜色与背景样式由子节点 `text` 的 inline `style:` 迁移至 `button` 自身的 `class:` | 解决 VM View Builder 丢弃内联 text 样式的机制限制，达成 VM 与 Vue 双端色彩一致 | AC-01, AC-02 |
+| SD-02 | add | `docs/specs/apps/minesweeper.md` | 新增已翻开数字单元格的快速探测（Chord）交互语义及表情状态指示器 | 补齐经典扫雷进阶操作体验与情感化微反馈 | AC-04, AC-05 |
 
 ## 6. 测试设计
 
@@ -176,26 +177,28 @@ total_steps: 4
 
 ## 8. 执行步骤
 
-- **T-01**：重构 `minesweeper_store.at` 的色彩与样式模型：
+- [x] **T-01**：重构 `minesweeper_store.at` 的色彩与样式模型 [✅ 已完成]
   - 将高对比文本颜色与深色背景直接写入 `cell_class`；
   - 增加 `face_icon` 表情状态机与 `exploded_idx`；
   - 实现 `mines_str` 与 `timer_str` 格式化；
   - 实现 `Chord(x, y)` 快速探测逻辑。
-- **T-02**：重构 `app.at` 视图布局：
+  - *证据*：commit `5563fa5`，VM MCP 测试数字颜色解析正确，Chord 交互调用通过。
+- [x] **T-02**：重构 `app.at` 视图布局 [✅ 已完成]
   - 打造 LCD 仪表板信息栏与表情重开按钮；
-  - 重构胶囊底座分段式难度选择栏（防止折行）；
+  - 重构胶囊底座分段式难度选择栏（杜绝 9×9 下折行）；
   - 优化棋盘外层容器卡片与无缝网格，去除单元格孤立圆角；
-  - 单元格点击事件区分：未翻开揭开、已翻开触发 Chord。
-- **T-03**：更新 `tests/desktop_mcp.py`，增加深色文字对比度、Chord 操作以及表情状态测试用例。
-- **T-04**：运行 VM 自动化测试与实机验证，捕获全新优化截图，更新测试截图基线。
+  - 单元格点击事件无缝支持揭开与 Chord。
+  - *证据*：commit `5563fa5`，VM 实机截图验证分段控件无折行、棋盘无缝贴合。
+- [x] **T-03**：更新 `tests/desktop_mcp.py`，增加深色文字对比度、Chord 操作以及表情状态测试用例 [✅ 已完成]
+  - *证据*：commit `5563fa5`，`desktop_mcp.py` 补充 `AUTO_BIN` fallback 与 `face_icon` 状态断言。
+- [x] **T-04**：运行 VM 自动化测试与实机验证，捕获全新优化截图，更新测试截图基线 [✅ 已完成]
+  - *证据*：`desktop_mcp.py` 25/25 PASS，捕获 5 状态完整高清截图，更新 `mines_vm_fit_initial.png` 基线。
 
 ## 9. 复审记录
 
-- stage: new
-- plan_id: PLAN-017
-- plan_revision: 1
-- outcome: pass
-- next: work (T-01)
+- stage: new | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | next: work (T-01)
+- stage: work | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | code_commit: 5563fa5 | task_ids: T-01, T-02, T-03, T-04 | evidence: desktop_mcp.py 25/25 PASS, VM visual screenshots verified | blockers: none | next: review
+- stage: review | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | reviewed_commit: 5563fa54a5d7b90085a67e7402c7a3cca148ab7c | base_commit: 216989f5a81d090eabe9bdefc796bf117c3761fa | dependency_revisions: none | spec_inputs: none | acceptance_results: AC-01 pass, AC-02 pass, AC-03 pass, AC-04 pass, AC-05 pass, AC-06 pass | findings: none | evidence: desktop_mcp.py 25/25 PASS, test_chord.py PASS, VM visual screenshots verified | next: merge
 
 ## 10. 待澄清事项
 
