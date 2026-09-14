@@ -11,6 +11,7 @@ render: "vue"
 // PLAN-008：桌面注册表展示字段（launcher/图标格标题与图标）。
 icon: "image"
 title: "UI Gallery"
+title_zh: "UI 画廊"
 front_port: 3049
 window: "1440x900"
 

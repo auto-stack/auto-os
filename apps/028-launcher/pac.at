@@ -17,5 +17,6 @@ render: "vue"
 front_port: 4028
 icon: "search"
 title: "Launcher"
+title_zh: "启动器"
 category: "system"
 desktop: "true"
