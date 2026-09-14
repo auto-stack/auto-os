@@ -484,6 +484,15 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 4 work 记录（第二批反馈 8 项）
+
+- `code_commit`（auto-lang os-016-dev）：`ba2f79360`（T-19/20/21 单提交）。
+- 迭代单根元素纪律入档：VM `for` 迭代多根 → 纵向堆叠（chevron 掉行根因）；
+  popover 不可入 mouse-area 子树（F-2 泄漏面）；两者均已写提交注记。
+- 实证：面包屑单行内联 chevron（p2-breadcrumb-inline.png）；列表行无泄漏、
+  无操作列、名称纯文本（p2 列表态截图同版式）。行交互（单击选中/双击打开/
+  整行右键/Enter）结构就位，交互手感留用户实机确认。
+
 ### 2026-09-14 修复轮 3（面包屑 Win11 风格 + 编辑入口实钮）
 
 - crumbs 加 chevron-right 分隔（末层无）；非 hover 态纯文本、hover 显按钮
