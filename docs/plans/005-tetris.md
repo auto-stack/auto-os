@@ -901,6 +901,23 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: keep Plan `executing`; independently review/land auto-lang `86dae6ba4`,
   then run the remaining mode and gallery gates before `/auto-plan:review`.
 
+
+### 2026-09-14 — execution follow-up / port allocation
+
+- stage: work
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: partial
+- code_commit: e18b791 (fix(tetris): move app ports off autoterm band)
+- change: Tetris pac.at now uses 17500/17501; README, Playwright default,
+  persistence probe default, and the canonical app Spec matrix use the same
+  ports. Repository search found no existing 17500/17501 registration.
+- evidence: git diff --check passed; all checked-in Tetris port references are
+  aligned. This removes the port collision only; R-001/R-005 native and gallery
+  acceptance blockers remain unchanged.
+- next: continue Plan 005 execution and re-review after the remaining acceptance
+  evidence is complete.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
