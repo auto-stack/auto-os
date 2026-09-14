@@ -162,7 +162,8 @@ widget App {
                                         style: "w-full flex items-center gap-3 px-4 py-3 bg-primary/15 text-foreground rounded-none cursor-pointer"
                                         col {
                                             style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
-                                            text r.mg { style: "text-sm font-bold ${r.tchip}" }
+                                            // PLAN-018 rev2：真图标——iconfile: 走位图臂，裸 lucide 名走 svg 臂
+                                            icon (name: r.icon) { style: "h-6 w-6" }
                                         }
                                         col {
                                             style: "flex flex-col"
@@ -178,7 +179,8 @@ widget App {
                                         style: "w-full flex items-center gap-3 px-4 py-3 bg-transparent text-foreground hover:bg-primary/10 rounded-none cursor-pointer"
                                         col {
                                             style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
-                                            text r.mg { style: "text-sm font-bold ${r.tchip}" }
+                                            // PLAN-018 rev2：真图标——iconfile: 走位图臂，裸 lucide 名走 svg 臂
+                                            icon (name: r.icon) { style: "h-6 w-6" }
                                         }
                                         col {
                                             style: "flex flex-col"
@@ -244,7 +246,8 @@ widget App {
                                         style: "flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/15 cursor-pointer"
                                         col {
                                             style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
-                                            text g.mg { style: "text-lg font-bold ${g.tchip}" }
+                                            // PLAN-018 rev2：真图标（同 palette）
+                                            icon (name: g.icon) { style: "h-7 w-7" }
                                         }
                                         text g.title { style: "text-primary text-xs text-center" }
                                     }
@@ -257,7 +260,8 @@ widget App {
                                         style: "flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-primary/10 cursor-pointer"
                                         col {
                                             style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
-                                            text g.mg { style: "text-lg font-bold ${g.tchip}" }
+                                            // PLAN-018 rev2：真图标（同 palette）
+                                            icon (name: g.icon) { style: "h-7 w-7" }
                                         }
                                         text g.title { style: "text-foreground text-xs text-center" }
                                     }
@@ -549,7 +553,7 @@ widget App {
             .gridrows = []
             var gi2 int = 0
             while gi2 < napps {
-                var row4 = { gi: .gridrows.len(), name: .apps_names[gi2], title: .apps_titles[gi2], mg: .apps_titles[gi2].slice(0, 1), category: .apps_cats[gi2], chip: "bg-[" + .apps_colors[gi2] + "21]", tchip: "text-[" + .apps_colors[gi2] + "]" }
+                var row4 = { gi: .gridrows.len(), name: .apps_names[gi2], title: .apps_titles[gi2], icon: .apps_icons[gi2], mg: .apps_titles[gi2].slice(0, 1), category: .apps_cats[gi2], chip: "bg-[" + .apps_colors[gi2] + "21]", tchip: "text-[" + .apps_colors[gi2] + "]" }
                 .gridrows.push(row4)
                 gi2 = gi2 + 1
             }
