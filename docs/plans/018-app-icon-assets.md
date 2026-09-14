@@ -306,6 +306,13 @@ palette/grid 的行视图从未渲染 icon 字段（色章 + 首字母为 463 �
   行渲染以 `icon (name: r.icon/g.icon)` 替换 `text r.mg` 首字母；gridrows
   行对象补 `icon: .apps_icons[gi2]`。icon 值 = boot 接线后的
   `iconfile:<stem>`（位图臂）或裸 lucide 名（svg 臂）——回退链自动覆盖。
+- **用户需求显式化（2026-09-14，rev2 追加两条）**：
+  ① launcher（palette/grid）必须显示 `assets/icons` 位图真图标，不得以
+  品牌色章+首字母充数（= T7 本体）；
+  ② 桌面图标格的快捷方式同样必须用 `assets/icons` 位图（= AC-4 桌面格
+  面 + T4 接线的直接消费结果；storage 已预置 27 id）。
+  两需求实现均在 `os-018-dev`；主干生效随 review→merge（主检出桌面当前
+  master 构建无位图臂，回退 lucide 属预期）。
 - **视觉复核待**：三轮实机截图受环境噪音阻断（①前台应用污染；②MCP
   9247 被并行会话 VM 实例占用致 FATAL，改 `AUTOUI_MCP_PORT=9461` 私有
   端口解决；③用户正实时使用桌面，反复起停叫停）。诊断探针已清除，
