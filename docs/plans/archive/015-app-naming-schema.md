@@ -381,6 +381,6 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
 | landed | auto-os main `2152dc1`；auto-lang master `d5acac7fd`（merge os-015-dev，cdc3ed46d 在祖先，并行会话代落地、本方核实祖先链）；auto-kanban/auto-term/auto-musk/auto-os-config/auto-down 各 main/master merge 提交（015 pac.at 单行批） |
 | ledger_refreshed | `.autoos/specs.json` P015-1..4 + P015-R1 五条目（reports/architecture/designs/tests/reviews；+25 行最小 diff） |
 | archived | 本件 git mv → docs/plans/archive/015-app-naming-schema.md，status: archived（completion_kind: delivered） |
-| cleaned | 见下方补记（wt-guard 五 worktree + 分支删除） |
+| cleaned | wt-guard 五 worktree 全 clean（auto-os/auto-down/auto-kanban/auto-musk/auto-os-config）→ worktree remove + 分支 os-015-dev 删除（74de56e/3320014/fc0434f/0a8d5ac/e924fff）→ `.wt/os-015/` 组目录移除，全组零残留；auto-lang/auto-term worktree 已先行由并行会话按同规程清除 |
 
 completion_kind: delivered
