@@ -484,6 +484,17 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 Phase 2（r2）work 记录：UX 反馈批 9 项全实施
+
+- `code_commit`（auto-lang os-016-dev）：`beb1ad124`（T-12..T-18 单提交）。
+- AC-15..22 全部实机验证：列表/网格双态截图（p2-list-final.png、
+  p2-grid-final.png）；双击打开结构就位（ondblclick，交互留用户实机）。
+- F-1（中文字体家族）/F-2（popover closed 泄漏）记框架债；F-2 的用户可见
+  面已随卡内 popover 移除消除。
+- tf/tv：按用户指示暂缓（首次失败 = D 盘瞬时空满 + ffi oracle 二进制
+  缺失，oracle ×5 已补构建；重跑待用户示下）。
+- 附加交付：盘符切换（侧栏「此电脑」组，C..Z exists 探测，用户修订需求）。
+
 ### 2026-09-14 修复轮 2（用户实机反馈：重复项 + 侧栏形态）
 
 - **重复项根因**：T-05 排序块的选择排序交换漏回写——`out[filled] = out[best]`
