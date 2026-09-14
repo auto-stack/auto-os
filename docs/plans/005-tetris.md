@@ -918,6 +918,24 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - next: continue Plan 005 execution and re-review after the remaining acceptance
   evidence is complete.
 
+
+### 2026-09-14 — execution follow-up / partial code landing
+
+- stage: work
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: partial
+- delivery_commit: 73413c5 (merge of integration commit a4bb893)
+- landed: apps/036-tetris, docs/specs/apps/tetris.md, manifest entry, README
+  registration, and the corrected 17500/17501 port allocation are now on
+  auto-os main; ancestry to a4bb893 verified.
+- acceptance: focused manifest/port checks and Python syntax checks passed.
+  This is a phase landing only; the Plan remains executing and is not archived.
+- blockers: R-001 and R-005 remain unchanged (complete cross-renderer/native
+  and desktop/gallery acceptance still required).
+- next: finish the remaining acceptance evidence, then run an independent
+  revision-2 review before merge/archive.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
