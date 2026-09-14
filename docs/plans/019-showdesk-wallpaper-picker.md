@@ -437,6 +437,11 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   auto-lang 2b0f51654（assets pin 同步 + vue 金样重生成）；scoped 22 测
   全绿（desktop_surface/w5/p010/desktop_injects/shell）。并入本计划
   merge。
+- 2026-09-14 走查反馈批 PLAN-019-FU2（同日第二查）：任务栏按钮内真实
+  图标放大——字标 text-lg→text-3xl（图标盒跟随按钮字号机制，18→30px
+  ≈+67%；框 h-10 / 行高 h-14 / layout 常量零影响），17 处按钮统一替换。
+  提交：auto-os fc30a51 / auto-lang 047b584f7（assets pin 同步）；shell
+  14 测绿。并入本计划 merge。
 
 ## 10. 待澄清事项
 
