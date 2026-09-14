@@ -155,6 +155,8 @@ widget KitchenSinkPage {
                 icon {}
                 icon (name: "sample") {}
                 icon (size: 1) {}
+                icon (state: "on") {}
+                icon (state: "off") {}
             }
 
             h2 "image"
