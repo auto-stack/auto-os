@@ -484,6 +484,11 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 5 补充：选中行纵向居中
+
+- 内行 `h-full`（框架 Fill 语义）未使内容居中——改显式 `h-11` 与
+  mouse-area 同高，items-center 生效。用户运行实例已含此修复（重选可见）。
+
 ### 2026-09-14 修复轮 5 work 记录（行交互/菜单实机反馈）
 
 - `code_commit`（auto-lang os-016-dev）：`35712be35`。
