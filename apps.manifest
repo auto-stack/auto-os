@@ -2,7 +2,6 @@
   "apps": [
     {
       "id": "kanban",
-      "name": "通用看板（v1 计划板）",
       "repo": "../auto-kanban",
       "kind": "repo",
       "ports": [17100, 17101],
@@ -11,7 +10,6 @@
     },
     {
       "id": "auto-musk",
-      "name": "Auto Musk（Coding Agent）",
       "repo": "../auto-musk",
       "kind": "repo",
       "ports": [17200, 17201],
@@ -25,7 +23,6 @@
     },
     {
       "id": "jade-garden",
-      "name": "Jade Garden（类 Obsidian 知识库）",
       "repo": "../auto-down/jade-garden/front/auto",
       "kind": "repo",
       "ports": [17300, 17301],
@@ -39,7 +36,6 @@
     },
     {
       "id": "auto-term",
-      "name": "AutoTerm（桌面终端）",
       "repo": "../auto-term/app",
       "kind": "repo",
       "ports": [17400, 17401],

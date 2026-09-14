@@ -807,6 +807,100 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - Plan 继续保持 `executing`；只有在具备上述原生/桌面验收能力并完成独立复审后，
   才能转 `reviewed` 并进入 `/auto-plan:merge`。
 
+### 2026-09-14 — review / revision 2（fit 自动尺寸复审）
+
+- stage: review
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: blocked
+- reviewed_commit: `66da4c78c46e1df0d6747ded0999f825ab724551`
+- base_commit: `6fb69564d81591c8666b1485de2aaaa97342d77a`
+- dependency_revisions: `auto-lang` master `34f86fa424e7c6f12d3b7e1fe7d62a301d12cf44`
+  （fit 测量容器改用隐藏 scrollbar；`cargo build -p auto` 通过）。主检出另有
+  其他计划的既有未提交文件，本次只提交并验证 renderer 单文件改动。
+- spec_inputs: Plan SHA-256 `CF6EA8A86932A29D27EB9772E65B6F319B692E5512D39689F3927E3F8E841B64`；
+  `docs/specs/apps/tetris.md`（应用 worktree）SHA-256
+  `596B7E0884F53B56C2834E22F7E2CA14B98CE6D06BDA614AAF0B27A09432AB70`；
+  `.autoos/specs.json` SHA-256
+  `CDE7340E2D51703BBEB85FA6DFFFBA9D893F706FB69A8E6C73416B4EB6F2818D`。
+- independence: 本次复审在同一执行会话内完成，非独立审查会话；结论由当前
+  应用 worktree、依赖提交、生成物和可复跑命令结果重建。
+- acceptance_results:
+  - AC-01: partial — `run_matrix.py --all-modes` 的源码、转译、生成、Cargo、
+    后端和持久化能力为 supported；VM MCP/native/gameplay/visual 仍有 blocked，
+    M1–M7 完整真实进程、网络和业务等价矩阵未闭合。
+  - AC-02: partial — `rules_golden` 为 2 passed，覆盖 opening/lock 与 1/2/3/4
+    行计分、压缩；7×4 形态/28 旋转全量 golden 与 VM 夹具注入仍缺失。
+  - AC-03: partial — 20ms Tick、键盘单键和暂停动作有证据；按住重复、keyup、
+    失焦清理、三轨真实计时和物理输入仍没有可复跑证据。
+  - AC-04: partial — 新运行时 `Scrollbar::hidden()` 修复后，VM merged 首屏截图
+    观察到自动收缩、中央 Dialog 且无 fit 测量滚动条；Iced Modal 定向测试 5 passed。
+    360×720/320 宽、深浅主题和稳定逐像素夹具仍未完成。
+  - AC-05: partial — Rust/VM MCP 已有 ready→playing、方向键、硬降和暂停状态证据；
+    Playwright 入口可列出 3 个用例，但当前环境实际运行因 Chromium 可执行文件缺失，
+    完整三轨状态、焦点和背景输入拦截仍未证明。
+  - AC-06: partial — HTTP 与 no-merge 持久化低分保护、版本化写入、保存 ACK 和
+    跨进程重启读取通过；merged 重启、损坏/只读、并发最大值和跨模式数据根仍缺证据。
+  - AC-07: blocked — `gallery_contract.py` 仍报告 `05-games` 画廊缺失且产品 app
+    不在当前 gallery scan root；桌面发现、打开和开局没有真实可控证据。
+  - AC-08: partial — 应用 worktree 已恢复干净，fit 运行时提交可绑定，能力矩阵与
+    Spec 输入可复核；当前环境的浏览器二进制缺失以及完整原生/桌面证据仍未闭合。
+- findings:
+  - `R-001` blocker（AC-01/02/03/04/05/06/07）：规则全量 golden、三轨 M1–M7
+    完整矩阵、按住/keyup/失焦、物理输入、窄窗/主题夹具仍未完成。`rules_golden`
+    与 MCP 状态冒烟只能证明已有子集，不能升级为完整通过。
+  - `R-005` blocker（AC-01/03/04/05/07）：高端口 VM MCP 当前可连接且 fit 截图已验证，
+    但仍没有可接管的真实顶层窗口/物理输入驱动，也没有桌面与 `05-games` 画廊真实
+    发现/开局和稳定像素验收；不能以 MCP 结构快照替代这些门。
+- evidence:
+  - `python -B tests/run_matrix.py --all-modes`：持久化 supported、Rust rules golden
+    supported；VM rules fixture 与 native/gameplay/visual 明确 blocked。
+  - `node_modules/.bin/playwright.cmd test --list`：列出 3 个用例；实际运行因缺少
+    Chromium 可执行文件未启动，既有 `3 passed` 记录仍保留为历史证据。
+  - `cargo test -p auto-lang --features iced-layout-tests popover_modal_ -- --nocapture`：
+    5 passed；VM merged MCP `autoui_snapshot` 返回 `Tetris VM MCP snapshot OK`，
+    `autoui_screenshot` 首屏观察到中央 Dialog、自动收缩且无可见 fit 滚动条。
+  - 应用 worktree `D:/autostack/.wt/os-005/auto-os`：clean；依赖 renderer 修复提交
+    `34f86fa424e7c6f12d3b7e1fe7d62a301d12cf44` 已提交。
+- next: Plan 保持 `executing`；先解除 `R-001`/`R-005`，完成完整规则与模式矩阵、
+  原生物理/像素和桌面画廊验收后，再重新复审；本次不进入 `/auto-plan:merge`。
+
+### 2026-09-14 — execution follow-up / native VM focus and input gate
+
+- stage: work
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: partial
+- code_commits: app `df4ee1f`/`7091fa6`, evidence refresh `44f6933`/`20bef67`; auto-lang prerequisite
+  `86dae6ba4` (`fix(ui): route opt-in app blur lifecycle events`)
+- task_ids: T1, T5, T6
+- evidence:
+  - `cargo check -p auto-lang` and full `cargo build -p auto` pass on the
+    dependency revision.
+  - A real VM merged window on MCP `9273` passed
+    `python -B tests/native_focus_probe.py --mcp-url http://127.0.0.1:9273/mcp`:
+    six physical key-down packets during a 750 ms hold, explicit key-up,
+    `px=3→0`, and focus transfer to another visible window resulting in
+    `phase="paused"`. Focus restoration did not resume play.
+  - The refreshed native sequence on MCP `9274` starts from the ready Dialog,
+    sends `ArrowLeft`, `ArrowRight`, `ArrowDown`, `Space`, and `P` with
+    key-down/key-up pairs, and records the focus transition in
+    `tests/evidence/native-input-live.json`.
+  - `tests/evidence/vm-ready-modal-live.png` shows the ready Dialog centered
+    over the dimmed board; `tests/evidence/capabilities.md` binds the live MCP
+    endpoint and native driver.
+  - Rust `rules_golden` now passes 3 tests, including all seven pieces × four
+    rotations and one through four line-clear score/compaction cases.
+- blockers:
+  - VM fixture injection is still unavailable through AutoUI MCP, so the same
+    full rules golden cannot yet be run against the VM implementation.
+  - The complete M1–M7 cross-mode business matrix, persistence fault/concurrency
+    cases, and stable narrow-window/theme pixel fixtures remain unexecuted.
+  - Desktop discovery and the `05-games` gallery are still external to the
+    current app scan root/category and remain blocked by `gallery_contract.py`.
+- next: keep Plan `executing`; independently review/land auto-lang `86dae6ba4`,
+  then run the remaining mode and gallery gates before `/auto-plan:review`.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |

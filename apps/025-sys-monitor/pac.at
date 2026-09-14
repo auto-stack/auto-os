@@ -9,7 +9,8 @@ description: "任务管理器式系统监视器——真实系统数据（sysinf
 
 scene: "ui"
 render: "vue"
-title: "系统监视器"
+title: "System Monitor"
+title_zh: "系统监视器"
 icon: "activity"
 category: "system"
 front_port: 4025
