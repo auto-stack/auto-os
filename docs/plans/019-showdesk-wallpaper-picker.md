@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-019
-status: executing             # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: showdesk-wallpaper-picker
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -397,7 +397,9 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   - **残余（review 门）**：实机冒烟清单已落 SD spec「验证」节（shell 宿主
     无 VM/MCP 通道，per-app harness 不适用——范围调整记录在案）；AC-01/03/
     04/05/06/07/08 的实机侧待复审/用户走查确认。
-  - next: review（`/auto-plan:review`）。
+  - **outcome: pass → status execution_done**。全部任务完成、范围调整
+    （实机冒烟清单承载）与预存红清点均有案，无阻塞问题。next: review
+    （`/auto-plan:review`）。
 
 ## 10. 待澄清事项
 
