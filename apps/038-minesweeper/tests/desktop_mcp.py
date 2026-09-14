@@ -58,6 +58,8 @@ def pick_free_port(start=MCP_PORT_DEFAULT):
 
 _AUTO_BIN = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..",
                          "target", "debug", "auto.exe")
+if not os.path.exists(_AUTO_BIN):
+    _AUTO_BIN = r"d:\autostack\auto-lang\target\debug\auto.exe"
 AUTO_BIN = os.environ.get("AUTO_BIN", _AUTO_BIN)
 MINES_PROJECT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -204,18 +206,19 @@ def run_tests_038(mcp_url):
     reveal_ids = find_buttons_by_label(snap, "　")
     result.check("81 covered cell buttons", len(reveal_ids) == 81,
                  f"got {len(reveal_ids)}")
-    result.check("Reset button bound", find_buttons_by_label(snap, "🔄") != [],
-                 "missing")
+    face_ids = find_buttons_by_label(snap, "🙂") or find_buttons_by_label(snap, "🔄")
+    result.check("Reset button bound", face_ids != [], "missing")
     # G3 crash-fix witness: the multi-byte labels render at all.
     result.check("emoji labels render (UTF-8 fix)", "💣" in snap and "⏱" in snap,
                  "highlight_code panic regression")
 
     # T2: initial state.
     print("\nT2: Initial State")
-    state = mcp.state("game_state", "rows", "cols", "mine_count", "elapsed")
+    state = mcp.state("game_state", "rows", "cols", "mine_count", "elapsed", "face_icon")
     result.check("game_state ready", 'game_state: "ready"' in state, state)
     result.check("rows 9 / cols 9", "rows: 9" in state and "cols: 9" in state, state)
     result.check("mine_count 10", "mine_count: 10" in state, state)
+    result.check("face_icon smiley (🙂)", 'face_icon: "🙂"' in state, state)
 
     # T3: first click at cell 36 (4,4) — first-click-safe mine placement,
     # then flood-fill. Pinned OBSERVED deterministic values (see header):
@@ -253,8 +256,9 @@ def run_tests_038(mcp_url):
     print("\nT4: Mine Click → Lost (all mines revealed)")
     r = mcp.click(reveal_ids[3])
     result.check("mine click status ok", "status: ok" in r, r)
-    state = mcp.state("game_state")
+    state = mcp.state("game_state", "face_icon")
     result.check("game_state lost", 'game_state: "lost"' in state, state)
+    result.check("face_icon dizzy (😵)", 'face_icon: "😵"' in state, state)
     snap3 = mcp.snapshot()
     hist3 = count_button_labels(snap3)
     result.check("all 10 mines display 💣", hist3["bombs"] == 10,
@@ -262,14 +266,15 @@ def run_tests_038(mcp_url):
 
     # T5: reset restores a fresh board.
     print("\nT5: Reset")
-    reset_ids = find_buttons_by_label(snap3, "🔄")
+    reset_ids = find_buttons_by_label(snap3, "😵") or find_buttons_by_label(snap3, "🙂") or find_buttons_by_label(snap3, "🔄")
     reset_btn = reset_ids[0] if reset_ids else None
     if reset_btn is None:
         result.skip("reset", "Reset button not found")
     else:
         mcp.click(reset_btn)
-        state = mcp.state("game_state", "elapsed")
+        state = mcp.state("game_state", "elapsed", "face_icon")
         result.check("game_state ready after reset", 'game_state: "ready"' in state, state)
+        result.check("face_icon smiley after reset (🙂)", 'face_icon: "🙂"' in state, state)
         snap4 = mcp.snapshot()
         hist4 = count_button_labels(snap4)
         result.check("board fully re-covered (81 '　')", hist4["unrevealed"] == 81,

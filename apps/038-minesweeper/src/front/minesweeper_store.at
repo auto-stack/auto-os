@@ -22,6 +22,7 @@ store MinesweeperStore {
         var game_state str = "ready"
         var elapsed int = 0
         var flags_placed int = 0
+        var face_icon str = "🙂"
         // Precomputed view strings (VM view bindings cannot call functions).
         var mines_label str = "💣 10"
         var timer_label str = "⏱ 0s"
@@ -65,29 +66,30 @@ store MinesweeperStore {
             .game_state = "ready"
             .elapsed = 0
             .flags_placed = 0
+            .face_icon = "🙂"
             .board = []
             var x int = 0
             for x < .rows {
                 var y int = 0
                 for y < .cols {
-                    .board.push({ x: x, y: y, mine: false, revealed: false, flagged: false, adjacent: 0, number_class: "", cell_class: "w-8 h-8 flex items-center justify-center select-none bg-gray-400 hover:bg-gray-500 border border-gray-500", display: "　" })
+                    .board.push({ x: x, y: y, mine: false, revealed: false, flagged: false, adjacent: 0, number_class: "", cell_class: "w-8 h-8 flex items-center justify-center select-none bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-800 border border-zinc-600 rounded-none text-zinc-100", display: "　" })
                     y = y + 1
                 }
                 x = x + 1
             }
             .mines_label = "💣 " + .mine_count.to_string()
             .timer_label = "⏱ 0s"
-            .beginner_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-            .intermediate_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-            .expert_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+            .beginner_class = "px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+            .intermediate_class = "px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+            .expert_class = "px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
             if .difficulty == "beginner" {
-                .beginner_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-blue-600 text-white border-blue-700"
+                .beginner_class = "px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-700 text-white shadow-sm border border-zinc-600/50"
             }
             if .difficulty == "intermediate" {
-                .intermediate_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-blue-600 text-white border-blue-700"
+                .intermediate_class = "px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-700 text-white shadow-sm border border-zinc-600/50"
             }
             if .difficulty == "expert" {
-                .expert_class = "px-3 py-1.5 rounded-lg text-sm font-semibold border bg-blue-600 text-white border-blue-700"
+                .expert_class = "px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-700 text-white shadow-sm border border-zinc-600/50"
             }
         }
 
@@ -172,13 +174,175 @@ store MinesweeperStore {
                 .game_state = "playing"
             }
 
-            // Look up the clicked cell; ignore flagged / already-revealed.
+            // Look up the clicked cell; ignore flagged.
             var tidx int = x * .cols + y
             var target = .board[tidx]
             if target.flagged {
                 return
             }
+
+            // Chord: if clicking an already-revealed numbered cell, and flag count matches adjacent count,
+            // automatically reveal surrounding unflagged unrevealed cells!
             if target.revealed {
+                if target.adjacent > 0 {
+                    var flag_count int = 0
+                    var cdx int = -1
+                    for cdx <= 1 {
+                        var cdy int = -1
+                        for cdy <= 1 {
+                            if cdx != 0 || cdy != 0 {
+                                var cnx int = x + cdx
+                                var cny int = y + cdy
+                                if cnx >= 0 && cnx < .rows && cny >= 0 && cny < .cols {
+                                    if .board[cnx * .cols + cny].flagged {
+                                        flag_count = flag_count + 1
+                                    }
+                                }
+                            }
+                            cdy = cdy + 1
+                        }
+                        cdx = cdx + 1
+                    }
+                    if flag_count == target.adjacent {
+                        var hit_mine bool = false
+                        var ndx int = -1
+                        for ndx <= 1 {
+                            var ndy int = -1
+                            for ndy <= 1 {
+                                if ndx != 0 || ndy != 0 {
+                                    var nnx int = x + ndx
+                                    var nny int = y + ndy
+                                    if nnx >= 0 && nnx < .rows && nny >= 0 && nny < .cols {
+                                        var nidx int = nnx * .cols + nny
+                                        var nc = .board[nidx]
+                                        if nc.revealed == false && nc.flagged == false {
+                                            if nc.mine {
+                                                hit_mine = true
+                                            }
+                                        }
+                                    }
+                                }
+                                ndy = ndy + 1
+                            }
+                            ndx = ndx + 1
+                        }
+                        if hit_mine {
+                            var k int = 0
+                            for k < .board.len() {
+                                if .board[k].mine {
+                                    var ck = .board[k]
+                                    var c_class str = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800 rounded-none text-base"
+                                    if ck.x == x && ck.y == y {
+                                        c_class = "w-8 h-8 flex items-center justify-center select-none bg-rose-950 border-2 border-rose-500 rounded-none text-base"
+                                    }
+                                    .board[k] = { x: ck.x, y: ck.y, mine: true, revealed: true, flagged: ck.flagged, adjacent: ck.adjacent, number_class: "color:#fff;font-weight:700", cell_class: c_class, display: "💣" }
+                                }
+                                k = k + 1
+                            }
+                            .game_state = "lost"
+                            .face_icon = "😵"
+                            return
+                        }
+                        var stack = []
+                        var rdx int = -1
+                        for rdx <= 1 {
+                            var rdy int = -1
+                            for rdy <= 1 {
+                                if rdx != 0 || rdy != 0 {
+                                    var rnx int = x + rdx
+                                    var rny int = y + rdy
+                                    if rnx >= 0 && rnx < .rows && rny >= 0 && rny < .cols {
+                                        var ridx int = rnx * .cols + rny
+                                        var rc = .board[ridx]
+                                        if rc.revealed == false && rc.flagged == false {
+                                            stack.push(rnx)
+                                            stack.push(rny)
+                                        }
+                                    }
+                                }
+                                rdy = rdy + 1
+                            }
+                            rdx = rdx + 1
+                        }
+                        for stack.len() > 0 {
+                            var cy int = stack.pop()
+                            var cx int = stack.pop()
+                            if cx >= 0 && cx < .rows && cy >= 0 && cy < .cols {
+                                var fidx int = cx * .cols + cy
+                                var fc = .board[fidx]
+                                if fc.revealed == false && fc.flagged == false {
+                                    var nclass str = "color:#60a5fa;font-weight:700;font-size:1.125rem"
+                                    var cclass str = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none font-bold text-base"
+                                    if fc.adjacent == 1 {
+                                        nclass = "color:#60a5fa;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-blue-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 2 {
+                                        nclass = "color:#34d399;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-emerald-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 3 {
+                                        nclass = "color:#f87171;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-rose-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 4 {
+                                        nclass = "color:#c084fc;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-purple-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 5 {
+                                        nclass = "color:#fbbf24;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-amber-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 6 {
+                                        nclass = "color:#22d3ee;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-cyan-400 font-bold text-base"
+                                    }
+                                    if fc.adjacent == 7 {
+                                        nclass = "color:#e4e4e7;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-zinc-200 font-bold text-base"
+                                    }
+                                    if fc.adjacent >= 8 {
+                                        nclass = "color:#f472b6;font-weight:700;font-size:1.125rem"
+                                        cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-pink-400 font-bold text-base"
+                                    }
+                                    var dpy str = " "
+                                    if fc.adjacent > 0 {
+                                        dpy = fc.adjacent.to_string()
+                                    }
+                                    .board[fidx] = { x: fc.x, y: fc.y, mine: fc.mine, revealed: true, flagged: fc.flagged, adjacent: fc.adjacent, number_class: nclass, cell_class: cclass, display: dpy }
+                                    if fc.adjacent == 0 {
+                                        var ex int = -1
+                                        for ex <= 1 {
+                                            var ey int = -1
+                                            for ey <= 1 {
+                                                if ex != 0 || ey != 0 {
+                                                    stack.push(cx + ex)
+                                                    stack.push(cy + ey)
+                                                }
+                                                ey = ey + 1
+                                            }
+                                            ex = ex + 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        var won bool = true
+                        var w int = 0
+                        for w < .board.len() {
+                            if .board[w].mine == false {
+                                if .board[w].revealed == false {
+                                    won = false
+                                }
+                            }
+                            w = w + 1
+                        }
+                        if won {
+                            .game_state = "won"
+                            .face_icon = "😎"
+                        }
+                    }
+                }
                 return
             }
 
@@ -188,11 +352,16 @@ store MinesweeperStore {
                 for k < .board.len() {
                     if .board[k].mine {
                         var ck = .board[k]
-                        .board[k] = { x: ck.x, y: ck.y, mine: true, revealed: true, flagged: ck.flagged, adjacent: ck.adjacent, number_class: "color:#000;font-weight:700;font-size:1.125rem", cell_class: "w-8 h-8 flex items-center justify-center select-none bg-white border border-gray-200", display: "💣" }
+                        var c_class str = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800 rounded-none text-base"
+                        if ck.x == x && ck.y == y {
+                            c_class = "w-8 h-8 flex items-center justify-center select-none bg-rose-950 border-2 border-rose-500 rounded-none text-base"
+                        }
+                        .board[k] = { x: ck.x, y: ck.y, mine: true, revealed: true, flagged: ck.flagged, adjacent: ck.adjacent, number_class: "color:#fff;font-weight:700", cell_class: c_class, display: "💣" }
                     }
                     k = k + 1
                 }
                 .game_state = "lost"
+                .face_icon = "😵"
                 return
             }
 
@@ -208,36 +377,45 @@ store MinesweeperStore {
                     var fc = .board[fidx]
                     if fc.revealed == false && fc.flagged == false {
                         // Reveal it with its number color class.
-                        var nclass str = ""
+                        var nclass str = "color:#60a5fa;font-weight:700;font-size:1.125rem"
+                        var cclass str = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none font-bold text-base"
                         if fc.adjacent == 1 {
-                            nclass = "color:#1d4ed8;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#60a5fa;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-blue-400 font-bold text-base"
                         }
                         if fc.adjacent == 2 {
-                            nclass = "color:#15803d;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#34d399;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-emerald-400 font-bold text-base"
                         }
                         if fc.adjacent == 3 {
-                            nclass = "color:#b91c1c;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#f87171;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-rose-400 font-bold text-base"
                         }
                         if fc.adjacent == 4 {
-                            nclass = "color:#6b21a8;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#c084fc;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-purple-400 font-bold text-base"
                         }
                         if fc.adjacent == 5 {
-                            nclass = "color:#9a3412;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#fbbf24;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-amber-400 font-bold text-base"
                         }
                         if fc.adjacent == 6 {
-                            nclass = "color:#0f766e;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#22d3ee;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-cyan-400 font-bold text-base"
                         }
                         if fc.adjacent == 7 {
-                            nclass = "color:#111827;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#e4e4e7;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-zinc-200 font-bold text-base"
                         }
                         if fc.adjacent >= 8 {
-                            nclass = "color:#9d174d;font-weight:700;font-size:1.125rem"
+                            nclass = "color:#f472b6;font-weight:700;font-size:1.125rem"
+                            cclass = "w-8 h-8 flex items-center justify-center select-none bg-zinc-900 border border-zinc-800/80 rounded-none text-pink-400 font-bold text-base"
                         }
                         var dpy str = " "
                         if fc.adjacent > 0 {
                             dpy = fc.adjacent.to_string()
                         }
-                        .board[fidx] = { x: fc.x, y: fc.y, mine: fc.mine, revealed: true, flagged: fc.flagged, adjacent: fc.adjacent, number_class: nclass, cell_class: "w-8 h-8 flex items-center justify-center select-none bg-white border border-gray-200", display: dpy }
+                        .board[fidx] = { x: fc.x, y: fc.y, mine: fc.mine, revealed: true, flagged: fc.flagged, adjacent: fc.adjacent, number_class: nclass, cell_class: cclass, display: dpy }
                         // Empty cell: push 8 neighbors to keep flooding.
                         if fc.adjacent == 0 {
                             var ex int = -1
@@ -270,6 +448,7 @@ store MinesweeperStore {
             }
             if won {
                 .game_state = "won"
+                .face_icon = "😎"
             }
         }
 
@@ -284,11 +463,13 @@ store MinesweeperStore {
             var fc = .board[fidx]
             if fc.revealed == false {
                 var new_flag bool = fc.flagged == false
-                var new_dpy str = " "
+                var new_dpy str = "　"
+                var new_class str = "w-8 h-8 flex items-center justify-center select-none bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-800 border border-zinc-600 rounded-none text-zinc-100"
                 if new_flag {
                     new_dpy = "🚩"
+                    new_class = "w-8 h-8 flex items-center justify-center select-none bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-800 border border-zinc-600 rounded-none text-rose-400 text-base"
                 }
-                .board[fidx] = { x: fc.x, y: fc.y, mine: fc.mine, revealed: fc.revealed, flagged: new_flag, adjacent: fc.adjacent, number_class: fc.number_class, cell_class: fc.cell_class, display: new_dpy }
+                .board[fidx] = { x: fc.x, y: fc.y, mine: fc.mine, revealed: fc.revealed, flagged: new_flag, adjacent: fc.adjacent, number_class: fc.number_class, cell_class: new_class, display: new_dpy }
                 if new_flag {
                     .flags_placed = .flags_placed + 1
                 } else {

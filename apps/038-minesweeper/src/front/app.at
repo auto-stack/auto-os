@@ -15,91 +15,85 @@ widget App {
         var mounted int = 0
     }
 
-    // Plan 506: 外壳改"内容即页面"（无 center 包裹，循 011 样板），配合
-    // pac `window: "fit"` 窗口随内容收缩（棋盘尺寸随难度档变化，fit 窗
-    // 在 launch 时按当帧内容收缩）。
+    // Plan 506 & Plan 017: 外壳"内容即页面"，配合 pac `window: "fit"` 窗口随内容收缩。
+    // PLAN-017 UI/UX 现代化重构：深色现代仪表板 + 表情状态机 + 分段难度控件 + 无缝网格。
     view {
         col {
-                // —— 信息栏 ——
+            // —— 顶栏信息与 LCD 仪表板 ——
+            row {
+                // 剩余雷数 LCD 盒
                 row {
-                    col {
-                        text .store.mines_label {
-                            style: "text-2xl font-bold text-gray-800"
-                        }
-                        text "mines left" {
-                            style: "text-xs text-gray-500 uppercase tracking-wide"
-                        }
-                        style: "items-center"
+                    text .store.mines_label {
+                        style: "text-base font-bold font-mono text-rose-400"
                     }
-                    col {
-                        text .store.timer_label {
-                            style: "text-2xl font-bold font-mono text-gray-800"
-                        }
-                        text "time" {
-                            style: "text-xs text-gray-500 uppercase tracking-wide"
-                        }
-                        style: "items-center"
-                    }
-                    button "🔄" {
-                        onclick: .Reset,
-                        style: "text-3xl px-4 py-2 rounded-xl hover:bg-gray-100"
-                    }
-                    style: "items-center justify-between"
+                    style: "bg-zinc-950 border border-zinc-800 px-3 py-1.5 rounded-xl items-center shadow-inner"
                 }
 
-                // —— 难度选择 ——
-                row {
-                    button "初级 9×9" {
-                        onclick: .SetDifficulty("beginner"),
-                        class: .store.beginner_class
-                    }
-                    button "中级 16×16" {
-                        onclick: .SetDifficulty("intermediate"),
-                        class: .store.intermediate_class
-                    }
-                    button "高级 30×16" {
-                        onclick: .SetDifficulty("expert"),
-                        class: .store.expert_class
-                    }
-                    style: "gap-2"
+                // 表情重开按钮
+                button .store.face_icon {
+                    onclick: .Reset,
+                    style: "text-2xl px-3.5 py-1 bg-zinc-800 hover:bg-zinc-700 active:scale-95 rounded-xl border border-zinc-700 shadow-md"
                 }
 
-                // —— 棋盘网格 ——
-                // Plan 448 I: cols 接受动态表达式(store.cols 随难度档 9/16/30),
-                // 单块替换原先三份固定字面量条件块。vue 侧发内联
-                // grid-template-columns repeat 样式(动态 Tailwind 类名不被
-                // JIT 收录);VM 侧重建期求值(→ View::Grid{cols})。
-                div {
-                    grid {
-                        for cell in .store.board {
-                            button {
-                                text cell.display {
-                                    style: cell.number_class
-                                }
-                                onclick: .Reveal(cell.x, cell.y),
-                                oncontextmenu.prevent: .Flag(cell.x, cell.y),
-                                class: cell.cell_class
+                // 计时器 LCD 盒
+                row {
+                    text .store.timer_label {
+                        style: "text-base font-bold font-mono text-amber-400"
+                    }
+                    style: "bg-zinc-950 border border-zinc-800 px-3 py-1.5 rounded-xl items-center shadow-inner"
+                }
+                style: "w-full items-center justify-between"
+            }
+
+            // —— 难度分段选择器 ——
+            row {
+                button "初级 9×9" {
+                    onclick: .SetDifficulty("beginner"),
+                    class: .store.beginner_class
+                }
+                button "中级 16×16" {
+                    onclick: .SetDifficulty("intermediate"),
+                    class: .store.intermediate_class
+                }
+                button "高级 30×16" {
+                    onclick: .SetDifficulty("expert"),
+                    class: .store.expert_class
+                }
+                style: "bg-zinc-900 border border-zinc-800 p-1 rounded-xl gap-1 items-center"
+            }
+
+            // —— 棋盘网格 ——
+            div {
+                grid {
+                    for cell in .store.board {
+                        button {
+                            text cell.display {
+                                style: cell.number_class
                             }
+                            onclick: .Reveal(cell.x, cell.y),
+                            oncontextmenu.prevent: .Flag(cell.x, cell.y),
+                            class: cell.cell_class
                         }
-                        cols: .store.cols
-                        gap: 0
                     }
-                    style: "items-center"
+                    cols: .store.cols
+                    gap: 0
                 }
+                style: "p-1.5 bg-zinc-950/80 border border-zinc-800 rounded-xl shadow-2xl items-center"
+            }
 
-                // —— 游戏结束遮罩 ——
-                if .store.game_state == "won" {
-                    text "🎉 胜利!" {
-                        style: "text-3xl font-bold text-green-600 mt-6"
-                    }
+            // —— 游戏状态提示 ——
+            if .store.game_state == "won" {
+                text "🎉 胜利! 所有地雷已排除" {
+                    style: "text-lg font-bold text-emerald-400 mt-1"
                 }
-                if .store.game_state == "lost" {
-                    text "💥 踩雷了!点 🔄 重开" {
-                        style: "text-2xl font-bold text-red-600 mt-6"
-                    }
+            }
+            if .store.game_state == "lost" {
+                text "💥 踩雷了! 点表情重开" {
+                    style: "text-lg font-bold text-rose-500 mt-1"
                 }
+            }
 
-            style: "max-w-fit p-4 items-center gap-4"
+            style: "max-w-fit p-4 items-center gap-3.5 bg-zinc-900/40 rounded-2xl border border-zinc-800/60"
         }
     }
 
