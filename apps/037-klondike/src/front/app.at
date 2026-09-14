@@ -3,135 +3,469 @@ use klondike_store: KlondikeStore
 widget App {
     msg {
         Init,
+        NewGame,
+        DebugWinDeal,
         SetSkinVector,
         SetSkinSvg,
-        DrawStock,
-        ResetDeck,
-        SelectCard(int)
+        ClickStock,
+        ClickWaste,
+        ClickFoundation(int),
+        ClickColCard(int, int),
+        ClickEmptyCol(int),
+        AutoSendWaste,
+        AutoSendCol(int),
+        AutoSendAll,
+        Undo,
+        Tick
     }
 
     model {
-        var dummy int = 0
+        var interval int = 1000
     }
 
     view {
         col {
-            style: "min-h-screen bg-slate-950 text-slate-100 p-6 gap-6"
+            style: "min-h-screen bg-slate-950 text-slate-100 p-5 gap-5 select-none"
 
-            // 顶栏：标题、模式切换与皮肤控制
+            // 顶栏：标题、用时/步数、控制按钮与皮肤切换
             row {
-                style: "items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm"
+                style: "items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex-wrap gap-4"
                 row {
                     style: "items-center gap-3"
                     icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
                     col {
-                        text "AutoOS 纸牌接龙 — 牌面自绘与皮肤包架构" { style: "text-lg font-bold text-slate-100" }
-                        text "双通道交互 + 矢量自绘 + 外部 SVG 皮肤包扩展接口" { style: "text-xs text-slate-400" }
+                        text "AutoOS 纸牌接龙 (Klondike Solitaire)" { style: "text-lg font-bold text-slate-100" }
+                        text "双通道交互 · 52张标准接龙 · 自动收牌与单步撤销" { style: "text-xs text-slate-400" }
                     }
                 }
 
-                // 皮肤包切换器
+                // 状态指标：用时 & 步数 & 最佳纪录
+                row {
+                    style: "items-center gap-6 bg-slate-950/60 border border-slate-800 rounded-lg px-4 py-1.5"
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
+                        text "用时: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
+                    }
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
+                        text "步数: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
+                    }
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
+                        text "最佳: " { style: "text-xs text-slate-400 font-medium" }
+                        text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
+                    }
+                }
+
+                // 操作按钮组
                 row {
                     style: "items-center gap-2"
-                    text "当前皮肤：" { style: "text-xs text-slate-400 font-medium" }
+                    button "撤销 (Undo)" {
+                        onclick: .Undo
+                        class: .store.undo_btn_class
+                    }
+                    button "自动收牌 (Auto)" {
+                        onclick: .AutoSendAll
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
+                    }
+                    button "新对局" {
+                        onclick: .NewGame
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
+                    }
+                    button "必胜测试" {
+                        onclick: .DebugWinDeal
+                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+                    }
+                }
+
+                // 皮肤包切换
+                row {
+                    style: "items-center gap-2"
                     button "自绘矢量 (Vector)" {
                         onclick: .SetSkinVector
                         class: .store.btn_vector_class
                     }
-                    button "外部 SVG 皮肤包 (SVG Skin)" {
+                    button "SVG皮肤包" {
                         onclick: .SetSkinSvg
                         class: .store.btn_svg_class
                     }
                 }
             }
 
-            // 区域一：52 张典型牌面自绘展台（Sample Gallery）
-            col {
-                style: "bg-slate-900 border border-slate-800 rounded-xl p-5 gap-4 shadow-sm"
-                row {
-                    style: "items-center justify-between"
-                    row {
-                        style: "items-center gap-2"
-                        icon (name: "sparkles", class: "w-4 h-4 text-amber-400") {}
-                        text "牌面形态展台 (Cards Showcase)" { style: "text-sm font-semibold text-slate-200" }
-                        text "（展示 A、人头牌 J/Q/K、数字牌、选中高亮与盖牌样式）" { style: "text-xs text-slate-400" }
+            // 胜利结算横幅 (仅在获胜时展示)
+            if .store.game_state == "won" {
+                col {
+                    style: "bg-emerald-900/90 border-2 border-emerald-400 rounded-2xl p-6 items-center justify-center gap-3 shadow-2xl text-center"
+                    text "🏆 恭喜通关！所有 52 张纸牌已集齐归位！" { style: "text-2xl font-bold text-amber-300" }
+                    text "完赛耗时: " + .store.timer_label + "  |  总用步数: " + .store.moves_label { style: "text-sm text-emerald-100 font-mono" }
+                    text "历史最佳: " + .store.best_record_label + "  |  累计胜场: " + .store.games_won_label + " 局" { style: "text-xs text-amber-200 font-mono" }
+                    button "开启新对局 (Play Again)" {
+                        onclick: .NewGame
+                        class: "mt-2 px-6 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg cursor-pointer text-sm"
                     }
-                    text "点击卡片可测试选中高亮与提拉效果" { style: "text-xs text-indigo-400 font-medium" }
                 }
+            }
 
-                // 卡牌横排展示
+            // 主牌桌：祖母绿毛毡绿桌背景
+            col {
+                style: "bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-6 gap-6 shadow-2xl flex-1"
+
+                // 顶排：发牌堆/弃牌堆 (左) + 4 基础堆 (右)
                 row {
-                    style: "gap-4 items-center flex-wrap pt-2"
-                    for card in .store.showcase_cards {
+                    style: "items-start justify-between"
+
+                    // 左侧：发牌堆与弃牌堆
+                    row {
+                        style: "gap-4 items-center"
+
+                        // 发牌堆 (Stock)
                         button {
-                            key: card.id
-                            onclick: .SelectCard(card.id)
+                            onclick: .ClickStock
                             style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
-
-                            // 单牌渲染
                             col {
-                                class: card.card_class
-
-                                // 模式 A：自绘矢量排版
-                                if .store.skin_mode == "vector" {
-                                    if card.is_face_down {
-                                        // 牌背花纹
+                                if .store.stock_count > 0 {
+                                    col {
+                                        style: "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative cursor-pointer select-none"
                                         col {
-                                            style: "w-[64px] h-[92px] rounded border border-indigo-300/30 dark:border-slate-500/30 items-center justify-center bg-indigo-800/50 dark:bg-slate-700/40"
-                                            icon (name: "layers", class: "w-6 h-6 text-indigo-200/60 dark:text-slate-400") {}
+                                            style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/50"
+                                            icon (name: "layers", class: "w-6 h-6 text-indigo-200") {}
                                         }
-                                    }
-                                    if !card.is_face_down {
-                                        // 1. 左上角标：点数 + 迷你花色
-                                        col {
-                                            style: "items-center w-4 gap-0.5 leading-none"
-                                            text card.rank_text {
-                                                class: "text-xs font-bold font-mono " + card.color_class
-                                            }
-                                            CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
-                                        }
-
-                                        // 2. 牌面中心区域
-                                        col {
-                                            style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                            if card.rank == 1 {
-                                                // Ace: 大号优雅花色
-                                                CardSuit (suit: card.suit, style: "w-8 h-8 opacity-85 " + card.color_class) {}
-                                            }
-                                            if card.is_court {
-                                                // J/Q/K: 衬线大字母 + 皇家徽章 (Crown / Sparkles / Shield)
-                                                col {
-                                                    style: "items-center gap-0.5"
-                                                    text card.rank_text {
-                                                        class: "text-xl font-bold font-serif opacity-75 leading-none " + card.color_class
-                                                    }
-                                                    CourtBadge (badge: card.court_badge, style: "w-3.5 h-3.5 opacity-70 " + card.color_class) {}
-                                                }
-                                            }
-                                            if !card.is_court && card.rank > 1 {
-                                                // 数字牌: 中号半透明花色
-                                                CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
-                                            }
-                                        }
-
-                                        // 3. 右下角标 (旋转微型角标)
-                                        row {
-                                            style: "items-center justify-end gap-0.5"
-                                            CardSuit (suit: card.suit, style: "w-2.5 h-2.5 opacity-50 " + card.color_class) {}
-                                            text card.rank_text {
-                                                class: "text-[10px] font-bold font-mono opacity-50 " + card.color_class
-                                            }
+                                        text .store.stock_count_label {
+                                            style: "absolute bottom-1 right-1.5 text-[10px] font-mono font-bold bg-black/60 text-white rounded px-1.5 py-0.5"
                                         }
                                     }
                                 }
-
-                                // 模式 B：外部 SVG 皮肤包接口
-                                if .store.skin_mode == "svg" {
+                                if .store.stock_count == 0 {
                                     col {
-                                        style: "w-full h-full items-center justify-center p-1 bg-slate-50 dark:bg-slate-800 rounded"
-                                        icon (name: "image", class: "w-5 h-5 text-indigo-400 opacity-60") {}
-                                        text card.svg_src { style: "text-[9px] text-center text-slate-500 truncate w-full mt-1" }
-                                        text "[SVG 皮肤包槽位]" { style: "text-[8px] text-indigo-500 font-mono" }
+                                        style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/40 bg-emerald-950/20 items-center justify-center relative cursor-pointer select-none"
+                                        icon (name: "refresh-cw", class: "w-6 h-6 text-emerald-400/60") {}
+                                        text "循环发牌" { style: "text-[9px] text-emerald-400/60 font-medium mt-1" }
+                                    }
+                                }
+                            }
+                        }
+
+                        // 弃牌堆 (Waste)
+                        if .store.has_waste {
+                            button {
+                                onclick: .ClickWaste
+                                ondblclick: .AutoSendWaste
+                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                col {
+                                    class: .store.waste_card.card_class
+                                    CardFace (
+                                        rank: .store.waste_card.rank,
+                                        rank_text: .store.waste_card.rank_text,
+                                        suit: .store.waste_card.suit,
+                                        color_class: .store.waste_card.color_class,
+                                        is_court: .store.waste_card.is_court,
+                                        court_badge: .store.waste_card.court_badge,
+                                        is_face_down: false,
+                                        skin_mode: .store.skin_mode,
+                                        svg_src: .store.waste_card.svg_src
+                                    ) {}
+                                }
+                            }
+                        }
+                        if !.store.has_waste {
+                            col {
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/20 bg-emerald-950/10 items-center justify-center"
+                                text "弃牌堆" { style: "text-[10px] text-emerald-600/40" }
+                            }
+                        }
+                    }
+
+                    // 右侧：4 个基础堆 (Foundations ♠, ♥, ♦, ♣)
+                    row {
+                        style: "gap-3 items-center"
+                        for slot in .store.foundation_slots {
+                            button {
+                                key: slot.idx
+                                onclick: .ClickFoundation(slot.idx)
+                                style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                                col {
+                                    class: slot.slot_class
+                                    if slot.has_card {
+                                        CardFace (
+                                            rank: slot.rank,
+                                            rank_text: slot.rank_text,
+                                            suit: slot.suit,
+                                            color_class: slot.color_class,
+                                            is_court: slot.is_court,
+                                            court_badge: slot.court_badge,
+                                            is_face_down: false,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: slot.svg_src
+                                        ) {}
+                                    }
+                                    if !slot.has_card {
+                                        col {
+                                            style: "w-full h-full items-center justify-center opacity-25 text-slate-400 pointer-events-none"
+                                            CardSuit (suit: slot.suit, style: "w-8 h-8") {}
+                                            text slot.suit_name { style: "text-[9px] mt-1 text-emerald-400 font-medium" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 底排：7 列牌桌 (Tableau)
+                row {
+                    style: "gap-4 items-start justify-center pt-2 min-h-[380px]"
+
+                    // 列 0
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col0.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(0)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col0.len() > 0 {
+                            for card in .store.col0 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(0, card.idx)
+                                        ondblclick: .AutoSendCol(0)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 1
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col1.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(1)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col1.len() > 0 {
+                            for card in .store.col1 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(1, card.idx)
+                                        ondblclick: .AutoSendCol(1)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 2
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col2.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(2)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col2.len() > 0 {
+                            for card in .store.col2 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(2, card.idx)
+                                        ondblclick: .AutoSendCol(2)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 3
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col3.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(3)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col3.len() > 0 {
+                            for card in .store.col3 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(3, card.idx)
+                                        ondblclick: .AutoSendCol(3)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 4
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col4.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(4)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col4.len() > 0 {
+                            for card in .store.col4 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(4, card.idx)
+                                        ondblclick: .AutoSendCol(4)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 5
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col5.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(5)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col5.len() > 0 {
+                            for card in .store.col5 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(5, card.idx)
+                                        ondblclick: .AutoSendCol(5)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // 列 6
+                    col {
+                        style: "w-[76px] min-h-[340px]"
+                        if .store.col6.len() == 0 {
+                            button {
+                                onclick: .ClickEmptyCol(6)
+                                style: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-600/30 bg-emerald-950/20 items-center justify-center text-emerald-400/30 text-xs font-mono font-bold hover:border-emerald-400/50 cursor-pointer"
+                                text "K"
+                            }
+                        }
+                        if .store.col6.len() > 0 {
+                            for card in .store.col6 {
+                                col {
+                                    class: card.wrapper_class
+                                    button {
+                                        key: card.id
+                                        onclick: .ClickColCard(6, card.idx)
+                                        ondblclick: .AutoSendCol(6)
+                                        class: card.card_class
+                                        CardFace (
+                                            rank: card.rank,
+                                            rank_text: card.rank_text,
+                                            suit: card.suit,
+                                            color_class: card.color_class,
+                                            is_court: card.is_court,
+                                            court_badge: card.court_badge,
+                                            is_face_down: card.is_face_down,
+                                            skin_mode: .store.skin_mode,
+                                            svg_src: card.svg_src
+                                        ) {}
                                     }
                                 }
                             }
@@ -140,187 +474,35 @@ widget App {
                 }
             }
 
-            // 区域二：牌桌布局模拟（展示发牌堆、4 基础堆与牌桌列垂直层叠效果）
+            // 附带区域：典型牌面自绘与外部皮肤展台 (Gallery Showcase)
             col {
-                style: "bg-emerald-950/70 border border-emerald-800/60 rounded-xl p-6 gap-6 shadow-inner flex-1"
-
-                // 顶排：发牌堆/弃牌堆 + 基础堆
+                style: "bg-slate-900/60 border border-slate-800 rounded-xl p-4 gap-3 shadow-sm"
                 row {
-                    style: "items-start justify-between"
-
-                    // 左侧：发牌堆与弃牌堆
+                    style: "items-center justify-between"
                     row {
-                        style: "gap-4 items-center"
-                        // 发牌堆
-                        button {
-                            onclick: .DrawStock
-                            style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
-                            col {
-                                style: "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative cursor-pointer select-none"
-                                col {
-                                    style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/50"
-                                    icon (name: "layers", class: "w-6 h-6 text-indigo-200") {}
-                                }
-                                text .store.stock_count.to_string() {
-                                    style: "absolute bottom-1 right-1.5 text-[10px] font-mono font-bold bg-black/50 text-white rounded px-1.5 py-0.5"
-                                }
-                            }
-                        }
-
-                        // 弃牌堆
-                        col {
-                            class: .store.waste_card.card_class
-                            col {
-                                style: "items-center w-4 gap-0.5 leading-none"
-                                text .store.waste_card.rank_text {
-                                    class: "text-xs font-bold font-mono " + .store.waste_card.color_class
-                                }
-                                CardSuit (suit: .store.waste_card.suit, style: "w-3 h-3 " + .store.waste_card.color_class) {}
-                            }
-                            col {
-                                style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                col {
-                                    style: "items-center gap-0.5"
-                                    text .store.waste_card.rank_text {
-                                        class: "text-xl font-bold font-serif opacity-75 leading-none " + .store.waste_card.color_class
-                                    }
-                                    CourtBadge (badge: .store.waste_card.court_badge, style: "w-3.5 h-3.5 opacity-70 " + .store.waste_card.color_class) {}
-                                }
-                            }
-                        }
-                    }
-
-                    // 右侧：4 个基础堆（Foundations）
-                    row {
-                        style: "gap-3 items-center"
-                        for slot in .store.foundation_slots {
-                            col {
-                                class: slot.slot_class
-                                if slot.has_card {
-                                    col {
-                                        style: "items-center w-4 gap-0.5 leading-none"
-                                        text slot.rank_text {
-                                            class: "text-xs font-bold font-mono " + slot.color_class
-                                        }
-                                        CardSuit (suit: slot.suit, style: "w-3 h-3 " + slot.color_class) {}
-                                    }
-                                    col {
-                                        style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                        CardSuit (suit: slot.suit, style: "w-8 h-8 opacity-80 " + slot.color_class) {}
-                                    }
-                                }
-                                if !slot.has_card {
-                                    // 空槽幽灵花色
-                                    CardSuit (suit: slot.suit, style: "w-8 h-8 opacity-20 text-slate-400") {}
-                                }
-                            }
-                        }
+                        style: "items-center gap-2"
+                        icon (name: "sparkles", class: "w-4 h-4 text-amber-400") {}
+                        text "牌面设计与皮肤规范展台 (Showcase)" { style: "text-xs font-semibold text-slate-300" }
+                        text "（供卡牌视觉对齐与 SVG 素材包热插拔比对）" { style: "text-[10px] text-slate-400" }
                     }
                 }
 
-                // 牌桌列（3 列局部层叠模拟）
-                col {
-                    style: "gap-2 pt-4"
-                    row {
-                        style: "items-center justify-between"
-                        text "牌桌列垂直层叠效果模拟 (Tableau Cascade Preview)" { style: "text-sm font-semibold" }
-                        text "上层明牌仅露出顶部 26px，点数与花色仍然清晰识别" { style: "text-xs text-slate-400" }
-                    }
-
-                    row {
-                        style: "gap-4 items-start pt-2"
-
-                        // 列 0
+                row {
+                    style: "gap-3 items-center flex-wrap pt-1"
+                    for scard in .store.showcase_cards {
                         col {
-                            style: "w-[76px] min-h-[220px]"
-                            for card in .store.tab_col0 {
-                                col {
-                                    class: card.card_class
-                                    col {
-                                        style: "items-center w-4 gap-0.5 leading-none"
-                                        text card.rank_text {
-                                            class: "text-xs font-bold font-mono " + card.color_class
-                                        }
-                                        CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
-                                    }
-                                    col {
-                                        style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                        CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
-                                    }
-                                }
-                            }
-                        }
-
-                        // 列 1 (1 盖牌 + 1 明牌，带负外边距叠牌)
-                        col {
-                            style: "w-[76px] min-h-[220px]"
-                            for card in .store.tab_col1 {
-                                col {
-                                    class: card.wrapper_class
-                                    col {
-                                        class: card.card_class
-                                        if card.is_face_down {
-                                            col {
-                                                style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/40"
-                                                icon (name: "layers", class: "w-5 h-5 text-indigo-200/50") {}
-                                            }
-                                        }
-                                        if !card.is_face_down {
-                                            col {
-                                                style: "items-center w-4 gap-0.5 leading-none"
-                                                text card.rank_text {
-                                                    class: "text-xs font-bold font-mono " + card.color_class
-                                                }
-                                                CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
-                                            }
-                                            col {
-                                                style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                                CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // 列 2 (2 盖牌 + 2 明牌连贯段)
-                        col {
-                            style: "w-[76px] min-h-[220px]"
-                            for card in .store.tab_col2 {
-                                col {
-                                    class: card.wrapper_class
-                                    col {
-                                        class: card.card_class
-                                        if card.is_face_down {
-                                            col {
-                                                style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/40"
-                                                icon (name: "layers", class: "w-5 h-5 text-indigo-200/50") {}
-                                            }
-                                        }
-                                        if !card.is_face_down {
-                                            col {
-                                                style: "items-center w-4 gap-0.5 leading-none"
-                                                text card.rank_text {
-                                                    class: "text-xs font-bold font-mono " + card.color_class
-                                                }
-                                                CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
-                                            }
-                                            col {
-                                                style: "absolute inset-0 items-center justify-center pointer-events-none"
-                                                if card.is_court {
-                                                    text card.rank_text {
-                                                        class: "text-lg font-bold font-serif opacity-70 " + card.color_class
-                                                    }
-                                                    CourtBadge (badge: card.court_badge, style: "w-3 h-3 opacity-60 " + card.color_class) {}
-                                                }
-                                                if !card.is_court {
-                                                    CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            class: scard.card_class
+                            CardFace (
+                                rank: scard.rank,
+                                rank_text: scard.rank_text,
+                                suit: scard.suit,
+                                color_class: scard.color_class,
+                                is_court: scard.is_court,
+                                court_badge: scard.court_badge,
+                                is_face_down: scard.is_face_down,
+                                skin_mode: .store.skin_mode,
+                                svg_src: scard.svg_src
+                            ) {}
                         }
                     }
                 }
@@ -333,6 +515,14 @@ widget App {
             store.Init()
         }
 
+        .NewGame -> {
+            store.NewGame()
+        }
+
+        .DebugWinDeal -> {
+            store.DebugWinDeal()
+        }
+
         .SetSkinVector -> {
             store.SetSkinMode("vector")
         }
@@ -341,16 +531,44 @@ widget App {
             store.SetSkinMode("svg")
         }
 
-        .DrawStock -> {
-            store.DrawStock()
+        .ClickStock -> {
+            store.ClickStock()
         }
 
-        .ResetDeck -> {
-            store.ResetDeck()
+        .ClickWaste -> {
+            store.ClickWaste()
         }
 
-        .SelectCard(id) -> {
-            store.SelectCard(id)
+        .ClickFoundation(f_idx) -> {
+            store.ClickFoundation(f_idx)
+        }
+
+        .ClickColCard(col_idx, card_idx) -> {
+            store.ClickColCard(col_idx, card_idx)
+        }
+
+        .ClickEmptyCol(col_idx) -> {
+            store.ClickEmptyCol(col_idx)
+        }
+
+        .AutoSendWaste -> {
+            store.AutoSendCard("waste", 0)
+        }
+
+        .AutoSendCol(col_idx) -> {
+            store.AutoSendCard("col", col_idx)
+        }
+
+        .AutoSendAll -> {
+            store.AutoSendAll()
+        }
+
+        .Undo -> {
+            store.Undo()
+        }
+
+        .Tick -> {
+            store.Tick()
         }
     }
 }

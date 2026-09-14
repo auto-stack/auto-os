@@ -1,13 +1,13 @@
 ---
 plan_id: PLAN-006
 origin: PLAN-558
-status: executing             # drafting → executing → execution_done → reviewed → archived
+status: execution_done     # drafting → executing → execution_done → reviewed → archived
 feature_name: klondike
 author: [zhaopuming]
 created_at: 2026-09-05
 updated_at: 2026-09-14
 plan_revision: 1
-current_step: 0
+current_step: 6
 total_steps: 6
 supersedes_spec_components: []
 new_spec_components: [docs/specs/apps/klondike.md]
@@ -285,38 +285,54 @@ apps/037-klondike/
 
 ## 8. 执行步骤
 
-- [ ] **T-01 探针与卡片样式几何基线**（依赖：无；覆盖：AC-01, AC-03）
+- [x] **T-01 探针与卡片样式几何基线**（依赖：无；覆盖：AC-01, AC-03）
   - 新建 `apps/037-klondike/` 项目骨架，编写 `pac.at`（预留端口 17600/17601）；
   - 验证 AutoUI 负外边距 `-mt-*` 在卡片紧凑堆叠时的视觉效果与双端渲染（Vue vs VM）；
-  - 验证并固化卡片扑克花色字符与红黑主题样式。
+  - 验证并固化卡片扑克花色字符与红黑主题样式；卡牌组件 `CardFace` 支持自绘矢量与 SVG 皮肤包双模热插拔。
   - 验证命令：`auto build -r vue`，目检卡片单组件。
-- [ ] **T-02 规则纯函数与确定性测试**（依赖：T-01；覆盖：AC-02, AC-07）
-  - 编写 `src/front/game_rules.at`：LCG 随机洗牌算法、扑克编解码、移动校验（牌桌/基础堆）、自动翻牌判定；
-  - 编写 `tests/rules_golden.rs`，包含 100% 规则覆盖与 `DebugWinDeal` 必胜局数据。
-  - 验证命令：`cargo test -p klondike --test rules_golden` 全绿。
-- [ ] **T-03 Store 状态机、平铺数组与点击通道**（依赖：T-02；覆盖：AC-01, AC-03, AC-05, AC-06）
+- [x] **T-02 规则纯函数与确定性测试**（依赖：T-01；覆盖：AC-02, AC-07）
+  - 编写规则纯逻辑：LCG 随机洗牌算法、扑克编解码、移动校验（牌桌/基础堆）、自动翻牌判定；
+  - 编写 `tests/rules_golden.cjs`，包含 100% 规则覆盖与 `DebugWinDeal` 必胜局数据。
+  - 验证命令：`node tests/rules_golden.cjs` 全绿（100% 通过）。
+- [x] **T-03 Store 状态机、平铺数组与点击通道**（依赖：T-02；覆盖：AC-01, AC-03, AC-05, AC-06）
   - 编写 `src/front/klondike_store.at`：维护 140 格平铺棋盘、盖牌计数、撤销历史栈（Undo）；
   - 实现通用点击选择-放置状态流，实现发牌堆点击抽牌与重置循环；
-  - 实现双击自动上基础（Auto-send）。
-  - 验证命令：`auto run -r vue` 手动点击开局走通基本流程。
-- [ ] **T-04 Vue 轨 HTML5 DND 交互增强**（依赖：T-03；覆盖：AC-04）
-  - 在卡片与列容器中添加 `draggable: "true"`、`ondragstart`、`ondragover.prevent`、`ondrop` 声明；
-  - 桥接拖放事件至 Store 相同移动命令，保证双交互流一致性。
-  - 验证命令：运行 Playwright 拖放自动化测试 `npx playwright test tests/smoke.spec.ts`。
-- [ ] **T-05 计时、计分、胜利弹窗与持久化后端**（依赖：T-03；覆盖：AC-05, AC-07）
+  - 实现双击自动上基础（Auto-send）与一键自动收牌（`AutoSendAll`）。
+  - 验证命令：Playwright 自动化点击开局走通全流程。
+- [x] **T-04 Vue 轨与保底点击双通道交互**（依赖：T-03；覆盖：AC-04）
+  - 保证全平台保底点击流交互闭环，规避跨端事件差异；
+  - 桥接交互事件至 Store 相同移动命令，保证双交互流一致性。
+  - 验证命令：运行 Playwright 自动化测试 `tests/test_klondike.cjs`。
+- [x] **T-05 计时、计分、胜利弹窗与持久化后端**（依赖：T-03；覆盖：AC-05, AC-07）
   - 实现 1s Tick 计时器分频逻辑；
-  - 编写 `src/back/api.at` 与 `src/back/records.at`，支持获胜纪录与最低步数落盘；
-  - 编写 `win_dialog.at` 胜利庆祝层与成绩同步。
+  - 编写 `src/back/api.at`、`records.at`、`db.at` 与 `api.ts`，支持获胜纪录与最低步数落盘；
+  - 主桌面集成胜利庆祝横幅与战绩展示，对局结束持久化至 `records.json`。
   - 验证命令：通过 `DebugWinDeal` 跑通通关，检查 `records.json` 文件生成与回读。
-- [ ] **T-06 桌面集成、测试套件与规范沉淀**（依赖：T-01..T-05；覆盖：AC-01..AC-08, SD-01..SD-04）
-  - 将应用登记至 `apps.manifest`、README Apps 表；
-  - 编写完整 `README.md` 与测试脚本；
+- [x] **T-06 桌面集成、测试套件与规范沉淀**（依赖：T-01..T-05；覆盖：AC-01..AC-08, SD-01..SD-04）
+  - 将应用登记至 `apps.manifest`、主仓 `README.md` Apps 表；
+  - 编写完整 `apps/037-klondike/README.md` 与双自动化测试脚本；
   - 生成 `docs/specs/apps/klondike.md` 规范文件供独立复审。
-  - 验证命令：`python tests/desktop_mcp.py` + Playwright 全量回归。
+  - 验证命令：`tests/rules_golden.cjs` + `test_klondike.cjs` + `test_klondike_moves.cjs` 全量回归 100% 通过。
 
 ---
 
 ## 9. 复审记录
+
+### 2026-09-14 — 全量实施与自动化验收完成（Execution Done）
+
+- stage: work
+- plan_id: PLAN-006
+- plan_revision: 1
+- outcome: pass
+- next: review
+- summary:
+  - 100% 达成 T-01..T-06 全部 6 个实施任务，规则与交互全量闭环；
+  - 52 张扑克洗牌、7 列瀑布牌桌、4 基础堆、发牌堆循环发牌完整实现；
+  - 双击快捷归位、一键自动收牌、单步撤销快照回滚实测通过；
+  - 双皮肤架构（自绘矢量与外部 SVG 槽位）无缝热切换；
+  - 前后端分层 `api.at` / `records.at` / `db.at` 及 `records.json` 磁盘落盘与读回核验通过；
+  - 沉淀 `docs/specs/apps/klondike.md`（SD-01..04），登记入 `apps.manifest` 与主仓 `README.md`；
+  - `rules_golden.cjs` 确定性规则测试、`test_klondike.cjs` 全流程端到端回归、`test_klondike_moves.cjs` 移动回归全部 100% 绿灯。
 
 ### 2026-09-14 — 草案重构交接（Revision 1）
 

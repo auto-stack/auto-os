@@ -66,6 +66,7 @@ auto-os/
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
+| 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；

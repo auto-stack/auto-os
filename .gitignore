@@ -6,3 +6,6 @@ widgets-gallery/src/front/tests/
 **/gen/
 **/.am/
 **/node_modules/
+**/dist/
+**/rust-workspace/
+**/target/

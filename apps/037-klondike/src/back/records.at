@@ -1,0 +1,29 @@
+// src/back/records.at — Klondike records state & persistence logic
+use api: GameRecord
+
+var current_records GameRecord = GameRecord {
+    best_moves: 0,
+    best_time_s: 0,
+    games_won: 0,
+    games_played: 0,
+}
+
+pub fn get_records() GameRecord {
+    return current_records
+}
+
+pub fn record_start() GameRecord {
+    current_records.games_played = current_records.games_played + 1
+    return current_records
+}
+
+pub fn record_win(moves: int, time_s: int) GameRecord {
+    current_records.games_won = current_records.games_won + 1
+    if current_records.best_moves == 0 || moves < current_records.best_moves {
+        current_records.best_moves = moves
+    }
+    if current_records.best_time_s == 0 || time_s < current_records.best_time_s {
+        current_records.best_time_s = time_s
+    }
+    return current_records
+}
