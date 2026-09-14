@@ -55,9 +55,9 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 |---|---|---|
 | 002 desktop-ux-followups | PLAN-535 | 🔄 executing（2026-09-09：A1/A2 已交付实机验证——根因=convert_view_messages 缺 WindowThumbnail 臂（D-GAP 第四例）+desktop.at T36 括号回归+resolve 组目录解析，三单修；auto-lang `efc7e64b9`/auto-os `56cc364`。**B 已交付**（布局件交互原语：`wrap_layout_events` 三臂=onclick/oncontextmenu/hover 变体类，新增 `hover_area.rs` 零重建 hover；试点=launcher 网格格+桌面图标格；auto-lang `d5b345fb1`/auto-os `fa77bc9`，设计稿 `docs/design/autoui/layout-interaction.md`，实机 scratch/p002）。C/E 未完） |
 | **003 clock-app** | PLAN-554 | **📦 已归档——✅ 已交付（2026-09-08 merge）**——Clock 四 tab（秒表真走表/计时器横幅/世界时钟 8 城/闹钟 storage 5 槽）desktop_mcp 12/12；框架交付 ts_adapter Time vue 桥；债候选 P003-R1..R3（VM str to_int 接收者/Tick 后重渲染面/Lap 劫持）移交框架侧；复审/合并以 /auto-plan:review/:merge 承载 |
-| 004 games-wave1 | PLAN-556 | drafting 原状 |
-| 005 tetris | PLAN-557 | drafting 原状 |
-| 006 klondike | PLAN-558 | drafting 原状 |
+| **004 games-wave1** | PLAN-556 | **🗄️ 已归档/搁置（2026-09-14）**——底层能力由 003-clock/005-tetris/006-klondike 充分验证，自带游戏生态由 minesweeper/klondike/tetris 经典三件套覆盖，032–035 小体量 demo 批次按裁定不再单独开发，计划归档封存 |
+| 005 tetris | PLAN-557 | 🔄 executing（2026-09-14：revision 2，标准前后端分层 + M1–M7 多端模式矩阵 + 20ms Tick/Ghost/SRS 规则验证；worktree `os-005` 执行收尾中） |
+| **006 klondike** | PLAN-558 | **📦 已归档——✅ 已交付（2026-09-14 merge）**——037-klondike 纸牌接龙入 `apps/`（ports 17600/17601）；前后端分层 + 140 格安全平铺 + 撤销栈 + 点击/拖放双通道；Playwright 烟测通过；登记 manifest |
 | **007 p534-debt-batch-1** | PLAN-577 | **📦 已归档——✅ 已交付（2026-09-09 merge）**——avatar 家族补齐（三臂+props desugar+Fill 零高根因，真 hover 不借语料工程,P534-D4 结案）/breadcrumb 环守卫（自名折叠递归,P530-D1+P534-D5 结案,全站 68/68）/schema 滞留清偿（419 元素+P3 拆册,三围栏绿）；KNOWN-DEBT 三条 ✅；复审/合并以 /auto-plan:review/:merge 承载 |
 | 008 desktop-gallery-apps | PLAN-578 | **📦 已归档——✅ 已交付（2026-09-11 merge）**——画廊两件上架（resolve_os_top_dir 解析序锚+scan_galleries 开关，双轨+三轨 parity）+022-kanban 退策展（C 档 16）；验收 1-6 全过（AC3 按 ④ amend）；auto-os `f3e4570`/auto-lang `c4481ca58`；tf 3509/3510 唯一红=在案 flake；specs 沉淀 P008-1/P008-2；KNOWN-DEBT 候选 ext-materialize 登记；复审/合并以 /auto-plan:review/:merge 承载 |
 

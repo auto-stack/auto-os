@@ -1,18 +1,18 @@
 ---
 plan_id: PLAN-004
 origin: PLAN-556
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: games-wave1
 author: [zhaopuming]
 created_at: 2026-09-05
-updated_at: 2026-09-07
+updated_at: 2026-09-14（搁置归档：生态与底层验证已由 003/005/006 覆盖，本批取消）
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
-affects: [auto-lang/ui, auto-man]   # 受影响的 specs 路径，如 [auto-lang/vm]
+affects: []
 current_step: 0
 total_steps: 10
 ---
@@ -24,6 +24,13 @@ total_steps: 10
 > 其 `docs/plans/INDEX.md`。正文中的 auto-lang 相对路径/行号锚点，开工时按本仓
 > AGENTS §2 解析序换算（env → `../auto-lang` → `D:/autostack/auto-lang`），
 > 现文不回改。
+
+> **搁置与归档注记（Shelved / Superseded，2026-09-14）**：
+> 经 2026-09-14 架构与生态综合评估，本计划决议**搁置并不再单独执行**，直接转入终态 `archived`：
+> 1. **底层机制验证已全面覆盖**：PLAN-004 原定用于验证的 Tick 自驱动、Grid 渲染、LCG 伪随机数、键盘绑定等技术点，已在 [PLAN-003 Clock](003-clock-app.md)、[PLAN-005 Tetris](../005-tetris.md)（20ms 高频 Tick/复杂网格/SRS旋转/Ghost投影）以及 [PLAN-006 Klondike](006-klondike.md)（140格安全平铺/撤销栈/双通道拖拽）中以更高标准充分验证并交付。
+> 2. **规范代际跃迁**：自 PLAN-013 确立标准 App 规范（独立目录、前后端分层 `src/front` + `src/back`、版本化数据持久化、桌面 Fit 自适应布局及 Playwright+MCP 双端测试）后，PLAN-004 的早期简易 demo 构想（单文件 `app.at`、仅简易前端 storage）已严重过时。若按新标准重构 032–035 四款小游戏，投入产出比（ROI）极低。
+> 3. **系统自带游戏生态饱和**：AutoOS 目前已拥有**扫雷 (038-minesweeper)**、**纸牌接龙 (037-klondike)**、**俄罗斯方块 (036-tetris)** 三大经典操作系统自带游戏，品类覆盖益智推理、纸牌策略与街机反应，游戏生态已达阶段性成熟。
+> 4. **处置定案**：032-2048、033-snake、034-gomoku、035-memory 及备选池（Wordle/数独/推箱子）不再作为 AutoOS 官方自带应用逐一开发。若未来社区或教学有特定演示需求，再按现代 App 规范独立立项。
 
 # [PLAN-004] 游戏第一波——032-2048 / 033-snake / 034-gomoku / 035-memory
 
@@ -209,9 +216,19 @@ window: "fit"
 
 ## 复审记录
 
+### 2026-09-14 — 搁置复审与归档裁定（Shelved / Superseded）
+
+- **裁定结果**：Shelved & Archived（搁置归档，终态）。
+- **依据**：
+  1. 底层能力（Tick、Grid、LCG、键盘）已由 003-clock、005-tetris、006-klondike 验证通过。
+  2. 桌面自带游戏已具备经典三件套（扫雷 + 接龙 + 俄罗斯方块），生态饱和。
+  3. 早期单文件 demo 方案落后于 PLAN-013 标准 App 规范，不再逐一投入开发。
+- **关联文件迁移**：`docs/plans/004-games-wave1.md` → `docs/plans/archive/004-games-wave1.md`。
+- **台账同步**：`docs/plans/autos-desktop-program.md` 同步更新指针状态。
+
 ## 待澄清事项
 
-1. gomoku AI（minimax/贪心）远期——v1 双人本地（盘点结论）。
-2. 游戏音效：无音频 FFI，全波次不做。
-3. 225 格 VM 渲染若超帧：降 13×13（T1c 裁定权），README 注记原因。
+1. gomoku AI（minimax/贪心）远期——v1 双人本地（盘点结论；随计划归档核销）。
+2. 游戏音效：无音频 FFI，全波次不做（随计划归档核销）。
+3. 225 格 VM 渲染若超帧：降 13×13（已由 tetris 200 格与 klondike 140 格验证，核销）。
 4. 039/040 空号留给后续（Wordle/数独/推箱子备选池，未立项）。
