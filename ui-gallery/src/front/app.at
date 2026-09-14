@@ -1,7 +1,11 @@
+// PLAN-625: registry 数据源跨端化——TS demos.ts 8 fn(VM 臂 no-op stub,
+// filteredDemos 恒空)切换为 .at 静态表 registry.at(生成产物,双端同源,
+// tree_util PLAN-522/614 先例);AppViewport.vue 的 load 装配仍走 TS registry。
+use registry: filter_demos, demo_title, demo_description, demo_doc, demo_source, demo_pac, demo_loadable
+
 widget App {
     use {
         component: AppViewport from "src/gallery/AppViewport.vue"
-        fn: getAllDemos, getDemoTitle, getDemoDesc, getDemoDoc, getDemoSource, getDemoPac, isDemoLoadable, filterDemosBy from "src/front/utils/demos.ts"
     }
 
     msg {
@@ -21,13 +25,13 @@ widget App {
     }
 
     computed {
-        currentTitle => getDemoTitle(selected_id)
-        currentDesc => getDemoDesc(selected_id)
-        currentDoc => getDemoDoc(selected_id)
-        currentSource => getDemoSource(selected_id)
-        currentPac => getDemoPac(selected_id)
-        currentLoadable => isDemoLoadable(selected_id)
-        filteredDemos => filterDemosBy(search_query, active_category)
+        currentTitle => demo_title(selected_id)
+        currentDesc => demo_description(selected_id)
+        currentDoc => demo_doc(selected_id)
+        currentSource => demo_source(selected_id)
+        currentPac => demo_pac(selected_id)
+        currentLoadable => demo_loadable(selected_id)
+        filteredDemos => filter_demos(search_query, active_category)
     }
 
     view {
