@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-019
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing             # drafting → executing → execution_done → reviewed → archived
 feature_name: showdesk-wallpaper-picker
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -16,7 +16,7 @@ affects: [shell/desktop.at, shell/shell.at,
           auto-lang/crates/auto-lang/src/ui/session.rs,
           auto-lang/crates/auto-lang/src/ui/iced/renderer.rs,
           docs/specs/shell/showdesk-wallpaper.md]
-current_step: 0
+current_step: 7
 total_steps: 7
 ---
 
@@ -295,11 +295,20 @@ auto-lang `schema/projection-protocol-v1.md`：§4 动词 +5、§2 字段 +5
 （含 wp_paths 平行面注记）、§6 v1.7 changelog + vue 端注记。
 依赖：无。→ AC-09,10。
 
+[x] [✅ 已完成] 提交 8580ef29e（§4 动词 +7：实现期增补 wallpaper_nav/
+wallpaper_preview 已回填；§2 +__wm_showdesk + __wp_* 五面；§6 v1.7 节 +
+vue 注记）。
+
 ### T-02 WM 负一屏 + 动词执行臂
 session.rs `WmState` 簿记字段；renderer.rs 执行臂 `show_desktop` /
 `showdesk_return`（排除规则四条 + activate 先 return）+ 投影过滤 +
 `__wm_showdesk` 注入。单测：状态机组 + 排除规则组。
 依赖：T-01。→ AC-01,02。
+
+[x] [✅ 已完成] 提交 11b6ab81e。WmState showdesk/picker 七簿记字段；
+排除规则五条全落（环切/删除守卫+压实跟随/发送拒/activate 先回）；测试
+showdesk_state_machine_roundtrip / showdesk_exclusion_rules /
+showdesk_projection_filter_and_flag 全绿。
 
 ### T-03 wallpaper_pick/close 组合臂 + picker 注入面 + 目录浏览臂
 renderer.rs：组合簿记（归属规则单点）、`__wp_*` 五面注入（复用
@@ -309,25 +318,53 @@ renderer.rs：组合簿记（归属规则单点）、`__wp_*` 五面注入（复
 单测：组合两分支 + 注入面投影。
 依赖：T-02。→ AC-03,04,07。
 
+[x] [✅ 已完成] 提交 11b6ab81e。组合簿记归属规则单点（AC-04 两分支测试
+wallpaper_pick_close_return_ownership）；inject_wallpaper_picker 五面
+直写；browse_dir = rfd pick_folder（调查结案：ui-dialog 已随 ui-iced 启用，
+v1 无父窗绑定）。
+
 ### T-04 desktop.at picker 层 + 键臂
 shell/desktop.at：五面消费、栅格/预览状态机、遮罩/Esc 链、菜单两臂改线
 `wallpaper_pick`；renderer.rs 全局键臂（←/→/Esc，picker_open 门控；执行时
 核实与 switcher 热键注册点不冲突）。
 依赖：T-03。→ AC-03,05,06。
 
+[x] [✅ 已完成] 提交 0fd896a（auto-os .at）+ aedf73f35（auto-lang 键臂 +
+assets pin 双写 + vue 金样重生成）。键臂 = 订阅层 PICKER_KEYS_OPEN 原子
+门控 + picker_key_message 纯函数（关态完全穿透不吞键）；DesktopEvent
++WallpaperKeyNav/WallpaperKeyEscape。测试 wallpaper 族 5 绿 +
+desktop_surface 4 绿（含真 pack 编译）。
+
 ### T-05 shell.at sliver
 shell/shell.at 时钟后右缘细条 + toggle handler + hover 态。
 依赖：T-02。→ AC-01。
+
+[x] [✅ 已完成] 提交 0fd896a。w-3 细条 + border-l 分隔线 + sliver_hover
+高亮；ShowDesktopToggle 按 __wm_showdesk 等式直发；shell pack 编译测试
+14 绿（真 shell.at 装载）。
 
 ### T-06 每壁纸布局记忆
 renderer.rs `SetWallpaper` 臂换键迁移 + `desktop_icon_drop_at` 写当前键 +
 fp 算法（定案后落 SD-03 spec）。单测：键控组。
 依赖：T-01（独立于 T-02..T-05）。→ AC-08。
 
+[x] [✅ 已完成] 提交 820cdfde8。fp = FNV-1a 64hex + `\`→`/` + ASCII
+小写折叠（落 SD-04）；键控读缺席回退缺省底稿；apply_drop 写当前壁纸键；
+set_wallpaper 迁移臂（切前快照旧键/切后重注入）。测试
+wallpaper_layout_key_and_csv_roundtrip + wallpaper_layout_memory_migration
+绿；w5/desktop_injects 回归绿。
+
 ### T-07 对拍 + 实机冒烟收口
 投影/schema_drift 全量绿；desktop MCP 冒烟脚本（双主题全链截图）；SD-03
 spec 定稿（docs/specs/shell/showdesk-wallpaper.md）。
 依赖：T-04,T-05,T-06。→ AC-09（终验）。
+
+[x] [✅ 已完成] 提交 ef270c4c3（p010 预存红顺带修正）+ c77d9b7（SD-03
+spec 草案）。全量日常档 --no-fail-fast = 4885/4903；18 失败全部基线实证
+预存红（layout 族 14 环境几何 + c2_param/plan606/plan055/desktop_protocol
+coverage + p010——后者过期期望已修正）。范围调整：shell 宿主无 VM/MCP
+通道（per-app harness 不适用），实机冒烟以 SD spec「验证」节人工清单承载，
+待复审/用户走查（AC-01/03/04/05/06/07/08 实机侧）。
 
 ## 9. 复审记录
 
@@ -336,6 +373,31 @@ spec 定稿（docs/specs/shell/showdesk-wallpaper.md）。
   §4 授权记录与 §5 设计。任务覆盖全部 AC 与 SD；路径/行号经本仓与 auto-lang
   实地核实。next: work（`/auto-plan:work`，worktree
   `D:/autostack/.wt/os-019/auto-os -b plan-019-dev`）。
+- 2026-09-14 stage:work PLAN-019 rev1 outcome:pass — 执行完成
+  （T-01..T-07，current_step 7/7）。
+  - **worktree/分支**：auto-os `D:/autostack/.wt/os-019/auto-os`
+    （plan-019-dev，基线 a657a4e）；auto-lang `D:/autostack/.wt/os-019/auto-lang`
+    （auto-os-dev，基线 a9d3b8c67）+ 依赖 auto-down（detached 140775f）。
+  - **提交**：auto-lang 8580ef29e（T-01 协议 v1.7）→ 11b6ab81e（T-02/T-03
+    WM+组合臂）→ aedf73f35（T-04/T-05 键臂+pack 双写）→ 820cdfde8（T-06
+    布局记忆）→ ef270c4c3（T-07 p010 修正）；auto-os 0fd896a（.at 层）→
+    c77d9b7（SD-03 spec 草案，备 merge 发布）。
+  - **证据**：showdesk×3 + wallpaper×5（pick-close 归属两分支/nav 游标
+    flip/Esc 链/布局键控迁移）新测全绿；shell 14 绿 + desktop_surface 4 绿
+    （含真 pack 编译）+ w5/desktop_injects 回归绿；vue a2vue 金样重生成
+    （AUTO_LANG_UPDATE_GOLDEN）；全量日常档 --no-fail-fast = 4885/4903，
+    18 失败**全部基线实证预存红**（layout 族 14 = dock 几何环境依赖、
+    c2_param/plan606/plan055/desktop_protocol coverage/p010 = 本机
+    fixture 漂移——p010 过期期望 4 已顺带修正为 2+PickerDismiss 断言）。
+  - **有界调查结案**（§10-2/3/4）：ui-dialog 已随 ui-iced 启用（rfd 直接
+    可用，v1 无父窗绑定）；picker 键臂用订阅层原子门控（PICKER_KEYS_OPEN，
+    关态完全穿透）；fp 算法定案 FNV-1a 64hex + `\`→`/` + ASCII 小写折叠
+    （已落 SD-04）。协议 v1.7 实现期增补 `wallpaper_nav`/`wallpaper_preview`
+    两动词与 `__wp_preview`（路径载荷）——设计细化已回填文档。
+  - **残余（review 门）**：实机冒烟清单已落 SD spec「验证」节（shell 宿主
+    无 VM/MCP 通道，per-app harness 不适用——范围调整记录在案）；AC-01/03/
+    04/05/06/07/08 的实机侧待复审/用户走查确认。
+  - next: review（`/auto-plan:review`）。
 
 ## 10. 待澄清事项
 
