@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-015
-status: reviewed               # drafting → executing → execution_done → reviewed → archived（review pass；merge 六仓已落，auto-lang landing 待并行会话让位——见 §9 merge 收据）
+status: archived              # drafting → executing → execution_done → reviewed → archived（2026-09-14 终态：delivered；merge 收据见 §9 末）
 feature_name: app-naming-schema
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -372,3 +372,15 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
 | Q1 | jade-garden 中文名（"玉圃"为预设） | T4 一行数据 | **work 轮已落预设值**（可随时改 pac.at 一行） |
 | Q2 | auto-musk 英文展示名定型（`Auto Musk` vs `Musk`） | T4 一行数据 | **work 轮裁定**：英文 `Auto Musk`、中文暂保留品牌 `Auto Musk`（品牌不译，RealWorld 同款先例）；要改仅需 pac.at 一行 |
 | Q3 | auto-lang 侧是否独立开 plan 分账 | 流程账 | **work 轮判定**：改动面（4 crates 文件 + examples 数据 + spec 一节）随本计划组内 os-015-dev 分支落地，auto-lang 侧未单开 plan；merge 时按其 AGENTS 归账 |
+
+### merge 收据（PLAN-015:r1 → 闭合，2026-09-14）
+
+| checkpoint | 证据 |
+|---|---|
+| prepared | 七仓 reviewed 基线（§9 review 记录）；canonical 目标 = auto-lang/docs/specs/auto-man/project.md §四名称契约（SD-01/SD-02） |
+| landed | auto-os main `2152dc1`；auto-lang master `d5acac7fd`（merge os-015-dev，cdc3ed46d 在祖先，并行会话代落地、本方核实祖先链）；auto-kanban/auto-term/auto-musk/auto-os-config/auto-down 各 main/master merge 提交（015 pac.at 单行批） |
+| ledger_refreshed | `.autoos/specs.json` P015-1..4 + P015-R1 五条目（reports/architecture/designs/tests/reviews；+25 行最小 diff） |
+| archived | 本件 git mv → docs/plans/archive/015-app-naming-schema.md，status: archived（completion_kind: delivered） |
+| cleaned | 见下方补记（wt-guard 五 worktree + 分支删除） |
+
+completion_kind: delivered
