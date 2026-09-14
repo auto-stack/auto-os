@@ -706,5 +706,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | ID | 事项 | 去向 |
 |---|---|---|
 | F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
-| F-2 | VM popover 在 grid/flex 子树内 closed 态内容泄漏参与布局（实机截图："打开"菜单项内联渲染）——aura popover 布局面 bug，另立框架债 | 框架债 |
+| F-2 | 【定性修正】popover first-child = 锚件就地渲染（PLAN-528 设计语义，非泄漏）——菜单必须用 popover-trigger/popover-content 子标签拆分，否则首项（"打开"）会变锚件消失、菜单锚在首项位置 | 已按规范形态修复（R5） |
+| F-6 | 【框架·高优】VM 动态视图无细粒度更新：任何被视图引用的状态写（选中/hover/ctx）→ view_dirty → 整棵 .at→iced 视图树重转换（无行级依赖追踪、无 diffing）。千级节点 × debug 构建 = 每次交互 0.1-0.3s 卡顿。框架方向：视图 diffing 或依赖追踪细粒度失效；短期缓解 = 优化构建 + 控制单视图节点规模 | 框架债（另立） |
+| F-7 | 【框架】右键菜单正确终态 = 全视图单实例菜单 + 指针位置定位（Win11 式）：需要 a) 事件坐标面（=F-3）或 b) popover 原生指针定位原语（坐标不走状态回写，避免每次移动全量重建）。现 Plan 422 popover 仅锚件/坐标态两种定位 | 框架债（与 F-3 合并推进） |
 | F-3 | 右键菜单无法精确跟随鼠标：`.at` 事件不携带指针坐标（D-1 同源），popover 仅锚件/坐标态定位 | 框架债（需事件坐标面） |
