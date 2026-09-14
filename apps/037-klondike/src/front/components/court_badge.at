@@ -3,13 +3,13 @@ widget CourtBadge (badge: str = "", style: str = "") {
         col {
             class: .style
             if .badge == "crown" {
-                icon (name: "crown", style: "w-full h-full") {}
+                icon (name: "crown", class: .style) {}
             } else {
                 if .badge == "sparkles" {
-                    icon (name: "sparkles", style: "w-full h-full") {}
+                    icon (name: "sparkles", class: .style) {}
                 } else {
                     if .badge == "shield" {
-                        icon (name: "shield", style: "w-full h-full") {}
+                        icon (name: "shield", class: .style) {}
                     }
                 }
             }

@@ -1,4 +1,7 @@
 use klondike_store: KlondikeStore
+use components.card_face: CardFace
+use components.card_suit: CardSuit
+use components.court_badge: CourtBadge
 
 widget App {
     msg {
@@ -35,7 +38,21 @@ widget App {
                     icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
                     col {
                         text "AutoOS 纸牌接龙 (Klondike Solitaire)" { style: "text-lg font-bold text-slate-100" }
-                        text "双通道交互 · 52张标准接龙 · 自动收牌与单步撤销" { style: "text-xs text-slate-400" }
+                        row {
+                            style: "items-center gap-2"
+                            text "双通道交互 · 52张标准接龙" { style: "text-xs text-slate-400" }
+                            row {
+                                style: "items-center gap-1 bg-slate-950/80 p-0.5 rounded border border-slate-800"
+                                button "矢量" {
+                                    onclick: .SetSkinVector
+                                    class: .store.btn_vector_class
+                                }
+                                button "SVG" {
+                                    onclick: .SetSkinSvg
+                                    class: .store.btn_svg_class
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -80,19 +97,6 @@ widget App {
                     button "必胜测试" {
                         onclick: .DebugWinDeal
                         class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
-                    }
-                }
-
-                // 皮肤包切换
-                row {
-                    style: "items-center gap-2"
-                    button "自绘矢量 (Vector)" {
-                        onclick: .SetSkinVector
-                        class: .store.btn_vector_class
-                    }
-                    button "SVG皮肤包" {
-                        onclick: .SetSkinSvg
-                        class: .store.btn_svg_class
                     }
                 }
             }

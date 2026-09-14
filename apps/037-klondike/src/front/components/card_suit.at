@@ -3,16 +3,16 @@ widget CardSuit (suit: str = "", style: str = "") {
         col {
             class: .style
             if .suit == "spade" {
-                icon (name: "spade", style: "w-full h-full fill-current") {}
+                icon (name: "spade", class: .style) {}
             } else {
                 if .suit == "heart" {
-                    icon (name: "heart", style: "w-full h-full fill-current") {}
+                    icon (name: "heart", class: .style) {}
                 } else {
                     if .suit == "diamond" {
-                        icon (name: "diamond", style: "w-full h-full fill-current") {}
+                        icon (name: "diamond", class: .style) {}
                     } else {
                         if .suit == "club" {
-                            icon (name: "club", style: "w-full h-full fill-current") {}
+                            icon (name: "club", class: .style) {}
                         }
                     }
                 }

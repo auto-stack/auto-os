@@ -1,3 +1,6 @@
+use card_suit: CardSuit
+use court_badge: CourtBadge
+
 widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class: str = "", is_court: bool = false, court_badge: str = "", is_face_down: bool = false, skin_mode: str = "vector", svg_src: str = "") {
     view {
         col {
@@ -15,7 +18,7 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
                     row {
                         style: "items-center gap-1 leading-none"
                         text .rank_text {
-                            class: "text-xs font-bold font-mono " + .color_class
+                            style: "text-xs font-bold font-mono " + .color_class
                         }
                         CardSuit (suit: .suit, style: "w-3 h-3 " + .color_class) {}
                     }
@@ -30,7 +33,7 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
                             col {
                                 style: "items-center gap-0.5"
                                 text .rank_text {
-                                    class: "text-xl font-bold font-serif opacity-75 leading-none " + .color_class
+                                    style: "text-xl font-bold font-serif opacity-75 leading-none " + .color_class
                                 }
                                 CourtBadge (badge: .court_badge, style: "w-3.5 h-3.5 opacity-70 " + .color_class) {}
                             }
@@ -45,7 +48,7 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
                         style: "items-center justify-end gap-0.5 self-end"
                         CardSuit (suit: .suit, style: "w-2.5 h-2.5 opacity-50 " + .color_class) {}
                         text .rank_text {
-                            class: "text-[10px] font-bold font-mono opacity-50 " + .color_class
+                            style: "text-[10px] font-bold font-mono opacity-50 " + .color_class
                         }
                     }
                 }
