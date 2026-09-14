@@ -965,6 +965,74 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   independent revision-2 review;
   keep Plan status `executing` until those gates close.
 
+### 2026-09-14 — execution follow-up / Rust native startup repair
+
+- stage: work
+- plan_id: PLAN-005
+- outcome: partial
+- change: the native Iced view no longer uses the styled-column → nested-row/
+  nested-column level-card shape that caused `STATUS_STACK_OVERFLOW` during
+  startup. The level/line summary is now a two-column `grid`, and unsupported
+  `btn*`/`flex-wrap` classes were removed from the shared view source.
+- evidence: `auto build -r rust --gen-only` regenerated the UI source; offline
+  Cargo build passed; the generated Rust binary stayed alive for eight seconds
+  and its MCP snapshot passed `tests/desktop_mcp.py` on port 9442. The startup
+  log no longer contains the flex-wrap or button-style warnings.
+- remaining: native physical input/window takeover, narrow-window and gallery
+  acceptance, and VM no-merge environment validation remain separate gates.
+
+### 2026-09-14 — functional acceptance reported by user
+
+- stage: work
+- plan_id: PLAN-005
+- outcome: functional-complete
+- acceptance: user manually verified that all seven modes (M1–M7) start and
+  support the basic Tetris operations without functional issues. M5 VM/Rust
+  no-merge, M6 Rust merged, and M7 Rust no-merge now start without the earlier
+  layout stack overflow or button-style warnings.
+- scope: this closes the planned feature behavior and the user-visible basic
+  operation gate. Formal review evidence for long-press/keyup/blur, narrow
+  window pixels, and desktop/gallery discovery remains a separate evidence
+  concern if those gates are required for archival.
+
+### 2026-09-14 — review / functional acceptance phase
+
+- stage: review (phase-only)
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: pass
+- reviewed_commit: `a4533a9296ac9c93f78c474df69706c5420dd525`
+- base_commit: `31ad06c`
+- dependency_revisions: auto-lang `a899ec8967fd05e0147889d01e18540ead62d31b`;
+  renderer prerequisite remains recorded in the preceding execution entry
+- spec_inputs: `docs/specs/apps/tetris.md` revision 1 and this Plan revision 2
+- acceptance_results:
+  - M1–M7: pass for the user-visible functional phase. The user manually
+    confirmed that all seven Vue/VM/Rust merged/no-merge modes start and that
+    the basic move, rotate, soft-drop, hard-drop, pause and line-clear flows
+    work. M5, M6 and M7 also start without the earlier native layout overflow
+    or style warnings.
+  - implementation regression: pass. The reviewed worktree is clean at
+    `a4533a9`; generated Rust source builds offline, the native process remains
+    alive, and the MCP snapshot probe succeeds.
+- findings:
+  - no functional findings remain for the accepted M1–M7 basic-operation
+    phase.
+  - `R-001`/`R-005` remain open only for the separate archival evidence gates
+    already named in prior records (long-press/keyup/blur, narrow-window and
+    theme pixel fixtures, and desktop/gallery discovery). This phase verdict
+    does not silently convert those unexecuted criteria into passes.
+- evidence:
+  - user acceptance in the 2026-09-14 functional test session (M1–M7).
+  - `auto build -r rust --gen-only`, offline Cargo build, direct native
+    process liveness probe, and `tests/desktop_mcp.py` snapshot probe as
+    recorded in the preceding execution entry.
+  - `git diff --check` passes; reviewed implementation worktree is clean.
+- next: keep the overall Plan `executing` because this is a phase-only pass.
+  The accepted functional delivery is ready for the remaining archival review
+  gates; run `/auto-plan:review` again after those gates if final
+  `reviewed`/merge status is required.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
