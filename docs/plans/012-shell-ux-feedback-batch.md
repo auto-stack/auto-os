@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-012
 plan_revision: 2              # rev2 = 追加问题7（图标居中 + 任务栏状态指示，2026-09-11）
-status: executing             # drafting → executing → execution_done → reviewed → archived（review needs_fix→work F1 已修；余 F2 实机采集待用户后复审）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-14 review pass，F2 实机走查 + 复验反馈全部收口）
 feature_name: shell-ux-feedback-batch
 author: [zhaopuming]
 created_at: 2026-09-11
@@ -798,6 +798,51 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   dock）。另：桌面图标 storage 写入 `shell.desktop.icons`（用户可测
   拖拽）。code_commit：auto-os cce46ec / auto-lang 85faa0610。
   next：用户终验（面板顶 gap/布局钮高亮/拖拽）→ 复审。
+- 2026-09-14 review（/auto-plan:review，实现会话内复核——判定从工件与
+  活体探针重建，非执行摘要转述；局限：与实现同会话，以确定性门档 +
+  用户实机复验记录互补）。stage: review，PLAN-012 rev2，outcome:
+  **pass**，status → reviewed。reviewed_commit：auto-os os-012-dev
+  894cc00 + 主检出计划终稿；auto-lang os-012-dev c848976e8（含
+  85faa0610/1f433f12c/599a2c3c2/538a2b17d 系列）；base：auto-os master
+  6fb6956 / auto-lang master 859c31710；依赖：auto-down bd21ef6
+  （worktree 意外丢失后已于 bd21ef6 原位重建——环境事件非代码变更，
+  已登记）。spec_inputs：schema/projection-protocol-v1.md（v1.6 +
+  复验增补 §2.0.1/§4/§6）、schema/aura.at（workspace_preview 入库 +
+  audio/video backends 漂移同步）、.autoos/specs.json @ 主检出
+  （SD-01..06 落点，merge 派生）。**门档（最终代码全跑）**：cargo tf
+  （nextest ui-iced + schema_drift + docs_gen + component_registry）
+  = **3534/3534 全过**；iced 档全量单线程 = 4620 过 / 196 败（= review
+  基线存量，名字级零新增回归）；VM/默认档全量单线程 = **3523 过 /
+  0 败**。**门档修复（本轮 review 清偿的分支回归）**：① desktop.at
+  a2vue 金样过期（F11 真拖拽重写未再生）→ 金样再生；② schema/aura.at
+  漂移（T8 workspace_preview 未再生入库）→ SCHEMA_DRIFT_GENERATE_AT
+  再生（连带 audio/video backends 漂移同步）；③ docs_gen 三栅栏
+  （kitchen-sink/core.md/DOC_EXCLUDE）→ DOCS_GEN_UPDATE 再生 +
+  workspace_preview 白名单（宿主合成件 gallery 不可呈现，契约文档化
+  于协议文档）；④ element_coverage tag 真名化（NavDestination/Swiper，
+  os-007 同族）。**复验反馈修复入档**（见上两轮记录）：dock 去重等式
+  判据（view 条件 contains 死点清偿）、通知面板右上锚定终解（装配
+  scrim + justify-start + 紧凑 max-h）、二次点击关闭（事件双达定性
+  + N6d 回归）、布局钮高亮、全特权层 window_size 镜像、drain 前置。
+  **AC 终判**：AC-01 ✓ AC-02 ✓（用户复验）；AC-03 ✓（右上角 + 12px
+  gap，用户裁定锚点变更）；AC-04 ✓（×/Esc/scrim 外点 + 二次点击关
+  闭，bus 双 toggle 活体验证）；AC-05 ✓ AC-06 ✓（用户复验）；AC-07 ✓
+  （去重成功，用户确认）；AC-08 ✓（T11 机制 + 图标已写入
+  shell.desktop.icons 可测；拖拽为 F11 用户复验过机制，本轮桌面图标
+  解锁后待用户顺手确认，非阻塞）；AC-09 ✓（用户复验）；AC-10 用户
+  裁定收讫（残留 ~3px iced svg quirk 移交 DEBTS icon 族，不 weaken——
+  缺陷本体随 DEBTS 跟踪）；AC-11 ✓（用户复验 + 活体截图）；AC-12 ✓
+  （铃铛/齿轮/grid 高亮活体验证 + 用户确认）。**findings**：无新增
+  阻塞。登记项：DEBTS 012-候选 ×3（dock 聚合 Win11 UX 计划候选/
+  icon 族计划候选——字形残留 3px + 高亮机制统一/tick 饿死根治——
+  本轮 drain 前置为缓解）；环境事件：.wt/os-012/auto-down worktree
+  意外丢失已原位重建（bd21ef6）。**spec delta 终稿**：frontmatter
+  supersedes/new 已填（G2 锚定语义右上裁定、dock_pinned 缺省空、
+  协议文档 v1.6+、aura.at workspace_preview、关闭模型、状态指示），
+  证据冻结 = 协议文档 + aura.at @ c848976e8。evidence：
+  docs/plans/evidence/012/（前后对照 ×8 + F2-WALKTHROUGH-ROUND3 +
+  探针脚本）；tmp 探针脚本副本随档。next：merge（三仓收口，PLAN-011
+  先例）——用户令下即行。
   **二次点击关闭清偿（2026-09-14 晨）**：用户复验"点一下高亮，再点一
   下没有关闭"定性 = 装配级 scrim 与铃铛 notes_toggle 事件双达（铃铛后
   执行重开盖掉 scrim 关闭）。修复 = scrim 回归 .at 内 N6d 模式（卡片
