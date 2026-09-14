@@ -36,6 +36,7 @@ auto-os/
 ├── apps/                # in-repo 桌面 app（Stage B P-5 随迁；含 pac.at 的
 │                        #   子目录 = local app root，P-3 容器探测注册）
 │   ├── 025-sys-monitor/ #   系统监视器（541 终态；tests/desktop_mcp 随目录）
+│   ├── 036-tetris/      #   俄罗斯方块（Plan 005；Vue/VM/Rust 双端）
 │   ├── 028-launcher/    #   桌面启动器（464；注册表型特权 app）
 │   ├── 038-minesweeper/ #   扫雷（games-wave1 基底）
 │   ├── kanban/          #   gitlink → auto-kanban（PLAN-013 首例 submodule，
@@ -66,6 +67,7 @@ auto-os/
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
 | 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
+| tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005) |
 | 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），

@@ -49,6 +49,14 @@
       "ports": [17600, 17601],
       "status": "active",
       "added": "2026-09-14"
+    },
+    {
+      "id": "tetris",
+      "repo": "apps/036-tetris",
+      "kind": "local",
+      "ports": [17500, 17501],
+      "status": "active",
+      "added": "2026-09-14"
     }
   ]
 }
