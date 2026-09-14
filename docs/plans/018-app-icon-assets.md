@@ -313,3 +313,9 @@ palette/grid 的行视图从未渲染 icon 字段（色章 + 首字母为 463 �
   （或 review 阶段实机门一并走查）。
 - 环境教训入库：桌面 MCP 端口用 `AUTOUI_MCP_PORT` 私有化，避免并行
   会话 9247 争用（9247 为固定缺省，无 pick-free 逻辑）。
+- **桌面快捷方式全量固定（用户需求，2026-09-14）**：`shell.desktop.icons`
+  storage 预置 27 id（~/.config/autoos/desktop-storage.json）+ desktop.sh
+  固定 `AUTO_VM_STORAGE_FILE`（worktree `68814ba` + 主检出同步 `5a04e40`）。
+  实机验证：桌面 4×8 网格 27 快捷方式全渲染（主检出 master 形态 = lucide
+  底章；PLAN-018 合并后同批快捷方式自动升双主题位图——boot 改写臂就位）。
+  证据 evidence/plan018-desktop-pins.png。
