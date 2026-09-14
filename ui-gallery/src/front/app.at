@@ -126,7 +126,11 @@ widget App {
                 // 左侧导航侧边栏 (Plan 573: 手搓 aside+button+style-if → sidebar 族;
                 // aside 只留布局外壳,active/hover 由 menu_button 契约承载)
                 aside {
-                    style: "w-72 border-r border-border bg-card/40 flex flex-col shrink-0 min-h-0"
+                    // PLAN-625 T-04: h-full 必写——aside 无显式高度类时 provider
+                    // 的 h-full 在 iced 布局塌缩为 0（Row 交叉轴无 CSS stretch
+                    // 语义），整棵子树在树中存在但零像素绘制。layout 守卫
+                    // p625_uigallery_sidebar_pills_visible 双形态钉住。
+                    style: "w-72 h-full border-r border-border bg-card/40 flex flex-col shrink-0 min-h-0"
 
                     sidebar_provider (class: "w-full min-h-0 flex-1 flex-col") {
                         // 分类筛选 Pills (是筛选器不是导航项,平移进 header 原样保留)
