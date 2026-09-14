@@ -149,6 +149,7 @@ widget App {
         "ArrowUp" -> .Rotate
         "ArrowDown" -> .SoftDrop
         " " -> .HardDrop
+        "Space" -> .HardDrop
         "p" -> .TogglePause
         "P" -> .TogglePause
         "Escape" -> .CloseHelp
