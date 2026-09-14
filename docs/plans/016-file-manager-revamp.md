@@ -484,6 +484,19 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 6（性能）：选中/悬停卡顿
+
+- 现象：点击选中 ~0.3s 才高亮，不流畅。根因 = 两次叠加：①每次状态变更
+  全量重建视图树（67 行 × 行内 popover 菜单 ≈ 千级控件，VM 动态视图无
+  diff），debug 构建放大 10-50x；②R5 的 hover 高亮为事件驱动
+  （mouseenter/leave 每次跨行切换也触发全量重建）。
+- 处置：a) 行内菜单瘦身（粘贴/divider 移除——状态栏已有粘贴入口）；
+  b) 换 `CARGO_PROFILE_DEV_OPT_LEVEL=2 DEBUG=0` 优化 dev 构建（运行时
+  预期降一个数量级）；c) MouseArea 容器不支持 hover: 变体对（renderer
+  build_container 单样式），事件驱动 hover 为现框架下唯一解 → 记 F-5
+  框架债（MouseArea hover: 变体支持后可零重建 hover）。
+- 残留：若优化构建后仍有可感卡顿 → 视图 diffing 属框架级工作，另立。
+
 ### 2026-09-14 修复轮 5 补充：选中行纵向居中
 
 - 内行 `h-full`（框架 Fill 语义）未使内容居中——改显式 `h-11` 与
