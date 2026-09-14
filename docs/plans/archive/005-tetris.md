@@ -1091,15 +1091,18 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - landed: the reviewed implementation tree and canonical Spec are ancestors of
   the current main branch; the renderer-safe Tetris view is present and the
   prepared Plan/debt/ledger delta is committed in `091e722`.
+- delivery_supplement: reviewed VM rules golden, matrix wiring, gallery path
+  hardening and durable evidence landed in `2f5bec4`; generated Rust golden
+  remains an ignored regeneration artifact by repository convention.
 - ledger_refreshed: `.autoos/specs.json` now contains `P005-1`, `P005-2`,
   `P005-3`, `P005-4` and `P005-R1`, all pointing to the Plan and archived
   evidence target.
 - archived: `docs/plans/archive/005-tetris.md` via `git mv`; frontmatter now
   records `status: archived` and `completion_kind: delivered`.
-- cleaned: pending `wt-guard.sh` verification and removal of the dedicated
-  `plan-005-dev` worktree/branch.
-- next: archive the Plan, clean its worktree, then append the final archive and
-  cleanup receipts.
+- cleaned: the worktree has no tracked changes and zero remaining reparse points;
+  branch-history reconciliation is the only cleanup step left.
+- next: reconcile the preserved plan branch history, then append the final
+  cleanup receipt.
 
 ## 10. 待澄清事项
 
