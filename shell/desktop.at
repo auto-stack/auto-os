@@ -148,10 +148,16 @@ widget DesktopSurface {
                 // review_ue.log 实录 8 条裸 click 无 ActivateApp）。降级后
                 // 整格 160×160 统一双击+右键（Windows 惯例：图标+文字整块
                 // 可点）；PLAN-019-FU1：chip 80px + glyph 40px（原 40/20）。
-                col {
-                    style: "h-20 w-20 items-center justify-center rounded-xl bg-[" + e.color + "]"
+                if e.full == "1" {
                     icon (name: e.icon) {
-                        style: "w-10 h-10 text-white"
+                        style: "w-40 h-40"
+                    }
+                } else {
+                    col {
+                        style: "h-20 w-20 items-center justify-center rounded-xl bg-[" + e.color + "]"
+                        icon (name: e.icon) {
+                            style: "w-10 h-10 text-white"
+                        }
                     }
                 }
                                 col {
