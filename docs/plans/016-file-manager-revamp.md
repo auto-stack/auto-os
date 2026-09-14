@@ -484,6 +484,18 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 7（R7）：open_with 桌面可达性分流（用户实机反馈）
+
+- 现象：独立窗口（auto run -r vm）双击 .jpg 无反应——命中 image-viewer
+  关联走 open_with，但 `__desktop_cmd` 需虚拟桌面宿主排空，独立窗口无人
+  排空 → 静默无效。
+- 修复：ui_desktop 宿主启动设 `AUTO_UI_IN_DESKTOP=1`（App 以 Env 探测
+  桌面在场）；027 OpenItem 分流——`关联命中 && in_desktop` → open_with；
+  否则（无关联 / 独立窗口）→ `process.spawn(cmd /c start path)` 走
+  Windows 关联默认程序。
+- 语义：open_with 的能力边界 = 虚拟桌面内；桌面外文件管理器一律系统
+  默认程序（与用户预期一致）。
+
 ### 2026-09-14 修复轮 6（性能）：选中/悬停卡顿
 
 - 现象：点击选中 ~0.3s 才高亮，不流畅。根因 = 两次叠加：①每次状态变更
