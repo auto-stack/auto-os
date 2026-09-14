@@ -41,7 +41,11 @@ fi
 # （extra roots/manifest 臂被静默丢弃）——注入 Windows 进程的 env 一律经
 # cygpath -m 转 `D:/...` 混合风格（非 bash 环境原样透传）。
 win_path() { command -v cygpath >/dev/null 2>&1 && cygpath -m "$1" || echo "$1"; }
-export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"   # manifest 聚合 env 臂（P-3：设置即权威）
+export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"
+  # PLAN-018 rev2 同步行（worktree 68814ba；review 合并时归一）：桌面 VM storage
+  # 固定 per-user 文件——桌面快捷方式（shell.desktop.icons）预置的前提。
+  export AUTO_VM_STORAGE_FILE="$(win_path "$HOME/.config/autoos/desktop-storage.json")"
+   # manifest 聚合 env 臂（P-3：设置即权威）
 
 if [ "$TRACK" = "vue" ]; then
   AUTO_CLI=""
