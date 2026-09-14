@@ -484,6 +484,18 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 tf/tv 回归补跑 ✅（绿）
+
+- `cargo tf`：**3555 tests run: 3555 passed**（44.7s）；`cargo tv`：
+  **3701 tests run: 3701 passed**（23.5s）——worktree os-016-dev 全量
+  （含 PLAN-016 全部改动）。
+- 前置：master 并入 os-016-dev（merge a39f2c6b9，带 PLAN-018 assets
+  pin/金样同步——旧 assets 曾致 desktop 金样对拍失败）；ffi_dual_019
+  以 `-E` 排除——**master 基线同失败**（auto-cache 依赖指纹 wide/narrow
+  变体未触发重建，i32 截断 705032704≠5000000000，nightly 门控测试），
+  属基线债务非本计划回归。
+- 日志：auto-os tmp/rev-tf-g4.log、rev-tv-g4.log。
+
 ### 2026-09-14 桌面内实机验收补充（R7 构建宿主实测）
 
 - **AC-01 ✅**：桌面切浅色（set_theme 0）后 027 完整跟随浅色（stella
