@@ -1,0 +1,22 @@
+widget CardSuit (suit: str = "", style: str = "") {
+    view {
+        col {
+            class: .style
+            if .suit == "spade" {
+                icon (name: "spade", style: "w-full h-full fill-current") {}
+            } else {
+                if .suit == "heart" {
+                    icon (name: "heart", style: "w-full h-full fill-current") {}
+                } else {
+                    if .suit == "diamond" {
+                        icon (name: "diamond", style: "w-full h-full fill-current") {}
+                    } else {
+                        if .suit == "club" {
+                            icon (name: "club", style: "w-full h-full fill-current") {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

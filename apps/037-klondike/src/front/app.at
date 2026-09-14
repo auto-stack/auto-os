@@ -1,0 +1,356 @@
+use klondike_store: KlondikeStore
+
+widget App {
+    msg {
+        Init,
+        SetSkinVector,
+        SetSkinSvg,
+        DrawStock,
+        ResetDeck,
+        SelectCard(int)
+    }
+
+    model {
+        var dummy int = 0
+    }
+
+    view {
+        col {
+            style: "min-h-screen bg-slate-950 text-slate-100 p-6 gap-6"
+
+            // 顶栏：标题、模式切换与皮肤控制
+            row {
+                style: "items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm"
+                row {
+                    style: "items-center gap-3"
+                    icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
+                    col {
+                        text "AutoOS 纸牌接龙 — 牌面自绘与皮肤包架构" { style: "text-lg font-bold text-slate-100" }
+                        text "双通道交互 + 矢量自绘 + 外部 SVG 皮肤包扩展接口" { style: "text-xs text-slate-400" }
+                    }
+                }
+
+                // 皮肤包切换器
+                row {
+                    style: "items-center gap-2"
+                    text "当前皮肤：" { style: "text-xs text-slate-400 font-medium" }
+                    button "自绘矢量 (Vector)" {
+                        onclick: .SetSkinVector
+                        class: .store.btn_vector_class
+                    }
+                    button "外部 SVG 皮肤包 (SVG Skin)" {
+                        onclick: .SetSkinSvg
+                        class: .store.btn_svg_class
+                    }
+                }
+            }
+
+            // 区域一：52 张典型牌面自绘展台（Sample Gallery）
+            col {
+                style: "bg-slate-900 border border-slate-800 rounded-xl p-5 gap-4 shadow-sm"
+                row {
+                    style: "items-center justify-between"
+                    row {
+                        style: "items-center gap-2"
+                        icon (name: "sparkles", class: "w-4 h-4 text-amber-400") {}
+                        text "牌面形态展台 (Cards Showcase)" { style: "text-sm font-semibold text-slate-200" }
+                        text "（展示 A、人头牌 J/Q/K、数字牌、选中高亮与盖牌样式）" { style: "text-xs text-slate-400" }
+                    }
+                    text "点击卡片可测试选中高亮与提拉效果" { style: "text-xs text-indigo-400 font-medium" }
+                }
+
+                // 卡牌横排展示
+                row {
+                    style: "gap-4 items-center flex-wrap pt-2"
+                    for card in .store.showcase_cards {
+                        button {
+                            key: card.id
+                            onclick: .SelectCard(card.id)
+                            style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+
+                            // 单牌渲染
+                            col {
+                                class: card.card_class
+
+                                // 模式 A：自绘矢量排版
+                                if .store.skin_mode == "vector" {
+                                    if card.is_face_down {
+                                        // 牌背花纹
+                                        col {
+                                            style: "w-[64px] h-[92px] rounded border border-indigo-300/30 dark:border-slate-500/30 items-center justify-center bg-indigo-800/50 dark:bg-slate-700/40"
+                                            icon (name: "layers", class: "w-6 h-6 text-indigo-200/60 dark:text-slate-400") {}
+                                        }
+                                    }
+                                    if !card.is_face_down {
+                                        // 1. 左上角标：点数 + 迷你花色
+                                        col {
+                                            style: "items-center w-4 gap-0.5 leading-none"
+                                            text card.rank_text {
+                                                class: "text-xs font-bold font-mono " + card.color_class
+                                            }
+                                            CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
+                                        }
+
+                                        // 2. 牌面中心区域
+                                        col {
+                                            style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                            if card.rank == 1 {
+                                                // Ace: 大号优雅花色
+                                                CardSuit (suit: card.suit, style: "w-8 h-8 opacity-85 " + card.color_class) {}
+                                            }
+                                            if card.is_court {
+                                                // J/Q/K: 衬线大字母 + 皇家徽章 (Crown / Sparkles / Shield)
+                                                col {
+                                                    style: "items-center gap-0.5"
+                                                    text card.rank_text {
+                                                        class: "text-xl font-bold font-serif opacity-75 leading-none " + card.color_class
+                                                    }
+                                                    CourtBadge (badge: card.court_badge, style: "w-3.5 h-3.5 opacity-70 " + card.color_class) {}
+                                                }
+                                            }
+                                            if !card.is_court && card.rank > 1 {
+                                                // 数字牌: 中号半透明花色
+                                                CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
+                                            }
+                                        }
+
+                                        // 3. 右下角标 (旋转微型角标)
+                                        row {
+                                            style: "items-center justify-end gap-0.5"
+                                            CardSuit (suit: card.suit, style: "w-2.5 h-2.5 opacity-50 " + card.color_class) {}
+                                            text card.rank_text {
+                                                class: "text-[10px] font-bold font-mono opacity-50 " + card.color_class
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // 模式 B：外部 SVG 皮肤包接口
+                                if .store.skin_mode == "svg" {
+                                    col {
+                                        style: "w-full h-full items-center justify-center p-1 bg-slate-50 dark:bg-slate-800 rounded"
+                                        icon (name: "image", class: "w-5 h-5 text-indigo-400 opacity-60") {}
+                                        text card.svg_src { style: "text-[9px] text-center text-slate-500 truncate w-full mt-1" }
+                                        text "[SVG 皮肤包槽位]" { style: "text-[8px] text-indigo-500 font-mono" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 区域二：牌桌布局模拟（展示发牌堆、4 基础堆与牌桌列垂直层叠效果）
+            col {
+                style: "bg-emerald-950/70 border border-emerald-800/60 rounded-xl p-6 gap-6 shadow-inner flex-1"
+
+                // 顶排：发牌堆/弃牌堆 + 基础堆
+                row {
+                    style: "items-start justify-between"
+
+                    // 左侧：发牌堆与弃牌堆
+                    row {
+                        style: "gap-4 items-center"
+                        // 发牌堆
+                        button {
+                            onclick: .DrawStock
+                            style: "p-0 rounded-lg bg-transparent border-0 text-left focus:outline-none"
+                            col {
+                                style: "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/40 shadow-md items-center justify-center relative cursor-pointer select-none"
+                                col {
+                                    style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/50"
+                                    icon (name: "layers", class: "w-6 h-6 text-indigo-200") {}
+                                }
+                                text .store.stock_count.to_string() {
+                                    style: "absolute bottom-1 right-1.5 text-[10px] font-mono font-bold bg-black/50 text-white rounded px-1.5 py-0.5"
+                                }
+                            }
+                        }
+
+                        // 弃牌堆
+                        col {
+                            class: .store.waste_card.card_class
+                            col {
+                                style: "items-center w-4 gap-0.5 leading-none"
+                                text .store.waste_card.rank_text {
+                                    class: "text-xs font-bold font-mono " + .store.waste_card.color_class
+                                }
+                                CardSuit (suit: .store.waste_card.suit, style: "w-3 h-3 " + .store.waste_card.color_class) {}
+                            }
+                            col {
+                                style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                col {
+                                    style: "items-center gap-0.5"
+                                    text .store.waste_card.rank_text {
+                                        class: "text-xl font-bold font-serif opacity-75 leading-none " + .store.waste_card.color_class
+                                    }
+                                    CourtBadge (badge: .store.waste_card.court_badge, style: "w-3.5 h-3.5 opacity-70 " + .store.waste_card.color_class) {}
+                                }
+                            }
+                        }
+                    }
+
+                    // 右侧：4 个基础堆（Foundations）
+                    row {
+                        style: "gap-3 items-center"
+                        for slot in .store.foundation_slots {
+                            col {
+                                class: slot.slot_class
+                                if slot.has_card {
+                                    col {
+                                        style: "items-center w-4 gap-0.5 leading-none"
+                                        text slot.rank_text {
+                                            class: "text-xs font-bold font-mono " + slot.color_class
+                                        }
+                                        CardSuit (suit: slot.suit, style: "w-3 h-3 " + slot.color_class) {}
+                                    }
+                                    col {
+                                        style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                        CardSuit (suit: slot.suit, style: "w-8 h-8 opacity-80 " + slot.color_class) {}
+                                    }
+                                }
+                                if !slot.has_card {
+                                    // 空槽幽灵花色
+                                    CardSuit (suit: slot.suit, style: "w-8 h-8 opacity-20 text-slate-400") {}
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 牌桌列（3 列局部层叠模拟）
+                col {
+                    style: "gap-2 pt-4"
+                    row {
+                        style: "items-center justify-between"
+                        text "牌桌列垂直层叠效果模拟 (Tableau Cascade Preview)" { style: "text-sm font-semibold" }
+                        text "上层明牌仅露出顶部 26px，点数与花色仍然清晰识别" { style: "text-xs text-slate-400" }
+                    }
+
+                    row {
+                        style: "gap-4 items-start pt-2"
+
+                        // 列 0
+                        col {
+                            style: "w-[76px] min-h-[220px]"
+                            for card in .store.tab_col0 {
+                                col {
+                                    class: card.card_class
+                                    col {
+                                        style: "items-center w-4 gap-0.5 leading-none"
+                                        text card.rank_text {
+                                            class: "text-xs font-bold font-mono " + card.color_class
+                                        }
+                                        CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
+                                    }
+                                    col {
+                                        style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                        CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
+                                    }
+                                }
+                            }
+                        }
+
+                        // 列 1 (1 盖牌 + 1 明牌，带负外边距叠牌)
+                        col {
+                            style: "w-[76px] min-h-[220px]"
+                            for card in .store.tab_col1 {
+                                col {
+                                    class: card.wrapper_class
+                                    col {
+                                        class: card.card_class
+                                        if card.is_face_down {
+                                            col {
+                                                style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/40"
+                                                icon (name: "layers", class: "w-5 h-5 text-indigo-200/50") {}
+                                            }
+                                        }
+                                        if !card.is_face_down {
+                                            col {
+                                                style: "items-center w-4 gap-0.5 leading-none"
+                                                text card.rank_text {
+                                                    class: "text-xs font-bold font-mono " + card.color_class
+                                                }
+                                                CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
+                                            }
+                                            col {
+                                                style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                                CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // 列 2 (2 盖牌 + 2 明牌连贯段)
+                        col {
+                            style: "w-[76px] min-h-[220px]"
+                            for card in .store.tab_col2 {
+                                col {
+                                    class: card.wrapper_class
+                                    col {
+                                        class: card.card_class
+                                        if card.is_face_down {
+                                            col {
+                                                style: "w-[64px] h-[92px] rounded border border-indigo-300/30 items-center justify-center bg-indigo-800/40"
+                                                icon (name: "layers", class: "w-5 h-5 text-indigo-200/50") {}
+                                            }
+                                        }
+                                        if !card.is_face_down {
+                                            col {
+                                                style: "items-center w-4 gap-0.5 leading-none"
+                                                text card.rank_text {
+                                                    class: "text-xs font-bold font-mono " + card.color_class
+                                                }
+                                                CardSuit (suit: card.suit, style: "w-3 h-3 " + card.color_class) {}
+                                            }
+                                            col {
+                                                style: "absolute inset-0 items-center justify-center pointer-events-none"
+                                                if card.is_court {
+                                                    text card.rank_text {
+                                                        class: "text-lg font-bold font-serif opacity-70 " + card.color_class
+                                                    }
+                                                    CourtBadge (badge: card.court_badge, style: "w-3 h-3 opacity-60 " + card.color_class) {}
+                                                }
+                                                if !card.is_court {
+                                                    CardSuit (suit: card.suit, style: "w-6 h-6 opacity-30 " + card.color_class) {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    on {
+        .Init -> {
+            store.Init()
+        }
+
+        .SetSkinVector -> {
+            store.SetSkinMode("vector")
+        }
+
+        .SetSkinSvg -> {
+            store.SetSkinMode("svg")
+        }
+
+        .DrawStock -> {
+            store.DrawStock()
+        }
+
+        .ResetDeck -> {
+            store.ResetDeck()
+        }
+
+        .SelectCard(id) -> {
+            store.SelectCard(id)
+        }
+    }
+}
