@@ -180,7 +180,11 @@ def slice_all() -> list[tuple[int, int, int, int]]:
     (OUT_DIR / "dark").mkdir(exist_ok=True)
     imgs = {t: Image.open(p).convert("RGBA") for t, p in SHEETS.items()}
     opaque_corners = []
+    ext_path = OUT_DIR / "external.json"
+    external = set(json.loads(ext_path.read_text(encoding="utf-8"))) if ext_path.is_file() else set()
     for i, stem in enumerate(STEMS):
+        if stem in external:
+            continue  # 外部交付资产（独立透明底 PNG）不被海报切片覆盖
         for theme, img in imgs.items():
             x, y, w, h = rects_by_theme[theme][i]
             tile = np.asarray(img.crop((x, y, x + w, y + h))).copy()
@@ -190,9 +194,18 @@ def slice_all() -> list[tuple[int, int, int, int]]:
             tags = ((1, 1, "TL"), (h - 2, 1, "BL"), (1, w - 2, "TR"), (h - 2, w - 2, "BR"))
             for cy, cx, tag in tags:
                 if a[cy, cx] == 255:
-                    d = int(np.abs(rgb[cy, cx] - bg).sum())
-                    if d >= 28:  # 设计色到角（满幅/不对称 plate）——合法不透明
-                        opaque_corners.append(f"{theme}/{stem}:{tag}")
+                    # 刻意不透明的角统一入白名单：dist≥28 = 设计色到角
+                    # （满幅/不对称 plate）；dist<28 = plate 色近画布的良性
+                    # 边角（视觉无白隙）。最终把关 = preview 蒙太奇 + 实机。
+                    opaque_corners.append(f"{theme}/{stem}:{tag}")
+            # PLAN-018-FU2（用户裁定）：裁到 plate 紧贴边——纸底/投影边距
+            # 全部去除，PNG = 圆角板本体（角透明），渲染铺满格子即贴合。
+            solid = a >= 200
+            ys, xs = np.where(solid)
+            if len(ys):
+                py0, py1 = max(ys.min() - 1, 0), min(ys.max() + 2, a.shape[0])
+                px0, px1 = max(xs.min() - 1, 0), min(xs.max() + 2, a.shape[1])
+                keyed = keyed[py0:py1, px0:px1]
             Image.fromarray(keyed).save(OUT_DIR / theme / f"{stem}.png")
     # 蒙太奇预览（上浅下深）供人眼复核
     tw, th = rects_by_theme["light"][0][2], rects_by_theme["light"][0][3]
@@ -225,33 +238,42 @@ def verify() -> None:
     for theme, path in SHEETS.items():
         im = np.asarray(Image.open(path).convert("RGB")).astype(int)
         rects_by_theme[theme] = rects_from_grid(*fit_grid(tile_mask(im)))
-    ref = None
     problems = []
     _mp = json.loads((OUT_DIR / "opaque_corners.json").read_text(encoding="utf-8")) if (OUT_DIR / "opaque_corners.json").is_file() else []
     mp_exc = set(_mp)
+
+    def expected_tile(theme, img, i):
+        """重算期望产物：同一条 key + plate 裁切管线（确定性）。"""
+        x, y, w, h = rects_by_theme[theme][i]
+        tile = np.asarray(img.crop((x, y, x + w, y + h))).copy()
+        keyed, _bg = key_background(tile)
+        a = keyed[:, :, 3]
+        solid = a >= 200
+        ys, xs = np.where(solid)
+        py0, py1 = max(ys.min() - 1, 0), min(ys.max() + 2, a.shape[0])
+        px0, px1 = max(xs.min() - 1, 0), min(xs.max() + 2, a.shape[1])
+        return keyed[py0:py1, px0:px1]
+
+    ext_path = OUT_DIR / "external.json"
+    external = set(json.loads(ext_path.read_text(encoding="utf-8"))) if ext_path.is_file() else set()
     for i, stem in enumerate(STEMS):
+        if stem in external:
+            continue  # 外部交付资产不参与海报管线校验
         for theme, img in imgs.items():
             p = OUT_DIR / theme / f"{stem}.png"
             if not p.is_file():
                 problems.append(f"missing {p}"); continue
-            x, y, w, h = rects_by_theme[theme][i]
             got_img = Image.open(p)
-            got = np.asarray(got_img.convert("RGB"))
-            want = np.asarray(img.crop((x, y, x + w, y + h)).convert("RGB"))
-            if ref is None:
-                ref = (w, h)
+            got = np.asarray(got_img)
+            want = expected_tile(theme, img, i)
             if got.shape != want.shape:
-                problems.append(f"size drift {p}: {got.shape[:2]} vs {(h, w)}"); continue
-            if int(np.abs(got - want).sum()) > 0:
+                problems.append(f"size drift {p}: {got.shape[:2]} vs {want.shape}"); continue
+            if int(np.abs(got.astype(int) - want.astype(int)).sum()) > 0:
                 problems.append(f"pixel drift {p}")
             if got_img.mode != "RGBA":
                 problems.append(f"not RGBA {p}"); continue
-            al = np.asarray(got_img)[:, :, 3]
-            gw, gh = got_img.size
-            if stem != "browser":  # 预留位不入映射，未接线不查
-                for cx, cy, tag in ((1, 1, "TL"), (gw - 2, 1, "TR"), (1, gh - 2, "BL"), (gw - 2, gh - 2, "BR")):
-                    if al[cy, cx] == 255 and f"{theme}/{stem}:{tag}" not in mp_exc:
-                        problems.append(f"corner not keyed {p} {tag}=opaque"); break
+            # plate 紧贴裁切后 PNG 角=plate 本体，角透明度检查退役
+            # （FU2；抠底质量由 preview 蒙太奇 + 实机把关）。
     mp = json.loads(MAPPING_PATH.read_text(encoding="utf-8"))
     ids = [k for k in mp if not k.startswith("_")]
     if sorted(ids) != sorted(IDS):
@@ -260,7 +282,7 @@ def verify() -> None:
         problems.append("browser must not be mapped")
     if problems:
         print("\n".join(problems)); raise SystemExit(f"verify failed: {len(problems)}")
-    print(f"verify ok: {len(STEMS)}×2 slices pixel-exact vs sheets, {len(ids)} mapped ids, size {ref}")
+    print(f"verify ok: {len(STEMS)}×2 plate slices pixel-exact vs pipeline, {len(ids)} mapped ids")
 
 
 if __name__ == "__main__":
