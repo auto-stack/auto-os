@@ -852,9 +852,13 @@ T9 单线；T10→T11（W5 内）；T3 单线；T12 单线；**T13 依赖 T9**�
   齐；auto-os-config main a60c6bc；主检出冒烟 build ✓ +
   schema_drift/docs_gen 围栏绿）；**ledger_refreshed** ✓（
   .autoos/specs.json P012-1..8/R1 九条，json 校验过）；**archived**
-  ✓（本件 git mv archive/ + status:archived）；**cleaned** → 见文
-  末收据补记。环境备注：.wt/os-012/auto-down 由 plan064 merge 授权
-  清理（本会话误判"意外丢失"重建，合并完成后随组清理再删）。
+  ✓（本件 git mv archive/ + status:archived）；**cleaned** ✅：
+  四 worktree（auto-os/auto-lang/auto-os-config/auto-down）wt-guard
+  全 clean 后移除；分支 os-012-dev ×3 全删（auto-os 6e25d1b /
+  auto-lang 72b96c853 合并态 / auto-os-config a60c6bc）；组目录
+  .wt/os-012 已删。环境备注：.wt/os-012/auto-down 曾由 plan064
+  merge 授权清理（本会话误判"意外丢失"重建，合并完成后随组清理再
+  删，plan064 决策维持）。
   **二次点击关闭清偿（2026-09-14 晨）**：用户复验"点一下高亮，再点一
   下没有关闭"定性 = 装配级 scrim 与铃铛 notes_toggle 事件双达（铃铛后
   执行重开盖掉 scrim 关闭）。修复 = scrim 回归 .at 内 N6d 模式（卡片
