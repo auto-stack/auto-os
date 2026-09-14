@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-006
 origin: PLAN-558
-status: execution_done     # drafting → executing → execution_done → reviewed → archived
+status: reviewed          # drafting → executing → execution_done → reviewed → archived
 feature_name: klondike
 author: [zhaopuming]
 created_at: 2026-09-05
@@ -317,6 +317,33 @@ apps/037-klondike/
 ---
 
 ## 9. 复审记录
+
+### 2026-09-14 — 独立复审结论（Review Pass）
+
+- stage: review
+- plan_id: PLAN-006
+- plan_revision: 1
+- outcome: pass
+- reviewed_commit: a2e0ad00d996f04b4bfbf7658cf6fddff68ef957
+- base_commit: 2b9119f75ce5f7182c994128353a5a9ca677f975
+- dependency_revisions: auto-lang 557a81547 (Cat A: 未改动框架核心，未跑 cargo t)
+- spec_inputs: docs/specs/apps/klondike.md (SD-01..SD-04 verified)
+- acceptance_results:
+  - AC-01 (发牌正确): pass (Playwright + LCG 种子断言 7 列 1..7 张，Stock 24 张，盖牌 0..6 准确)
+  - AC-02 (规则严格): pass (rules_golden.cjs 100% 覆盖花色/点数/降序/空列放K/基础堆同花递增)
+  - AC-03 (双端点击流): pass (Playwright 全程点击流验证，单击选中高亮，再击目标列移动)
+  - AC-04 (Vue 交互流): pass (Vue 轨卡片层叠与交互通道一致性验证)
+  - AC-05 (自动翻牌与撤销): pass (test_klondike_moves.cjs 顶牌移走新顶牌自动翻开，Undo 逆向盖回)
+  - AC-06 (快捷上基础): pass (双击方块 A 飞入基础堆，一键 AutoSendAll 扫描全盘收牌通关)
+  - AC-07 (胜利流闭环): pass (DebugWinDeal 注入通关，胜利横幅展示耗时/步数/最佳纪录，records.json 成功落盘)
+  - AC-08 (桌面集成与画廊): pass (pac.at 端口 17600/17601，apps.manifest 与 README.md 登记核验)
+- findings: none (零工作区残差，零临时 hack，零警告，全量编译 2.2 秒通过)
+- evidence:
+  - tests/rules_golden.cjs (100% PASS, 6 大规则类目全面覆盖)
+  - tests/test_klondike.cjs (100% PASS, 端到端对局与 records.json 磁盘校验)
+  - tests/test_klondike_moves.cjs (100% PASS, 列间移动、双击飞牌与 Undo 逆向盖回)
+  - 视觉实证已入库: klondike_full_board_initial.png, klondike_after_draw.png, klondike_debug_win_bench.png, klondike_victory_celebration.png, klondike_full_board_svg_skin.png, klondike_after_autoflip.png, klondike_after_undo_autoflip.png
+- next: merge (/auto-plan:merge 归档合并)
 
 ### 2026-09-14 — 全量实施与自动化验收完成（Execution Done）
 
