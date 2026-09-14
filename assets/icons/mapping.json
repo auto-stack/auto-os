@@ -1,8 +1,5 @@
 {
  "_comment": "PLAN-018 桌面图标映射：registry id → 图标 stem；browser 为预留位不入映射",
- "_opaque_corners": [
-  "dark/jade-garden:BR"
- ],
  "011-calculator": "calculator",
  "012-stopwatch": "clock",
  "013-todo": "todo",

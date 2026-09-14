@@ -205,8 +205,12 @@ def slice_all() -> list[tuple[int, int, int, int]]:
             canvas.paste(imgs[theme].crop((x, y, x + w, y + h)),
                          (pad + c * (tw + pad), pad + (trow * ROWS + r) * (th + pad)))
     canvas.save(OUT_DIR / "preview.png")
+    # _opaque_corners 走独立 sidecar——mapping.json 是 icon_file 运行时
+    # 解析合同（纯 id→stem 串映射，多一个非串键即 parse failed → lucide
+    # 回退，FU1 实测）。
+    (OUT_DIR / "opaque_corners.json").write_text(
+        json.dumps(sorted(opaque_corners), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     mapping = {"_comment": "PLAN-018 桌面图标映射：registry id → 图标 stem；browser 为预留位不入映射",
-               "_opaque_corners": sorted(opaque_corners),
                **{i: s for i, s in zip(IDS, STEMS[:27])}}
     MAPPING_PATH.write_text(json.dumps(mapping, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"sliced {len(STEMS)}×2 -> {OUT_DIR}/{{light,dark}}; mapping {len(IDS)} ids; preview -> preview.png")
@@ -223,8 +227,8 @@ def verify() -> None:
         rects_by_theme[theme] = rects_from_grid(*fit_grid(tile_mask(im)))
     ref = None
     problems = []
-    _mp = json.loads(MAPPING_PATH.read_text(encoding="utf-8")) if MAPPING_PATH.is_file() else {}
-    mp_exc = set(_mp.get("_opaque_corners", []))
+    _mp = json.loads((OUT_DIR / "opaque_corners.json").read_text(encoding="utf-8")) if (OUT_DIR / "opaque_corners.json").is_file() else []
+    mp_exc = set(_mp)
     for i, stem in enumerate(STEMS):
         for theme, img in imgs.items():
             p = OUT_DIR / theme / f"{stem}.png"
