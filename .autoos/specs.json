@@ -11,6 +11,7 @@
      "created": "2026-09-14",
      "last_modified": "2026-09-14",
      "id": "P005-1",
+     "file": "docs/plans/archive/005-tetris.md",
      "title": "PLAN-005 俄罗斯方块 AutoUI 交付报告",
      "content": "标准 AutoUI 俄罗斯方块 app：Vue 通过 HTTP；VM/Rust 支持 merged 与 no-merge；棋盘网格、ghost、next、Dialog、键盘与持久化均已交付。源码位于 apps/036-tetris，规范位于 docs/specs/apps/tetris.md，端口为 17500/17501。"
     },
@@ -110,6 +111,7 @@
      "created": "2026-09-14",
      "last_modified": "2026-09-14",
      "id": "P005-2",
+     "file": "docs/specs/apps/tetris.md",
      "title": "PLAN-005 三轨模式与应用分层",
      "content": "单一 .at App/Store/API 分层生成 Vue、VM/Iced 与 Rust；Vue 始终走 HTTP，VM/Rust 分别覆盖 merged/no-merge。游戏帧计算留在 Store，后端只承担最高分读取与保存。"
     },
@@ -283,6 +285,7 @@
      "created": "2026-09-14",
      "last_modified": "2026-09-14",
      "id": "P005-3",
+     "file": "docs/specs/apps/tetris.md",
      "title": "PLAN-005 棋盘与状态 UI 契约",
      "content": "棋盘使用 10×20 严格网格与零圆角单格，active/locked/ghost 分层；next、摘要、控制按钮和 ready/paused/help/confirm/over 统一使用 AutoUI dialog。原生布局避免 nested styled columns 触发栈溢出。"
     },
@@ -344,6 +347,7 @@
      "created": "2026-09-14",
      "last_modified": "2026-09-14",
      "id": "P005-4",
+     "file": "docs/plans/archive/005-tetris.md",
      "title": "PLAN-005 M1–M7 功能验收与规则 golden",
      "content": "M1–M7 均已启动并由用户完成基本移动、旋转、软降、硬降、暂停和消行验收；Rust 与 VM fixture golden 覆盖 7×4 形态及 1/2/3/4 行消除计分/压缩。长按/失焦、像素夹具、桌面画廊和 merged 故障矩阵转入 DEBT-005-01..03。"
     },
@@ -449,6 +453,7 @@
      "created": "2026-09-14",
      "last_modified": "2026-09-14",
      "id": "P005-R1",
+     "file": "docs/plans/archive/005-tetris.md",
      "title": "PLAN-005 revision 3 review — pass",
      "content": "用户批准将扩展原生输入/视觉、桌面画廊和 merged 持久化故障矩阵移交 DEBTS。M1–M7 基本功能阶段通过，reviewed_commit=a2eab26dc6f25821b48d5f051ef14d6121651b38，计划进入 merge/archive；后置项见 DEBTS.md。"
     },
