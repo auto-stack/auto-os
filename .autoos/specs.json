@@ -58,6 +58,11 @@
      "status": "published",
      "created": "2026-09-14",
      "last_modified": "2026-09-14"
+    },
+    {
+     "id": "P015-1",
+     "title": "PLAN-015 变更摘要 — app-naming-schema（pac.at 四名称契约）",
+     "content": "桌面 21+ app 名称混杂三源（pac title 未定版语言 / manifest name 死字段 / kebab 兜底）。\n定版 pac.at 四字段契约：name（工程标识，不动）/ exe_name（rust 轨产物名，Plan 014 升格标准）/\ntitle（英文展示名）/ title_zh（中文展示名，新增）。展示名解析链加 locale 臂（AUTO_LOCALE\n缺省 zh：title_zh→title→name→目录名；en：title→name→目录名）。apps.manifest name 键退役\n（dead_code），展示名唯一事实源归 pac.at。44 pac.at 双字段补齐（examples/ui 33、auto-os 5、\nkanban/musk/os-config/jade-garden/term×2）。\n跨仓交付：auto-lang d5acac7fd（merge os-015-dev）、auto-os 2152dc1、五兄弟仓各自 merge。\ncanonical：auto-lang docs/specs/auto-man/project.md §pac.at 四名称契约。"
     }
    ]
   },
@@ -201,6 +206,11 @@
      "last_modified": "2026-09-14",
      "title": "037-klondike 接龙安全平铺与双通道交互 — 架构注记",
      "content": "① 140 格平铺安全模型：7 列牌桌平铺定长列表，配合 tab_face_down 盖牌计数器，移牌后列牌数等于盖牌数且大于 0 时自动触发 col_down -= 1，彻底根除数组越界崩溃隐患；② JS 浮点除法陷阱规避：扑克花色严禁使用 / 13，采用整数区间判定（card >= 39 ? 3 : ...），点数采用 (card % 13) + 1；③ 双通道交互：点击选择-放置全平台一等保底，保障 AutoVM 原生桌面端零交互落差，Vue 轨叠加原生拖放增强；④ 双皮肤架构：自绘矢量排版 CardFace 纯代码实时自绘与外部 SVG 皮肤包槽位热插拔无缝切换。"
+    },
+    {
+     "id": "P015-2",
+     "title": "展示名 locale 解析链与消费面收口（display_title）",
+     "content": "解析收口三处纯判定 + env 壳：app_registry AppRegistryEntry::display_title(_in)\n（crates/auto-lang/src/ui/app_registry.rs）、Pac::display_title_in + Automan::pac_display_title\n（crates/auto-man/src/{pac,automan}.rs）、vue parse_pac_display_title（document.title）。\n消费读点：renderer launcher titles/lts、桌面格 label、LaunchSpec 填充×2（iced/renderer.rs）、\nAUTO_VM_TITLE 注入臂（auto/src/main.rs）。locale 判定 AUTO_LOCALE zh 前缀命中（缺省 zh），\ni18n_lookup::locale_prefers_zh 为约定属主（auto-man 持同款私有副本——ui 模块对 auto-man\n非默认在编）。标识链不挂展示名：dock pinned/hidden/recent/os-config config.at 全按 id/name。\napps.manifest schema = id/repo/kind/ports/status/daemon（OsManifestApp.name 已删）。"
     }
    ]
   },
@@ -228,6 +238,11 @@
      "last_modified": "2026-09-14",
      "title": "037-klondike 状态机、单步撤销与战绩持久化契约 — 设计注记",
      "content": "① 单步撤销快照栈：维护 undo_stack 快照，记录移动前各堆卡牌切片、盖牌翻开数与移动步数，支持精准逆向回退；② 双击上基础与一键收牌：双击明牌自动探测同花色递增槽位飞入，AutoSendAll 循环扫描全盘收拢；③ 前后端分层与持久化：GameRecord DTO（best_moves, best_time_s, games_won, games_played）+ #[api] 端点（/api/records, /api/records/win, /api/records/start），本地磁盘持久化至 records.json。"
+    },
+    {
+     "id": "P015-3",
+     "title": "SD-01/SD-02 规范增量定稿 — 四名称契约节",
+     "content": "SD-01 add：auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」——\n四字段语义表 + locale 解析链 + exe_name 白名单（[A-Za-z0-9_-]，非法告警忽略，唯一消费点\nrust_ui::generate_cargo_toml [[bin]]）。SD-02 modify：同节边界段——apps.manifest 不承载展示名。\n反向钉：test_plan015_title_zh_never_enters_cargo_toml（展示名不进 Cargo.toml）。"
     }
    ]
   },
@@ -299,6 +314,11 @@
      "last_modified": "2026-09-14",
      "title": "037-klondike 规则测试、Playwright 端到端与必胜夹具 — 测试注记",
      "content": "① rules_golden.cjs：100% 覆盖 52 牌编码、红黑异色校验、基础堆递增、LCG 洗牌发牌、翻牌与撤销、胜利判定；② test_klondike.cjs：Playwright 全流程验证开局、抽牌、Undo、DebugWinDeal 必胜夹具注入、一键收牌通关、胜利横幅、历史最佳战绩、records.json 磁盘校验、SVG 皮肤热切换；③ test_klondike_moves.cjs：牌桌列明牌双击飞入基础堆、列顶盖牌自动翻开、单步撤销逆向盖回；全部套件 100% 绿灯通过。"
+    },
+    {
+     "id": "P015-4",
+     "title": "PLAN-015 验证矩阵 — 定点+全量门+四 locale 实机",
+     "content": "定点：auto-man 4 用例（title_zh 解析/display 链/document.title/反向钉）；app_registry 模块\n23/23（ui-iced 档，含策展集恰等 17 与 launch resolver e2e）。全量门（nextest 串行）：\ncargo tv 3691/3691；快档 4857 例 11 失败=10 layout 家族+1 plan492 m4（master 双侧复现，\nbase 既有，另立债务）；ui-iced 档 8 失败全 layout；auto 11/11；auto-man 287/287——零新增红。\n实机：VM 窗标题四 locale（缺省/en/zh_TW/fr），证据 docs/plans/evidence/plan015-vm-title-locales.md。\n策展集 base 既有红修齐：9c6c27e86 补 desktop:true 漏更 want，031-image-viewer 入 want（16→17）。"
     }
    ]
   },
@@ -373,6 +393,11 @@
      "last_modified": "2026-09-14",
      "title": "PLAN-006 经典纸牌接龙独立复审 — 审查注记",
      "content": "2026-09-14 独立复审结论 PASS（commit a2e0ad0 / c91ef03 / a25ed3a）：AC-01..AC-08 全部 8 项验收准则 100% 通过；SD-01..SD-04 规范增量全部通过；零债务、零工作区残差、零临时 hack，批准合入主干并归档。"
+    },
+    {
+     "id": "P015-R1",
+     "title": "PLAN-015 复审 pass + merge 收据（六仓 landed + auto-lang 并行落地）",
+     "content": "review pass（同会话复审，工件独立重建）：AC-1..6 全 pass；七仓 reviewed 基线全 clean。\nmerge：六仓 landed（auto-os 2152dc1、kanban/term/down/musk/os-config 各 merge 提交）；\nauto-lang landing 三次有界重试被并行会话占用阻断（收据 602ec31），后由并行会话完成\n（master d5acac7fd merge os-015-dev，cdc3ed46d 在祖先）——核实祖先链成立，本收据闭合。"
     }
    ]
   }
