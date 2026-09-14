@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-018
-status: executing             # drafting → executing → …（rev2：T7 launcher 真图标已实施，视觉复核待——见 §9 rev2）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（rev2 review pass，next=merge）
 feature_name: app-icon-assets
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -336,3 +336,50 @@ palette/grid 的行视图从未渲染 icon 字段（色章 + 首字母为 463 �
   实机验证：桌面 4×8 网格 27 快捷方式全渲染（主检出 master 形态 = lucide
   底章；PLAN-018 合并后同批快捷方式自动升双主题位图——boot 改写臂就位）。
   证据 evidence/plan018-desktop-pins.png。
+
+### 复审记录（stage: review | plan_id: PLAN-018 | rev2 | outcome: **pass** | next: merge）
+
+**独立性**：与实施同会话——结论全部工件重建（重跑测试/重做实机/重读 diff）。
+**reviewed_commit**：auto-os `01dc1d7`、auto-lang `4b55dc7e1`（+ `3b4a59f58`
+spec、`3f825c66f` T2-T4、`20122b1`/`64096a5`/`d82594c`/`68814ba` auto-os 侧）；
+**base**：auto-os `6dead8b`、auto-lang `88803e84e`；依赖：auto-down detach
+140775f（仅构建兄弟解析）。worktree 提交全清；auto-os worktree 内另有**他属**
+在途脏文件 `apps/036-tetris/src/front/app.at`（并行会话 WIP，保留不并入，
+merge 清理时须先安置）。
+
+**AC 判定**：
+- AC-1 pass——`slice_icons.py --verify` 独立重跑：28×2 像素级往返、27 id
+  恰等、browser 未映射。
+- AC-2 pass——icon_file 2/2；两 raster 合流臂在场（renderer 3432/5109）；
+  回退链顺序单测钉死。
+- AC-3 pass——plan018_iconfile_dual_theme_bitmap 1/1（双 img + SFC 切换
+  规则 + lucide 组件不受扰）。
+- AC-4 pass——复审新鲜实机重拍（PrintWindow + acceptance summon）：launcher
+  调色板逐行真位图（深色切片）+ 中文名 + 分类 chip；桌面网格/dock 位图证据
+  同分支先前采集互证。
+- AC-5 pass——ui/overview.md §「icon 字符串协议族（PLAN-018）」成文（协议
+  表/回退链/解析序/主题/mapping 指针，持久行为无执行日记）。
+- AC-6 pass——launcher palette 实机真位图 + 双主题切片；整桌面视觉主证
+  已由实机走查覆盖（launchers/grid/dock 三面），任务栏随窗标题沿用同通道。
+
+**全量门（nextest 串行，os-018 worktree）**：cargo tv 3697/3697；快档 4898
+例失败 16 = layout 家族 14（`apply_layout_filters` 等——master 已删除/重写
+该批测试，属陈旧分支快照随合并消解 + master 同挂实证的家族债务）+
+`covered_elements_within_target_set` 1（88803e84e base 状态实证同挂）+
+`p010_popover_ondismiss` 1（base 状态实证同挂）——**零本计划回归**；
+auto-man 287/287；auto 11/11。
+
+**findings**：
+- F1(info) baseline 债务清单扩充（layout 家族 14 + strips_tags +
+  covered_elements + p010_popover）——并行会话 WIP/既有，建议另开债务计划。
+- F2(info) 同会话复审局限——以工件重建缓解（AC-4 新鲜捕获、AC-1/2/3/5
+  全部重跑）。
+- F3(info) auto-os worktree 内他属在途脏文件（036-tetris app.at）——保留
+  未并入；merge 清理时须先安置该文件再 wt-guard。
+- F4(info) 主干推进协调点：auto-os main 的 `e358cd5`（launcher 搜索三档
+  判定修复，PLAN-015 回归）与本分支 launcher 视图改动同文件不同区域，
+  merge 后需复核 launcher 搜索仍命中（'term' 等子串）。
+
+**spec_inputs**：`auto-lang/docs/specs/auto-lang/ui/overview.md` §「icon
+字符串协议族（PLAN-018）」（协议表/回退链/资产根解析序/主题目录，持久行为；
+SD-01 锚定此节；SD-02 = 本仓 README 图标资产节，随 T1 落）。
