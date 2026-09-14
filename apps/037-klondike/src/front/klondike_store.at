@@ -1134,7 +1134,7 @@ store KlondikeStore {
 
                     var wrap_str str = ""
                     if i > 0 {
-                        wrap_str = "-mt-[74px]"
+                        wrap_str = "-mt-[82px]"
                     }
 
                     var card_style str = ""

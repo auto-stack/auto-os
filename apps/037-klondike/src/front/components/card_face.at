@@ -11,9 +11,9 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
                     }
                 }
                 if !.is_face_down {
-                    // 1. 左上角标：点数 + 迷你花色
-                    col {
-                        style: "items-center w-4 gap-0.5 leading-none"
+                    // 1. 左上角标：点数 + 迷你花色 (横向排列)
+                    row {
+                        style: "items-center gap-1 leading-none"
                         text .rank_text {
                             class: "text-xs font-bold font-mono " + .color_class
                         }
