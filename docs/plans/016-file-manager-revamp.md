@@ -1,7 +1,8 @@
 ---
 plan_id: PLAN-016
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived（r2 Phase 2 执行中）
 feature_name: file-manager-revamp
+plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
 created_at: 2026-09-14
 updated_at: 2026-09-14
@@ -26,7 +27,7 @@ affects:
   - auto-os/docs/plans/016-file-manager-revamp.md
 
 current_step: 10
-total_steps: 11
+total_steps: 18
 ---
 
 # [PLAN-016] file-manager-revamp
@@ -551,3 +552,62 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | 4 | 027 是否收编独立仓/apps 容器臂（PLAN-013 混合形态） | 非目标；待 app 成熟后另行计划 |
 | 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探（**T-10 已实现地址栏**，可编辑回车跳转 + canonical 剥 `\?\` 前缀）；后续可提 stdlib `fs.drives` 提案 |
 | 6 | 与 PLAN-014/015 的开工顺序 | 依赖既有授权范围内排程：015 merge 后开工；014 错峰——不需用户新授权，若用户指定并行则接受 renderer.rs 冲突面人工协调 |
+
+---
+
+# Phase 2：UX 反馈批（plan_revision 2 · 2026-09-14 用户实机反馈 9 项）
+
+> 触发：用户实机观察反馈（截图 4 张），用户直接下达。设计/验证约束：VM 轨
+> flex-wrap 不支持（P614 纪律）→ 图标模式改 grid 类（025 performance 先例）；
+> `ondblclick` 支持（桌面图标同款）；button `title:` prop = 悬停 tooltip
+> （PLAN-053）；`.at` 无 blur 事件 → 地址编辑退出用显式确认/取消钮；字体
+> 家族框架面仅 serif/sans/mono（指定中文黑体需 renderer default_font 工作
+> → 记 finding F-1，本轮做字号提升）。
+
+| # | 用户反馈 | 分析 | 任务 |
+|---|---|---|---|
+| 1 | 右上 path input 与最右挤扁图标无用；取路径应在地址栏（点击变 input） | 独立地址栏与面包屑功能重复；挤扁体 = 布局压缩牺牲品 | T-12 |
+| 2 | 面包屑层级 `/` 换行、三层阶梯错位；模拟地址栏过高 | row 内混排 button/text 高度不一致；分隔符独立节点被挤下行 | T-12 |
+| 3 | 隐藏/+文件夹/+文件改纯图标（tooltip 文字）；小窗不压扁、地址栏可伸缩、右侧控件定宽 | 右侧控件全部 shrink-0 + icon-only + title tooltip；面包屑区 flex-1 独占伸缩 | T-13 |
+| 4 | 大小与类型贴死；类型列应居中 | 两列间无间距（pr 缺失）；类型内容列左对齐与表头居中不一致 | T-14 |
+| 5 | 中文默认字体太小、字型不对（期望黑体/系统默认） | 027 正文 text-xs(12px) 偏小 → 名列/侧栏升 text-sm；字体家族 = F-1 框架项 | T-15 |
+| 6 | 快捷访问 icon 应差异化 | home/monitor/file-text/download/image/music 字面量分支（TreeIcon 范式） | T-16 |
+| 7 | 图标模式未成 grid（VM flex-wrap 降级单行），溢出隐藏 | `row flex-wrap` → `grid grid-cols-4 md:grid-cols-6 xl:grid-cols-8`（025 先例） | T-17 |
+| 8 | 图标卡只有名称可点 | 卡整体 mouse-area（onclick 选中 + ondblclick 打开）；grid popover 内容泄漏 bug 一并消除（卡内 popover 移除） | T-17 |
+| 9 | 单击打开 → 应双击打开 | ondblclick 已支持；列表名列 onclick=选中 / ondblclick=打开；··· 菜单不变 | T-18 |
+
+## 7.P2 验收标准（Phase 2 增量）
+
+| ID | 可观察行为 | 验证方法 |
+|---|---|---|
+| AC-15 | 无独立地址栏 input；点击面包屑区变输入态，回车跳转、✕ 取消 | 实机操作 + 截图 |
+| AC-16 | 面包屑各层同一行水平对齐、无换行分隔符；胶囊高与 input 一致（h-9） | 截图对照 |
+| AC-17 | 隐藏/+文件夹/+文件为纯图标按钮（title 悬停出文字），定宽不压扁；搜索框/面包屑伸缩正常 | 窄窗 + 最大化截图 |
+| AC-18 | 大小列与类型列有间距；类型内容列居中 | 截图对照 |
+| AC-19 | 名称列与侧栏字号 text-sm | 截图对照 |
+| AC-20 | 快捷访问五项图标各异（monitor/file-text/download/image/music） | 截图 |
+| AC-21 | 图标模式为多列 grid；整卡可点（单击选中/双击打开）；卡内无泄漏菜单 | 实机操作 + 截图 |
+| AC-22 | 列表行单击=选中、双击=打开；··· 菜单行为不变 | 实机操作 |
+
+## 8.P2 Phase 2 执行步骤
+
+- **T-12 〔lang〕面包屑点击编辑 + 去独立地址栏**（AC-15/16）：msg 增
+  AddrEdit/AddrCancel；view 面包屑区 mouse-area 包裹 → addr_editing 切换
+  input（值同步 current_path）；crumbs 全按钮化（去独立分隔符、统一 h-7）。
+- **T-13 〔lang〕工具栏图标化 + 定宽**（AC-17）：隐藏/＋文件夹/＋文件 →
+  icon-only + title tooltip + w-8 shrink-0；右区全部 shrink-0。
+- **T-14 〔lang〕列表列距 + 类型居中**（AC-18）。
+- **T-15 〔lang〕字号提升**（AC-19）：名列/侧栏 text-sm；字体家族记 F-1。
+- **T-16 〔lang〕快捷图标差异化**（AC-20）：monitor/file-text/download/
+  image/music 字面量分支。
+- **T-17 〔lang〕grid 图标模式 + 整卡点击**（AC-21）：grid 类容器、mouse-area
+  整卡 onclick/ondblclick、卡内 popover 移除（泄漏 bug 消除，记录框架
+  popover 网格子树泄漏现象）。
+- **T-18 〔lang〕双击打开**（AC-22）：名列 onclick=选中/ondblclick=打开。
+
+## 10.P2 Phase 2 新增 finding
+
+| ID | 事项 | 去向 |
+|---|---|---|
+| F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
+| F-2 | VM popover 在 grid/flex 子树内 closed 态内容泄漏参与布局（实机截图："打开"菜单项内联渲染）——aura popover 布局面 bug，另立框架债 | 框架债 |
