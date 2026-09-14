@@ -871,7 +871,7 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - plan_id: PLAN-005
 - plan_revision: 2
 - outcome: partial
-- code_commits: app `df4ee1f`, evidence refresh `44f6933`; auto-lang prerequisite
+- code_commits: app `df4ee1f`, evidence refresh `44f6933`/`20bef67`; auto-lang prerequisite
   `86dae6ba4` (`fix(ui): route opt-in app blur lifecycle events`)
 - task_ids: T1, T5, T6
 - evidence:
