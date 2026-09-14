@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-018
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-14 work T1-T6 全落，见 §9）
 feature_name: app-icon-assets
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -252,3 +252,45 @@ Plan 529 布局）+ auto-lang 依赖 worktree `D:/autostack/.wt/os-018/auto-lang
 | Q1 | vue 宿主主题切换机制选型（根 class vs 双 src） | T3 实现细节 | work 期按 desktop-host 既有主题机制实测选定，设计两可 |
 | Q2 | 切片导出是否同步出 2x 高清位图（源表仅 1x） | AC-4 视觉锐度 | 源表 153×150 在桌面格 ≈48px 显示下已超采样，v1 不做 upscale；实测糊则 T5 提出回炉 |
 | Q3 | Browser 预留图是否顺带切出 | T1 产物 +1 文件 | 切出不入映射（成本零，未来 app 就绪即用） |
+
+### 执行证据（2026-09-14，work 轮）
+
+- **[x] T1** [✅ 已完成] `scripts/slice_icons.py`（连通域锚点拟合 + 每表各自
+  网格 + 像素级往返校验 + 蒙太奇预览）+ `assets/icons/{light,dark}/` 28×2 +
+  `mapping.json`（27 id）+ README 资产节。commit `20122b1`。手段注记：计划的
+  "逐格填充率 ≥0.85" 不可行——粉彩/白瓷图块与海报底色阈值扫描 0.06-0.86 全谱
+  不可分（T1 实测），改像素往返 + 预览人眼复核（AC-1 语义不变）。
+- **[x] T2** [✅ 已完成] `iced/icon_file.rs`（parse 白名单/资产根解析序/
+  (stem,dark) 缓存）+ renderer 两 raster 源合流臂（按钮 icon 臂 + Image 视图
+  臂；窗 icon 字段为 hicon 生产端不需改——手段注记）。commit `3f825c66f`。
+  定点 2/2 绿。
+- **[x] T3** [✅ 已完成] vue codegen icon 臂 iconfile 双 `<img>` + SFC 切换
+  规则三行（`iconfile_theme_css` 旗标）；`plan018_iconfile_dual_theme_bitmap`
+  绿 + ui_gen 档 773/773 + desktop 金样绿。
+- **[x] T4** [✅ 已完成] 桌面 boot 接线 `apply_icon_mapping` + `AUTO_OS_ICON_ROOT`
+  注入（renderer.rs 注册表快照组装点）。落点注记：boot 代码在 auto-lang
+  （读 auto-os 资产）——计划写"auto-os boot 侧"系代码归属误记，语义不变。
+- **[x] T5** [✅ 已完成] 实机证据（PrintWindow 零打扰采集）：浅色 dock
+  calculator/todo/notes 位图 + 深色 dock 同三枚走 dark 切片 + lucide 回退
+  同画面共存（grid/terminal 钮）；evidence/plan018-icons-{light,dark}.png、
+  plan018-dock-zoom{,-dark}.png。commit `64096a5`。手段注记：前三轮截屏被
+  前台应用污染（用户在用机器），最终 PrintWindow 离屏采集零打扰；工作树缺
+  兄弟检出致 kanban/musk/term 三 manifest 项缺席本轮桌面（merge 后主干全量
+  复核项，非缺陷）。
+- **[x] T6** [✅ 已完成] ui/overview.md §icon 字符串协议族（SD-01 定稿落点
+  即此节；SD-02 README 节随 T1 落）。commit `3b4a59f58`。
+
+- 2026-09-14 /auto-plan:work（stage: work | plan_id: PLAN-018 | rev1 |
+  outcome: **pass** | next: review）。
+  **code_commit**：auto-os worktree `20122b1`（T1）+ `64096a5`（T5 证据）、
+  auto-lang worktree `3f825c66f`（T2-T4）+ `3b4a59f58`（T6 spec）。
+  **worktree**：`.wt/os-018/{auto-os,auto-lang,auto-down}`（auto-down 为
+  crates optional-dep 兄弟解析用，detach master）。
+  **task_ids**：T1-T6 全 ✅；**evidence**：§8 执行证据 + evidence/plan018-*。
+  **关键实测**：dock 四钮实机位图渲染（浅/深双主题各自走对切片目录）、
+  lucide 回退同画面共存；ui_gen 773/773 + app_registry/icon_file 定点全绿；
+  切片 28×2 像素级往返 + mapping 恰等。**手段偏差三笔记录**（填充率→像素
+  往返+人眼预览；T4 落点 auto-lang；T5 PrintWindow 替代前台截屏），均
+  等价实现不触契约。
+  **blockers**: 无。遗留 review 复核：vue 宿主 .dark class 机制实测（Q1）、
+  主干全量桌面（含 kanban/musk/term manifest 项）图标复核、全量门。
