@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-015
-status: reviewed               # drafting → executing → execution_done → reviewed → archived（2026-09-14 review pass，next=merge）
+status: reviewed               # drafting → executing → execution_done → reviewed → archived（review pass；merge 六仓已落，auto-lang landing 待并行会话让位——见 §9 merge 收据）
 feature_name: app-naming-schema
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -335,6 +335,35 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
   **spec_inputs**：`auto-lang/docs/specs/auto-man/project.md` @ d0baea6be
   （§「pac.at 四名称契约（PLAN-015）」23 行，锚定 SD-01/SD-02；描述持久
   行为，无执行日记）；`new_spec_components` 已定稿为精确路径。
+- 2026-09-14 /auto-plan:merge（**PLAN-015:r1**，收据键 PLAN-015:r1，
+  outcome: **blocked**——仅 auto-lang landing 一项待并行会话让位，余六仓
+  checkpoint 全落）。
+  - `prepared` ✅：七仓 reviewed 基线核对；auto-os spec 面随 auto-lang
+    commit 承载（SD-01/SD-02 唯一 canonical 目标 =
+    auto-lang/docs/specs/auto-man/project.md）；交付提交 = 各仓 os-015-dev
+    分支头。
+  - `landed` ✅（6/7）：auto-os main `2152dc1`（merge 提交，含
+    apps 5 pac.at + apps.manifest + AGENTS.md）；auto-kanban main
+    （title_zh 看板）；auto-term main（app+at-app 两文件）；auto-down
+    master（jade-garden title/title_zh）；auto-musk main、auto-os-config
+    main（各自 merge 提交，真合并零冲突）。
+  - `landed` ⏳（1/7）：**auto-lang master**——主检出被并行会话活跃占用
+    （iced layout/renderer/terminal 域 5→9 文件在途脏区，13:40–14:06 持续
+    演进，master 期间三度推进 0a3c9b26b→e0c404f57→0736b58e7），merge 会
+    覆写其在途文件，三次有界重试（含 5+8 分钟等待）均不满足干净前提，到
+    自动重试上限。**分支已保持 landing-ready**：os-015-dev `cdc3ed46d`
+    已三轮并入最新 master（重叠文件 i18n_lookup.rs/renderer.rs 均自动
+    合并且双侧改动存活验证：locale_prefers_zh+TABLES 共存、5×display_title
+    +5×title_zh:None 全在），合并提交定点绿（title_zh 3 + display 1 +
+    i18n F-02 5 + app_registry 64 + vshow 4）。
+  - **精确解锁动作**：auto-lang 主检出 `git status` 干净后跑
+    `git merge os-015-dev`（预期 ff；若 master 又进，先在
+    `.wt/os-015/auto-lang` 重并 master 再落）；落地后按序完成
+    `ledger_refreshed` → `archived` → `cleaned`（七 worktree + 分支 +
+    组目录，wt-guard 前置）。
+  - `ledger_refreshed` ⏳ / `archived` ⏳ / `cleaned` ⏳：依 auto-lang
+    landing 解锁（canonical spec 在该提交内，台账/归档不得先于 canonical
+    落地发布）。worktree 全部保留不清理。
 
 ## 10. 待澄清事项
 
