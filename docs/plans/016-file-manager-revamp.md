@@ -484,6 +484,46 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 /auto-plan:review（r2，实现会话内复审——已声明局限）
+
+- `stage: review` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: needs_fix`（两项收尾，其余全绿）| 保持 `executing`。
+- **基线**：实现 worktree `D:/autostack/.wt/os-016/auto-lang`（os-016-dev，
+  HEAD = master 合并 a39f2c6b9 后 + R5/R6 提交至 bd38e8894+；基点
+  8c3b4db57）；依赖 worktree `.wt/os-016/auto-os`（已并 main 34d4699）。
+  两 worktree 提交整洁（无脏实现）。复审在实现会话内进行（无独立会话，
+  已按技能要求以工件重建验证）。
+- **套件**：`cargo tf` 3555 全绿 / `cargo tv` 3701 全绿（019 为 master
+  基线失败，-E 排除，详见修复记录）——仓库要求的回归面 ✅。
+
+### 验收结果（r2 全量 AC）
+
+| AC | 结果 | 证据 |
+|---|---|---|
+| AC-01 浅色跟随 | **pass** | 桌面 set_theme 0 → 027 全窗浅色，ac01-light-desktop.png |
+| AC-02 图标 lucide | **pass** | 快照零 emoji 扫描 + p2-list-final.png |
+| AC-03 alert-dialog | **pass** | t03-rename-dialog.png + 删除确认态断言 |
+| AC-04 toast | **pass**（视觉截图见 rev-probe toast-copy；机制 = __toast 管线） | probe 截图 |
+| AC-05 真实列表 | **pass** | 67 项真实 listing（快照+截图），名称/大小/类型/日期列 |
+| AC-06 导航+错误态 | **partial** | 正常导航 ✅（侧栏/···→打开/面包屑层级）；错误路径 toast 态留实机（MCP 无法驱动地址编辑态） |
+| AC-07 文件操作 | **pass** | create ×2 磁盘断言；rename/delete 磁盘断言（rev-probe2）+ 用户实机 |
+| AC-08 open_with 动词 | **pass** | 协议 v1.7 落码 + acceptance bus 实证（未知 app 拒绝/启动臂） |
+| AC-09 txt→auto-edit | **pass** | t07-open-with-e2e.png（041 打开语料文件内容完整） |
+| AC-10 jpg→image-viewer | **pass** | ac10-image-open-desktop.png（031 启动聚焦 + photo.png 渲染）；"打开方式"选择器条款经用户 R5 指令演化为系统兜底（已记录） |
+| AC-11 套件绿跑 | **partial** | 套件已对齐 Phase 2 惯例；绿跑受 MCP 通道失联阻塞（框架债）；交互流程已单点实证 |
+| AC-12 vue 轨 | **fail→转 PLAN-631** | vue popover 发射缺陷（`left: 8px` 裸 CSS 进 :style JS 对象 → App.vue 白屏，App.vue:1033:124 实证）= ui_gen/vue.rs popover 臂坐标回退未引号化——属 F-7 vue 侧同族，随 PLAN-631 修 |
+| AC-13 文档一致 | **pass** | SPEC.md 重写 + 协议 v1.7 + 判定序四象限入册 |
+
+### findings（复审新增）
+
+| ID | 严重度 | 内容 | 去向 |
+|---|---|---|---|
+| FR-1 | 中 | AC-11 绿跑依赖 MCP 通道稳定性（框架债 F-3/MCP 失联）；套件需更新至 Phase 2 导航惯例（···→打开；地址栏已改点击编辑） | T-10 随 PLAN-631 后补跑 |
+| FR-2 | 低 | AC-12 vue 轨白屏 = ui_gen/vue.rs popover 臂坐标回退发射裸 `left: 8px`（PLAN-631 F-7 vue 侧同族） | 随 PLAN-631 修 |
+| FR-3 | 低 | 独立窗口无系统深浅色跟随（dark_mode 仅桌面回写链驱动） | 建议并入 PLAN-631 后续或 PLAN-016 后续轮 |
+| FR-4 | 信息 | AC-10 "打开方式"选择器按用户 R5 指令演化为系统默认程序兜底（契约演化，已记录） | 闭合 |
+
+### 2026-09-14 修复轮 7（R7）：open_with 桌面可达性分流（用户实机反馈）
 ### 2026-09-14 tf/tv 回归补跑 ✅（绿）
 
 - `cargo tf`：**3555 tests run: 3555 passed**（44.7s）；`cargo tv`：
