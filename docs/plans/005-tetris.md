@@ -956,7 +956,11 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - blockers: native physical keydown/keyup, long-press/repeat, blur/focus,
   narrow-window/theme pixels, desktop discovery, and `05-games` gallery remain
   manual/framework acceptance items. Rust Cargo was rerun successfully with an
-  explicit writable `CARGO_TARGET_DIR` and is no longer blocked.
+  explicit writable `CARGO_TARGET_DIR` and is no longer blocked. A fresh
+  VM no-merge launch in this environment stops in the AutoVM server with
+  `Module not found: auto.env`; the no-merge cross-mode leg therefore remains
+  open. The physical driver also found no visible `俄罗斯方块` window to take
+  over, while the merged MCP endpoint itself was reachable.
 - next: perform the native and desktop/gallery manual matrix and request an
   independent revision-2 review;
   keep Plan status `executing` until those gates close.
