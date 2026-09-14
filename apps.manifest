@@ -44,7 +44,6 @@
     },
     {
       "id": "037-klondike",
-      "name": "经典纸牌接龙",
       "repo": "apps/037-klondike",
       "kind": "local",
       "ports": [17600, 17601],
