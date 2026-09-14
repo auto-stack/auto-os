@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-015
-status: executing               # drafting → executing → execution_done → reviewed → archived（2026-09-14 work T1-T7 全落，见 §9）
+status: reviewed               # drafting → executing → execution_done → reviewed → archived（2026-09-14 review pass，next=merge）
 feature_name: app-naming-schema
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -8,7 +8,7 @@ updated_at: 2026-09-14
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: [auto-lang/docs/specs/auto-man/project.md#pac-四名称契约]
+new_spec_components: [auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」]
 touched_goals: []
 
 affects: [auto-lang/crates/auto-lang/src/ui/app_registry.rs, auto-lang/crates/auto-man/src/automan.rs,
@@ -222,8 +222,8 @@ pub fn display_title(&self) -> &str
 
 | delta_id | 类型 | 目标 | before/after | rationale | acceptance |
 |---|---|---|---|---|---|
-| SD-01 | add | auto-lang/docs/specs/auto-man/project.md#pac-四名称契约 | before：pac 名称字段无契约（name/title 语义未定版、exe_name 仅 Plan 014 局部注释）；after：四字段语义表 + locale 解析链 + exe_name 白名单成文 | 展示名/标识/产物名三概念解耦需成文契约 | AC-1, AC-3 |
-| SD-02 | modify | auto-lang/docs/specs/auto-man/project.md（manifest 节，执行期定位） | before：apps.manifest 条目含 name（dead）；after：manifest 条目 = id/repo/kind/ports/status/daemon，无展示名 | 单一事实源 | AC-4 |
+| SD-01 | add | auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」 | before：pac 名称字段无契约（name/title 语义未定版、exe_name 仅 Plan 014 局部注释）；after：四字段语义表 + locale 解析链 + exe_name 白名单成文 | 展示名/标识/产物名三概念解耦需成文契约 | AC-1, AC-3 |
+| SD-02 | modify | auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」边界段（review 定稿：原"manifest 节"实际收编为同节边界段，不另立节） | before：apps.manifest 条目含 name（dead）；after：manifest 条目 = id/repo/kind/ports/status/daemon，无展示名 | 单一事实源 | AC-4 |
 
 ## 6. 测试设计
 
@@ -306,6 +306,35 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
   发现并修齐 base 既有红：策展集 want 漏更 031-image-viewer（9c6c27e86，
   语义未放宽）。AC-6 以 headless 等价成文（VM 窗标题三 locale 实机 +
   注入链单测），整桌面视觉截图留 review 实机门。blockers: 无。
+- 2026-09-14 /auto-plan:review（stage: review | plan_id: PLAN-015 | rev1 |
+  outcome: **pass** | next: merge）。
+  **独立性声明**：复审与实施同会话，结论全部从工件独立重建（重跑测试/
+  重做实机/重读 diff），不采信实施轮日志。
+  **reviewed_commit**：auto-lang `d0baea6be`、auto-os `74de56e`、
+  auto-kanban `fc0434f`、auto-musk `0a8d5ac`、auto-term `1a7ac1e`、
+  auto-os-config `e924fff`、auto-down `3320014`（七检出全 clean）。
+  **base_commit**：auto-lang master `71ed7ea90`、auto-os main `d426fe6`。
+  **AC 判定**：AC-1 pass（app_registry 模块 23/23 + display_title 两链单测）；
+  AC-2 pass（automan 单测 + `AUTO_VM_TITLE` 臂换用）；AC-3 pass（spec 契约节
+  在 commit 内 + 反向钉用例绿 + exe_name 行为不变）；AC-4 pass（OsManifestApp
+  无 name + manifest 四行删 + AGENTS.md 同步 + 解析单测绿）；AC-5 pass
+  （review 侧独立重计：44 pac.at title/title_zh 双全，HEAD~1 diff 口径）；
+  AC-6 pass（headless 等价档：复审独立复现四 locale VM 实机——缺省=编辑器/
+  en=AutoEdit/zh_TW=编辑器/fr=AutoEdit；整桌面视觉截图遗留 merge 后机会性
+  补采，不阻塞）。
+  **全量门（nextest 串行）**：`cargo tv` 3691/3691 绿；`cargo t` 快档 4857
+  例 11 失败=10 `ui::layout::tests`（master 双侧复现，base 既有）+1
+  `plan492_m4 c2_param_msg_declaration_both_tracks_alive`（master 复现，base
+  既有）——零新增红；ui-iced 档 4844 例 8 失败全 layout 家族（base 既有）；
+  auto crate 11/11；auto-man 287/287。
+  **findings**：F1(info) 策展集 base 既有红修齐已核（want 16→17，语义未
+  放宽）；F2(info) 复审自身两次并行 cargo 执行造成假红（plan609/vshow env
+  竞态 + auto.exe 文件锁）与 VM 实验残留僵尸 auto.exe——串行重跑后全部
+  消除，教训：本仓门禁必须 nextest 串行单链；F3(info) layout 家族 + m4
+  base 既有红非本计划范围，建议另开 debt 计划，不阻塞本计划。
+  **spec_inputs**：`auto-lang/docs/specs/auto-man/project.md` @ d0baea6be
+  （§「pac.at 四名称契约（PLAN-015）」23 行，锚定 SD-01/SD-02；描述持久
+  行为，无执行日记）；`new_spec_components` 已定稿为精确路径。
 
 ## 10. 待澄清事项
 
