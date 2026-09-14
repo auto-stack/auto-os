@@ -392,6 +392,6 @@ SD-01 锚定此节；SD-02 = 本仓 README 图标资产节，随 T1 落）。
 | landed | auto-lang master `5cf18fea0`（merge os-018-dev，icon_file.rs/builder 透传/资产消费在 master ✓ 冒烟 2+1 绿）；auto-os main `a2eab26`（PLAN-018 merge：资产/工具/launcher 真图标/desktop.sh storage 固定）+ `307e526`（pyc 清理）；主检出冒烟 slice --verify 绿 |
 | ledger_refreshed | `.autoos/specs.json` P018-1..4 + P018-R1 五条目（+25 行最小 diff，indent=1 保形） |
 | archived | 本件 git mv → docs/plans/archive/018-app-icon-assets.md，status: archived（completion_kind: delivered） |
-| cleaned | 见下方补记（wt-guard + worktree/分支/组目录清理） |
+| cleaned | wt-guard 三 worktree 全 clean（auto-os/auto-lang/auto-down）→ remove --force（auto-os 内他属 tetris 脏文件已先以 `.wt/os-018-tetris-wip.patch` 安置，119 行 diff 可 `git apply` 恢复）→ 分支 os-018-dev ×2 删除（13a6d36/5cf18fea0 已在主干祖先）→ `.wt/os-018/` 组目录移除，全组零残留 |
 
 completion_kind: delivered
