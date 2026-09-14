@@ -483,6 +483,22 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 2（用户实机反馈：重复项 + 侧栏形态）
+
+- **重复项根因**：T-05 排序块的选择排序交换漏回写——`out[filled] = out[best]`
+  未先把旧 `out[filled]` 存走，造成条目复制 + 丢失（实机 AppData×4/
+  Documents×2）。重写为直接对象比较 + 真三行交换，平行键数组退役。
+- **侧栏换装**（用户裁定）：手搓 button 列 → Sidebar 组件族（015-notes
+  NavTree 同款：sidebar_provider/header/content/group/menu/menu_button
+  active 高亮）。
+- Tick 错峰 20→8（引导加载态 5s→2s）。
+- 实证：实机截图无重复（AppData/Documents 各一次，字母序）+ Sidebar
+  渲染 active 高亮 → evidence/016/repair-sidebar-dedup.png；
+  commit b70185cd8。
+- 注：列表中 `Application Data`/`Cookies`/`Local Settings` 等为 Windows
+  用户目录真实 junction 条目（非重复 bug）；Explorer 默认隐藏，本应用
+  stdlib 无属性面暂不区分，已记 SPEC。
+
 ### 2026-09-14 work 执行 handoff（T-01..T-11 全量执行；10/11 步达成）
 
 - `stage: work` | `plan_id: PLAN-016` | `plan_revision: 1`
