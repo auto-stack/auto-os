@@ -484,6 +484,18 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 修复轮 5 work 记录（行交互/菜单实机反馈）
+
+- `code_commit`（auto-lang os-016-dev）：`35712be35`。
+- **popover 根因闭合（F-2 细化）**：first-child 被当锚件就地渲染不进菜单
+  ——"打开"消失 + 菜单锚错位的共同根因；trigger/content 子标签强制拆分
+  修复（shadcn 规范形态），菜单恢复 Open 为首项、锚 = ··· 钮。
+- 行 hover 高亮（mouseenter/leave 显式驱动）+ 内行 h-full 居中修复。
+- 文件打开系统兜底：无关联 → `process.spawn(cmd /c start path)`。
+- F-4 新增：多选 ctrl/shift 需 click 事件修饰键面（框架债）。
+- 待用户实机验收：右键菜单位置与形态、双击/Enter 打开、hover 手感、
+  点空白编辑路径。
+
 ### 2026-09-14 修复轮 4 work 记录（第二批反馈 8 项）
 
 - `code_commit`（auto-lang os-016-dev）：`ba2f79360`（T-19/20/21 单提交）。
