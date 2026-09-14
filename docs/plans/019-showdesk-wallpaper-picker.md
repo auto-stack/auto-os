@@ -430,6 +430,13 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
     （组兄弟解析自命中新 shell pack），按 SD spec「验证」节六步清单走查
     并回填结论；代码未变，快速复审复用本次自动化证据 + 走查结论即翻
     pass → merge。
+- 2026-09-14 走查反馈批 PLAN-019-FU1（用户实机首查，未变更 rev2 合同）：
+  桌面快捷方式图标默认大一倍——格 80→160px / chip 40→80px / glyph
+  20→40px / label text-sm，栅格定宽 696→1336px；宿主 drop_at 栅距
+  88→168px 同步（拖拽落格像素换算与视图一致）。提交：auto-os a656fe5 /
+  auto-lang 2b0f51654（assets pin 同步 + vue 金样重生成）；scoped 22 测
+  全绿（desktop_surface/w5/p010/desktop_injects/shell）。并入本计划
+  merge。
 
 ## 10. 待澄清事项
 
