@@ -26,7 +26,10 @@ def auto_lang_root() -> Path:
     configured = os.environ.get("AUTO_LANG_ROOT")
     if configured:
         return Path(configured)
-    for candidate in (OS_ROOT.parent / "auto-lang", OS_ROOT.parents[2] / "auto-lang", Path("D:/autostack/auto-lang")):
+    # ``OS_ROOT.parents[2]`` is outside the Windows drive for the normal
+    # auto-os checkout and raises IndexError.  Keep resolution bounded to the
+    # documented sibling and explicit fallback paths.
+    for candidate in (OS_ROOT.parent / "auto-lang", Path("D:/autostack/auto-lang")):
         if candidate.is_dir():
             return candidate
     return Path("D:/autostack/auto-lang")

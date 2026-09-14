@@ -1,7 +1,8 @@
 ---
 plan_id: PLAN-016
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived（r2 Phase 2 执行中）
 feature_name: file-manager-revamp
+plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
 created_at: 2026-09-14
 updated_at: 2026-09-14
@@ -26,7 +27,7 @@ affects:
   - auto-os/docs/plans/016-file-manager-revamp.md
 
 current_step: 10
-total_steps: 11
+total_steps: 18
 ---
 
 # [PLAN-016] file-manager-revamp
@@ -483,6 +484,98 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 桌面内实机验收补充（R7 构建宿主实测）
+
+- **AC-01 ✅**：桌面切浅色（set_theme 0）后 027 完整跟随浅色（stella
+  light 全 token：工具栏/侧栏/行/状态栏），真实目录 67 项同屏——
+  evidence/016/ac01-light-desktop.png。
+- **AC-10 桌面腿 ✅**：bus 注入 open_with 031-image-viewer + photo.png →
+  031 启动聚焦、缩略图/大图渲染（testdata 1x1 红图按缩放呈现）——
+  **031 back.api 桌面轨可用性疑虑解除**（D-2 残留闭合）。031 为浅色
+  主题（pac theme 既有）。
+- 证据：ac01-light-desktop.png、ac10-image-open-desktop.png。
+
+### 2026-09-14 修复轮 7（R7）：open_with 桌面可达性分流（用户实机反馈）
+
+- 现象：独立窗口（auto run -r vm）双击 .jpg 无反应——命中 image-viewer
+  关联走 open_with，但 `__desktop_cmd` 需虚拟桌面宿主排空，独立窗口无人
+  排空 → 静默无效。
+- 修复：ui_desktop 宿主启动设 `AUTO_UI_IN_DESKTOP=1`（App 以 Env 探测
+  桌面在场）；027 OpenItem 分流——`关联命中 && in_desktop` → open_with；
+  否则（无关联 / 独立窗口）→ `process.spawn(cmd /c start path)` 走
+  Windows 关联默认程序。
+- 语义：open_with 的能力边界 = 虚拟桌面内；桌面外文件管理器一律系统
+  默认程序（与用户预期一致）。
+- **判定序（用户 2026-09-14 确认）**：打开文件时优先在当前"环境"里找
+  关联程序（虚拟桌面在场 = 环境提供 image-viewer/auto-edit 等，以
+  `AUTO_UI_IN_DESKTOP` 标记 + pac `opens` 关联为准）；环境里没有 → 系统
+  打开方式（cmd start 关联 verb）。四象限：桌面内+有关联 → open_with；
+  桌面内+无关联 → 系统；独立窗口+有关联 → 系统（环境未提供，通道不可
+  达）；独立窗口+无关联 → 系统。
+- 残留（债务）：宿主执行臂 launch 失败（如目标 app 装载异常）目前仅
+  toast 反馈，无回执通道让 027 降级到系统打开——需 open_with 回执面，
+  记框架债 F-6。
+
+### 2026-09-14 修复轮 6（性能）：选中/悬停卡顿
+
+- 现象：点击选中 ~0.3s 才高亮，不流畅。根因 = 两次叠加：①每次状态变更
+  全量重建视图树（67 行 × 行内 popover 菜单 ≈ 千级控件，VM 动态视图无
+  diff），debug 构建放大 10-50x；②R5 的 hover 高亮为事件驱动
+  （mouseenter/leave 每次跨行切换也触发全量重建）。
+- 处置：a) 行内菜单瘦身（粘贴/divider 移除——状态栏已有粘贴入口）；
+  b) 换 `CARGO_PROFILE_DEV_OPT_LEVEL=2 DEBUG=0` 优化 dev 构建（运行时
+  预期降一个数量级）；c) MouseArea 容器不支持 hover: 变体对（renderer
+  build_container 单样式），事件驱动 hover 为现框架下唯一解 → 记 F-5
+  框架债（MouseArea hover: 变体支持后可零重建 hover）。
+- 残留：若优化构建后仍有可感卡顿 → 视图 diffing 属框架级工作，另立。
+
+### 2026-09-14 修复轮 5 补充：选中行纵向居中
+
+- 内行 `h-full`（框架 Fill 语义）未使内容居中——改显式 `h-11` 与
+  mouse-area 同高，items-center 生效。用户运行实例已含此修复（重选可见）。
+
+### 2026-09-14 修复轮 5 work 记录（行交互/菜单实机反馈）
+
+- `code_commit`（auto-lang os-016-dev）：`35712be35`。
+- **popover 根因闭合（F-2 细化）**：first-child 被当锚件就地渲染不进菜单
+  ——"打开"消失 + 菜单锚错位的共同根因；trigger/content 子标签强制拆分
+  修复（shadcn 规范形态），菜单恢复 Open 为首项、锚 = ··· 钮。
+- 行 hover 高亮（mouseenter/leave 显式驱动）+ 内行 h-full 居中修复。
+- 文件打开系统兜底：无关联 → `process.spawn(cmd /c start path)`。
+- F-4 新增：多选 ctrl/shift 需 click 事件修饰键面（框架债）。
+- 待用户实机验收：右键菜单位置与形态、双击/Enter 打开、hover 手感、
+  点空白编辑路径。
+
+### 2026-09-14 修复轮 4 work 记录（第二批反馈 8 项）
+
+- `code_commit`（auto-lang os-016-dev）：`ba2f79360`（T-19/20/21 单提交）。
+- 迭代单根元素纪律入档：VM `for` 迭代多根 → 纵向堆叠（chevron 掉行根因）；
+  popover 不可入 mouse-area 子树（F-2 泄漏面）；两者均已写提交注记。
+- 实证：面包屑单行内联 chevron（p2-breadcrumb-inline.png）；列表行无泄漏、
+  无操作列、名称纯文本（p2 列表态截图同版式）。行交互（单击选中/双击打开/
+  整行右键/Enter）结构就位，交互手感留用户实机确认。
+
+### 2026-09-14 修复轮 3（面包屑 Win11 风格 + 编辑入口实钮）
+
+- crumbs 加 chevron-right 分隔（末层无）；非 hover 态纯文本、hover 显按钮
+  底（用户要求）；左侧 folder-open 图标升级为「编辑路径」显式入口
+  （onclick AddrEdit，值=完整路径）。
+- 发现：mouse-area 空白区点击不可靠（MCP/实机均未触发 AddrEdit）——入口
+  以显式按钮为准，mouse-area 保留为增强。
+- commit f5dc845d9；证据 p2-breadcrumb-win11.png（chevron 分隔 + 单行
+  对齐实机截图）。
+
+### 2026-09-14 Phase 2（r2）work 记录：UX 反馈批 9 项全实施
+
+- `code_commit`（auto-lang os-016-dev）：`beb1ad124`（T-12..T-18 单提交）。
+- AC-15..22 全部实机验证：列表/网格双态截图（p2-list-final.png、
+  p2-grid-final.png）；双击打开结构就位（ondblclick，交互留用户实机）。
+- F-1（中文字体家族）/F-2（popover closed 泄漏）记框架债；F-2 的用户可见
+  面已随卡内 popover 移除消除。
+- tf/tv：按用户指示暂缓（首次失败 = D 盘瞬时空满 + ffi oracle 二进制
+  缺失，oracle ×5 已补构建；重跑待用户示下）。
+- 附加交付：盘符切换（侧栏「此电脑」组，C..Z exists 探测，用户修订需求）。
+
 ### 2026-09-14 修复轮 2（用户实机反馈：重复项 + 侧栏形态）
 
 - **重复项根因**：T-05 排序块的选择排序交换漏回写——`out[filled] = out[best]`
@@ -551,3 +644,80 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | 4 | 027 是否收编独立仓/apps 容器臂（PLAN-013 混合形态） | 非目标；待 app 成熟后另行计划 |
 | 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探（**T-10 已实现地址栏**，可编辑回车跳转 + canonical 剥 `\?\` 前缀）；后续可提 stdlib `fs.drives` 提案 |
 | 6 | 与 PLAN-014/015 的开工顺序 | 依赖既有授权范围内排程：015 merge 后开工；014 错峰——不需用户新授权，若用户指定并行则接受 renderer.rs 冲突面人工协调 |
+
+---
+
+# Phase 2：UX 反馈批（plan_revision 2 · 2026-09-14 用户实机反馈 9 项）
+
+> 触发：用户实机观察反馈（截图 4 张），用户直接下达。设计/验证约束：VM 轨
+> flex-wrap 不支持（P614 纪律）→ 图标模式改 grid 类（025 performance 先例）；
+> `ondblclick` 支持（桌面图标同款）；button `title:` prop = 悬停 tooltip
+> （PLAN-053）；`.at` 无 blur 事件 → 地址编辑退出用显式确认/取消钮；字体
+> 家族框架面仅 serif/sans/mono（指定中文黑体需 renderer default_font 工作
+> → 记 finding F-1，本轮做字号提升）。
+
+| # | 用户反馈 | 分析 | 任务 |
+|---|---|---|---|
+| 1 | 右上 path input 与最右挤扁图标无用；取路径应在地址栏（点击变 input） | 独立地址栏与面包屑功能重复；挤扁体 = 布局压缩牺牲品 | T-12 |
+| 2 | 面包屑层级 `/` 换行、三层阶梯错位；模拟地址栏过高 | row 内混排 button/text 高度不一致；分隔符独立节点被挤下行 | T-12 |
+| 3 | 隐藏/+文件夹/+文件改纯图标（tooltip 文字）；小窗不压扁、地址栏可伸缩、右侧控件定宽 | 右侧控件全部 shrink-0 + icon-only + title tooltip；面包屑区 flex-1 独占伸缩 | T-13 |
+| 4 | 大小与类型贴死；类型列应居中 | 两列间无间距（pr 缺失）；类型内容列左对齐与表头居中不一致 | T-14 |
+| 5 | 中文默认字体太小、字型不对（期望黑体/系统默认） | 027 正文 text-xs(12px) 偏小 → 名列/侧栏升 text-sm；字体家族 = F-1 框架项 | T-15 |
+| 6 | 快捷访问 icon 应差异化 | home/monitor/file-text/download/image/music 字面量分支（TreeIcon 范式） | T-16 |
+| 7 | 图标模式未成 grid（VM flex-wrap 降级单行），溢出隐藏 | `row flex-wrap` → `grid grid-cols-4 md:grid-cols-6 xl:grid-cols-8`（025 先例） | T-17 |
+| 8 | 图标卡只有名称可点 | 卡整体 mouse-area（onclick 选中 + ondblclick 打开）；grid popover 内容泄漏 bug 一并消除（卡内 popover 移除） | T-17 |
+| 9 | 单击打开 → 应双击打开 | ondblclick 已支持；列表名列 onclick=选中 / ondblclick=打开；··· 菜单不变 | T-18 |
+
+## 7.P2 验收标准（Phase 2 增量）
+
+| ID | 可观察行为 | 验证方法 |
+|---|---|---|
+| AC-15 | 无独立地址栏 input；点击面包屑区变输入态，回车跳转、✕ 取消 | 实机操作 + 截图 |
+| AC-16 | 面包屑各层同一行水平对齐、无换行分隔符；胶囊高与 input 一致（h-9） | 截图对照 |
+| AC-17 | 隐藏/+文件夹/+文件为纯图标按钮（title 悬停出文字），定宽不压扁；搜索框/面包屑伸缩正常 | 窄窗 + 最大化截图 |
+| AC-18 | 大小列与类型列有间距；类型内容列居中 | 截图对照 |
+| AC-19 | 名称列与侧栏字号 text-sm | 截图对照 |
+| AC-20 | 快捷访问五项图标各异（monitor/file-text/download/image/music） | 截图 |
+| AC-21 | 图标模式为多列 grid；整卡可点（单击选中/双击打开）；卡内无泄漏菜单 | 实机操作 + 截图 |
+| AC-22 | 列表行单击=选中、双击=打开；··· 菜单行为不变 | 实机操作 |
+
+## 8.P2 Phase 2 执行步骤
+
+- **T-12 〔lang〕面包屑点击编辑 + 去独立地址栏**（AC-15/16）：msg 增
+  AddrEdit/AddrCancel；view 面包屑区 mouse-area 包裹 → addr_editing 切换
+  input（值同步 current_path）；crumbs 全按钮化（去独立分隔符、统一 h-7）。
+- **T-13 〔lang〕工具栏图标化 + 定宽**（AC-17）：隐藏/＋文件夹/＋文件 →
+  icon-only + title tooltip + w-8 shrink-0；右区全部 shrink-0。
+- **T-14 〔lang〕列表列距 + 类型居中**（AC-18）。
+- **T-15 〔lang〕字号提升**（AC-19）：名列/侧栏 text-sm；字体家族记 F-1。
+- **T-16 〔lang〕快捷图标差异化**（AC-20）：monitor/file-text/download/
+  image/music 字面量分支。
+- **T-17 〔lang〕grid 图标模式 + 整卡点击**（AC-21）：grid 类容器、mouse-area
+  整卡 onclick/ondblclick、卡内 popover 移除（泄漏 bug 消除，记录框架
+  popover 网格子树泄漏现象）。
+- **T-18 〔lang〕双击打开**（AC-22）：名列 onclick=选中/ondblclick=打开。
+
+## 9.P2 修复轮 4（用户实机反馈第二批 8 项，2026-09-14）
+
+| # | 反馈 | 根因 | 修复 |
+|---|---|---|---|
+| 1 | "编辑路径"图标钮多余；点地址栏空白应切 input | mouse-area 多子件结构命中不可靠 | 删图标钮；mouse-area 包单行子件重构（空白点击→AddrEdit） |
+| 2 | chevron 掉到按钮下方 | 循环体内条件节点（if !last icon）被 VM 纵向布局 | sep 进 crumb 对象字段，恒渲染 `text c.sep`（末层空串零宽） |
+| 3 | 路径常态显示成按钮状 | 无 bg 类时按钮默认底色透出 | crumbs 改 variant="ghost"（常态透明、hover 显底） |
+| 4 | 双击进不去目录；"选定：xxx"错位 | ondblclick 挂在 button 上（aura dblclick 通路在 mouse-area）；行 id 排序前编号致 files_view[id] 错位 | 整行 mouse-area（onclick 选中/ondblclick 打开/右键菜单）；排序后重编 id |
+| 5 | 右键仅名称区可出菜单、不跟随鼠标 | oncontextmenu 挂名称钮；事件不携带坐标 | oncontextmenu 提升到整行（mouse-area）；菜单行内锚定；鼠标精确跟随 = F-3 框架债 |
+| 6 | 名称列单独高亮多余 | 名称钮 hover 底 | 名称去按钮化（纯文本），整行高亮 |
+| 7 | 右键菜单首项应为"打开"（=双击） | 已是 CtxOpen→OpenItem，行级重构后保持 | 复核 |
+| 8 | 选中 + Enter = 双击 | 无键盘面 | actions DSL `shortcut: "Enter"`（弹层打开时守卫跳过） |
+
+（任务并入 T-19 行级交互重构 / T-20 面包屑 r3 / T-21 Enter 打开。）
+
+## 10.P2 Phase 2 新增 finding
+
+| ID | 事项 | 去向 |
+|---|---|---|
+| F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
+| F-2 | 【定性修正】popover first-child = 锚件就地渲染（PLAN-528 设计语义，非泄漏）——菜单必须用 popover-trigger/popover-content 子标签拆分，否则首项（"打开"）会变锚件消失、菜单锚在首项位置 | 已按规范形态修复（R5） |
+| F-6 | 【框架·高优】VM 动态视图无细粒度更新：任何被视图引用的状态写（选中/hover/ctx）→ view_dirty → 整棵 .at→iced 视图树重转换（无行级依赖追踪、无 diffing）。千级节点 × debug 构建 = 每次交互 0.1-0.3s 卡顿。框架方向：视图 diffing 或依赖追踪细粒度失效；短期缓解 = 优化构建 + 控制单视图节点规模 | **已立项 auto-lang PLAN-631**（autoui-interaction-primitives：F-5 hover 样式对 / F-7 popover pointer 定位 / F-6 剖析+缓存；含 F-3 事件坐标与 F-4 多选修饰键的演进面） |
+| F-7 | 【框架】右键菜单正确终态 = 全视图单实例菜单 + 指针位置定位（Win11 式）：需要 a) 事件坐标面（=F-3）或 b) popover 原生指针定位原语（坐标不走状态回写，避免每次移动全量重建）。现 Plan 422 popover 仅锚件/坐标态两种定位 | 框架债（与 F-3 合并推进） |
+| F-3 | 右键菜单无法精确跟随鼠标：`.at` 事件不携带指针坐标（D-1 同源），popover 仅锚件/坐标态定位 | 框架债（需事件坐标面） |

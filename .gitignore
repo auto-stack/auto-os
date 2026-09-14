@@ -10,3 +10,4 @@ widgets-gallery/src/front/tests/
 **/rust-workspace/
 **/target/
 **/tmp/
+__pycache__/

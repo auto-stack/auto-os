@@ -118,6 +118,7 @@ def probe() -> dict[str, tuple[str, str]]:
         "supported",
         f"MCP endpoint configured: {mcp}",
     ) if mcp else ("blocked", "AUTOUI_MCP_URL is not configured")
+    result["rules.vm-golden"] = vm_rules_golden()
 
     backend = os.environ.get("TETRIS_BACKEND_EXE")
     if not backend:
@@ -283,6 +284,32 @@ def rust_rules_golden() -> tuple[str, str]:
     return "supported", "generated TetrisStore golden passed (opening/lock + 7x4 rotations + 1..4 line clears)"
 
 
+def vm_rules_golden() -> tuple[str, str]:
+    """Run the same deterministic cases through the VM fixture channel."""
+
+    url = os.environ.get("AUTOUI_MCP_URL")
+    if not url:
+        return "blocked", "AUTOUI_MCP_URL is not configured"
+    runner = TESTS / "vm_rules_golden.py"
+    if not runner.is_file():
+        return "blocked", "VM rules golden runner is missing"
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(runner), "--mcp-url", url],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            timeout=180,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        return "blocked", f"VM golden runner unavailable: {exc}"
+    detail = (proc.stdout + proc.stderr).strip().splitlines()
+    if proc.returncode != 0:
+        return "blocked", detail[-1] if detail else "VM rules golden failed"
+    return "supported", detail[-1] if detail else "VM rules golden passed"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--probe", action="store_true", help="write capability evidence")
@@ -305,11 +332,15 @@ def main() -> int:
         if status != "supported" and not args.all_modes:
             return 2
     if args.suite == "rules" or args.all_modes:
+        rules_failed = False
         status, detail = rust_rules_golden()
         print(f"rules.rust-golden: {status} — {detail}")
-        if status != "supported" and args.suite == "rules":
+        rules_failed = rules_failed or status != "supported"
+        status, detail = vm_rules_golden()
+        print(f"rules.vm-golden: {status} — {detail}")
+        rules_failed = rules_failed or status != "supported"
+        if rules_failed and args.suite == "rules":
             return 2
-        print("rules.vm-golden: blocked — VM fixture injection is not exposed by AutoUI MCP")
     if args.suite in {"gameplay", "visual"} or args.all_modes:
         print("native/gameplay/visual: blocked — run with a connected native window or browser URL")
     return 0

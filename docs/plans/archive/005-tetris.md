@@ -1,18 +1,19 @@
 ---
 plan_id: PLAN-005
 origin: PLAN-557
-status: executing
+status: archived
 feature_name: tetris
 author: [zhaopuming]
 created_at: 2026-09-05
 updated_at: 2026-09-14
-plan_revision: 2
+plan_revision: 3
 supersedes_spec_components: []
 new_spec_components: [docs/specs/apps/tetris.md]
 touched_goals: []
 affects: [auto-os/apps/036-tetris]
-current_step: 1
+current_step: 6
 total_steps: 6
+completion_kind: delivered
 ---
 
 > **迁移与修订历史**：本计划由 auto-lang `557-tetris.md` 随 PLAN-001 于
@@ -349,13 +350,26 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 | AC-07 | 桌面 Vue/VM 发现、打开并玩一局；画廊05-games可打开；登记一致 | 桌面/画廊真实交互，核对 id/端口/路径，缺能力则 blocked |
 | AC-08 | 测试可复跑，Spec delta 与实现/模式裁定一致，不污染框架仓 | T6 证据审计、git diff/status、review 沉淀清单 |
 
+### 7.1 本次交付范围与后置债务
+
+用户在 2026-09-14 确认 M1–M7 七种模式均可运行，基本移动、旋转、软降、硬降、
+暂停和消行流程满足本次交付目标，并同意将剩余的扩展验收项移交 DEBTS，不阻塞
+本计划 review/merge。后置项登记在仓根 [DEBTS.md](../../DEBTS.md)：
+
+- `DEBT-005-01`：长按/keyup/失焦的原生物理输入矩阵，以及窄窗口、主题和稳定像素夹具。
+- `DEBT-005-02`：桌面发现、打开、开局与 `05-games` 画廊真实验收。
+- `DEBT-005-03`：merged 原生重启、损坏/只读、并发最大值和跨模式数据根的持久化故障矩阵。
+
+这些债务保留原规范中的目标，不改变已交付功能；后续专项计划应按 `docs/specs/apps/tetris.md`
+的规则和 UI 契约补齐证据。
+
 ## 8. 执行步骤
 
 保留 T1–T6 ID，按执行切片记录进度。下列 run_matrix.py 及参数是 **T1/T6 要新建并验证
 的入口**，不表示已有工具。先以当前 auto --help / auto run --help 确认 CLI，
 记录实际二进制路径。工作在专用 worktree，计划簿记留主检出。
 
-- [ ] **T1 能力探针与阻断清单**（依赖无；AC-01/03/04/05/06/07/08）
+- [x] **T1 能力探针与阻断清单**（依赖无；AC-01/03/04/05/06/07/08）
   读取 §4 锚，新建 tests/probes/、run_matrix.py --probe，输出
   tests/evidence/capabilities.md。覆盖 M1–M7 真业务/落盘、20ms Tick/时间源、
   keyup/repeat/blur、视口/覆盖/尺寸/图标、Store/函数、夹具、原生自动化、
@@ -364,9 +378,9 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   与证据。最多一轮最小复现+一轮源码接口核对；缺口形成精确前置清单回填，
   不无限试错。M8 已按用户裁定不适用；M6 失败转框架前置，不直接扩大代码范围。
   已完成 `--probe`/`--all-modes`：源码、CLI、前后端生成物、Playwright 与 Rust
-  后端均为 supported；`vm.mcp` 因未配置 `AUTOUI_MCP_URL` 保持 blocked，M1–M7
-  的真实进程/网络矩阵仍待原生驱动。
-- [ ] **T2 标准骨架与 UI 基线**（依赖 T1 对应 UI/目录能力；AC-01/04/05）
+  后端均为 supported；M1–M7 的模式矩阵已由用户完成基本操作验收。原生扩展输入
+  和稳定像素夹具转入 `DEBT-005-01`。
+- [x] **T2 标准骨架与 UI 基线**（依赖 T1 对应 UI/目录能力；AC-01/04/05）
   新增 §2.1 pac/App/Store/pages/API DTO 骨架，以固定局面实现 ready/playing/
   paused/over、宽窄与深浅色。测试夹具开关不出现在产品页面。
   验证：auto build -r vue、auto build -r rust、M3 启动无编译错误；
@@ -376,21 +390,22 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   截图回归后将棋盘网格改为 `cols: 10/4`（Vue 生成 `grid-cols-10/4`），网格占满
   棋盘区域；所有棋盘按钮显式使用 `min-w-0 min-h-0 rounded-none p-0`，并设置 1px
   间距，消除默认 Button 的圆角和内边距重叠。Playwright 已断言 10/4 列及 200 个
-  棋盘按钮；M3 实机窗口和视觉夹具尚未完成，因此本任务保持未勾选。
+  棋盘按钮；M3 实机窗口和视觉夹具转入 `DEBT-005-01`。
   状态提示统一使用 AutoUI 标准 `dialog`/`dialog-content`，不再用
   `absolute inset-0` 模拟遮罩。Vue 生成到标准 Dialog（fixed 视口居中），
   VM/Rust 生成到 `PopoverPlacement::Modal`；这样原生渲染器不会把提示降级成
   普通流式内容而落到窗口角落。Playwright 已加入 `role=dialog` 的视口中心断言。
-- [ ] **T3 块表与移动族**（依赖 T2；AC-02/04）
+- [x] **T3 块表与移动族**（依赖 T2；AC-02/04）
   新增 game_rules.at，完善 Store、tests/rules.at、testdata：
   形状/LCG/碰撞/旋转/软硬降/ghost，分离 board 与视图格。
   验证：python tests/run_matrix.py --suite rules，确定性夹具通过；
   真实输入与 ghost 落点一致，测试不重写游戏算法。
   已实现：Store 内 7×4 形状表、LCG、碰撞、ghost、移动/旋转/软降/硬降及
-  统一 render cell 字段；尚未建立 §6.1 的完整 rules.at/testdata golden。
+  统一 render cell 字段；Rust 与 VM fixture golden 已覆盖 7×4 形态及 1/2/3/4
+  行消除计分/压缩。
   消行后的行压缩已按棋盘自上而下存储修正为“顶部补空行、保留行顺序”，避免
   消除底部满行后上方方块停留在原坐标。
-- [ ] **T4 完整局面与输入**（依赖 T3；AC-02/03/05）
+- [x] **T4 完整局面与输入**（依赖 T3；AC-02/03/05）
   完成 Tick、锁定/消行/计分/升级/出生结束、键盘与按钮、按住重复、
   暂停/失焦/重开、状态面板及反馈。
   验证：python tests/run_matrix.py --suite gameplay，§6.1 全 golden、
@@ -399,9 +414,9 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   帮助、重开确认和反馈文案；Playwright 已验证开始/暂停/恢复、硬降与说明层。
   ready/paused/help/confirm/over 五种状态现在复用标准 AutoUI Dialog，状态切换
   不再依赖原生不稳定的绝对定位；Vue 首屏已验证提示框居中。
-  按住重复、失焦和完整 golden 仍待 T1/T6 驱动补齐；受控 Vue 局面已验证消除
-  1 行后上方标记格下落 1 行。
-- [ ] **T5 持久化与部署等价**（依赖 T4，T1 后端前置解决；AC-01/06）
+  受控 Vue 局面已验证消除 1 行后上方标记格下落 1 行；按住重复和失焦物理矩阵
+  转入 `DEBT-005-01`。
+- [x] **T5 持久化与部署等价**（依赖 T4，T1 后端前置解决；AC-01/06）
   完成 src/back/{api,records}.at 与 Store 保存状态，各模式执行相同业务。
   验证：python tests/run_matrix.py --suite persistence --all-modes，逐腿
   重启读800、故障/重试/最大值通过；保留进程/网络/文件证据。
@@ -410,9 +425,9 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   Rust HTTP 后端真实 GET/POST 已通过，`records.json` 现在写入带
   `schema_version`/`best` 的 JSON，并已用 `42 → 低分 10 → 高分 99 → 重启` 回归。
   负分与非法字符串现在明确返回 false，且不会改变已有最高分。
-  merged Rust 的 scalar API 已生成 db 吸收委托，损坏/只读/并发、原生启动与完整
-  M1–M7 尚未证明，故 AC-06 继续阻断。
-- [ ] **T6 集成、验证与回写**（依赖 T1–T5；AC-01..08；SD-01..03）
+  merged Rust 的 scalar API 已生成 db 吸收委托；损坏/只读/并发及跨模式数据根转入
+  `DEBT-005-03`，不影响本次已验收的基本持久化行为。
+- [x] **T6 集成、验证与回写**（依赖 T1–T5；AC-01..08；SD-01..03）
   完善测试入口与依赖、应用 README，更新本仓 manifest/README/桌面台账、
   画廊入口；相关框架前置完成后实测。
   验证：python tests/run_matrix.py --all-modes，npm test（应用 tests 目录），
@@ -422,7 +437,7 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   已实现：应用 README、测试包、Playwright 冒烟、desktop MCP 探针、可复跑的
   `run_matrix.py` 与 `tests/evidence/capabilities.md`，以及 `apps.manifest`/本仓
   README 登记；基础实现提交 `dae3951`，验证补丁另有 worktree 提交。
-  真实桌面/画廊打开、全矩阵、Spec delta 与独立 review 尚未完成。
+  真实桌面/画廊打开转入 `DEBT-005-02`；本次功能验收、Spec delta 和 review 已完成。
 
 ## 9. 复审记录
 
@@ -965,16 +980,142 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   independent revision-2 review;
   keep Plan status `executing` until those gates close.
 
+### 2026-09-14 — execution follow-up / Rust native startup repair
+
+- stage: work
+- plan_id: PLAN-005
+- outcome: partial
+- change: the native Iced view no longer uses the styled-column → nested-row/
+  nested-column level-card shape that caused `STATUS_STACK_OVERFLOW` during
+  startup. The level/line summary is now a two-column `grid`, and unsupported
+  `btn*`/`flex-wrap` classes were removed from the shared view source.
+- evidence: `auto build -r rust --gen-only` regenerated the UI source; offline
+  Cargo build passed; the generated Rust binary stayed alive for eight seconds
+  and its MCP snapshot passed `tests/desktop_mcp.py` on port 9442. The startup
+  log no longer contains the flex-wrap or button-style warnings.
+- remaining: native physical input/window takeover, narrow-window and gallery
+  acceptance, and VM no-merge environment validation remain separate gates.
+
+### 2026-09-14 — functional acceptance reported by user
+
+- stage: work
+- plan_id: PLAN-005
+- outcome: functional-complete
+- acceptance: user manually verified that all seven modes (M1–M7) start and
+  support the basic Tetris operations without functional issues. M5 VM/Rust
+  no-merge, M6 Rust merged, and M7 Rust no-merge now start without the earlier
+  layout stack overflow or button-style warnings.
+- scope: this closes the planned feature behavior and the user-visible basic
+  operation gate. Formal review evidence for long-press/keyup/blur, narrow
+  window pixels, and desktop/gallery discovery remains a separate evidence
+  concern if those gates are required for archival.
+
+### 2026-09-14 — review / functional acceptance phase
+
+- stage: review (phase-only)
+- plan_id: PLAN-005
+- plan_revision: 2
+- outcome: pass
+- reviewed_commit: `a4533a9296ac9c93f78c474df69706c5420dd525`
+- base_commit: `31ad06c`
+- dependency_revisions: auto-lang `a899ec8967fd05e0147889d01e18540ead62d31b`;
+  renderer prerequisite remains recorded in the preceding execution entry
+- spec_inputs: `docs/specs/apps/tetris.md` revision 1 and this Plan revision 2
+- acceptance_results:
+  - M1–M7: pass for the user-visible functional phase. The user manually
+    confirmed that all seven Vue/VM/Rust merged/no-merge modes start and that
+    the basic move, rotate, soft-drop, hard-drop, pause and line-clear flows
+    work. M5, M6 and M7 also start without the earlier native layout overflow
+    or style warnings.
+  - implementation regression: pass. The reviewed worktree is clean at
+    `a4533a9`; generated Rust source builds offline, the native process remains
+    alive, and the MCP snapshot probe succeeds.
+- findings:
+  - no functional findings remain for the accepted M1–M7 basic-operation
+    phase.
+  - `R-001`/`R-005` remain open only for the separate archival evidence gates
+    already named in prior records (long-press/keyup/blur, narrow-window and
+    theme pixel fixtures, and desktop/gallery discovery). This phase verdict
+    does not silently convert those unexecuted criteria into passes.
+- evidence:
+  - user acceptance in the 2026-09-14 functional test session (M1–M7).
+  - `auto build -r rust --gen-only`, offline Cargo build, direct native
+    process liveness probe, and `tests/desktop_mcp.py` snapshot probe as
+    recorded in the preceding execution entry.
+  - `git diff --check` passes; reviewed implementation worktree is clean.
+- next: keep the overall Plan `executing` because this is a phase-only pass.
+  The accepted functional delivery is ready for the remaining archival review
+  gates; run `/auto-plan:review` again after those gates if final
+  `reviewed`/merge status is required.
+
+### 2026-09-14 — review / final scope amendment and merge approval
+
+- stage: review
+- plan_id: PLAN-005
+- plan_revision: 3
+- outcome: pass
+- reviewed_commit: `a2eab26dc6f25821b48d5f051ef14d6121651b38`
+- base_commit: `a8e65531015384b1c1658b42b56a6ec68111a41e`
+- dependency_revisions: auto-lang `a899ec8967fd05e0147889d01e18540ead62d31b`
+- spec_inputs: `docs/specs/apps/tetris.md` revision 1; no canonical behavior
+  change, only the user-approved deferral ledger in `DEBTS.md`
+- acceptance_results:
+  - AC-01, AC-02, AC-05 and the basic portions of AC-03/04/06: pass. M1–M7
+    start and the user verified the basic move, rotate, soft-drop, hard-drop,
+    pause and line-clear flows in all seven modes.
+  - AC-08: pass. The app is registered, the Spec is present, the generated
+    targets and evidence are recorded, and the reviewed implementation is on
+    the main tree.
+  - deferred sub-gates: long-press/keyup/blur and visual fixtures →
+    `DEBT-005-01`; desktop/gallery → `DEBT-005-02`; merged persistence fault
+    matrix → `DEBT-005-03`. These are approved follow-up scope and do not block
+    this delivery.
+- findings: no remaining finding blocks the approved Plan 005 delivery.
+- evidence:
+  - user functional acceptance for M1–M7 on 2026-09-14;
+  - VM fixture and Rust rules golden evidence recorded above;
+  - current main tree contains the verified renderer-safe `app.at` and the
+    canonical Tetris Spec; `DEBTS.md` preserves the deferred acceptance work.
+- next: merge and archive Plan 005 with `completion_kind: delivered`; future
+  debt work should use a new Plan and reference the three DEBT IDs.
+
+### 2026-09-14 — merge receipt PLAN-005:r3
+
+- stage: merge
+- plan_id: PLAN-005
+- plan_revision: 3
+- outcome: pass
+- prepared: reviewed baseline `a2eab26dc6f25821b48d5f051ef14d6121651b38`,
+  canonical Spec `docs/specs/apps/tetris.md` revision 1, and approved debt
+  projection `DEBTS.md`; delivery preparation committed as `091e722`.
+- landed: the reviewed implementation tree and canonical Spec are ancestors of
+  the current main branch; the renderer-safe Tetris view is present and the
+  prepared Plan/debt/ledger delta is committed in `091e722`.
+- delivery_supplement: reviewed VM rules golden, matrix wiring, gallery path
+  hardening and durable evidence landed in `2f5bec4`; generated Rust golden
+  remains an ignored regeneration artifact by repository convention.
+- ledger_refreshed: `.autoos/specs.json` now contains `P005-1`, `P005-2`,
+  `P005-3`, `P005-4` and `P005-R1`, all pointing to the Plan and archived
+  evidence target.
+- archived: `docs/plans/archive/005-tetris.md` via `git mv`; frontmatter now
+  records `status: archived` and `completion_kind: delivered`.
+- cleaned: `wt-guard.sh` returned clean after the generated junctions were
+  removed; the `plan-005-dev` worktree, branch and empty `.wt/os-005` group
+  directory were removed. Main commit `6f86cf4` preserves the reconciled branch
+  history as a second parent.
+- next: none. Plan 005 is delivered and archived; follow-up work starts from
+  `DEBT-005-01` through `DEBT-005-03` in a new Plan.
+
 ## 10. 待澄清事项
 
 | ID | 问题 / 当前建议 | 责任人与下一步 |
 |---|---|---|
-| B1（执行阻断） | Rust UI merged/no-merge 生成与 Cargo 编译已通过，VM no-merge 能启动 HTTP 后端，VM/Rust merged 已启动原生窗口且 VM MCP 结构冒烟通过；完整 VM/Rust merged/no-merge 实机交互、窗口截图和视觉夹具仍未跑，不能把结构快照当像素验收 | 后续 T1/T6 接入原生驱动，逐项保留进程/网络/窗口证据 |
-| B2（执行阻断） | Rust HTTP 产物现以版本化 JSON 写入 `records.json`，并已实测低分保护与跨进程重启读取；merged Rust scalar API 已生成 db 吸收委托，但原生重启、损坏/只读、并发最大值和跨模式数据根仍未证明 | 保留数据根/错误语义前置 Plan；HTTP 子腿有证据，M6 原生实机与 AC-06 全矩阵继续 blocked |
+| B1（已转债务） | 原生长按/keyup/失焦、窄窗/主题像素和完整物理输入证据尚未形成 | 见 `DEBT-005-01` |
+| B2（已转债务） | merged 原生重启、损坏/只读、并发最大值和跨模式数据根矩阵尚未形成 | 见 `DEBT-005-03` |
 | B3（范围偏差） | 真实 app 独立兄弟仓建议未执行；自动审查拒绝把 manifest 指向尚不存在的 `../auto-tetris`，当前实现保留在 `apps/036-tetris` 以保持可发现/可运行 | 若要迁移，先创建并验证目标仓，再单独提出 manifest/README 迁移变更 |
 | Q1（已解决） | 用户明确 Vue 使用 HTTP；VM/Rust 支持 merged 和 no-merge | 2026-09-12 用户回复，revision 2 纳入；M8 不适用，不再请求确认 |
 | Q2 | merged Rust 的通用 CRUD 仍不是本应用的持久化证明；当前已验证 scalar API 可生成 db 委托，但复杂 DTO/原生重启仍需实机证据 | 后续 T1/T6 继续用真实模式核验；缺口转 auto-lang 前置 Plan，保留 AC-01/06，不降为内存记录 |
-| Q3 | 端口、PLAN-013 集成、画廊外部源、三轨视口/键盘能力 | T1 按最新有效规约定案及列依赖；17400/17401 已在实现中使用，但桌面/画廊尚未实测 |
+| Q3（已转债务） | 端口、PLAN-013 集成、画廊外部源、三轨视口/键盘能力 | 端口已调整并验证；桌面/画廊后续见 `DEBT-005-02` |
 | Q4（框架观察） | `grid` schema 的 `columns` 与 Vue 生成器的 `cols` 存在别名漂移；本次用 `cols` 规避，未改 auto-lang | 若其他 app 需要 `columns` 在 Vue 生效，另立 auto-lang 前置 Plan 同步 schema/生成器；本 app 以已验证产物为准 |
 
 旧待澄清项已明确：v1 LCG 独立抽样、无踢墙保留；ghost 升为必验 UI 改善。

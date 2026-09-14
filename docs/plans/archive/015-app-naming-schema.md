@@ -384,3 +384,10 @@ auto-lang 侧跑定点 cargo t，仍禁全量 docs_gen）。
 | cleaned | wt-guard 五 worktree 全 clean（auto-os/auto-down/auto-kanban/auto-musk/auto-os-config）→ worktree remove + 分支 os-015-dev 删除（74de56e/3320014/fc0434f/0a8d5ac/e924fff）→ `.wt/os-015/` 组目录移除，全组零残留；auto-lang/auto-term worktree 已先行由并行会话按同规程清除 |
 
 completion_kind: delivered
+
+### 补记（2026-09-14 晚）：桌面格 label locale 遗漏清偿
+
+实机发现 desktop_icon_cells（renderer.rs 桌面格 cells）label 用裸 `title`
+——PLAN-015 display_title 消费面清点的遗漏点（桌面格 cells 与 __desktop_icons
+entries 是两条注入路径）。已修：`e2.display_title().to_string()`（auto-lang
+master 提交），实机桌面格中文名生效（计算器/时钟/待办清单/玉圃…）。

@@ -41,11 +41,10 @@ fi
 # （extra roots/manifest 臂被静默丢弃）——注入 Windows 进程的 env 一律经
 # cygpath -m 转 `D:/...` 混合风格（非 bash 环境原样透传）。
 win_path() { command -v cygpath >/dev/null 2>&1 && cygpath -m "$1" || echo "$1"; }
-export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"
-  # PLAN-018 rev2 同步行（worktree 68814ba；review 合并时归一）：桌面 VM storage
-  # 固定 per-user 文件——桌面快捷方式（shell.desktop.icons）预置的前提。
+export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"   # manifest 聚合 env 臂（P-3：设置即权威；storage 固定行与主检出 5a04e40 同步行归一）
+  # PLAN-018 rev2：桌面 VM storage 固定到确定性 per-user 文件（原按 CWD 哈希
+  # 散落 tempdir——换目录即换库，桌面快捷方式等 shell storage 无法预置）。
   export AUTO_VM_STORAGE_FILE="$(win_path "$HOME/.config/autoos/desktop-storage.json")"
-   # manifest 聚合 env 臂（P-3：设置即权威）
 
 if [ "$TRACK" = "vue" ]; then
   AUTO_CLI=""
@@ -81,6 +80,9 @@ if [ "$TRACK" = "vue" ]; then
   # 框架 demo 主注册表（§3-a 原设计：AUTO_DESKTOP_APPS + EXTRA 两件齐注）。
   export AUTO_DESKTOP_APPS="$(win_path "$LANG_ROOT/examples/ui")"
   export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"
+  # PLAN-018 rev2：桌面 VM storage 固定到确定性 per-user 文件（原按 CWD 哈希
+  # 散落 tempdir——换目录即换库，桌面快捷方式等 shell storage 无法预置）。
+  export AUTO_VM_STORAGE_FILE="$(win_path "$HOME/.config/autoos/desktop-storage.json")"
   echo "[desktop.sh] track=vue  lang=$LANG_ROOT  os=$OS_ROOT  auto=$AUTO_CLI"
   echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT  AUTO_DESKTOP_APPS=$AUTO_DESKTOP_APPS"
   echo "[desktop.sh] AUTO_DESKTOP_APPS_EXTRA=$AUTO_DESKTOP_APPS_EXTRA"
