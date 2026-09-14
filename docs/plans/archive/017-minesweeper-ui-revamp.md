@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-017
-status: reviewed           # drafting → executing → execution_done → reviewed → archived
+status: archived           # drafting → executing → execution_done → reviewed → archived
+completion_kind: delivered
 feature_name: minesweeper-ui-revamp
 author: [agent]
 created_at: 2026-09-14
@@ -199,6 +200,7 @@ total_steps: 4
 - stage: new | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | next: work (T-01)
 - stage: work | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | code_commit: 5563fa5 | task_ids: T-01, T-02, T-03, T-04 | evidence: desktop_mcp.py 25/25 PASS, VM visual screenshots verified | blockers: none | next: review
 - stage: review | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | reviewed_commit: 5563fa54a5d7b90085a67e7402c7a3cca148ab7c | base_commit: 216989f5a81d090eabe9bdefc796bf117c3761fa | dependency_revisions: none | spec_inputs: none | acceptance_results: AC-01 pass, AC-02 pass, AC-03 pass, AC-04 pass, AC-05 pass, AC-06 pass | findings: none | evidence: desktop_mcp.py 25/25 PASS, test_chord.py PASS, VM visual screenshots verified | next: merge
+- stage: merge | plan_id: PLAN-017 | plan_revision: 1 | outcome: pass | delivery_commit: 10f6f5e | canonical_specs: docs/specs/apps/minesweeper.md | ledger_refreshed: .autoos/specs.json (PLAN-017-report, P017-arch-1, P017-design-1, P017-test-1, P017-review-1) | archive_path: docs/plans/archive/017-minesweeper-ui-revamp.md | clean_status: pending | next: cleanup
 
 ## 10. 待澄清事项
 
