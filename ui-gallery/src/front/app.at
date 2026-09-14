@@ -11,6 +11,7 @@ widget App {
     msg {
         SetTheme(str),
         SetAccent(str),
+        SelectDemo(str),
     }
 
     model {
@@ -162,10 +163,11 @@ widget App {
                                     sidebar_menu_item {
                                         sidebar_menu_button {
                                             active: .selected_id == demo.id
-                                            onclick: () => {
-                                                .selected_id = demo.id
-                                                .reload_key = 0
-                                            }
+                                            // PLAN-625 T-06: 循环变量事件用 msg 带参形式
+                                            // (027 OpenItem(item.id) 惯用法)——lambda 体捕获
+                                            // 循环变量是 handler 合成不支持形态(合成期
+                                            // "Undefined variable: demo" → poisoned export)。
+                                            onclick: .SelectDemo(demo.id)
                                             style: "h-auto py-1.5"
 
                                             col {
@@ -331,5 +333,9 @@ widget App {
             }
         }
         .SetAccent(name) -> { .accent_color = name }
+        .SelectDemo(id) -> {
+            .selected_id = id
+            .reload_key = 0
+        }
     }
 }
