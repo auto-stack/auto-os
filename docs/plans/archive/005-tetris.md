@@ -1084,7 +1084,7 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
 - stage: merge
 - plan_id: PLAN-005
 - plan_revision: 3
-- outcome: in_progress
+- outcome: pass
 - prepared: reviewed baseline `a2eab26dc6f25821b48d5f051ef14d6121651b38`,
   canonical Spec `docs/specs/apps/tetris.md` revision 1, and approved debt
   projection `DEBTS.md`; delivery preparation committed as `091e722`.
@@ -1099,10 +1099,12 @@ Vue 用 Playwright，VM/Rust 用原生驱动。Rust MCP 若不可用，T1 确定
   evidence target.
 - archived: `docs/plans/archive/005-tetris.md` via `git mv`; frontmatter now
   records `status: archived` and `completion_kind: delivered`.
-- cleaned: the worktree has no tracked changes and zero remaining reparse points;
-  branch-history reconciliation is the only cleanup step left.
-- next: reconcile the preserved plan branch history, then append the final
-  cleanup receipt.
+- cleaned: `wt-guard.sh` returned clean after the generated junctions were
+  removed; the `plan-005-dev` worktree, branch and empty `.wt/os-005` group
+  directory were removed. Main commit `6f86cf4` preserves the reconciled branch
+  history as a second parent.
+- next: none. Plan 005 is delivered and archived; follow-up work starts from
+  `DEBT-005-01` through `DEBT-005-03` in a new Plan.
 
 ## 10. 待澄清事项
 
