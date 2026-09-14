@@ -1,7 +1,7 @@
 ---
 plan_id: PLAN-006
 origin: PLAN-558
-status: reviewed          # drafting → executing → execution_done → reviewed → archived
+status: archived          # drafting → executing → execution_done → reviewed → archived
 feature_name: klondike
 author: [zhaopuming]
 created_at: 2026-09-05
@@ -317,6 +317,20 @@ apps/037-klondike/
 ---
 
 ## 9. 复审记录
+
+### 2026-09-14 — 合并归档收据（Consolidation Receipt）
+
+- stage: merge
+- plan_id: PLAN-006
+- plan_revision: 1
+- outcome: pass
+- completion_kind: delivered
+- delivery_commit: a25ed3a
+- canonical_specs:
+  - docs/specs/apps/klondike.md (SD-01..SD-04)
+- ledger_target: .autoos/specs.json (PLAN-006-report, P006-arch-1, P006-design-1, P006-test-1, P006-review-1)
+- archive_path: docs/plans/archive/006-klondike.md
+- cleanup_state: clean (wt-guard verified, branch plan-006-dev removed)
 
 ### 2026-09-14 — 独立复审结论（Review Pass）
 
