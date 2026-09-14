@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-016
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: file-manager-revamp
 author: [agent]
 created_at: 2026-09-14
@@ -25,7 +25,7 @@ affects:
   - auto-lang/schema/projection-protocol-v1.md           # 协议 v1.7
   - auto-os/docs/plans/016-file-manager-revamp.md
 
-current_step: 0
+current_step: 10
 total_steps: 11
 ---
 
@@ -35,6 +35,15 @@ total_steps: 11
 > auto-lang 侧改动（examples/ui + crates + stdlib）按 AGENTS §1 经 auto-lang
 > 仓 plan/工作区分账互链，或由 auto-plan:work 组内多仓模式执行。
 > 执行 worktree 布局：`.wt/os-016/auto-os`（Plan 529 组目录）。
+
+> **执行环境（2026-09-14 work 进入时记录）**：worktree
+> `D:/autostack/.wt/os-016/auto-os`（branch `os-016-dev`，base = auto-os main
+> `08f81b8`）＋ 依赖组 worktree `D:/autostack/.wt/os-016/auto-lang`
+> （branch `os-016-dev`，base = auto-lang master `8c3b4db57`，沿 os-015 组
+> 命名先例）。auto-lang 主检出存在他人未提交改动（i18n_lookup.rs 等）不纳入。
+> PLAN-015 尚未 merge（worktree os-015 在途）——本计划 pac.at 触面
+> （027/041/031 加 theme/opens 键）与其 title_zh 批量为不同行，接受合并期
+> trivial 解冲突；PLAN-014 无 worktree，renderer.rs 无在途竞争。
 
 ## 0. 变更摘要
 
@@ -474,6 +483,36 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-14 work 执行 handoff（T-01..T-11 全量执行；10/11 步达成）
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 1`
+- `outcome: blocked`（保持 executing）——**唯一残留 = T-10 全绿整跑**被
+  框架级 MCP 服务器线程偶发静默失联阻塞（进程存活、socket 消失；mock 时代
+  同机制，非本计划 app 改动引入；三轮修复尝试后按上限停）。套件本体已
+  重写对齐并提交，各流程已单点交互实证；解除动作见 §10 #0。
+- `code_commit`（auto-lang `os-016-dev`，base 8c3b4db57）：
+  `522857d33`(T-01..04) → `1073db0f6`(T-05/06+crates 修复) →
+  `4a5f5e27d`(T-07/08/09 协议 v1.7) → `8b1631058`(T-10 套件) →
+  `cea828063`(T-11 SPEC)。worktree `.wt/os-016/auto-os`（无实现改动）与
+  `.wt/os-016/auto-lang` + 依赖 auto-down detached 检出。
+- `task_ids`: T-01..T-09、T-11 ✅；T-10 部分完成（套件就位，绿跑被阻塞）。
+- `evidence`: docs/plans/evidence/016/（d1 右键锚定定案、d3 JsonValue None
+  级联 + 轨口径 + fs native id 撞号迁移、d4 目录删除口径、t01 深色列表、
+  t03 重命名模态、t05 真实主目录快照、t07 open_with 端到端截图）。
+- AC 状态：AC-01–07 结构与交互实证（AC-01 浅色视觉留复审桌面实测；
+  AC-02 快照零 emoji + 截图；AC-03/04 模态/锚定菜单/创建/删除/重命名
+  实证）；AC-08/09 端到端实证（bus 注入 → 041 启动消费，截图）；AC-10
+  发送面完成、031 消费臂就位（back.api 桌面轨形态留 D-2 残留实测）；
+  AC-11 部分被阻（见上）；AC-12 vue 轨留复审；AC-13 文档三处一致 ✅。
+- 设计调整（授权范围内，证据已记录）：D-1 定案锚定 popover（shell 先例，
+  免坐标）；D-2 定案 write_state `auto_open_path` + 目标 Tick 消费（双臂
+  统一，未用 acceptance 放宽/纯 toast 收缩）；D-4 定案非空目录拒绝；
+  新增 `fs.mtime` native（2986）与 `fs.rename/canonical/ext` id 迁移
+  2983-2985（撞号修复）——crates 面超出原 T-05 预期，属等价实现范围内的
+  必要修复，全部三表一致 + 提交注记。
+- `next`: review（复审时裁定 T-10 残留是否随 AC-11 一并延展，或按
+  blocked 项单独追踪）。
+
 ### 2026-09-14 起草 handoff（draft）
 
 - `stage: new`，`plan_id: PLAN-016`，`plan_revision: 1`。
@@ -489,9 +528,10 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 | # | 事项 | 状态/去向 |
 |---|---|---|
-| 1 | D-1：`.at` 事件是否暴露指针坐标（右键菜单真实锚定的前提） | T-04 bounded 调查，回退设计已备（行内锚定/居中 modal），不阻塞 |
-| 2 | D-2：已运行 app 的 open_with 送达臂（handler 直调泛化 vs v1 收缩）+ 031 桌面轨 back 前置形态（image stdlib front 直调 vs `back: { project }`） | T-07/T-08 调查定案；两个候选均有既有管线锚点；若选 b 收缩不削减 AC-10（031 走启动路径） |
+| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动 | **blocked**（唯一残留；其余 T-01..T-09/T-11 完成） |
+| 1 | D-1：✅ 已定案——锚定 popover + placement（shell dock 菜单范式，免坐标）；`.at` 事件无坐标面也不再需要 | 已闭合（evidence/016/d1-context-menu.md） |
+| 2 | D-2：已运行 app 的 open_with 送达臂 + 031 桌面轨 back 前置 | ✅ 主链定案——双臂统一 `write_state(auto_open_path)` + 目标 Tick 消费（免 handler 直调放宽）；031 消费臂已挂 SettleTick（open_file 同 OpenFile 流程），**桌面轨 back.api 实际可用性留实测**（opens 声明与启动路径不受阻） | 部分闭合（d3/d2 注记） |
 | 3 | 虚拟桌面图标（storage 策展）与文件系统"桌面"合一展示 | 非目标（本计划）；桌面程序后续设计议题，建议届时在桌面程序台账另立条目 |
 | 4 | 027 是否收编独立仓/apps 容器臂（PLAN-013 混合形态） | 非目标；待 app 成熟后另行计划 |
-| 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探；后续可提 stdlib `fs.drives` 提案 |
+| 5 | 全盘驱动器枚举（"此电脑"） | v1 不做（stdlib 无 drives API）；地址栏手输绝对路径已可上探（**T-10 已实现地址栏**，可编辑回车跳转 + canonical 剥 `\?\` 前缀）；后续可提 stdlib `fs.drives` 提案 |
 | 6 | 与 PLAN-014/015 的开工顺序 | 依赖既有授权范围内排程：015 merge 后开工；014 错峰——不需用户新授权，若用户指定并行则接受 renderer.rs 冲突面人工协调 |
