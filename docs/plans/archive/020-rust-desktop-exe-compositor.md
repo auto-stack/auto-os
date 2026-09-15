@@ -693,7 +693,12 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
     P020-1(designs)/P020-2(tests)/P020-3(reviews)，读回验证过。
   - `archived` ✅——本文件 `git mv` 至 `docs/plans/archive/`，status:
     archived。
-  - `cleaned` ✅（见下补记）。
+  - `cleaned` ✅——wt-guard 双 clean（.wt/lang-020/auto-lang、
+    .wt/os-020/auto-os 零 reparse point）；worktree 双移除；分支双删
+    （auto-lang plan-020-dev was ff436bad2 / auto-os plan-020-dev was
+    86e0581，均并入默认分支）；os-020 组目录清空已删；lang-020 组目录
+    留 auto-down（他线依赖 worktree）与 scratch020（e2e 载体，
+    smoke 脚本缺省寻址）不删。
 
 ## 10. 待澄清事项
 
