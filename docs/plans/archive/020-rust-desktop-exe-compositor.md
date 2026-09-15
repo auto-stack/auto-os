@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-020
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: rust-desktop-exe-compositor
 author: [agent]
 created_at: 2026-09-15
@@ -684,6 +684,16 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   →FF 至 cef6eb671 →ledger upsert→归档+清理（可由任何会话按本收据
   机械完成）。
   计划保持 `reviewed`（发布型阻断，非交付缺陷）。
+
+- 2026-09-15 /auto-plan:merge 收据续（`PLAN-020:r1` 完成）：
+  - `landed` ✅（补全）——auto-lang master FF `ff436bad2`（他线 renderer.rs
+    eprintln 遗留经选择性 stash 让路，stash 留属主；二次调和 56eb983a3/
+    ff436bad2 门重跑绿）；auto-os `86e0581`（前证）。
+  - `ledger_refreshed` ✅——auto-lang `.autoos/specs.json` upsert
+    P020-1(designs)/P020-2(tests)/P020-3(reviews)，读回验证过。
+  - `archived` ✅——本文件 `git mv` 至 `docs/plans/archive/`，status:
+    archived。
+  - `cleaned` ✅（见下补记）。
 
 ## 10. 待澄清事项
 
