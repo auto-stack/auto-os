@@ -271,7 +271,20 @@
      "id": "P018-2",
      "title": "icon 字符串协议族与位图后端接线（display_title 同构）",
      "content": "三前缀语义 + 回退链（见 canonical spec）。关键机制：icon_file.rs 全局缓存\n（(stem,dark) 键，失败占位防重试）；boot 接线 apply_icon_mapping 只改写命中\nid，未映射零回归；builder 对带协议前缀 name 原样透传（根修：无条件 lucide:\n前缀曾把 iconfile 值扭曲为 lucide:iconfile:x → 图标空白，实机 1196 HIT 零\nMISS 复验）。主题位 = theme::dark_mode()（PLAN-615 链）。desktop storage\n固定 AUTO_VM_STORAGE_FILE=~/.config/autoos/desktop-storage.json（desktop.sh，\n原按 CWD 哈希散落 tempdir 无法预置 shell.desktop.icons）。"
-    }
+    },
+
+   {
+    "id": "P021-1",
+    "file": "docs/specs/apps/kanban.md",
+    "title": "PLAN-021 双模式看板——模式=板=kind（只读 lang_plans + 手动 manual）",
+    "content": "boards.json 条目驱动双模式（header 切换+当前板高亮，去条目即消失）；泛化 Card 十三字段双 source 全字段必填（manual id=m+递增十进制）；manual 无状态文件后端（每请求读/AUTO_KANBAN_DATA→data/manual.json/全量重写+全列压实/手工 JSON 转义序列化）；写四端点经 boards_registry kind 门（lang_plans 源禁写不变，move=目标位插入+压实，空标题拒创建）；VM 约束适配：位置参数制 body 串、E5501 入口禁 nil、has_key 判缺失、as_string 物化、m 前缀避 i32 路径参强制、iced 相对路径不可依赖。",
+    "related": [
+     "PLAN-021"
+    ],
+    "status": "published",
+    "created": "2026-09-15",
+    "last_modified": "2026-09-15"
+   }
    ]
   },
   {
@@ -439,7 +452,20 @@
      "id": "P018-4",
      "title": "PLAN-018 验证矩阵 — 定点+切片校验+实机双主题",
      "content": "切片：--verify 像素级往返 28×2 + mapping 恰等（填充率指标对该画风不可行，\n改像素往返+蒙太奇人眼复核）。定点：icon_file 2/2、plan018_iconfile 1/1、\nui_gen 773/773、app_registry 23/23、desktop 金样绿。实机：dock/桌面格/launcher\n三消费面位图渲染双主题截图（evidence/plan018-*.png），acceptance 通道 summon。"
-    }
+    },
+
+   {
+    "id": "P021-2",
+    "file": "docs/plans/archive/021-kanban-normal-mode.md",
+    "title": "PLAN-021 测试证据——17 测全绿（8 只读回归 + M1-M9）+ VM 轨 MCP 全链 + 对账 629==629",
+    "content": "playwright 17 测（board.spec 8 回归 + manual.spec M1-M9，fixture 每测重拷隔离，run.mjs 注入三 env）；VM 轨 autoui-verifier MCP：双板按钮/三列/加卡 c_todo 0→1/移动 c_doing 1（按钮通道为双端断言面，拖拽为 Vue 增强）；真实数据对账 629==磁盘 5+624（statusless tracker 入 archived 为 579 既有映射）；门档：不改 auto-lang crates（Category A）。",
+    "related": [
+     "PLAN-021"
+    ],
+    "status": "published",
+    "created": "2026-09-15",
+    "last_modified": "2026-09-15"
+   }
    ]
   },
   {
@@ -548,7 +574,20 @@
      "id": "P018-R1",
      "title": "PLAN-018 复审记录 — pass（rev2）",
      "content": "review pass（同会话复审，工件重建）：AC-1..6 全 pass（AC-1/2/3/5 独立重跑、\nAC-4/6 新鲜实机捕获）。全量门：tv 3697/3697；快档 4898 例 16 失败全 baseline\n（layout 家族 14——master 已重写该批测试随合并消解；covered_elements 与\np010_popover 各 1——88803e84e base 状态实证同挂）；auto-man 287/287；auto\n11/11。findings：baseline 债务清单扩充另立计划；同会话复审以工件重建缓解；\nauto-os worktree 他属 tetris 脏文件以 patch 安置（.wt/os-018-tetris-wip.patch）。"
-    }
+    },
+
+   {
+    "id": "PLAN-021-r1",
+    "file": "docs/plans/archive/021-kanban-normal-mode.md",
+    "title": "PLAN-021 r2 复审 pass（5f3b4ff 独立重跑 17 测+P1 curl 链+AC-08 配置驱动+对账 629==629）",
+    "content": "复审 pass（2026-09-15，rev2，reviewed commit 5f3b4ff2a9e6854e6c226f0048aeaec948c598b2，base fc0434f，无 worktree 主检出执行）。AC-01..08 全 pass：17 测独立重跑；P1 curl 链（GET 排序/PUT 引号换行落盘/move 压实/DELETE/未知 cid/lang-plans 拒写）；AC-08 配置移除实测还原；真实对账 629==5+624（语料增长后总数仍等）。同会话复核已声明，裁决自工件重建。findings R-01 iced 相对路径/R-02 语料撕裂读崩后端/R-03 statusless 入折叠——均 info 级非阻断（579/框架侧既有）。执行偏差已记录：无 worktree；ManualBoard 内联 board.at（iced 路由页跨文件组件不渲染）；id m 前缀；beforeEach fixture 隔离。",
+    "related": [
+     "PLAN-021"
+    ],
+    "status": "published",
+    "created": "2026-09-15",
+    "last_modified": "2026-09-15"
+   }
    ]
   }
  ]
