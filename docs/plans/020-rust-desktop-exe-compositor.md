@@ -19,7 +19,7 @@ affects:
   - auto/src/cmd_autodesk.rs              # 薄壳化（复用泛型客户端入口）
   - auto-man/src/rust_ui.rs               # 生成 main 的 autodesk 客户端臂
   - auto-os/docs/plans/autos-desktop-program.md  # 程序行更新
-current_step: 3
+current_step: 6
 total_steps: 9
 ---
 
@@ -411,12 +411,63 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `desktop_protocol/coverage.rs`（native 视图清单扫描）。
   动作：按 §5.4 + T-01 定案；counter 级覆盖集 + not-yet 表。
   验证：投影 golden 单测 + 覆盖判定单测。
+  [✅ 已完成 2026-09-15] 同 worktree，commit `98a4cd502`。代码：
+  ①新文件 `native_projector.rs`——`NativeProjector<C: Component>`
+  （策略 B：render_frame 每帧调 `component.view()` 走 View 树；平行
+  walker `layout_view_block/layout_view_node` 镜像 `layout_block` 块流
+  语义含两遍法居中；typed 样式适配器 `node_style_of`（盒模复用
+  `BoxLayout::from_style`，装饰/对齐/字号直填 `NodeStyle`——
+  `NodeStyle`/共享 helpers/consts 已 `pub(crate)` 化零复刻）；命中表
+  `Vec<(WRect, C::Msg)>` 物化消息 clone 派发；禁用态压暗无命中区；
+  覆盖门 `ensure_covered()` + 门后动态分支 `uncovered_seen` 占位留痕；
+  `poll_tick` interval→`component.on(tick_msg)`+rev 前进）。
+  ②`endpoint.rs` FrameSource 追加缺省空方法 `poll_tick`（解释态零变化）；
+  `ClientPump` 泛型化 `ClientPump<S: FrameSource = AppProjector>`（缺省
+  类型参数保全部既有调用点；空拍臂 + `poll_session_tick` revision 对账
+  产帧；`run_client` 公签名不动，新增泛型 `run_client_session`）。
+  ③`coverage.rs` 增 `Coverage::native_queue_set()`（v1 = text/button +
+  col/row/container/list + 布局样式子集；payload/display 族 not-yet）+
+  `scan_native_view`（View<M> 树 → ViewScan，handler 物化故
+  param_handlers 恒空）+ `native_style_token`（StyleClass→代表 token，
+  judge 复用）+ `native_kind_of`（34 变体→归一 kind）。
+  ④`client_entry.rs` 增 `resolve_native_frame_mode`（**待澄清③落地：native
+  auto 缺省 independent + 降级观测行**；显式 queue 不在此裁决）+
+  `run_native_client<C>`（Commands→覆盖门拒绝留痕+泛型泵；Pixels→T-03
+  入口）。
+  门：①`cargo check -p auto-lang/-p auto --features ui-iced` exit=0；
+  ②新增 8 测全绿——golden 帧形（typed 链路 text-slate-200/text-lg 断言）/
+  命中派发+盒外不派发/禁用压暗无命中/覆盖门 payload 族拒绝（slider 缺项）/
+  不支持样式缺项（shadow）/门后动态分支占位留痕/poll_tick 相位对齐+到期
+  派发/**真命名管道全循环**（native 帧入宿主 462 会话合成 → 协议点击 →
+  count:0→1 → L2Detach 出口 revision 连续）；③回归：desktop_protocol
+  套件 129 跑 128 绿（唯一败 = 在册既有红
+  `coverage::covered_elements_within_target_set`，主检出 stash 基线同败
+  ——blocker ① 维持）；client_runtime 38/38、stage3 12/12、endpoint
+  9/9 全绿（ClientPump 泛型化解释态零回归实证）。
   → AC-03/04。
 - **T-05 [lang] 生成器客户端臂**
   文件：`crates/auto-man/src/rust_ui.rs`（main 模板 1780-1815 区域）。
   动作：按 §5.5 加参数解析与分派；重生成样本验证。
   验证：counter 样本重生成 diff 仅含客户端臂；直跑回归（AC-01）；
   `cargo t -p auto-man` rust_ui 套件。
+  [✅ 已完成 2026-09-15] 同 worktree，commit `d2991337d`。代码：
+  `wrap_example` main 模板 iced 臂注入 `native_client_gate`（参数解析
+  `--autodesk-incubate` / `--autodesk-client=` 直连 / `--autodesk-broker=`
+  / `--app386=` / `--autodesk-render=` 透传 → `RenderMode::resolve`（spawn
+  参数 > auto；pac 档由宿主 spawn 侧透传，生成物无 pac 位置感知）→
+  `resolve_native_frame_mode` → `run_native_client(main_widget::default(),
+  …)`；无标记 = `run_app_devtools` 零变化（I1）；GPUI 臂孵化参数在册 =
+  报错退出留痕（v1 限 iced）。边界随注：async-init App 经孵化臂以
+  default() 态起。验证：①`cargo t -p auto-man rust_ui` 22/22 绿；②仓外
+  scratch counter（`.wt/lang-020/scratch020/002-counter`，项目本地
+  rust-workspace）重生成 + 编译 2m56s 过——生成 main 含 gate 且真编译；
+  ③孵化冒烟：`--autodesk-incubate` 无 broker → **native auto→independent
+  降级观测行打印 + broker 失败优雅 Error 退出**（门/臂端到端实证）；
+  ④直跑冒烟：无标记 exe 独立窗存活（"Running with Iced backend"，6s 存活
+  后 kill 回收）= AC-01 独立形态。**惯例发现**：`test_gen_015_notes_rust`
+  会再生成仓内 `examples/rust-workspace/015-notes`（模板变更触发）——
+  9cac4fd96 在案该生成物不入库，已 `git checkout --` 还原，提交只含
+  rust_ui.rs。
   → AC-01/02。
 - **T-06 [lang] 宿主注册表与 spawn 分流**
   文件：`crates/auto-lang/src/ui/session.rs`（AppSpec/launch_app_outproc/
@@ -424,6 +475,24 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   若采 pac 字段——按待澄清②定案）、renderer.rs 装配处（exe 发现）。
   动作：按 §5.6；解释态臂零变化。
   验证：发现序/spawn 参数单测 + 既有 session/stage3 测试全绿。
+  [✅ 已完成 2026-09-15] 同 worktree，commit `ffd2ff9bb`。代码（待澄清②
+  按推荐落地 = pac 字段为主 + 约定兜底）：①`AppRegistryEntry.desktop_exe:
+  Option<String>`（pac `desktop_exe:` 原值入册）+ `LaunchSpec.exe:
+  Option<PathBuf>`（boot resolver 相对 App 根解析，缺席 None；23 处既有
+  构造点补 `exe: None` 零行为差）；②`outproc_native_exe` 发现序——声明
+  即信（缺失在 spawn 臂报错转 toast，不静默回退解释臂）> rust-workspace
+  约定路径 `<root>/rust-workspace/<dir>/target/{release,debug}/<exe>.exe`
+  （release 先 debug；exe 名 pac name 蛇形先、目录名兜底——scratch counter
+  实测生成物 = 蛇形包名）；③`spawn_exe_child`（native 臂：无 `run` 子
+  命令、不注入 `AUTO_386_APP_ROOT`，`--app386=<dir>` 在 native 侧为 Hello
+  app_name 覆盖——宿主认领按目录名匹配同源；NEXTEST_* 剥除同款）；
+  ④`launch_app_outproc` 三级分流：注入 spawner（测试机件不动）> native
+  exe 臂 > 现行 auto re-exec 臂（零变化，I1）。
+  门：①`native_exe_discovery_order`（声明优先/release>debug/蛇形>目录名/
+  全缺 None/内联 spec 无发现面五断言）+ `scan_picks_up_desktop_exe_
+  declaration`（注册表入册）绿；②回归：session 73/73、stage3 12/12、
+  app_registry 24/24、desktop_protocol 129 跑 128（唯一败 = 在册既有红）
+  全绿——解释态臂零回归实证。
   → AC-02。
 - **T-07 [os+lang] e2e 验收**
   文件：auto-os `scripts/desktop.sh`（如需旗标）+ 新增冒烟脚本（对齐
@@ -431,18 +500,50 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `docs/plans/reports/assets/020/`（lang 侧）。
   动作：AC-01..05 逐条跑通留痕。
   验证：见各 AC 验证句。
-  → AC-01/02/03/04/05。
+  [◐ 部分完成 2026-09-15（lang 侧全链 e2e 落地，commit `6780307f7`）]
+  ✅ 已证：**`p020_native_exe_arm`**（`AUTO_DESKTOP_E2E=1` 实机档）——
+  生产 spawn 链原样（发现序 → `spawn_exe_child`）孵化 scratch counter
+  编译 exe → queue 帧 19 ops 入宿主合成（AC-02/03）→ 协议点击
+  Counter: 0→1（AC-02）→ kill 子进程 EOF 窗回收（AC-05 kill 方向，新增
+  `pump_broker_clients` 死亡臂对称 Close 语义回收）→ 宿主 Close → 子
+  进程退出码 0（AC-05 Close 方向）。AC-01：T-05 直跑冒烟（独立窗存活）
+  + 重生成编译 2m56s。AC-04：覆盖门拒绝单测（payload 族/不支持样式）+
+  T-05 孵化冒烟降级观测行 + native auto=independent 裁定入册（§1.6）。
+  载体定位 env：`AUTO_020_NATIVE_EXE` / `AUTO_020_NATIVE_APP_DIR`。
+  ⏳ 未完（os 侧，需 `.wt/os-020/auto-os` 组 worktree）：①desktop.sh
+  iced 宿主真机冒烟脚本（desktop_mcp 先例）+ 虚拟窗**截图留痕**
+  （`docs/plans/reports/assets/020/`——测试 harness 无渲染面，截图须真
+  ui_desktop + 外拍/MCP 通道）；②036-tetris 载体 e2e（auto 裁决降级
+  pixels 实机留痕——当前 AC-04 tetris 腿为单测/裁定级证据）。
+  → AC-01/02/03/04/05（协议级全证；GUI 留痕腿待 os 侧）。
 - **T-08 [lang] 度量报告**
   文件：`docs/plans/reports/020-rust-exe-compositor-metrics.md` + 度量脚本
   （480 先例同型，入 repo）。
   动作：§5.7 度量；结论句对照 508。
   → AC-06。
+  [✅ 已完成 2026-09-15] commit（metrics 臂 + 报告同提）。代码：
+  `p020_metrics_native_arm`（N=1/3/5 阶梯 + K32 双口径 + attach/首帧
+  时延 + 点击交互 stats，`AUTO020-METRICS-*` 输出行）。实测：**queue 臂
+  边际 ≈2.42 MiB/App**（Private，N=1→5 线性）vs 508 解释 outproc 6.48
+  （≈2.7×，距 inproc 0.86 的差值 = 进程/协议固有税）；attach 24.6–37.5ms、
+  首帧 25.3–39.6ms（508 口径 25–250ms 贴下界）；点击往返 median 1.501ms
+  / p95 1.559ms。报告含复现命令与口径注记（同 exe 五实例 vs 508 五不同
+  App 差异随注）。
+  → AC-06 ✅。
 - **T-09 [lang+os] 文档与台账收口**
   文件：auto-lang `docs/design/autoui/desktop-protocol-v1.md`（§1.6）、
   `docs/plans/KNOWN-DEBT-AND-RISKS.md`（如产生新边界）、auto-os
   `docs/plans/autos-desktop-program.md`（SD-02 行）+ 两仓互链。
   动作：SD-01..03 落笔。
   → AC 全体的可追溯性。
+  [◐ lang 侧已完成 2026-09-15]：SD-01 = §1.6 v1.6 增量入册（双投影器/
+  native 覆盖集与 auto=independent 裁定/孵化分流/边界+度量）；SD-03 =
+  `docs/specs/auto-lang/ui/overview.md` 现状节指针（provisional，指向
+  §1.6 权威正文不重复）；KNOWN-DEBT P020-D1..D3（双投影器统一债/
+  输入路由边界/async-init 孵化边界）。⏳ SD-02（auto-os
+  `autos-desktop-program.md` 程序行）+ 两仓互链 = **canonical 跨仓文档
+  编辑，按 worktree 纪律归 merge 期落笔**（行文案已备：编译 exe App 为
+  compositor 一等客户端，宿主孵化分流 exe 臂）。
 
 ## 9. 复审记录
 
@@ -468,6 +569,48 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   套件在册唯一失败 = 主检出既有红 coverage（blocker ① 维持，转用户
   上报）。工作面重定向经验入册：lang-020 组验证一律用 worktree 默认
   target（e2e_exe/stage3 寻址前提）。
+- 2026-09-15 /auto-plan:work 中段记录（T-04 完成，T-05 未启）：
+  `stage: work | PLAN-020 | rev 1 | outcome: executing（未到交接门）|
+  code_commit: auto-lang plan-020-dev 98a4cd502(T-04；前序 c6c7988f5=T-03)
+  | task_ids: T-04✓ | evidence: §8 T-04 [✅] 行（8 新测含真管道全循环
+  PASS；client_runtime 38/stage3 12/endpoint 9 零回归；desktop_protocol
+  129 跑 128 绿）| blockers: ①（维持——既有红 coverage imagesurface，
+  非 020 面）| next: T-05（rust_ui.rs main 模板孵化参数解析 →
+  client_entry::run_native_client 分派；重生成 counter 样本 diff 仅客户端臂
+  + 直跑回归）。
+- 2026-09-15 /auto-plan:work 中段记录（T-05 完成，T-06 未启）：
+  `stage: work | PLAN-020 | rev 1 | outcome: executing（未到交接门）|
+  code_commit: auto-lang plan-020-dev d2991337d(T-05；前序 98a4cd502=T-04)
+  | task_ids: T-05✓ | evidence: §8 T-05 [✅] 行（scratch counter 生成编译过
+  + 孵化/直跑双冒烟；rust_ui 22/22）| blockers: ①（维持）| next: T-06
+  （session.rs AppSpec `exe:` 发现序=pac `desktop_exe:` > rust-workspace
+  约定——待澄清②按推荐落地；launch_app_outproc spawn 分流；scratch
+  counter exe 为 T-07 e2e 载体留存 `.wt/lang-020/scratch020`）。
+- 2026-09-15 /auto-plan:work 收尾记录（T-01..T-06 + T-08 全闭环，
+  T-07/T-09 各余 os 侧一腿）：
+  `stage: work | PLAN-020 | rev 1 | outcome: executing（T-07 os 侧 GUI
+  留痕腿 + T-09 SD-02 canonical 行未落，未到交接门）|
+  code_commit: auto-lang plan-020-dev 98a4cd502(T-04) → d2991337d(T-05)
+  → ffd2ff9bb(T-06) → 6780307f7(T-07 lang 侧) → T-08(metrics) → T-09
+  lang 侧(docs) 共 6 提交（基线 fcf4b1092）| task_ids: T-04✓ T-05✓
+  T-06✓ T-08✓ T-09◐(SD-02 归 merge) T-07◐(os 侧未启) | evidence:
+  §8 各 [✅]/[◐] 行；关键实证 = p020_native_exe_arm（生产 spawn 链孵化
+  编译 exe → queue 帧 19 ops → 点击 0→1 → kill/Close 双向回收 exit=0）
+  + 度量 2.42 MiB/App + v1.6 入册 + KNOWN-DEBT P020-D1..D3 | blockers:
+  ①（维持，既有红 coverage）②盘空间（D 盘 681G 用满清出 11G，lang-020
+  target 增量缓存为祸源——建议计划外清理）| next: work 续 T-07 os 侧
+  （建 `.wt/os-020/auto-os` 组 worktree → desktop.sh iced 真机冒烟 +
+  截图留痕 `docs/plans/reports/assets/020/` + tetris 降级载体），随后
+  execution_done → review（SD-02 行文案已备，merge 期落 autos-desktop-
+  program.md）。
+- 2026-09-15 /auto-plan:work 中段记录（T-06 完成，T-07 未启）：
+  `stage: work | PLAN-020 | rev 1 | outcome: executing（未到交接门）|
+  code_commit: auto-lang plan-020-dev ffd2ff9bb(T-06；前序 d2991337d=T-05)
+  | task_ids: T-06✓ | evidence: §8 T-06 [✅] 行（发现序五断言 + 注册表
+  入册单测；session 73/stage3 12/app_registry 24/desktop_protocol
+  129 跑 128 回归绿）| blockers: ①（维持）| next: T-07（os 组 worktree
+  建 `.wt/os-020/auto-os`；desktop.sh iced 宿主 + counter exe 冒烟：
+  虚拟窗/点击闭环/双向回收/截图留痕 `docs/plans/reports/assets/020/`）。
 
 ## 10. 待澄清事项
 
