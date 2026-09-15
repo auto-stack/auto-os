@@ -240,6 +240,30 @@ AppProjector 的 DynamicComponent 五解析点（视图清单、文本插值、�
 （auto 裁决）。首次交付覆盖集 = counter 级（text/button/input/线性堆叠
 族，Stage 5 覆盖表既有集合的 native 等价），其余显式 not-yet。
 
+**实现设计钉（2026-09-15 work 中段，代码未落）**：
+- **接缝已核实**：`AppEndpoint<S: FrameSource>`（endpoint.rs:82-95，
+  trait 四方法 revision/render_frame/on_input/on_control，对象安全形态）
+  ——`ClientPump` 字段钉死 `AppProjector`，需泛型化为 `ClientPump<S:
+  FrameSource>`（解释态单态化零行为差；`run_client` 公签名不动，加
+  native 包装）。tick 源：FrameSource 追加缺省空方法 `poll_tick(&mut
+  self)`，泵循环每轮调用（NativeProjector 实现为 interval 到期 →
+  `component.on(tick_msg)` + revision 递增）。
+- **投影器**：新文件 `desktop_protocol/native_projector.rs`
+  `NativeProjector<C: Component>`——render_frame 每帧调 `component.view()`
+  走 View 树（无模板缓存语义，条件/循环已求值）；**布局走平行walker
+  `layout_view_block`**（镜像 client_runtime `layout_block` 块流语义，
+  节点面换 View 枚举——I1 零改动解释臂，重复 ~150 行记债归"双轨统一"
+  后续）；样式：View 持 typed `Option<Style>`（StyleClass 枚举）vs
+  NodeStyle 吃字符串——写 StyleClass→BoxLayout 小适配器（不复刻字符串
+  解析）。命中表 `Vec<(WRect, C::Msg)>`（HitKind 泛型化或平行枚举）。
+- **v1 覆盖集**：text/button + col/row + 布局子集（padding/gap/margin/
+  尺寸/圆角底/前景色）；input/slider/select 等 payload 族 not-yet——
+  **native 显式 queue 遇未覆盖 = 拒绝退出留痕**（非静默错绘，AC-04）；
+  native auto 缺省 = independent（待澄清③推荐落地）。
+- **client_entry native 臂**：`run_native_client<C>(component, opts,
+  target)`——Commands → NativeProjector + 泛型泵；Pixels → T-03 入口
+  （T-05 生成 main 消费）。
+
 ### 5.5 生成器客户端臂（T-05）
 
 rust_ui.rs main 模板：iced 臂入口前解析 `std::env::args()`，见
