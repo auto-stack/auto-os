@@ -511,7 +511,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | AC-09 txt→auto-edit | **pass** | t07-open-with-e2e.png（041 打开语料文件内容完整） |
 | AC-10 jpg→image-viewer | **pass** | ac10-image-open-desktop.png（031 启动聚焦 + photo.png 渲染）；"打开方式"选择器条款经用户 R5 指令演化为系统兜底（已记录） |
 | AC-11 套件绿跑 | **partial** | 套件已对齐 Phase 2 惯例；绿跑受 MCP 通道失联阻塞（框架债）；交互流程已单点实证 |
-| AC-12 vue 轨 | **fail→转 PLAN-631** | vue popover 发射缺陷（`left: 8px` 裸 CSS 进 :style JS 对象 → App.vue 白屏，App.vue:1033:124 实证）= ui_gen/vue.rs popover 臂坐标回退未引号化——属 F-7 vue 侧同族，随 PLAN-631 修 |
+| AC-12 vue 轨 | **fail→仍开放** | vue popover 发射缺陷（`left: 8px` 裸 CSS 进 :style JS 对象 → App.vue 白屏，App.vue:1033:124 实证）= ui_gen/vue.rs popover 臂坐标回退未引号化——属 F-7 vue 侧同族；PLAN-631 已落地但 **vue 轨为其明示非目标**（VM 轨 only），本项须另行立项/顺带修 |
 | AC-13 文档一致 | **pass** | SPEC.md 重写 + 协议 v1.7 + 判定序四象限入册 |
 
 ### findings（复审新增）
@@ -519,7 +519,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | ID | 严重度 | 内容 | 去向 |
 |---|---|---|---|
 | FR-1 | 中 | AC-11 绿跑依赖 MCP 通道稳定性（框架债 F-3/MCP 失联）；套件需更新至 Phase 2 导航惯例（···→打开；地址栏已改点击编辑）。**实机探针补充发现**：Phase 2 后快照可驱动面收窄——mouse-area/sidebar_menu_button 不进快照 id 面、关闭态弹层文本污染断言（"确认删除"恒在）、双击无合成动作。→ 套件重构需稳定测试钩子契约，随 PLAN-631 testability 面一并落地；短期以用户实机清单代 AC-11 | T-10 随 PLAN-631 后补跑 |
-| FR-2 | 低 | AC-12 vue 轨白屏 = ui_gen/vue.rs popover 臂坐标回退发射裸 `left: 8px`（PLAN-631 F-7 vue 侧同族） | 随 PLAN-631 修 |
+| FR-2 | 低 | AC-12 vue 轨白屏 = ui_gen/vue.rs popover 臂坐标回退发射裸 `left: 8px`（PLAN-631 F-7 vue 侧同族） | PLAN-631 不覆盖 vue 轨——仍开放，另行处理 |
 | FR-3 | 低 | 独立窗口无系统深浅色跟随（dark_mode 仅桌面回写链驱动） | 建议并入 PLAN-631 后续或 PLAN-016 后续轮 |
 | FR-4 | 信息 | AC-10 "打开方式"选择器按用户 R5 指令演化为系统默认程序兜底（契约演化，已记录） | 闭合 |
 
@@ -770,6 +770,6 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 |---|---|---|
 | F-1 | 中文字体家族指定（黑体/微软雅黑）：iced_adapter font_family 仅 serif/sans/mono 抽象，指定具体中文字体需 renderer default_font / cosmic fallback 面——框架工作，另立 | 框架债（复审裁定归属） |
 | F-2 | 【定性修正】popover first-child = 锚件就地渲染（PLAN-528 设计语义，非泄漏）——菜单必须用 popover-trigger/popover-content 子标签拆分，否则首项（"打开"）会变锚件消失、菜单锚在首项位置 | 已按规范形态修复（R5） |
-| F-6 | 【框架·高优】VM 动态视图无细粒度更新：任何被视图引用的状态写（选中/hover/ctx）→ view_dirty → 整棵 .at→iced 视图树重转换（无行级依赖追踪、无 diffing）。千级节点 × debug 构建 = 每次交互 0.1-0.3s 卡顿。框架方向：视图 diffing 或依赖追踪细粒度失效；短期缓解 = 优化构建 + 控制单视图节点规模 | **已立项 auto-lang PLAN-631**（autoui-interaction-primitives：F-5 hover 样式对 / F-7 popover pointer 定位 / F-6 剖析+缓存；含 F-3 事件坐标与 F-4 多选修饰键的演进面） |
+| F-6 | 【框架·高优】VM 动态视图无细粒度更新：任何被视图引用的状态写（选中/hover/ctx）→ view_dirty → 整棵 .at→iced 视图树重转换（无行级依赖追踪、无 diffing）。千级节点 × debug 构建 = 每次交互 0.1-0.3s 卡顿。框架方向：视图 diffing 或依赖追踪细粒度失效；短期缓解 = 优化构建 + 控制单视图节点规模 | **已落地 auto-lang PLAN-631**（2026-09-15 merge，auto-lang master `4e5f39cad`；F-5 hover 样式对 / F-7 popover pointer 定位〔027 假坐标退役接线就绪〕/ F-6 剖析+缓存——67 行选中 debug 整重建 15.8→9.8ms；F-3 事件坐标与 F-4 多选修饰键演进面未含；vue 轨非目标 |
 | F-7 | 【框架】右键菜单正确终态 = 全视图单实例菜单 + 指针位置定位（Win11 式）：需要 a) 事件坐标面（=F-3）或 b) popover 原生指针定位原语（坐标不走状态回写，避免每次移动全量重建）。现 Plan 422 popover 仅锚件/坐标态两种定位 | 框架债（与 F-3 合并推进） |
 | F-3 | 右键菜单无法精确跟随鼠标：`.at` 事件不携带指针坐标（D-1 同源），popover 仅锚件/坐标态定位 | 框架债（需事件坐标面） |
