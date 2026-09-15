@@ -16,16 +16,16 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
                 if !.is_face_down {
                     // 1. 左上角标：点数 + 迷你花色 (横向排列)
                     row {
-                        style: "items-center gap-1 leading-none"
+                        style: "items-center gap-1 leading-none self-start"
                         text .rank_text {
                             style: "text-xs font-bold font-mono " + .color_class
                         }
                         CardSuit (suit: .suit, style: "w-3 h-3 " + .color_class) {}
                     }
 
-                    // 2. 牌面中心区域
+                    // 2. 牌面中心区域 (flex-1 纵横居中，脱离 absolute inset-0 兼容双端)
                     col {
-                        style: "absolute inset-0 items-center justify-center pointer-events-none"
+                        style: "w-full flex-1 items-center justify-center pointer-events-none my-0.5"
                         if .rank == 1 {
                             CardSuit (suit: .suit, style: "w-8 h-8 opacity-85 " + .color_class) {}
                         }
@@ -45,7 +45,7 @@ widget CardFace (rank: int = 0, rank_text: str = "", suit: str = "", color_class
 
                     // 3. 右下角标 (微型角标)
                     row {
-                        style: "items-center justify-end gap-0.5 self-end"
+                        style: "items-center justify-end gap-0.5 self-end leading-none"
                         CardSuit (suit: .suit, style: "w-2.5 h-2.5 opacity-50 " + .color_class) {}
                         text .rank_text {
                             style: "text-[10px] font-bold font-mono opacity-50 " + .color_class

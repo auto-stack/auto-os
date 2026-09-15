@@ -30,9 +30,11 @@ widget App {
         col {
             style: "min-h-screen bg-slate-950 text-slate-100 p-5 gap-5 select-none"
 
-            // 顶栏：标题、用时/步数、控制按钮与皮肤切换
-            row {
-                style: "items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm flex-wrap gap-4"
+            // 顶栏：标题、用时/步数、控制按钮与皮肤切换（两行布局，兼容 VM/Iced 无 flex-wrap）
+            col {
+                style: "bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 shadow-sm gap-2"
+
+                // 第一行：logo + 皮肤切换
                 row {
                     style: "items-center gap-3"
                     icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
@@ -56,47 +58,52 @@ widget App {
                     }
                 }
 
-                // 状态指标：用时 & 步数 & 最佳纪录
+                // 第二行：状态指标 + 操作按钮
                 row {
-                    style: "items-center gap-6 bg-slate-950/60 border border-slate-800 rounded-lg px-4 py-1.5"
-                    row {
-                        style: "items-center gap-2"
-                        icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
-                        text "用时: " { style: "text-xs text-slate-400 font-medium" }
-                        text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
-                    }
-                    row {
-                        style: "items-center gap-2"
-                        icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
-                        text "步数: " { style: "text-xs text-slate-400 font-medium" }
-                        text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
-                    }
-                    row {
-                        style: "items-center gap-2"
-                        icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
-                        text "最佳: " { style: "text-xs text-slate-400 font-medium" }
-                        text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
-                    }
-                }
+                    style: "items-center justify-between gap-4"
 
-                // 操作按钮组
-                row {
-                    style: "items-center gap-2"
-                    button "撤销 (Undo)" {
-                        onclick: .Undo
-                        class: .store.undo_btn_class
+                    // 状态指标：用时 & 步数 & 最佳纪录
+                    row {
+                        style: "items-center gap-4 bg-slate-950/60 border border-slate-800 rounded-lg px-4 py-1"
+                        row {
+                            style: "items-center gap-2"
+                            icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
+                            text "用时: " { style: "text-xs text-slate-400 font-medium" }
+                            text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
+                        }
+                        row {
+                            style: "items-center gap-2"
+                            icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
+                            text "步数: " { style: "text-xs text-slate-400 font-medium" }
+                            text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
+                        }
+                        row {
+                            style: "items-center gap-2"
+                            icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
+                            text "最佳: " { style: "text-xs text-slate-400 font-medium" }
+                            text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
+                        }
                     }
-                    button "自动收牌 (Auto)" {
-                        onclick: .AutoSendAll
-                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
-                    }
-                    button "新对局" {
-                        onclick: .NewGame
-                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
-                    }
-                    button "必胜测试" {
-                        onclick: .DebugWinDeal
-                        class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+
+                    // 操作按钮组
+                    row {
+                        style: "items-center gap-2"
+                        button "撤销 (Undo)" {
+                            onclick: .Undo
+                            class: .store.undo_btn_class
+                        }
+                        button "自动收牌 (Auto)" {
+                            onclick: .AutoSendAll
+                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
+                        }
+                        button "新对局" {
+                            onclick: .NewGame
+                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
+                        }
+                        button "必胜测试" {
+                            onclick: .DebugWinDeal
+                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+                        }
                     }
                 }
             }
