@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-020
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: rust-desktop-exe-compositor
 author: [agent]
 created_at: 2026-09-15
@@ -19,7 +19,7 @@ affects:
   - auto/src/cmd_autodesk.rs              # 薄壳化（复用泛型客户端入口）
   - auto-man/src/rust_ui.rs               # 生成 main 的 autodesk 客户端臂
   - auto-os/docs/plans/autos-desktop-program.md  # 程序行更新
-current_step: 0
+current_step: 3
 total_steps: 9
 ---
 
@@ -172,6 +172,52 @@ handler 载荷、条件块、状态插值）是泛化的唯一未知量。调查
 
 定案记录追加进本节（`### 5.1 定案记录`），复审时作为 T-03/T-04 的依据。
 
+### 5.1 定案记录（T-01，2026-09-15）
+
+- **D1' = 策略 B（运行期 View 投影），策略 A 否决**。证据：
+  - `View<M>` 是 iced 无关类型 IR（`ui/view.rs:428`，~35 变体、typed 命名字段
+    prop、无 HashMap），已有三消费端（iced `iced/renderer.rs:3052`、GPUI
+    `gpui/renderer.rs:60`、headless/VTree `vnode_converter.rs:67`）——投影器
+    即第四后端，架构先例充分。
+  - 零参 handler 在 View 里已是**物化 `M` 值**（`Button.onclick: M`
+    view.rs:452；builder 构建期急切求值闭包 view.rs:1409-1415）→ 泛型命中表
+    `Vec<(WRect, C::Msg)>` 直接 clone 派发。先例：`extract_handler_from_view<M>`
+    （renderer.rs:22002-22028）+ rust 模式 MCP 通道已按 view→path→handler→
+    `component.on(m)` 派发（renderer.rs:21924-21931）。
+  - 解释态同样产 View（`AuraViewBuilder::build(&AuraNode) -> View<DynamicMessage>`
+    aura_view_builder.rs:375，DynamicComponent::view dynamic.rs:1154）——View
+    投影器天然具备双轨统一潜力。
+  - 策略 A 否决依据：静态表无法表达状态依赖视图（tetris `cells.iter().map`
+    每格按钮 / `if save_pending` 条件按钮，main.rs:112 一表达式内并存），且
+    重复运行期树已携带的信息。
+  - **泛型而非对象安全**：`Component: Sized`（component.rs:34）→
+    `NativeProjector<C: Component>` 单态化（每个 child exe 自带具体 App，
+    无动态分发需求）。
+- **D2' 五解析点 native 对应面**：视图清单 = 直接遍历 `view()` 产物（复用
+  `extract_children_ref<M>` vnode_converter.rs:581、`find_view_by_path_generic`
+  renderer.rs:21981、`VNode.path` 稳定身份 vnode.rs:310）——解释态所需的
+  flatten_visible/eval_condition/interpolate（client_runtime.rs:717/732/1807）
+  在 View 已天然消解（条件/循环/插值在 view() 构建期求值完毕）；文本/prop =
+  typed 字段直读；状态读 = `Component::state_snapshot()`（component.rs:87，
+  生成器已覆写，tetris main.rs:383-409——顺带对齐 L3 StateSnapshot 控制面）；
+  样式 = View 持已解析 `Option<Style>`（StyleClass typed 枚举 style/mod.rs:246）
+  vs 现投影器 NodeStyle 吃字符串（client_runtime.rs:223）→ 需
+  StyleClass→BoxLayout/颜色小适配器；命中派发 = 泛型表 + `component.on(msg)`，
+  **输入载荷侧信道**：生成 on() 经 `last_input_text()` 读 typed 文本
+  （renderer.rs:1065-1069），派发前须设同一 thread-local（MCP 先例
+  renderer.rs:21926）。
+- **D3' tick/键**：trait 方法全后端无关（tick_interval_ms/tick_msg/key_message/
+  key_bindings，component.rs:41-72）；ClientPump 现无 tick 源（client_runtime.rs:
+  2044/2171）→ native 泵自带 timer 循环（devtools_update 派发同型
+  renderer.rs:21881-21886）。
+- **v1 边界（入覆盖表 not-yet）**：payload handler 族（Slider `fn(f32)->M`、
+  Select/PointerMove/Scroll `Arc<dyn Fn>` 新类型 view.rs:46-418）不入命中表；
+  `EventRouter`/`view_to_vtree_with_events` 不可复用（DynamicMessage 专属
+  unsafe transmute，vnode_converter.rs:1383-1397）。
+- **架构裁定（附加）**：v1 双投影器并存——`AppProjector`（解释态，零改动，
+  I1）+ `NativeProjector<C>`（新，View 泛型）；解释态投影器改写为 View 基
+  （双轨统一）留后续债，不在本计划。
+
 ### 5.2 客户端入口泛型化（T-02）
 
 `desktop_protocol` 新增 `client_for_component`（名字执行期可调）：把
@@ -284,6 +330,10 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   动作：对 counter 级与 tetris 生成代码做 View/AuraNode 差异扫描，定案
   D1'/D2'/D3'。产物：`### 5.1 定案记录`。
   验证：定案记录含两样本证据引用；复审通过。
+  [✅ 已完成 2026-09-15] 定案 = 策略 B（§5.1 定案记录）；两样本证据 =
+  counter 级 builder 物化 + tetris main.rs:112 状态依赖视图；`View<M>`
+  三消费端/`extract_handler_from_view<M>` 先例/五解析点对应面/边界均落
+  file:line 证据。代码零改动（纯调查），无 commit。
   → AC-03/04。新路径：是（调查产物）。
 - **T-02 [lang] 客户端入口泛型化**
   文件：`crates/auto-lang/src/ui/desktop_protocol/`（新入口 + mod 导出）、
@@ -291,12 +341,46 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   动作：按 §5.2 抽壳；解释态行为零变化。
   验证：`cargo t -p auto-lang --features ui-iced desktop_protocol` 全绿 +
   `cargo t -p auto`（autodesk 入口相关）。
+  [✅ 已完成 2026-09-15] worktree `D:/autostack/.wt/lang-020/auto-lang`
+  （plan-020-dev，基线 auto-lang fcf4b1092 + 组内 auto-down 140775f 兄弟
+  worktree）。代码：新增 `desktop_protocol/client_entry.rs`
+  （ClientOpts/ClientTarget/connect/run_dynamic_client），mod.rs 注册，
+  `crates/auto/src/cmd_autodesk.rs` 薄壳化（装载+三态裁决留壳）。门：
+  ①`cargo check -p auto` exit=0；②`cargo t -p auto-lang --features
+  ui-iced desktop_protocol --no-fail-fast` = 120 跑 117 绿 / 3 败，逐条
+  归因（均非 020 代码回归）：`coverage::covered_elements_within_target_set`
+  = **主检出既有红**（stash 基线同败复证：element 表登记 imagesurface
+  covered / 投影器能力表缺失）；`p508_g2_outproc_arm` 与
+  `t3_independent_pixels_and_dual_mode` = **环境交互**——e2e_exe 硬编码
+  `<worktree>/target` 寻址 × 验证时 CARGO_TARGET_DIR 组目录重定向 →
+  构建落点/寻址点分裂（os error 3），无重定向复跑收口（见 §9）。
   → AC-07。
 - **T-03 [lang] pixels 臂泛化**
   文件：`desktop_protocol/pixels.rs`（+ client_runtime 需要处）。
   动作：按 §5.3 组件参数泛型化；双态分派接 T-02 入口。
   验证：既有 pixels 测试全绿 + 新增 native Component 像素臂两进程集成
   （exe 形态，AC-05 前置）。
+  [✅ 已完成 2026-09-15] 同 worktree。代码：`pixels.rs` 增
+  `run_independent_native_child<C: Component>`（桥/launch slot/PIXELS_POLL
+  装配与解释臂同源）+ `poll_transport` pub(crate)；`iced/renderer.rs` 增
+  NativePixelsMsg/NativePixelsHost（from_launch 发 Hello）/update
+  （Proto/Shot 两臂镜像 session 解释态同名臂；App/Tick 驱动
+  `inner.on` 后截图）/view（View→iced，`Element<'_>` 生命周期跟输入——
+  iced 0.14 ViewFn HRTB）/协议轮询 + tick 两个泛型 subscription recipe/
+  `run_native_iced_pixels`（隐藏单窗 `visible:false`，`window::latest()`
+  取窗 id——0.14 无 Id::MAIN，`.run().map_err(into)`）；`iced/mod.rs`
+  再导出；`examples/native_pixels_counter.rs` + Cargo.toml `[[example]]`
+  （required-features = ui-iced）。**范式发现（T-05/T-07 依赖）**：winit
+  Windows 拒绝非主线程 EventLoop，libtest 恒在工作线程跑测试 → 窗口化
+  像素臂 e2e 载体必须是生产形态二进制（stage3 t3 用真 `auto run` 同理；
+  本轮以 example 二进制最小同构落地；测试二进制 re-exec 仅适用 queue 臂）。
+  门：`AUTO_DESKTOP_E2E=1 cargo t ... native_pixels_child_two_process`
+  **PASS 25.6s**——真隐藏窗 + 真截图：Hello → Welcome(Pixels)+BufferAlloc
+  → FrameReadyPixels 首帧（shm 槽满幅非零、64×32 逻辑尺寸对齐）→
+  Input 触发第二帧（frame_id 递增；v1.3 输入边界对齐：无 handler 派发）
+  → Close → ExitRequest → 宿主 BufferRelease → Detached → 子进程干净
+  退出（**宿主必须走完回收步**——Close 不自足）。边界（§5.1 同册）：
+  L3 StateSnapshot 注入传 None（native not-yet）。
   → AC-02/04/05。
 - **T-04 [lang] queue 投影臂泛化**
   文件：`desktop_protocol/client_runtime.rs`（AppProjector seam）、
@@ -342,11 +426,24 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `outcome: pass`（合同完整，任务覆盖全部 AC 与规范增量，路径/命令已对
   仓核验）；`next: work`（T-01 起步——深水定案先行，无需用户解锁）。
   悬置决策已在 §10 登记（①②③④⑤），均不阻塞 T-01/T-02 开工。
+- 2026-09-15 /auto-plan:work 中段记录（T-01..T-03 完成，T-04 未启）：
+  `stage: work | PLAN-020 | rev 1 | outcome: executing（未到交接门）|
+  code_commit: auto-lang plan-020-dev 876782838(T-02) → c6c7988f5(T-03)
+  （基线 fcf4b1092；组 = .wt/lang-020/{auto-lang, auto-down@140775f}）|
+  task_ids: T-01✓ T-02✓ T-03✓ | evidence: §5.1 定案记录（策略 B）+
+  各任务 [✅] 行；native 像素臂 e2e PASS 25.6s | blockers: ①主检出既有红
+  coverage::covered_elements_within_target_set（stash 基线同败——
+  element 表 imagesurface 登记/能力表脱钩，非 020 引入，**建议上报
+  plan624/在册线处理**）；②p508_g2/t3_independent 环境交互（e2e_exe
+  硬编码 worktree 默认 target × CARGO_TARGET_DIR 重定向；无重定向复跑
+  收口中——后续验证一律不重定向 target 或先修 e2e_exe 尊重 env）|
+  next: T-04（NativeProjector<C> over View，§5.1 定案 + 既有
+  AppProjector 块流布局复用）。
 
 ## 10. 待澄清事项
 
-- **①** queue 臂命中→动作策略 A（生成期静态表）/ B（运行期 View 投影）：
-  T-01 定案，倾向 B。
+- **①（已定案，T-01）** queue 臂命中→动作策略 = **B（运行期 View 投影）**，
+  见 §5.1 定案记录；策略 A 否决。
 - **②** exe 发现机制：pac `desktop_exe:` 显式字段 vs 纯约定路径扫描：
   推荐 pac 字段为主 + rust-workspace 约定兜底（T-06 依定案落）。
 - **③** native 组件 auto 裁决缺省臂：推荐 independent 保底（queue 覆盖
