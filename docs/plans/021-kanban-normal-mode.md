@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-021
-status: execution_done       # drafting → executing → execution_done → reviewed → archived
+status: reviewed             # drafting → executing → execution_done → reviewed → archived
 feature_name: auto-kanban 普通模式——手动看板（卡片 CRUD/列移动/排序/持久化），与只读计划板并存为双模式
 author: [zhaopuming, ZCode]
 created_at: 2026-09-15
@@ -663,6 +663,46 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
     位置参数制 body 串、E5501 入口禁 nil、has_key 判缺、as_string
     物化、let 绑定入字面量、客户端 body 包装双形态、iced 相对路径、
     路由页跨文件组件调用不渲染（ManualBoard 内联）。
+- 2026-09-15 · stage: review · plan_revision: 2 · ZCode（/auto-plan:review，
+  **与会话内执行同会话复核——独立性受限，已按合同从工件重建裁决：
+  全部验证在 reviewed commit 上独立重跑，不采信执行期摘要**）
+  - outcome: **pass**
+  - reviewed_commit: auto-kanban main `5f3b4ff2a9e6854e6c226f0048aeaec948c598b2`
+    · base_commit: `fc0434f3de60c5cbb06a6df3865c201e65fb1724`（祖先关系
+    验证 ✓，9 提交，无 worktree——计划 §10-2 裁定的主检出执行）
+  - dependency_revisions: auto `0.1.0+v0.4.2-753-g4e26b3237-dirty`
+    （auto-lang target/debug，会话中经历 690→753 两次并发重建，复审
+    全链以 753 重跑）；无其他依赖仓变更。
+  - dirty inventory: 仅 .gitignore 用户侧 hunk（screenshots/图片 ignore，
+    非本计划，未入库——HEAD 版已核对只含本计划 3 行）；无未提交实现。
+  - scope: diff fc0434f..HEAD 共 14 文件，全部落 auto-kanban 授权仓；
+    auto-os 侧仅计划文件（2dd68da 单文件）✓。
+  - spec_inputs: docs/specs/apps/kanban.md 尚不存在（SD-01 = new，merge
+    落盘）；§9 增量草案经复核——描述即当前行为与持久决策，无执行日记
+    残留；supersedes=[]、new=P021-1（docs/specs/apps/kanban.md，与既有
+    apps/klondike 等 spec 布局一致）、affects 一致。
+  - acceptance_results（独立重跑证据）：
+    AC-01 ✓ M1+T1/T8 · AC-02 ✓ M2 · AC-03 ✓ M3 · AC-04 ✓ M4/M5+
+    dragTo 拖拽冒烟 · AC-05 ✓ M6 · AC-06 ✓ M7+P1 落盘断言 ·
+    AC-07 ✓ 17/17（5.7s，复审重跑）+ 真实对账 cards 629 == 磁盘
+    5+624（语料较执行时新增 2 文件后总数仍相等；无 status tracker
+    文件入 archived 为 579 既有映射，扫描逻辑本计划零改动）·
+    AC-08 ✓ P1 curl 全链（GET 排序/PUT 引号换行落盘转义/move 中位
+    插入压实 0..n-1/DELETE true/未知 cid 零卡/lang-plans 拒写零卡）
+    + 配置驱动实测（临时移除 manual 条目 → /api/boards 消失，还原
+    后恢复，git 工作区零残留）。
+  - findings（均 info 级非阻断，框架/语料侧，不在本计划授权范围）：
+    R-01 iced 进程内相对路径读配置失败（绝对路径 env 可用，桌面标准
+    入口即绝对注入）；R-02 语料并发撕裂读可致 VM 后端崩溃（579 既有
+    暴露，执行期偶发两次，语料稳定后自愈）；R-03 statusless tracker
+    文件映射入 archived 折叠（579 既有映射）。
+  - evidence: tests/tests/{board,manual}.spec.ts（17 测，复审重跑
+    17 passed 5.7s）；P1 curl 链（fixture
+    %TEMP%/review021/m.json，落盘断言 python 读回）；AC-08 配置移除
+    实测（已还原）；screenshots/021-t04…t07*.png；§9 work 记录及各
+    任务证据行。复审后工作区核对：boards.test.json 已还原（零 diff）。
+  - next: **merge**（/auto-plan:merge；spec 增量按 §9 草案落
+    docs/specs/apps/kanban.md）。
 
 ## 10. 待澄清事项
 
