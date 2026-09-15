@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-016
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-15 T-10 收口，next: review）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-15 终复审 pass，next: merge）
 feature_name: file-manager-revamp
 plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
@@ -862,3 +862,63 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
   对 MCP 驱动方是契约事实，宜入 autoui-verifier 测试指引。
 - **`status: execution_done`**；worktree（.wt/os-016 双仓）保留候审，
   next: /auto-plan:review。
+
+### 2026-09-15 /auto-plan:review（r2 终复审：needs_fix→pass 单循环）
+
+- `stage: review` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: pass` | `reviewed_commit`：auto-lang os-016-dev
+  `a1ea8c6e1`（= 922a46444 + SD-02 规范节）| `base_commit`：8c3b4db57
+  （分支含 master 合并 32b2e4149 = PLAN-020 全批）|
+  `dependency_revisions`：auto-os os-016-dev（worktree c6af080，纯簿记）。
+- **独立性限制声明**：复审在执行会话内进行（无独立会话可用）——按技能
+  以工件重建裁定，全部结论基于可复现命令/文件证据，不采信执行摘要。
+- **门禁（复用 + 理由）**：cargo tf 3575/3575 ✅、cargo tv 3721/3721 ✅
+  （-E 排除 ffi_dual_019，master 基线同败；c6af080 在案，二次合并调和树）。
+  复用理由：门禁后提交（73ed1553d→922a46444）仅触 027 app 层 `.at` 与
+  python 套件（`git diff --stat 32b2e4149..HEAD` 实证 crates 零改动），
+  门禁有效性保持。app 层运行面由本轮套件绿跑覆盖。
+- **验收结果**（AC → 证据）：
+  - AC-11（终验门）：**pass（本轮复现）**——desktop_mcp.py 58/0 exit 0
+    （evidence/016/t10-green-run.txt，合并后基线）。
+  - AC-03/04/05/06/07：pass（本轮套件复现——模态三路/真实列表与磁盘
+    一致/导航+错误态 cwd 不变/文件操作磁盘断言全绿）。
+  - AC-02：pass（套件 T1 图标钮断言本轮 + p2 截图 09-14 复用：视图
+    面无改动）。
+  - AC-01：pass（09-14 桌面 set_theme 双向截图复用——主题回写链非
+    合并触面，app dark_mode 声明无改动）。
+  - AC-08：pass（协议 v1.7 §6 在册本轮核验 + 定向测试
+    open_with/launch/session 231/232 绿本轮）。
+  - AC-09/AC-10：pass（09-14 桌面 e2e 截图复用 + execute_open_with →
+    launch_app 结构复核本轮 + 定向测试；合并触 launch 路由面——建议
+    merge 门加一次桌面 e2e 冒烟，非阻塞）。
+  - AC-12：pass（本日闭合——App.vue:1033 引号化零裸 CSS + 4027 实拍
+    非白屏，ac12-vue-track.png）。
+  - AC-13：pass（SPEC.md/协议 v1.7/opens 契约三处一致 + D-1..D-4
+    工件齐）。
+  - AC-14/AC-15..22：pass（Phase 2 记录 + 套件 T13 重启持久化本轮
+    复现）。
+- **findings**：
+  - FR-7（中 → 已修复，单循环）：SD-02 规范节缺失——
+    docs/specs/auto-man/project.md §opens 键未落（SD-01/SD-03 均已在
+    分支，唯此缺）。修复 `a1ea8c6e1`（平铺键语义/normalize_opens/
+    AppRegistryEntry.opens/宿主校验消费/与 PLAN-015 正交——描述均为
+    已验证行为），复审复核通过。
+  - FR-6（中 → 已解释关闭）：并发会话"T8 文件可见性异常（疑
+    projector 层扰动）"实为套件 find_ids 子串双命中取错钮——
+    「新建文件夹」⊃「新建文件」前缀 → NewFolderOpen 误发 → a.txt 被
+    建成**目录**（isfile False 之全部表象；"listdir 间歇可见"即目录
+    条目在）。922a46444 修复（exact 全等 + PUA 哨兵剥离）+ 58/0 绿跑
+    证伪 projector 层嫌疑；其自定解除条件（任一会话 0-fail 绿跑即推
+    execution_done）已满足。
+  - 过程项（非阻塞）：①os-016-dev（auto-os wt）c6af080 与主检出簿记
+    分叉——merge 时计划文件冲突以本复审终态（reviewed）为准；②
+    AC-09/AC-10 桌面 e2e 建议 merge 门冒烟复跑；③VTree label 带 PUA
+    哨兵（title 按钮）为 MCP 驱动契约事实，宜入 autoui-verifier 指引。
+- `spec_inputs`：schema/projection-protocol-v1.md（v1.7 在册）、
+  docs/specs/auto-man/project.md（a1ea8c6e1 新增 SD-02 节）、
+  027 SPEC.md（SD-03）。
+- `evidence`：evidence/016/t10-green-run.txt、ac12-vue-track.png、
+  t07-open-with-e2e.png、ac01-light-desktop.png、ac10-image-open-desktop.png、
+  p2-list-final.png。
+- **`status: reviewed`**；next: /auto-plan:merge（worktree 双仓待其
+  清偿；merge 时注意 os-016-dev 簿记分叉调和）。
