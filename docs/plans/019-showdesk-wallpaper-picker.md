@@ -448,6 +448,21 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   四角中值 + 边界连通 flood + 投影半透明保留；_opaque_corners 白名单
   记满幅设计角），重切 28×2 verify ok。提交 main 8daabe1（018 已归档，
   归档文档补历史补记不改状态）；用户在主检出桌面重启验证。
+- 2026-09-15 走查反馈批 PLAN-019-FU8（os-016 设置面走查，用户裁定「切换
+  壁纸按钮应进入显示桌面 carousel，而非直接换一张」——补按钮触发入口）：
+  os-config 设置面 Desktop 页壁纸卡精简为「目录（可切换）+ 切换壁纸」，
+  按钮走**config 请求通道**触发本计划组合：跨进程唯一现成通道 = config.at
+  单源（宿主 `poll_external_config` 400ms mtime 轮询既有）——新增
+  `wallpaper_request` 字段（os-config 每次点击交替写 "1"/"2"，宿主差分臂
+  `apply_external_config_diff` 只认**值变化**，变化即调
+  `execute_wallpaper_pick` 同一组合臂：show_desktop 幂等 + picker 开 +
+  return_on_close 归属单点；空值/同值不触发，宿主不清值、config 单写方
+  仍为 daemon/设置面）。改动面：auto-lang desktop_config.rs（字段
+  解析/序列化/往返测）+ renderer.rs（差分臂 + 触发测
+  wallpaper_request_diff_triggers_pick）；auto-os 侧 .at 零改动（picker
+  层/sliver/协议词表不动——无新投影字段/动词，v1.7 不升版）。宿主可执
+  行面随 019 worktree 构建（ui_desktop --example，11:39）；os-config 侧
+  auto/src/front/desktop_page.at + desktop_store.at（Regen 门禁绿）。
 
 ## 10. 待澄清事项
 
