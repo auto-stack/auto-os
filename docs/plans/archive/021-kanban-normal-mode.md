@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-021
-status: reviewed             # drafting → executing → execution_done → reviewed → archived
+status: archived             # drafting → executing → execution_done → reviewed → archived
 feature_name: auto-kanban 普通模式——手动看板（卡片 CRUD/列移动/排序/持久化），与只读计划板并存为双模式
 author: [zhaopuming, ZCode]
 created_at: 2026-09-15
@@ -703,6 +703,22 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
     任务证据行。复审后工作区核对：boards.test.json 已还原（零 diff）。
   - next: **merge**（/auto-plan:merge；spec 增量按 §9 草案落
     docs/specs/apps/kanban.md）。
+- 2026-09-15 · stage: merge · PLAN-021:r2 · ZCode（/auto-plan:merge）
+  - outcome: **pass** · completion_kind: **delivered**
+  - prepared: worktree `.wt/os-021/auto-os`（plan-021-dev @ d515bca），canonical
+    diff = SD-01 新增 docs/specs/apps/kanban.md（双模式架构/泛化 Card 十三字段/
+    manual 无状态文件后端/写四端点 kind 门/交互与测试门六节）+ specs.json
+    投影三项（architecture P021-1 / tests P021-2 / reviews PLAN-021-r1）。
+  - landed: auto-os main `7917c27`（prepared 4a500e0 cherry-pick，两路径内容
+    零 diff；祖先链 d515bca → 7917c27）；实现仓 auto-kanban main
+    `5f3b4ff`（复审基线，实现未再变更）。
+  - ledger_refreshed: `.autoos/specs.json`（tracked，随 landed commit 入库）；
+    回读验证 P021-1（architecture → docs/specs/apps/kanban.md）/ P021-2
+    （tests → 本归档文件）/ PLAN-021-r1（reviews → 本归档文件）三项目标
+    与 related=[PLAN-021] 均在。
+  - archived: `docs/plans/archive/021-kanban-normal-mode.md`，status:
+    archived。
+  - cleaned: 见下方 cleaned 行。
 
 ## 10. 待澄清事项
 
