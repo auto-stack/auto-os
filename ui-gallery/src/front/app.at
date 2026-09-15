@@ -1,7 +1,7 @@
 // PLAN-625: registry 数据源跨端化——TS demos.ts 8 fn(VM 臂 no-op stub,
 // filteredDemos 恒空)切换为 .at 静态表 registry.at(生成产物,双端同源,
 // tree_util PLAN-522/614 先例);AppViewport.vue 的 load 装配仍走 TS registry。
-use registry: filter_demos, demo_title, demo_description, demo_doc, demo_source, demo_pac, demo_loadable
+use registry: filter_demos, demo_title, demo_doc, demo_source, demo_pac, demo_loadable
 
 widget App {
     use {
@@ -19,7 +19,7 @@ widget App {
         var search_query str = ""
         var active_category str = "all"
         var active_tab str = "tutorial"
-        var viewport_mode str = "full"
+        var viewport_mode str = "desktop"
         var dark_mode bool = true
         var accent_color str = "indigo"
         var reload_key int = 0
@@ -27,7 +27,6 @@ widget App {
 
     computed {
         currentTitle => demo_title(selected_id)
-        currentDesc => demo_description(selected_id)
         currentDoc => demo_doc(selected_id)
         currentSource => demo_source(selected_id)
         currentPac => demo_pac(selected_id)
@@ -178,14 +177,17 @@ widget App {
                                                 style: "flex-1 min-w-0 items-start gap-1"
                                                 row {
                                                     style: "items-center justify-between w-full"
-                                                    text demo.title { style: "text-xs font-semibold truncate flex-1" }
+                                                    // 主标题=示例原名(id),副标题=中文名(生成器
+                                                    // PLAN-015 下 description==title,用 title
+                                                    // 避免两行同文)
+                                                    text demo.id { style: "text-xs font-semibold truncate flex-1" }
                                                     if demo.loadable {
                                                         text "可交互" { style: "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-mono" }
                                                     } else {
                                                         text "独立" { style: "text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono" }
                                                     }
                                                 }
-                                                text demo.description { style: "text-[11px] text-muted-foreground line-clamp-1" }
+                                                text demo.title { style: "text-[11px] text-muted-foreground line-clamp-1" }
                                             }
                                         }
                                     }
@@ -202,15 +204,17 @@ widget App {
                     col {
                         style: "max-w-6xl mx-auto gap-6 pb-16"
 
-                        // Demo 头部信息
+                        // Demo 头部信息：主标题=示例原名(id),副标题=中文名
+                        // (text-base 放大);原 desc 行与主标题重复,删除
                         col {
-                            style: "gap-2"
+                            style: "gap-1"
                             row {
                                 style: "items-center gap-3"
-                                h2 .currentTitle { style: "text-2xl font-bold tracking-tight text-foreground" }
-                                text .selected_id { style: "text-xs font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border" }
+                                // 用 text 而非 h2:h2 会被隐式并入 mt-8 mb-4
+                                // 默认样式(aura_view_builder),撑偏行内基线
+                                text .selected_id { style: "text-2xl font-bold tracking-tight text-foreground" }
+                                text .currentTitle { style: "text-base font-medium text-muted-foreground" }
                             }
-                            text .currentDesc { style: "text-sm text-muted-foreground" }
                         }
 
                         // 上半部：可交互应用视口卡片 (Live Interactive Canvas)
@@ -234,20 +238,27 @@ widget App {
                                 row {
                                     style: "items-center gap-2"
 
-                                    // 视口尺寸选择
+                                    // 视口尺寸选择：桌面/平板两档,图标示意宽高方向,
+                                    // 标注完整分辨率;全宽档退役（默认桌面）
                                     row {
                                         style: "bg-muted rounded-md p-0.5 text-xs font-medium"
-                                        button "全宽" {
-                                            style: if .viewport_mode == "full" { "px-2 py-1 rounded bg-background shadow-xs text-foreground font-bold" } else { "px-2 py-1 text-muted-foreground" }
-                                            onclick: () => { .viewport_mode = "full" }
-                                        }
-                                        button "桌面 (1024)" {
+                                        button {
                                             style: if .viewport_mode == "desktop" { "px-2 py-1 rounded bg-background shadow-xs text-foreground font-bold" } else { "px-2 py-1 text-muted-foreground" }
                                             onclick: () => { .viewport_mode = "desktop" }
+                                            row {
+                                                style: "items-center gap-1.5"
+                                                icon (name: "monitor", size: 13)
+                                                text "桌面 1024×720"
+                                            }
                                         }
-                                        button "平板 (768)" {
+                                        button {
                                             style: if .viewport_mode == "tablet" { "px-2 py-1 rounded bg-background shadow-xs text-foreground font-bold" } else { "px-2 py-1 text-muted-foreground" }
                                             onclick: () => { .viewport_mode = "tablet" }
+                                            row {
+                                                style: "items-center gap-1.5"
+                                                icon (name: "tablet", size: 13)
+                                                text "平板 768×1024"
+                                            }
                                         }
                                     }
 
