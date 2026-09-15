@@ -5,7 +5,7 @@ feature_name: file-manager-revamp
 plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
 created_at: 2026-09-14
-updated_at: 2026-09-14
+updated_at: 2026-09-15
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -689,7 +689,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 | # | 事项 | 状态/去向 |
 |---|---|---|
-| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动 | **blocked**（唯一残留；其余 T-01..T-09/T-11 完成） |
+| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动。**2026-09-15 进展**：①注入式驱动通路已实证可行（autoui_fixture + AUTOUI_TEST_FIXTURES=1；带参 trigger \x1F payload 编码 = encode_payload wire 格式；title 即 VTree label 可检索；行名在 mouse-area 子树内不可见 → ItemCtx(i) 探测 selected_info 回读定位）；②套件 FR-1 重构（Phase 2 导航惯例版）由并发会话在 os-016 worktree 在途执行（当日 16:40/16:52 未提交改动），本 work 会话按单写者纪律让位未触碰；③AC-12/FR-2 已闭合（见 §9 当日记录） | **executing**（套件重构随并发会话收口；注入式通路实证解除"驱动面"疑虑，MCP 线程失联仍有连接层重试容错） |
 | 1 | D-1：✅ 已定案——锚定 popover + placement（shell dock 菜单范式，免坐标）；`.at` 事件无坐标面也不再需要 | 已闭合（evidence/016/d1-context-menu.md） |
 | 2 | D-2：已运行 app 的 open_with 送达臂 + 031 桌面轨 back 前置 | ✅ 主链定案——双臂统一 `write_state(auto_open_path)` + 目标 Tick 消费（免 handler 直调放宽）；031 消费臂已挂 SettleTick（open_file 同 OpenFile 流程），**桌面轨 back.api 实际可用性留实测**（opens 声明与启动路径不受阻） | 部分闭合（d3/d2 注记） |
 | 3 | 虚拟桌面图标（storage 策展）与文件系统"桌面"合一展示 | 非目标（本计划）；桌面程序后续设计议题，建议届时在桌面程序台账另立条目 |
@@ -773,3 +773,37 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | F-6 | 【框架·高优】VM 动态视图无细粒度更新：任何被视图引用的状态写（选中/hover/ctx）→ view_dirty → 整棵 .at→iced 视图树重转换（无行级依赖追踪、无 diffing）。千级节点 × debug 构建 = 每次交互 0.1-0.3s 卡顿。框架方向：视图 diffing 或依赖追踪细粒度失效；短期缓解 = 优化构建 + 控制单视图节点规模 | **已落地 auto-lang PLAN-631**（2026-09-15 merge，auto-lang master `4e5f39cad`；F-5 hover 样式对 / F-7 popover pointer 定位〔027 假坐标退役接线就绪〕/ F-6 剖析+缓存——67 行选中 debug 整重建 15.8→9.8ms；F-3 事件坐标与 F-4 多选修饰键演进面未含；vue 轨非目标 |
 | F-7 | 【框架】右键菜单正确终态 = 全视图单实例菜单 + 指针位置定位（Win11 式）：需要 a) 事件坐标面（=F-3）或 b) popover 原生指针定位原语（坐标不走状态回写，避免每次移动全量重建）。现 Plan 422 popover 仅锚件/坐标态两种定位 | 框架债（与 F-3 合并推进） |
 | F-3 | 右键菜单无法精确跟随鼠标：`.at` 事件不携带指针坐标（D-1 同源），popover 仅锚件/坐标态定位 | 框架债（需事件坐标面） |
+
+---
+
+# 2026-09-15 work 补充记录：AC-12（vue 轨）闭合 + T-10 并发分工
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: 部分收口`（本会话闭合 AC-12/FR-2；T-10/AC-11 套件重构由并发
+  会话在途，保持 `executing`）| `code_commit`：无新提交（vue.rs 修复系分支
+  既有提交 8b2b25f64，随 master 两次合入 os-016-dev；本会话零实现改动）。
+- **AC-12/FR-2 闭合（本会话实证）**：r2 复审 FR-2 所述 vue popover 臂裸 CSS
+  白屏缺陷已在分支修复（auto-musk 修正 `8b2b25f64`：坐标锚定形态判别 +
+  缺省回退引号化，提交注记同证 vue-tsc TS1351 阻断解除）。在 os-016-dev
+  worktree 构建宿主，对 027 temp 副本两級验证：
+  - 发射级：`auto build --render vue --gen-only`——复审白屏实证点
+    **App.vue:1033** 现发射合法 JS `:style="{ left: '8px', top: '8px' }"`，
+    全项目裸 `left: <数字>` 模式零命中；
+  - 渲染级：`auto run --render vue`（front_port 4027）+ 浏览器实拍——全壳
+    渲染（lucide 工具栏/快速访问+此电脑侧栏/四列表头/状态栏，深色主题），
+    非白屏，#app 挂载 children>0，vite-error-overlay 不在场；
+  - vue 轨列表保持"正在加载..."= fs ts 桥缺席（D-3 已备案口径，非门槛）。
+  - 证据：`docs/plans/evidence/016/ac12-vue-track.png`。**AC-12 → pass**；
+    r2 findings FR-2 → 闭合（FR-3 独立窗口系统主题跟随仍开放，属后续轮建议）。
+- **T-10/AC-11 并发分工（单写者纪律）**：本会话进入时发现另一会话已在同一
+  worktree `.wt/os-016/auto-lang` 重写 `desktop_mcp.py`（自述"FR-1 重构：
+  Phase 2 导航惯例版，随 PLAN-631 testability 面闭合 AC-11"；当日
+  16:40/16:52 两次未提交改动，`src/front/tmp/` 有其 16:37+ 实跑截图）。
+  本会话对套件文件让位未触碰，亦未向 9531+ 端口发射实例防互扰。其间实证
+  的注入式驱动通路已回填 §10 #0（autoui_fixture 状态写 + trigger 派发、
+  带参 trigger `\x1F` payload = encode_payload wire 格式、行定位 ItemCtx
+  探测、title=VTree label），与 §10 #0"套件改注入式驱动"解除动作一致，
+  供在途会话收口参考。
+- 附注（主检出预存 WIP）：auto-os 主检出另有他属未提交改动
+  （apps/025-sys-monitor、shell/desktop.at 等）与 028-launcher 删除件——
+  非 PLAN-016 触面，本会话仅在 `docs/plans/**` 簿记，未纳入未动。
