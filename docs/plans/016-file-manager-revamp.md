@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-016
-status: executing              # drafting → executing → execution_done → reviewed → archived（r2 Phase 2 执行中）
+status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-15 T-10 收口，next: review）
 feature_name: file-manager-revamp
 plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
@@ -26,7 +26,7 @@ affects:
   - auto-lang/schema/projection-protocol-v1.md           # 协议 v1.7
   - auto-os/docs/plans/016-file-manager-revamp.md
 
-current_step: 10
+current_step: 18
 total_steps: 18
 ---
 
@@ -689,7 +689,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 | # | 事项 | 状态/去向 |
 |---|---|---|
-| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动。**2026-09-15 进展**：①注入式驱动通路已实证可行（autoui_fixture + AUTOUI_TEST_FIXTURES=1；带参 trigger \x1F payload 编码 = encode_payload wire 格式；title 即 VTree label 可检索；行名在 mouse-area 子树内不可见 → ItemCtx(i) 探测 selected_info 回读定位）；②套件 FR-1 重构（Phase 2 导航惯例版）由并发会话在 os-016 worktree 在途执行（当日 16:40/16:52 未提交改动），本 work 会话按单写者纪律让位未触碰；③AC-12/FR-2 已闭合（见 §9 当日记录） | **executing**（套件重构随并发会话收口；注入式通路实证解除"驱动面"疑虑，MCP 线程失联仍有连接层重试容错） |
+| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动。**2026-09-15 已闭合**：注入式驱动通路实证（autoui_fixture + AUTOUI_TEST_FIXTURES=1、带参 trigger \x1F payload = encode_payload wire 格式、ItemCtx 探测行定位）→ 双会话调和定稿（602fa8738 定稿 + c2746e82e 归档）→ 922a46444 落实 exact 全等 + PUA 哨兵剥离后 **全绿 58/0 exit 0**（evidence/016/t10-green-run.log） | **closed** |
 | 1 | D-1：✅ 已定案——锚定 popover + placement（shell dock 菜单范式，免坐标）；`.at` 事件无坐标面也不再需要 | 已闭合（evidence/016/d1-context-menu.md） |
 | 2 | D-2：已运行 app 的 open_with 送达臂 + 031 桌面轨 back 前置 | ✅ 主链定案——双臂统一 `write_state(auto_open_path)` + 目标 Tick 消费（免 handler 直调放宽）；031 消费臂已挂 SettleTick（open_file 同 OpenFile 流程），**桌面轨 back.api 实际可用性留实测**（opens 声明与启动路径不受阻） | 部分闭合（d3/d2 注记） |
 | 3 | 虚拟桌面图标（storage 策展）与文件系统"桌面"合一展示 | 非目标（本计划）；桌面程序后续设计议题，建议届时在桌面程序台账另立条目 |
@@ -829,3 +829,36 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
   注入面不变。
 - T-10 归属不变：并发会话合并期间仍在迭代（17:58 套件再更新 + 新实例
   在跑）；绿跑待其收口。
+
+### 2026-09-15 work 终局记录：T-10 绿跑收口 → execution_done
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: pass` | `code_commit`（auto-lang os-016-dev）：
+  `73ed1553d`（对方 WIP 署名归档 + app.at F-8 修复保留）→
+  `602fa8738`（对方定稿：fixture 版 + 效果判定重试容错）→
+  `c2746e82e`（调和快照）→ `922a46444`（本会话收口修复）。
+  | `task_ids`: T-10（末项） | `next`: review。
+- **双会话调和过程**：本会话与并发会话在同一套件文件上多轮交替
+  （对方两度以归档提交收敛工作区，本会话的中间修复一次被工作区回退
+  丢弃）。终局形态 = 注入式驱动版（本会话骨架：fixture 同步导航/
+  带参 trigger 行定位/vtree title 寻址）+ 对方两处修正（type_into
+  placeholder 寻址、效果判定重试容错）+ 本会话收口修复。
+- **T8 真因（收口修复 922a46444）**：find_ids 子串匹配下「新建文件」
+  双命中「新建文件夹」钮（label 前缀包含关系）→ press first 取错钮
+  → NewFolderOpen 误发 → a.txt 被建成**目录**（isfile False——
+  此前"落盘失败"的全部表象）；且 c2746e82e 虽加了 exact 形参但未
+  落入匹配循环。修复 = 匹配循环落实 exact 全等 + PUA 哨兵剥离
+  （\uee03 前缀，PLAN-631 hover/tooltip 面带入 VTree label）。
+  框架无回归——PLAN-631/020 均无辜。
+- **绿跑**：desktop_mcp.py **58 通过 0 失败 exit 0**（T1–T14 全组
+  + Phase 2 重启持久化），合并后基线（32b2e4149 序列）。
+  证据：`docs/plans/evidence/016/t10-green-run.log`。
+- **AC 终态**：AC-01–AC-14（r2 全表 + AC-12 本日闭合）✅；
+  AC-15–AC-22（Phase 2）✅；**AC-11 ✅**（本轮绿跑）；
+  AC-13 ✅（SPEC/协议 v1.7/opens 契约一致 + 决策工件齐）。
+- 过程 finding（记档不入验收面）：①MCP 动作通道偶发丢帧（press ok
+  未执行）仍在，套件以同步 fixture 触发免疫之，UI press 面保留
+  效果判定重试；②VTree label 带 PUA 哨兵前缀（title 按钮）——
+  对 MCP 驱动方是契约事实，宜入 autoui-verifier 测试指引。
+- **`status: execution_done`**；worktree（.wt/os-016 双仓）保留候审，
+  next: /auto-plan:review。
