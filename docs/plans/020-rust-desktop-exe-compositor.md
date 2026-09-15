@@ -657,6 +657,34 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   next: merge（auto-plan-merge；SD-02 canonical 行于 os worktree
   plan-020-dev 待发布，组 worktree 清理随 merge 收尾）。
 
+- 2026-09-15 /auto-plan:merge 收据（`PLAN-020:r1`——部分着陆，lang 侧
+  发布阻断）：
+  `stage: merge | PLAN-020 | rev 1 | outcome: blocked（publication-only）|` 
+  **检查点**：
+  - `prepared` ✅ lang 分支调和 master（`cef6eb671`——KNOWN-DEBT 双留
+    解决，PLAN-632/545 增补与 P020-D1..D4 共存）；调和树重跑门：
+    desktop_protocol 130/131+在册红、session 73/73、terminal 30/30
+    （PLAN-019 共存实证）、p020 e2e 全绿、`cargo check -p auto` 过；
+    ledger 条目文案已备（本收据下方）。
+  - `landed` ◐ **auto-os ✅**——main FF `86e0581`（os 分支调和 2fb33b8
+    后 FF），SD-02 canonical 3a 行 + scripts/smoke-020-native-exe.sh 发布，
+    025 WIP 零卷入；**auto-lang ⛔ 阻断**——`git merge --ff-only
+    plan-020-dev` 拒绝：主检出并发会话 WIP（PLAN-019 线 rust_ui.rs
+    merged-db 垫片 + renderer.rs/vue.rs）与 FF 改写面重叠（git 原文
+    "would be overwritten by merge"），master 停留 4a1b8cf59。
+  - `ledger_refreshed` ⏳ 待 lang landed 后 upsert（auto-lang
+    `.autoos/specs.json` runtime-only 离线读改写；条目文案 prepared：
+    P020-1 designs=SD-01→desktop-protocol-v1.md §1.6+SD-02→os 程序 3a 行
+    +SD-03→overview.md 指针；P020-2 tests=e2e/门套件/度量复现命令与
+    结果；P020-3 reviews=复审+本收据）。
+  - `archived` ⏳ / `cleaned` ⏳ 待 lang landed（含 wt-guard 双组清理：
+    .wt/lang-020/auto-lang、.wt/os-020/auto-os）。
+  **解除动作**（唯一）：并发会话（PLAN-019 线）提交/stash 其主检出
+  WIP 后，于 auto-lang 主检出重跑 `git merge --ff-only plan-020-dev`
+  →FF 至 cef6eb671 →ledger upsert→归档+清理（可由任何会话按本收据
+  机械完成）。
+  计划保持 `reviewed`（发布型阻断，非交付缺陷）。
+
 ## 10. 待澄清事项
 
 - **①（已定案，T-01）** queue 臂命中→动作策略 = **B（运行期 View 投影）**，
