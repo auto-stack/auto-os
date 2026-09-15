@@ -718,7 +718,7 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
     与 related=[PLAN-021] 均在。
   - archived: `docs/plans/archive/021-kanban-normal-mode.md`，status:
     archived。
-  - cleaned: 见下方 cleaned 行。
+  - cleaned: wt-guard clean（无 reparse point）→ worktree `.wt/os-021/auto-os` 移除 ✓ → 分支 plan-021-dev 删除（4a500e0 内容已经 cherry-pick 7917c27 全额落地，-d 因 SHA 重写拒删、-D 带证强制）✓ → 组目录 `.wt/os-021` 已空删 ✓。
 
 ## 10. 待澄清事项
 
