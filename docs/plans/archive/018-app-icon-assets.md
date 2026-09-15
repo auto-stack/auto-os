@@ -405,3 +405,20 @@ completion_kind: delivered
   修复 = slice_icons.py 增 key_background（bg=本 tile 四角中值 + 边界
   连通 flood + baked 投影半透明保留），重切 28×2 verify ok（四角 alpha
   门 + _opaque_corners 满幅白名单）。提交 main 8daabe1。
+- 2026-09-15（FU7，用户实机反馈：iconfile 位图图标圆角呈阶梯毛刺）：
+  根因不在资产（512px AI PNG 自带 2-3px 软边）也不在合成器矢量面
+  （lucide/文字/Quad 均有 AA）——是**位图缩小采样链**：512 原生纹理直挂，
+  iced 缺省 `FilterMethod::Linear` + wgpu 无 mipmap min_filter 缩 ~28×
+  （任务栏 18px 图标盒，PLAN-526 T9）时每屏幕像素仅 2×2 tap，圆角高对比
+  边缘欠采样呈硬阶梯（GPU 行为忠实模拟：18px 档全图半透明覆盖像素
+  5 个 vs 面积平均 58 个；证据图 `.auto/icon-gpu-vs-box.png`、
+  `.auto/icon-corner-compare.png`）。触发面 = 任务栏五钮换 iconfile
+  位图裁定（shell.at 2026-09-15）。修复 = `icon_file::load_sized` 显示档
+  装载：装载期 CPU 一次 Triangle 重采样，tex = 2×显示档（HiDPI ≤2x
+  物理像素覆盖）上限 512，缓存键 `(stem, dark, tex_px)`；renderer 按钮
+  臂（字号档）/Image 臂（style Fixed 宽/高档）双接线；新增
+  `decode_resized_downscales_with_smooth_edges` 单测（16px 档边缘半透明
+  覆盖 ≥8px 断言）。验证：`cargo t -p auto-lang --features ui-iced
+  icon_file` 3/3 绿 + `cargo check -p auto` 绿。代码 = auto-lang 分支
+  `os-018-fu7-dev` commit 13e1952cc（基 master dfab2f201；主检出
+  renderer.rs 有他线在飞 WIP，**未直接并入 master——待评审合入**）。
