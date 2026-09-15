@@ -807,3 +807,25 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 - 附注（主检出预存 WIP）：auto-os 主检出另有他属未提交改动
   （apps/025-sys-monitor、shell/desktop.at 等）与 028-launcher 删除件——
   非 PLAN-016 触面，本会话仅在 `docs/plans/**` 簿记，未纳入未动。
+
+### 2026-09-15 work 记录：master 合并收据（PLAN-020 全批并入 os-016-dev）
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 2` | `outcome: 合并完成` |
+  `code_commit`（auto-lang os-016-dev）：`32b2e4149`（merge master）。
+- 背景：master 领先 21 提交（PLAN-020 native exe/协议/spawn 分流全批 +
+  PLAN-636/PLAN-019/632 收据），与本计划触面重叠（renderer/session/
+  app_registry/协议）。T-10 并发会话当时 WIP 未提交（desktop_mcp.py +
+  app.at F-8 修复在途），经 `git merge-tree` 预检确认零文件交集后执行
+  合并——不触其未提交文件，其二进制实例不受影响。
+- 冲突解决：`session.rs` LaunchSpec 字段并集（PLAN-016 `opens` ×
+  PLAN-020 `exe`/`render_decl`）；另适配 master 侧 25 处
+  LaunchSpec/AppRegistryEntry 测试字面量补 `opens: Vec::new()`
+  （registry 生产填充点 app_registry.rs:193 不变）。
+- 验证：`cargo check -p auto` 绿（exe 锁定期间以 check+库测试替代全量
+  build）；`cargo t -p auto-lang` 定向 232 跑 **231 绿**，唯一败 =
+  在册既有红 coverage imagesurface（98a4cd502 在案，非合并引入）。
+- 语义整合点：`execute_open_with` → `launch_app` 走 PLAN-020 三级分流
+  内部路由，解释态 app（041/031）仍 inproc 臂，open_with boot seed
+  注入面不变。
+- T-10 归属不变：并发会话合并期间仍在迭代（17:58 套件再更新 + 新实例
+  在跑）；绿跑待其收口。
