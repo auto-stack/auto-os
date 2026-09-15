@@ -439,6 +439,11 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   收口中——后续验证一律不重定向 target 或先修 e2e_exe 尊重 env）|
   next: T-04（NativeProjector<C> over View，§5.1 定案 + 既有
   AppProjector 块流布局复用）。
+  补（同日晚）：②已收口——`p508_g2_outproc_arm` 无重定向复跑 **PASS
+  132.6s**（真 auto.exe outproc 链，cmd_autodesk 薄壳化零回归实证）；
+  套件在册唯一失败 = 主检出既有红 coverage（blocker ① 维持，转用户
+  上报）。工作面重定向经验入册：lang-020 组验证一律用 worktree 默认
+  target（e2e_exe/stage3 寻址前提）。
 
 ## 10. 待澄清事项
 
