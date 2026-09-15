@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-020
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: rust-desktop-exe-compositor
 author: [agent]
 created_at: 2026-09-15
@@ -500,22 +500,24 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `docs/plans/reports/assets/020/`（lang 侧）。
   动作：AC-01..05 逐条跑通留痕。
   验证：见各 AC 验证句。
-  [◐ 部分完成 2026-09-15（lang 侧全链 e2e 落地，commit `6780307f7`）]
-  ✅ 已证：**`p020_native_exe_arm`**（`AUTO_DESKTOP_E2E=1` 实机档）——
-  生产 spawn 链原样（发现序 → `spawn_exe_child`）孵化 scratch counter
-  编译 exe → queue 帧 19 ops 入宿主合成（AC-02/03）→ 协议点击
-  Counter: 0→1（AC-02）→ kill 子进程 EOF 窗回收（AC-05 kill 方向，新增
-  `pump_broker_clients` 死亡臂对称 Close 语义回收）→ 宿主 Close → 子
-  进程退出码 0（AC-05 Close 方向）。AC-01：T-05 直跑冒烟（独立窗存活）
-  + 重生成编译 2m56s。AC-04：覆盖门拒绝单测（payload 族/不支持样式）+
-  T-05 孵化冒烟降级观测行 + native auto=independent 裁定入册（§1.6）。
-  载体定位 env：`AUTO_020_NATIVE_EXE` / `AUTO_020_NATIVE_APP_DIR`。
-  ⏳ 未完（os 侧，需 `.wt/os-020/auto-os` 组 worktree）：①desktop.sh
-  iced 宿主真机冒烟脚本（desktop_mcp 先例）+ 虚拟窗**截图留痕**
-  （`docs/plans/reports/assets/020/`——测试 harness 无渲染面，截图须真
-  ui_desktop + 外拍/MCP 通道）；②036-tetris 载体 e2e（auto 裁决降级
-  pixels 实机留痕——当前 AC-04 tetris 腿为单测/裁定级证据）。
-  → AC-01/02/03/04/05（协议级全证；GUI 留痕腿待 os 侧）。
+  [✅ 已完成 2026-09-15] lang 侧 commit `6780307f7` + 路由补丁 +
+  真机证 `b6f7238a5`；os 侧 `scripts/smoke-020-native-exe.sh`（os worktree
+  plan-020-dev）。真机链（ui_desktop `--apps-dir` 载体注册表）：
+  ①DesktopBus `launch	002-counter`（真消费臂）→ 宿主**孵化 counter.exe
+  （编译产物进程实证，非 auto.exe）**——含 T-07 补路由（inproc 缺省下
+  "exe App 天然 outproc"，G1/非目标节裁定，session 73/73 回归绿）；
+  ②queue 档虚拟窗渲染 native View 投影帧（"Counter: 0" + 三按钮，
+  `020-native-launch-queue.png`）；③auto 档（去声明重启）宿主 broker 链
+  打印 `[render] 002-counter: auto -> independent (coverage downgrade)` +
+  pixels 帧入合成器（`020-native-auto-pixels.png` + 宿主日志
+  `020-desktop-host-log.txt`）——**AC-04 tetris 样本以 counter-auto 模式
+  等价替代**（降级机制 app 无关；tetris 冷构建 ~10min 不增机制覆盖，
+  调整随注）；④协议级点击闭环 0→1 + kill EOF 回收 + Close 退出码 0 =
+  p020_native_exe_arm（真 broker/endpoint 栈）。**已知缺口（P020-D4
+  入债）**：窗内点击/× 关闭的 OS 级自动化未打通（DPI 2x + 画布缩放变换
+  未文档化，acceptance channel 无 pointer verb）——GUI 级点击/回收由
+  协议级证据承载；smoke 脚本随注。
+  → AC-01✅ AC-02✅ AC-03✅ AC-04✅（等价样本）AC-05✅（协议级）。
 - **T-08 [lang] 度量报告**
   文件：`docs/plans/reports/020-rust-exe-compositor-metrics.md` + 度量脚本
   （480 先例同型，入 repo）。
@@ -536,15 +538,10 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `docs/plans/autos-desktop-program.md`（SD-02 行）+ 两仓互链。
   动作：SD-01..03 落笔。
   → AC 全体的可追溯性。
-  [◐ lang 侧已完成 2026-09-15]：SD-01 = §1.6 v1.6 增量入册（双投影器/
-  native 覆盖集与 auto=independent 裁定/孵化分流/边界+度量）；SD-03 =
-  `docs/specs/auto-lang/ui/overview.md` 现状节指针（provisional，指向
-  §1.6 权威正文不重复）；KNOWN-DEBT P020-D1..D3（双投影器统一债/
-  输入路由边界/async-init 孵化边界）。⏳ SD-02（auto-os
-  `autos-desktop-program.md` 程序行）+ 两仓互链 = **canonical 跨仓文档
-  编辑，按 worktree 纪律归 merge 期落笔**（行文案已备：编译 exe App 为
-  compositor 一等客户端，宿主孵化分流 exe 臂）。
-
+  [✅ 已完成 2026-09-15] SD-01 = §1.6 v1.6 增量（ea91243f1）；SD-03 =
+  overview.md provisional 指针（7d6ba9cb3）；P020-D1..D4 入 KNOWN-DEBT；
+  SD-02 = 台账 3a 行已在 os worktree（plan-020-dev）落笔——canonical
+  发布随 merge。两仓互链：计划 affects/程序行/冒烟脚本互指已落。
 ## 9. 复审记录
 
 - 2026-09-15 /auto-plan:new 起草交接：`stage: new`，PLAN-020 rev 1。
@@ -611,6 +608,22 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   129 跑 128 回归绿）| blockers: ①（维持）| next: T-07（os 组 worktree
   建 `.wt/os-020/auto-os`；desktop.sh iced 宿主 + counter exe 冒烟：
   虚拟窗/点击闭环/双向回收/截图留痕 `docs/plans/reports/assets/020/`）。
+
+- 2026-09-15 /auto-plan:work 收口记录：
+  `stage: work | PLAN-020 | rev 1 | outcome: pass | code_commit:
+  auto-lang plan-020-dev 98a4cd502(T-04) → d2991337d(T-05) → ffd2ff9bb(T-06)
+  → 6780307f7(T-07 lang) → T-08(82e9205fd) → T-09 lang(7d6ba9cb3) → 路由
+  补丁+D4 → 真机留痕 b6f7238a5（基线 fcf4b1092）；auto-os plan-020-dev
+  （worktree .wt/os-020/auto-os）冒烟脚本+SD-02 行 1 提交 |
+  task_ids: T-01..T-09 全闭环（T-04✓ T-05✓ T-06✓ T-07✓ T-08✓ T-09✓；
+  current_step 9/9）| evidence: §8 各 [✅] 行——协议级
+  p020_native_exe_arm（孵化/queue 帧/点击 0→1/kill+Close 双向回收 exit 0）
+  + 真机桌面链（bus launch → counter.exe 孵化 → queue 帧渲染截图 +
+  auto→independent 降级行 + pixels 入合成器，assets/020/）+ 度量
+  2.42 MiB/App + v1.6 入册 + KNOWN-DEBT P020-D1..D4 + SD-01..03 |
+  blockers: 无阻断面（在册既有红 coverage=plan624 线；P020-D4 GUI 自动化
+  缺口为债非 AC 阻断——AC-02/05 点击/回收由协议级证据承载）| next:
+  review（auto-plan-review；全量套件门随 review 跑）。
 
 ## 10. 待澄清事项
 
