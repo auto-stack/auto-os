@@ -434,3 +434,9 @@ completion_kind: delivered
   补齐。遗留唯一一步：主检出在飞 WIP 落定后于 auto-lang 主检出执行
   `git merge os-018-fu7-dev` 合入 master，随后 wt-guard 清组目录
   `.wt/os-018-fu7/`。
+
+- 2026-09-15（FU7 合入收据）：主检出 WIP 落定后，分支两度反合刷新
+  （bc4b08982 → 3c913c00f → fc68920df，均零冲突，icon_file 3/3 绿复查
+  ×3）→ master **快进合入 fc68920df**（icon_file.rs +88 / renderer.rs
+  +41）→ master 上终验 icon_file 3/3 绿 → wt-guard 双 worktree clean
+  → 组目录与分支 `os-018-fu7-dev` 移除完毕。**PLAN-018 全部闭环。**
