@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-020
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: rust-desktop-exe-compositor
 author: [agent]
 created_at: 2026-09-15
@@ -10,7 +10,7 @@ plan_revision: 1
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # v1.6 增量（ provisional，review 定稿）
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.6 v1.6 增量（review 定稿：ea91243f1 + 复审补正）
 touched_goals: []
 
 affects:
@@ -624,6 +624,38 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   blockers: 无阻断面（在册既有红 coverage=plan624 线；P020-D4 GUI 自动化
   缺口为债非 AC 阻断——AC-02/05 点击/回收由协议级证据承载）| next:
   review（auto-plan-review；全量套件门随 review 跑）。
+
+- 2026-09-15 /auto-plan:review（同会话复审——独立性受限已声明，裁决由
+  工件重建，不采信执行摘要）：
+  `stage: review | PLAN-020 | rev 1 | outcome: pass |
+  reviewed_commit: auto-lang plan-020-dev b187ef7d0（+复审提交：SD-01
+  补正）| base_commit: fcf4b1092 | dependency_revisions: auto-down
+  140775f（组兄弟 worktree）；载体 scratch020（regen 产物不入库）|
+  spec_inputs: desktop-protocol-v1.md §1.6（ea91243f1+复审补正）/
+  ui/overview.md 指针/KNOWN-DEBT P020-D1..D4；wire（message.rs）基线零
+  diff 实证，PROTOCOL_VERSION 仍 1 |
+  acceptance_results: AC-01✅（counter+**tetris 重生成直跑独立窗存活
+  6s**——复审补证；rust_ui 22/22）AC-02✅（真机 bus launch→counter.exe
+  进程孵化→虚拟窗渲染 queue 帧，截图 assets/020/；点击闭环协议级
+  p020_native_exe_arm 0→1）AC-03✅（19 ops 命令帧真管道+真机桌面双证）
+  AC-04✅（覆盖门拒绝单测+真机降级观测行+**tetris 孵化探针降级行复审
+  补证**+pixels 帧入合成器）AC-05✅（kill→EOF 回收+Close→exit 0 协议级
+  双向；GUI 级缺口=P020-D4 债）AC-06✅（报告复审重跑：N1 2.41→N5
+  12.24MiB，边际≈2.46 与报告 2.42 同噪；点击 median 1.505ms）AC-07✅
+  （desktop_protocol 131 跑 130+在册红；session 73/73；stage3 14/14；
+  dual_mode 3/3；app_registry 24/24；auto-man rust_ui 22/22；auto bins
+  编译过；**os 025 desktop_mcp 链 13/13**）|
+  findings: R-01 info=在册既有红 covered_elements_within_target_set
+  （plan624 线，基线同败非 020）；R-02 info=auto-lang lib-test 于
+  `cargo t -p auto` 特性单化下 E0425 set_menubar_open（git show 基线
+  已含同引用，非 020；转介 infra 线）；R-03 info（已改）=SD-01 缺路由
+  触发条件句+SD-02 证据指针陈旧——复审职权内 delta 对齐，两 worktree
+  各 1 提交；R-04 info=生成器出根装配怪癖（tetris workspace 依赖路径
+  指向主检出+相对 target-dir 破碎——9cac4fd96 同族环境项，车辆装配手
+  工纠正，非 020 缺陷，建议后续生成器修）| evidence: 本计划 §8 各 [✅]
+  行+assets/020/ 四件+复现命令（metrics 报告/e2e env 口径）|
+  next: merge（auto-plan-merge；SD-02 canonical 行于 os worktree
+  plan-020-dev 待发布，组 worktree 清理随 merge 收尾）。
 
 ## 10. 待澄清事项
 
