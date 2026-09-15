@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-016
-status: executing              # drafting → executing → execution_done → reviewed → archived（r2 Phase 2 执行中）
+status: executing              # drafting → executing → execution_done → reviewed → archived（2026-09-15 晚：收口接近完成，AC-11 终验被并发会话在途改动阻塞——见 §9 2026-09-15 晚补记）
 feature_name: file-manager-revamp
 plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
 created_at: 2026-09-14
-updated_at: 2026-09-14
+updated_at: 2026-09-15
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -26,7 +26,7 @@ affects:
   - auto-lang/schema/projection-protocol-v1.md           # 协议 v1.7
   - auto-os/docs/plans/016-file-manager-revamp.md
 
-current_step: 10
+current_step: 17
 total_steps: 18
 ---
 
@@ -484,6 +484,100 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 ## 9. 复审记录
 
+### 2026-09-15 晚 work 补记：并发会话调和 + AC-11 终验阻塞（状态回撤 executing）
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: blocked`（保持 executing；解除动作见下）。
+- **本会话已完成（证据在案，详见前一条 2026-09-15 handoff 记录）**：
+  master/main 双同步（f991e942c + os 快进 c7a71be）、native id 再迁移
+  2994-2997、tf 3575/3575 + tv 3721/3721 双绿、FR-2 判定（白屏解除，
+  ac12-vue-smoke.png）、AC-06 错误臂驱动、F-8 a/b 框架债实证 +
+  app.at D-4 判空修复（read_dir 原串判空）、desktop_mcp 重构首版绿跑
+  76/0（ac11-suite-green-run.log，**基线 = 二次合并前**）。
+- **并发会话（PLAN-020 组）中途介入本 worktree**：17:59 二次 merge
+  master（32b2e4149，PLAN-020 全批：协议/spawn 分流/**native projector**
+  +3118 行，触 renderer/session/app_registry）；18:15 将本会话未提交
+  WIP 归档为 73ed1553d（署名"并发会话"）；随后以**注入式驱动版套件**
+  （autoui_fixture 同步注入 = §10 #0 既定解除动作 b）接管 T-10 套件
+  迭代，并保留/泛化本会话的 input placeholder 寻址修复。本会话探测
+  确认注入式设计免疫动作丢帧（fixture applied 回执即生效），认可其
+  为套件主线，已退出该文件避免编辑战。
+- **调和后门禁**：二次合并树上 `cargo tf` 3575/3575 ✅ + `cargo tv`
+  3721/3721 ✅（-E 排除 ffi_dual_019）；PLAN-016 触面（OpenWith/opens/
+  协议 v1.7/auto_open_path 臂）二次合并后完好。
+- **阻塞（AC-11 终验）**：并发版套件在该树上 56 通过 / 2 失败——
+  T8「a.txt 创建后 python `os.path.isfile` 10s 内恒 False，而
+  `os.listdir` 又能列出该名」（独立探针复现；对照实验：无 UI 链的
+  直连 native 写同路径正常落盘、python 建文件应用立即可见）。签名指向
+  二次合并引入的 desktop_protocol/native projector 层对 VM fs 写可见性
+  的扰动（PLAN-020 在途域）。探针脚本：lang tmp/probe_t8*.py、
+  probe_overlay.py（未入库存档，结论已录本条）。
+- **解除动作**：由 PLAN-020 会话澄清 projector 层对 VM stdlib fs 写入
+  的可见性语义（或修复回直写）；随后任一会话以注入式套件跑出
+  0-fail 绿跑、回填本节并推 execution_done。本会话不再改
+  desktop_mcp.py（归并发会话所有）。
+- 其余 AC 状态：AC-01..AC-10/AC-13 证据与判定不变（见前一条记录与
+  验收表）；AC-12 = partial（白屏已除/stdlib 桥残留）；FR-5（F-8）
+  已录。
+
+### 2026-09-15 work 恢复执行 handoff（FR-1/FR-2 收口 + master 同步，全门通过）
+
+- `stage: work` | `plan_id: PLAN-016` | `plan_revision: 2` |
+  `outcome: pass（就 AC 证据面；后被并发会话二次合并部分取代——最终状态
+  见下一条 2026-09-15 晚补记，计划保持 executing）`。
+- **master 同步**：两 worktree 各自并默认分支——lang `merge master` →
+  f991e942c（+154 提交，含 PLAN-631 T-04/T-05 pointer popover/hover 面、
+  PLAN-630 menubar、PLAN-018/015 term natives 2983-2987）；os
+  `merge main` → c7a71be（快进）。lang 侧冲突三件：native_catalog.rs
+  （fs.rename/canonical/ext/mtime 再迁 2983-2986 → **2994-2997**——
+  2983-2987 已被 master 侧 PLAN-018 D5/PLAN-015 D4 占用；catalog/签名/
+  白名单三表一致）、027 app.at（master 的 PLAN-631 T-05 消费示范基于
+  已退役的 mock 版，取本计划重写版）、041 editor_store.at（并集：
+  ConsumeOpen + Plan 630 menu msgs）。
+- **回归**：`cargo tf` **3575/3575 全绿**（49.0s）、`cargo tv`
+  **3721/3721 全绿**（27.9s）——均 `-E not test(ffi_dual_019)`（master
+  基线同败，R7 已定性非本计划回归）。
+- **FR-1 ✅ 闭合（AC-11 pass）**：desktop_mcp.py 全套重构至 Phase 2
+  导航惯例——侧栏标签/面包屑层级/···→打开/排序表头驱动，行定位 =
+  磁盘镜像排序（目录先、名称升序）位次寻址（行名在 mouse-area 子树内
+  不进快照）；关闭态弹层文本污染改守卫化驱动（ctx_id/
+  new_modal_open/rename_open/confirm_del_open 状态断言）；tooltip 按钮带
+  PUA 前缀 U+EE03（正则容忍）。独立实例 MCP 9531/9532（9529/9247 保留）、
+  workdir 限 home 下 fm-mcp-<pid> 自清理、R6 惯例优化 dev 构建。绿跑：
+  **76 通过 0 失败（exit 0）**——tmp/ac11-suite-green-run.log（二次合并前基线，.log 证据沿 R7 tmp/ 惯例）。
+  动作通道偶发丢帧以"效果判定 + 有界重试"（try_until ≤3）容错；实例
+  级 socket 消失以整轮重启（重播种 workdir）容错。
+- **AC-06 ✅ 补完（partial → pass）**：错误路径经历史栈驱动——进入
+  sub1 → 上级 → ctx 删除 → 后退（GoBack 先减 idx 再 NavTo）→ canonical
+  失败错误臂：路径保持 + 不崩溃 + 列表完好（toast 内容在状态面不可观测
+  ——`__toast` 渲染器消费即清空，renderer.rs __toast 臂；错误臂证据 =
+  落点/history_idx 断言）；空目录空态（0 个项目 + "此目录为空"）同轮
+  驱动。地址栏点击编辑态仍为 mouse-area（无快照 id 面），保持实机验证
+  （Phase 2 实机清单已覆盖）。
+- **FR-2 ✅ 特定缺陷解除（AC-12 fail → partial）**：vue 轨冒烟实证
+  **白屏已不存在**——ac12-vue-smoke.png：主题/工具栏/侧栏/状态栏完整
+  渲染（白屏根因 `left: 8px` 裸 CSS 已随 master 侧 auto-musk 修复合入
+  ——坐标回退现发射引号化 `'8px'` + 形态判别，合并前 R7 基线已含）。
+  残留（另行处理）：vue 轨 console 报 `Env is not defined` + 资源 404
+  ——VM stdlib 桥缺失（D-3 口径，vue 轨为调试轨非事实轨），AC-12
+  判 partial 而非 pass。
+- **FR-3 保持开放**（独立窗口无系统深浅色跟随——低优，非本轮范围）。
+- **新发现 F-8（框架债，desktop_mcp 套件实证）**：
+  a) `json.parse("[]").len()` 返回 20（应 0）——VM json/len 语义缺陷；
+     027 D-4 空判曾依此，空目录删除恒被误判非空、永不可达。app 侧已
+     改 `read_dir 原串 != "[]"` 字符串判空绕开（app.at ExecuteDelete，
+     本轮提交）；框架侧 json/len 修复另立。
+  b) handler_codegen toast 重写只取**字面量**消息（`Expr::Str` 分支，
+     拼接表达式落 `_ => {}`）→ 动态消息 toast 静默变空、且消费端丢弃
+     空消息记录（parts[1].is_empty()）——027 全部操作反馈 toast 当前
+     实际不可见。框架修复（拼接表达式下沉 / 消息参数泛化）另立；
+     AC-04 的机制面证据（__toast 管线 + 字面量 toast 渲染）不受影响，
+     用户可见面受损注记入 F-8。
+- 提交：lang os-016-dev = f991e942c（merge）+ F-8 app 修复与套件重构
+  提交；os os-016-dev = c7a71be（merge）+ 计划收口提交。
+- `next`: review（用户门控 /auto-plan:review）。注意：AC-12 判 partial
+  （白屏已除、console 未清）；FR-3/F-8 为带外框架债，不阻 review。
+
 ### 2026-09-14 /auto-plan:review（r2，实现会话内复审——已声明局限）
 
 - `stage: review` | `plan_id: PLAN-016` | `plan_revision: 2` |
@@ -505,23 +599,25 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 | AC-03 alert-dialog | **pass** | t03-rename-dialog.png + 删除确认态断言 |
 | AC-04 toast | **pass**（视觉截图见 rev-probe toast-copy；机制 = __toast 管线） | probe 截图 |
 | AC-05 真实列表 | **pass** | 67 项真实 listing（快照+截图），名称/大小/类型/日期列 |
-| AC-06 导航+错误态 | **partial** | 正常导航 ✅（侧栏/···→打开/面包屑层级）；错误路径 toast 态留实机（MCP 无法驱动地址编辑态） |
-| AC-07 文件操作 | **pass** | create ×2 磁盘断言；rename/delete 磁盘断言（rev-probe2）+ 用户实机 |
+| AC-06 导航+错误态 | **pass**（2026-09-15 补完） | 错误臂 MCP 驱动：后退到已删目录 → 路径保持+不崩溃+history_idx 落地证明（套件 T14）；空目录空态 T15；正常导航侧栏/···→打开/面包屑层级 T2/T3/T4/T13。地址栏点击编辑态留实机（mouse-area 无快照 id 面，Phase 2 实机清单已覆盖） |
+| AC-07 文件操作 | **pass** | create ×2 磁盘断言；rename/delete 磁盘断言（rev-probe2）+ 用户实机；套件 T8-T12 磁盘级回归（绿跑）——D-4 空判 F-8 缺陷已修（read_dir 原串判空） |
 | AC-08 open_with 动词 | **pass** | 协议 v1.7 落码 + acceptance bus 实证（未知 app 拒绝/启动臂） |
 | AC-09 txt→auto-edit | **pass** | t07-open-with-e2e.png（041 打开语料文件内容完整） |
 | AC-10 jpg→image-viewer | **pass** | ac10-image-open-desktop.png（031 启动聚焦 + photo.png 渲染）；"打开方式"选择器条款经用户 R5 指令演化为系统兜底（已记录） |
-| AC-11 套件绿跑 | **partial** | 套件已对齐 Phase 2 惯例；绿跑受 MCP 通道失联阻塞（框架债）；交互流程已单点实证 |
-| AC-12 vue 轨 | **fail→仍开放** | vue popover 发射缺陷（`left: 8px` 裸 CSS 进 :style JS 对象 → App.vue 白屏，App.vue:1033:124 实证）= ui_gen/vue.rs popover 臂坐标回退未引号化——属 F-7 vue 侧同族；PLAN-631 已落地但 **vue 轨为其明示非目标**（VM 轨 only），本项须另行立项/顺带修 |
+| AC-11 套件绿跑 | **partial**（绿跑在二次合并前树上达成；终验被阻塞） | 本会话重构版套件在二次合并前树上绿跑 **76 通过 0 失败（exit 0）**——ac11-suite-green-run.log；并发会话（PLAN-020）二次合并 master 后接管套件（注入式驱动版），其终验 56/2——T8 文件可见性异常指向该合并的 native projector 在途改动，解除后即可绿（见 2026-09-15 晚补记） |
+| AC-12 vue 轨 | **partial**（白屏已解除） | FR-2 特定缺陷（popover 坐标回退裸 CSS → App.vue 白屏）已随 master 侧 auto-musk 修复合入解除——冒烟实证完整渲染 ac12-vue-smoke.png；残留：console `Env is not defined`+资源 404 = vue 轨 VM stdlib 桥缺失（D-3 口径框架债，另行处理） |
 | AC-13 文档一致 | **pass** | SPEC.md 重写 + 协议 v1.7 + 判定序四象限入册 |
 
 ### findings（复审新增）
 
 | ID | 严重度 | 内容 | 去向 |
 |---|---|---|---|
-| FR-1 | 中 | AC-11 绿跑依赖 MCP 通道稳定性（框架债 F-3/MCP 失联）；套件需更新至 Phase 2 导航惯例（···→打开；地址栏已改点击编辑）。**实机探针补充发现**：Phase 2 后快照可驱动面收窄——mouse-area/sidebar_menu_button 不进快照 id 面、关闭态弹层文本污染断言（"确认删除"恒在）、双击无合成动作。→ 套件重构需稳定测试钩子契约，随 PLAN-631 testability 面一并落地；短期以用户实机清单代 AC-11 | T-10 随 PLAN-631 后补跑 |
-| FR-2 | 低 | AC-12 vue 轨白屏 = ui_gen/vue.rs popover 臂坐标回退发射裸 `left: 8px`（PLAN-631 F-7 vue 侧同族） | PLAN-631 不覆盖 vue 轨——仍开放，另行处理 |
+| FR-1 | 中 | ~~AC-11 绿跑依赖 MCP 通道稳定性……套件需更新至 Phase 2 导航惯例~~ | **基本闭合（2026-09-15）**——套件重构至 Phase 2 惯例（本会话位置寻址版 76/0 首绿；并发会话按 §10 #0 b 路线改注入式驱动版并接管迭代，两版互证）；通道丢帧以效果判定+有界重试/fixture 同步注入容错。残留框架面（mouse-area 子树不进快照、双击无合成动作）并入 FR-5c；**AC-11 终验现被 T8 文件可见性异常阻塞（FR-6，见晚补记）** |
+| FR-2 | 低 | ~~AC-12 vue 轨白屏 = ui_gen/vue.rs popover 臂坐标回退发射裸 `left: 8px`~~ | **特定缺陷已闭合（2026-09-15）**——master 侧 auto-musk 修正（引号化回退 + 形态判别）随合并生效，冒烟实证白屏不存在（ac12-vue-smoke.png）；残留 = vue 轨 stdlib 桥缺失（console Env is not defined，D-3 口径）→ AC-12 判 partial，另行处理 |
 | FR-3 | 低 | 独立窗口无系统深浅色跟随（dark_mode 仅桌面回写链驱动） | 建议并入 PLAN-631 后续或 PLAN-016 后续轮 |
 | FR-4 | 信息 | AC-10 "打开方式"选择器按用户 R5 指令演化为系统默认程序兜底（契约演化，已记录） | 闭合 |
+| FR-5 | 中（框架） | **F-8 框架债（desktop_mcp 套件实证，2026-09-15）**：a) `json.parse("[]").len()` 返回 20（应 0）——VM json/len 语义缺陷，曾致 027 D-4 空目录删除永不可达（app 侧已绕开）；b) handler_codegen toast 重写只取字面量消息，拼接表达式静默变空 + 消费端丢弃空消息记录——027 动态消息 toast 当前实际不可见；c) mouse-area 子树不进 styled vtree 快照（行名/日期列不可寻址）+ MCP 无 dblclick 合成动作 | a/b/c 均框架修复另立（auto-lang）；不阻本计划 review |
+| FR-6 | 中（阻塞 AC-11 终验） | **T8 文件可见性异常（2026-09-15 晚，二次合并后树上实证）**：027 经 UI 链 CommitNew 创建 a.txt 后，python `os.path.isfile` 于目标路径 10s+ 恒 False，而应用自列目（read_dir）可见该项、`os.listdir` 亦间歇可见——签名指向并发 PLAN-020 会话二次合并（32b2e4149）引入的 desktop_protocol/native projector 层对 VM fs 写可见性的扰动。对照实验：无 UI 链的直连 native 写（rd_probe）同路径正常落盘；python 建文件应用立即可见。探针：`.wt/os-016/tmp/probe_t8*.py`、`probe_overlay.py`（组 tmp，未入库，结论录本节） | PLAN-020 会话澄清/修复 projector 层 fs 写语义；解除后任一会话跑出 0-fail 绿跑即推 execution_done |
 
 ### 2026-09-14 修复轮 7（R7）：open_with 桌面可达性分流（用户实机反馈）
 ### 2026-09-14 tf/tv 回归补跑 ✅（绿）
@@ -689,7 +785,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 
 | # | 事项 | 状态/去向 |
 |---|---|---|
-| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动 | **blocked**（唯一残留；其余 T-01..T-09/T-11 完成） |
+| 0 | **T-10 残留（work handoff）**：desktop_mcp 全绿整跑被 MCP 服务器线程静默失联阻塞（进程存活 socket 消失；~50% 复现；与 app 改动无关）。解除动作：复审期在框架侧定位 MCP HTTP 线程死因（hyper/tokio task abort 无日志），或套件改注入式驱动 | **大部分闭合（2026-09-15）**——通道丢帧已在套件层容错（效果判定+有界重试+整轮重启），位置寻址版曾绿跑 76/0；并发会话（PLAN-020）已落地注入式驱动版（fixture 同步注入）并接管迭代。**最终绿跑被 T8 文件可见性异常阻塞**（二次合并 native projector 在途改动，见 2026-09-15 晚补记） |
 | 1 | D-1：✅ 已定案——锚定 popover + placement（shell dock 菜单范式，免坐标）；`.at` 事件无坐标面也不再需要 | 已闭合（evidence/016/d1-context-menu.md） |
 | 2 | D-2：已运行 app 的 open_with 送达臂 + 031 桌面轨 back 前置 | ✅ 主链定案——双臂统一 `write_state(auto_open_path)` + 目标 Tick 消费（免 handler 直调放宽）；031 消费臂已挂 SettleTick（open_file 同 OpenFile 流程），**桌面轨 back.api 实际可用性留实测**（opens 声明与启动路径不受阻） | 部分闭合（d3/d2 注记） |
 | 3 | 虚拟桌面图标（storage 策展）与文件系统"桌面"合一展示 | 非目标（本计划）；桌面程序后续设计议题，建议届时在桌面程序台账另立条目 |
