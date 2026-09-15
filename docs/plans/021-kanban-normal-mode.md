@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-021
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done       # drafting → executing → execution_done → reviewed → archived
 feature_name: auto-kanban 普通模式——手动看板（卡片 CRUD/列移动/排序/持久化），与只读计划板并存为双模式
 author: [zhaopuming, ZCode]
 created_at: 2026-09-15
 updated_at: 2026-09-15
-plan_revision: 1
+plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -13,7 +13,7 @@ new_spec_components: [P021-1 apps/kanban.md（app spec 新增：双模式架构/
 touched_goals: []
 
 affects: [docs/specs/apps/kanban.md]
-current_step: 0
+current_step: 10
 total_steps: 10
 ---
 
@@ -435,12 +435,17 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
 [✅ 已完成] 一行证据。执行仓：D:/autostack/auto-kanban；worktree 裁定见
 §10-2）
 
-- [ ] **T-01 后端模型扩展**（AC-01/03 前置）
+- [x] **T-01 后端模型扩展**（AC-01/03 前置）
   api.at Card 加 detail/priority/order 三字段；lang_plans.at 卡构造处补
   ""/""/0 默认值（约 177 行字面量 +1 行）。boards_registry.at 零改动。
   验证：`auto gen` 退出码 0；`cd tests && npm test` 现有 8 测全绿
   （Card 扩字段不破坏只读板）。
-- [ ] **T-02 manual_store 无状态文件后端**（AC-02/03/04/05/06 后基座）
+  [✅ 已完成 2026-09-15] api.at Card 十三字段（两 source 全字段必填契约入
+  注释）；lang_plans.at:177 字面量补 detail:""/priority:""/order:0。验证：
+  `auto gen` EXIT=0；`cd tests && npm test` 8 passed (3.0s)。提交
+  f4cb452（base fc0434f）。附带发现：auto gen 产出 rust-workspace/（生成
+  物，未跟踪未 ignore）——随 T-08 一并入 .gitignore。
+- [x] **T-02 manual_store 无状态文件后端**（AC-02/03/04/05/06 后基座）
   新建 `src/back/manual_store.at`（§5.3 全函数面：load/create/update/
   move_card/remove + json_escape/card_to_json/resort/next_id/data_path/
   load_cards_only/save）。挂进 boards_registry.load_cards 分发
@@ -448,49 +453,167 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
   验证：`auto gen` 过；起服后 `AUTO_KANBAN_DATA=<tmp>/m.json curl
   :17101/api/boards/manual/cards` 返回 `{cards:[],meta:…}`（空库）；
   手写种子 JSON 后 curl 返回排序后卡片。
-- [ ] **T-03 写四端点 + 分发**（AC-02/03/04/05）
+  [✅ 已完成 2026-09-15] manual_store.at 全函数面 + registry 分发臂。
+  VM 实测约束四条（证据记入，已适配）：①后端编译入口（api.at）Plan 550
+  门 E5501 禁裸 nil/null 字面量（use 引入的模块不受门控）→ api.at 零
+  nil；②`""+JsonValue`（json.get 结果）得 JSON 编码形态带引号，取原始
+  内容必须 json.as_string；③结构体字面量字段位内联函数调用误求值
+  （source_root:data_path() → 0），须先 let 绑定再入字面量；④VM HTTP
+  位置参数制：路径参数按值绑定（可解析 i32 的推 int）+ 请求体为单个
+  原始 JSON 串（http_server.rs build_handler_args，Plan 346）→ id 采用
+  "m"+十进制串（§5.2 id 格式偏差记录），body 解包下沉 registry。
+  验证：`auto gen` EXIT=0；GET 有库返回 resort 排序后五卡
+  （todo 2,5,8 / doing 0 / done 3），quote+newline detail 往返无损。
+  提交 e33fd9c。
+- [x] **T-03 写四端点 + 分发**（AC-02/03/04/05）
   api.at 加 create_card/update_card/move_card/delete_card 四端点（§5.4
   签名）；boards_registry 各加 manual 分发臂（非法参回零卡/false）。
   验证：curl 全链路——POST 建卡→GET 见；PUT 改 detail（含 `"` 与换行）
   →落盘文件 node 读回转义正确；move 中位插入→GET 序号压紧 0..n-1；
   DELETE→GET 无此卡；未知 cid PUT 回零卡。
-- [ ] **T-04 boards.json 注册 + 模式切换 + header 高亮**（AC-01/08）
+  [✅ 已完成 2026-09-15] §5.4 签名按 VM HTTP 实况修订（见 T-02 证据②④）：
+  四端点签名 (path_params…, body str)，registry 增 create_card/update_card/
+  move_card/delete_card 分发臂 + is_manual kind 门 + body_str/body_int
+  解包。move 定案落地为"用户可见序（order 升序）目标位插入 + 全列压紧"
+  （初版按文件序插入被实测纠正：头卡移 0 位乱序 → 改 resort 后序列插入，
+  move/delete 统一 resort+renumber_columns 存盘规范序）。create 空标题拒
+  创建（落零卡不落盘，AC-02）。curl 全链路实测：POST→GET 见（doing 尾
+  order=1，P2 默认）；PUT 含 `"`/换行 detail → 落盘文件 python json 读回
+  转义正确；move 头/尾/跨列插入序号压紧 0..n-1；DELETE true→GET 无此卡；
+  未知 cid m999 PUT 回零卡 id=""；lang-plans 板写拒绝（POST 零卡/DELETE
+  false，Plan 579 禁写边界保持）。提交 e33fd9c。
+- [x] **T-04 boards.json 注册 + 模式切换 + header 高亮**（AC-01/08）
   boards.json 加 manual 条目（§5.5）；boards_store 加 current_kind 置位
   （Init/SelectBoard）+ LoadCurrent 手动板计数分流（c_todo/c_doing/c_done
   预格式，.empty 仅 lang_plans）；app.at 板按钮 current_id 比较高亮；
   board.at 拆只读分支（原代码原样入 if）。
   验证：`auto run` 切换两板——计划板四列原样、普通板三列空态（引导文案
   "点击上方添加第一张卡片"）；截图 `screenshots/021-t04-mode.png`。
-- [ ] **T-05 手动板页：三列 + 快速添加**（AC-01/02）
+  [✅ 已完成 2026-09-15] boards.json §5.5 落盘；store 增 current_kind
+  （Init/SelectBoard/Refresh 三路置位——Refresh 后 boards 整体重建需按 id
+  恢复 kind，计划外小加固）+ c_todo/c_doing/c_done_m 预格式（c_done 名被
+  lang_plans execution_done 计数占用，manual done 列计数记 c_done_m，命名
+  偏差记录）+ manual_empty 旗标（视图零函数判空）+ .empty 仅 lang_plans；
+  app.at 沿 015-notes chip 两态样式先例（style 命名 + `style: if b.id ==
+  .store.current_id {tab_btn_on} else {tab_btn}`）；board.at 只读树原样搬进
+  lang_plans 分支 + manual 分支渲染 ManualBoard()。布局裁定：组件 widget 放
+  `src/front/manual_board.at`（非 pages/——pages/ 生成路由页，front 根生成
+  components/，015-notes editor/sidebar 先例；初放 pages/ 致 vite 导入解析
+  失败 8 测红，移动后绿）。验证：`auto gen` EXIT=0；`npm test` 8 passed
+  (2.5s)（只读板零回归）；playwright 双板截图：计划板四列原样（真实语料
+  扫描 ~3s 后）+ 普通板三列（待办/进行中/完成）计数徽章 0/0/0 + 空态引导
+  + 当前板高亮（screenshots/021-t04-mode-langplans.png、021-t04-mode.png）。
+  提交 dfde67e。注意：后端单 worker，首屏 lang_plans 扫描期间 manual 请求
+  排队（测试/截图需等首轮 LoadCurrent 完成——计数标签出现为就绪信号）。
+- [x] **T-05 手动板页：三列 + 快速添加**（AC-01/02）
   新建 `src/front/pages/manual_board.at`（widget ManualBoard，§5.7）：
   快速添加行 + 三列渲染 + 计数徽章 + AddCard handler 链（store）。
   验证：添加两张卡出现在待办列、计数 2；`npm test` P2-M1/M2 绿。
-- [ ] **T-06 编辑面板**（AC-03）
+  [✅ 已完成 2026-09-15] 三列壳随 T-04 落地；T-05 增快速添加行
+  （input value/oninput + ＋添加，022 同型）+ store AddCard 链（空拦 →
+  create_card → LoadCurrent）+ esc() body JSON 串构造。布局：组件在
+  `src/front/manual_board.at`（见 T-04）。**框架契约重要实证（记入
+  spec 增量素材）**：生成客户端按 .at 形参名打包非路径参数
+  （(id,body) → 请求体 {"body":"<store 构造的 JSON 串>}，双层编码），
+  registry body 解包兼容双形态（curl 顶层直发 / 客户端 body 包装）；
+  缺字段判定必须 json.has_key——json.get 缺失键返回非 nil Null（实测，
+  == nil 判不中）。验证：playwright 前端实测加两卡 → 待办列两卡可见
+  + 计数徽章 2 + 零 console error + data/manual.json 落盘正确（截图
+  screenshots/021-t05-add.png）；`npm test` 8 passed (2.9s) 只读回归绿
+  （P2-M1/M2 正式断言随 T-08 manual.spec.ts 固化——T-05 先以脚本实测
+  等价验证）。提交 57f59bc。环境教训（记录）：本轮多台 --server vm
+  调试服并存导致响应串台假象（TaskStop 只杀 shell 不杀 detached
+  子进程；17103 曾双进程同听）——验证一律先按端口清场。
+- [x] **T-06 编辑面板**（AC-03）
   store 加 editing_id/edit_* 缓冲 + OpenEditor/CloseEditor/SaveEditor/
   TitleInput/DetailInput/SetPriority handlers；manual_board.at 加条件
   编辑面板（input/textarea/三优先级按钮/保存取消）。
   验证：P2-M3/M8 绿（特殊字符往返）；截图 `021-t06-editor.png`。
-- [ ] **T-07 移动/排序/删除/拖拽**（AC-04/05）
+  [✅ 已完成 2026-09-15] store 缓冲四字段 + 六 handler；面板含标题
+  input/详情 textarea/优先级三按钮单选（选中态高亮，style if 比较）/
+  保存取消；卡片整体 onclick → OpenEditor。实现修正：store 字段 input
+  绑定为单向（:value + @input），新值必须经带参 handler 回写（msg
+  EditTitle(str) → .EditTitle(v str) → store.EditTitle(v)，015-notes
+  editor.at:26,162 先例）——空参 handler 写法致编辑不生效，已修正。
+  验证：playwright 往返实测——点卡面板开、改标题（含英文双引号）/
+  多行详情（换行+引号）/P0 保存 → 卡片标题更新 + P0 徽章出现 + 面板
+  收起；重开面板三字段往返无损（title/detail JSON.stringify 比对一致，
+  P0 高亮 class 含 border-red-400）；零 console error。截图
+  screenshots/021-t06-editor.png、021-t06-editor-reopen.png。
+  提交 17384e3。
+- [x] **T-07 移动/排序/删除/拖拽**（AC-04/05）
   store 加 AskRemove/RemoveCard（两击确认）/MoveCard/ShiftCard/DragCard/
   DropCol；卡片操作行 ◀▶▲▼× + Vue draggable/ondrop（022 同型）+ 确认态
   样式。
   验证：P2-M4/M5/M6 绿；人工拖拽一次成功（截图 `021-t07-drag.png`）。
-- [ ] **T-08 fixture + 套件 + 隔离**（AC-06 测试面）
+  [✅ 已完成 2026-09-15] store 六 handler + widget 按钮/拖拽接线。
+  实现修正：卡片 onclick 收敛至**信息行**（徽章+标题+时间），操作行按钮
+  不再冒泡触发编辑面板（实测全卡 onclick 时按钮点击冒泡开面板——
+  Vue 事件冒泡，生成端无 .stop 通道；计划"卡片整体 onclick"按此收敛，
+  交互语义不变）。▲▼ 定案落地：目标位插入语义下与邻卡换位 = 一次
+  move_card 调用（邻卡 order 即目标位；边界无邻卡为安全 no-op）。
+  验证：playwright 实测——▶ 卡A todo→doing 计数迁移 ✓；▲ 卡C 与卡B
+  换位（todo 序 C<B）✓；两击删除（× → 确认红钮 → 卡消失 + 服务端
+  落盘重编号压实）✓；HTML5 拖拽 todo→done 成功 ✓（playwright dragTo，
+  截图 screenshots/021-t07-drag.png、021-t07-actions.png）；零 console
+  error；`npm test` 8 passed (2.8s)。提交 ac8d90e。环境记录：本轮
+  auto-lang docs/plans/415 在被并发写入时扫描可致 VM 后端崩溃（撕裂
+  读，框架层既有暴露，非本计划引入；语料稳定后自愈）。
+- [x] **T-08 fixture + 套件 + 隔离**（AC-06 测试面）
   `tests/testdata/manual/manual.template.json`（§5.8 五卡分布）；
   board.spec.ts 旁新建 `manual.spec.ts`（M1-M9 + beforeAll 模板拷贝）；
   run.mjs 注入 AUTO_KANBAN_DATA；`.gitignore` 加 data/ 与 manual.test.json。
   验证：`cd tests && npm test` 全绿（8 旧 + ~9 新）。
-- [ ] **T-09 双端一致 + 真实数据回归**（AC-07/08）
+  [✅ 已完成 2026-09-15] template 五卡（m1 P0 含引号+换行 detail /
+  m2 / m3 todo；m4 doing；m5 done）；boards.test.json 增 manual 条目
+  （board.spec 共用一份配置，T8 双板断言不受第三钮影响——实测通过）；
+  boards.with-manual.json（T-03 临时验证用）删除；manual.spec.ts M1-M9
+  以 card() 定位器（div.shadow-sm hasText）作用域化按钮点击。隔离策略
+  微调：模板重拷放 **beforeEach**（计划为 beforeAll——九测均变更数据，
+  每测重置保独立性，偏差记录）；M7 reload 后需重切普通看板（回到首板）。
+  路径基准 process.cwd()（import.meta 在 playwright 转译管道不可用，实测）。
+  .gitignore 增 data/、tests/testdata/manual/manual.test.json、
+  rust-workspace/（生成产物；与用户侧 screenshots 悬置修改分属两 hunk，
+  仅本计划行入库）。验证：`npm test` **17 passed (5.5s)**（8 旧 + 9 新）。
+  提交 957b990。
+- [x] **T-09 双端一致 + 真实数据回归**（AC-07/08）
   autoui-verifier：VM 轨起服 → test_vm_mcp.py 快照（双板按钮/三列/计数
   链）+ 按钮通道加卡/移动一轮；真实数据轮（AUTO_LANG_ROOT 不设）对账
   C3 沿用。
   验证：快照与断言记录入本文件复审节；对账数字相等。
-- [ ] **T-10 收尾：README + spec 增量 + 健康检查**（SD-01/SD-02）
+  [✅ 已完成 2026-09-15] **结构修正（先于验证）**：ManualBoard 独立组件
+  在 iced 路由页不渲染（跨文件组件调用从 pages/ 页 widget 发起时
+  AURA 组件解析失败——Vue 轨正常、015-notes 因无 pages/ 不受影响；
+  最小复现 + 同文件 widget 对照实测定位）→ **ManualBoard 视图整体内联
+  board.at**（计划 §5.7 结构偏差记录：不拆组件、单 widget 双分支，
+  022 同型），内联前后 Vue 轨 17 测全绿。VM 轨（`auto run -r vm` +
+  AUTOUI_MCP_PORT + autoui-verifier 驱动）：初屏双板按钮（计划/普通看板）
+  + 只读四列 ✓；press 普通看板 → 三列（待办/进行中/完成）+ 快速添加行
+  ✓；type+press 按钮通道加卡 → state c_todo "0"→"1" ✓；press ▶ 移动 →
+  c_doing "1"/c_todo "0" ✓（零拖拽依赖，§10-1 双端差异不触发）。截图
+  plan021_vm_manual 存 tests/screenshots。VM 环境注记：iced 进程内
+  后端对相对路径 boards.json 读取失败（CWD 与预期不符）→ 部署/验证
+  用绝对路径 env（桌面标准入口注入绝对路径，语义一致）。
+  **真实数据对账（C3）**：AUTO_LANG_ROOT 指真实 auto-lang →
+  cards 627 == docs/plans 4 + archive 623 = 627 ✓（总数相等）；拆分
+  active 3 / archived 624 vs 目录 4/623 的差异为 corpus 侧：4 个无
+  status frontmatter 的 tracker 文件（242/415/INDEX/KNOWN-DEBT-AND-
+  RISKS，非 auto-plan 计划文件）按 Plan 579 未知态映射入 archived 折叠
+  ——扫描逻辑本计划零改动。AC-07 总数对账达成。`npm test` 17 passed。
+  提交 e712eb5。
+- [x] **T-10 收尾：README + spec 增量 + 健康检查**（SD-01/SD-02）
   README.md 定位改双模式（§5.9 SD-02 口径）+ API 表补四端点 + 运行节补
   AUTO_KANBAN_DATA；spec 增量草案文本写入本计划（merge 时落
   docs/specs/apps/kanban.md）；`grep -rn "console.log\|debugger\|print("
   src/` 零残留；两仓 git status 核对。
   验证：三条命令输出贴入证据。
+  [✅ 已完成 2026-09-15] README 双模式定位（SD-02 口径：写操作仅作用于
+  manual 板独立数据文件，lang_plans 源仍禁写）+ 看板注册示例双条目 +
+  API 表补写四端点（含 kind 门说明）+ 结构节补 manual_store.at。
+  健康检查：`grep -rn "console.log\|debugger\|print(" src/` 零残留；
+  auto-kanban git status 仅剩 .gitignore 用户侧悬置 hunk（本计划 3 行
+  已入库）；auto-os 本计划仅动 docs/plans/021（仓内其余改动为用户侧
+  并行工作，不并入）。提交 5f3b4ff。
 
 ## 9. 复审记录
 
@@ -498,6 +621,48 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
   - outcome: **pass**（授权范围内可交 /auto-plan:work；无阻断决策点）
   - next: **work**（T-01 起）；待澄清 §10-1（VM 拖拽）与 §10-2（worktree
     形态）为执行期裁定项，不阻断 T-01..T-06。
+- 2026-09-15 · stage: work · plan_revision: 2 · ZCode（/auto-plan:work）
+  - outcome: **pass** — T-01..T-10 全部完成，验收映射齐全：
+    AC-01（M1/T1/T8）✓ · AC-02（M2）✓ · AC-03（M3/M8）✓ ·
+    AC-04（M4/M5 + playwright dragTo 拖拽冒烟截图）✓ · AC-05（M6）✓ ·
+    AC-06（M7 + P1 落盘断言）✓ · AC-07（8 旧测全绿 + 627==627 对账）✓ ·
+    AC-08（VM 轨 MCP 全链 + boards.json 配置驱动架构不变）✓。
+  - code_commit（auto-kanban main）：f4cb452（T-01）→ e33fd9c（T-02/03）→
+    dfde67e（T-04）→ 57f59bc（T-05）→ 17384e3（T-06）→ ac8d90e（T-07）→
+    957b990（T-08）→ e712eb5（T-09）→ 5f3b4ff（T-10）。base fc0434f。
+  - 执行裁定与偏差（均已记录于任务证据）：无 worktree（沿 579 先例）；
+    ManualBoard 不拆组件、视图内联 board.at（iced 路由页跨文件组件
+    调用不渲染）；manual done 列计数记 c_done_m（c_done 名被占用）；
+    id 采用 "m"+十进制串（VM 路径参 i32 强制适配）；写端点签名为
+    (path_params…, body str)（VM HTTP 位置参数制）；fixture 重拷放
+    beforeEach（测间独立性）。
+  - VM 约束新实证（spec 增量素材）：后端编译入口禁 nil（E5501，use
+    模块豁免）；json.get 缺失键返回非 nil Null（须 has_key）；
+    ""+JsonValue 得 JSON 编码形态（取原始值须 as_string）；结构体字面量
+    字段位内联函数调用误求值（须先 let 绑定）；生成客户端按形参名打包
+    body（registry 双形态解包）；fs 路径在 iced 进程内需绝对路径。
+  - blockers: 无。
+  - next: **review**（/auto-plan:review；worktree 保留不适用——本计划
+    无 worktree，主检出即执行现场，复审直接对 auto-kanban main）。
+- 2026-09-15 · stage: work · spec 增量草案（SD-01 定稿素材，merge 时落
+  docs/specs/apps/kanban.md）：
+  - 双模式架构：模式 = 板 = kind（boards.json 条目驱动；header 按钮组
+    即切换，当前板高亮；去掉条目即从 UI 消失）。
+  - 泛化 Card 契约：十三字段全填（lang_plans 填
+    badge=""、current=0、total=0、progress="—"、archived、file 与
+    detail=""、priority=""、order=0；manual 填 badge=""/current=0/
+    total=0/progress="—"/archived=false/file=""）。
+  - manual 无状态文件后端：每请求读数据文件、变更全量重写 + 全列
+    压紧重编号；路径解析 env AUTO_KANBAN_DATA → data/manual.json；
+    JSON 手工序列化（str 字段全过转义，先反斜杠后引号再控制字符）；
+    id = "m"+递增十进制（本文件内主键，允许复用）。
+  - 写四端点契约：POST/PUT/PUT move/DELETE，经 boards_registry 按
+    kind 分发；非 manual 板落零卡/false；lang_plans 源禁写不变；
+    move = 用户可见序目标位插入 + 全列压实；create 空标题拒创建。
+  - VM HTTP/渲染约束适配清单（引用本文件 T-02/T-03/T-05/T-09 证据）：
+    位置参数制 body 串、E5501 入口禁 nil、has_key 判缺、as_string
+    物化、let 绑定入字面量、客户端 body 包装双形态、iced 相对路径、
+    路由页跨文件组件调用不渲染（ManualBoard 内联）。
 
 ## 10. 待澄清事项
 
@@ -505,11 +670,12 @@ frontmatter 对应：`new_spec_components: [docs/specs/apps/kanban.md]`、
    有先例；VM (iced) 轨是否分发拖拽事件无实证。v1 裁定：按钮通道为双端
    主通道（playwright 断言面），拖拽为 Vue 增强；T-09 VM 轮顺带观测，若
    VM 拖拽可用则补注记、不可用则登记为已知双端差异（不修）。
-2. **worktree 形态**（/auto-plan:work 执行期裁定）：变更全在 auto-kanban
-   仓（D:/autostack/auto-kanban 主检出当前 clean，仅 .gitignore 一处他因
-   修改）；沿 Plan 579 先例可直接主检出执行；若 work 技能强制 worktree，
-   则建组目录 `.wt/os-021/auto-kanban`（AGENTS.md §2 布局）并遵守 wt-guard
-   红线。auto-os 仓侧仅有本计划文件与 .next-id 变更。
+2. **worktree 形态**（已裁定 2026-09-15，/auto-plan:work 入口）：**不建
+   worktree 组**——沿 Plan 579 先例（其复审记录明载"无 worktree，产出于两
+   新建仓，复验直接对两仓与主检出"），全部实现落在 auto-kanban 主检出
+   （main @ fc0434f）；auto-os 侧仅本计划文件回写。main 检出现有 .gitignore
+   一处他因悬置修改（screenshots/图片 ignore 扩展，用户侧），保留不并入本
+   计划提交。wt-guard 红线本轮不触发（无 worktree 建/删）。
 3. **manual 板卡片量级**：无状态全量重写在数百卡内无感；若未来上万卡需
    缓存层，属 v2 课题（现无此需求）。
 4. **id 复用**（§5.2 已注记）：删除最大 id 后新卡复用该 id——本文件内主键
