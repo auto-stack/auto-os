@@ -518,6 +518,8 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 
 | R6 | 右上角 × 应 hover 时再显示 | 面板级 mouse-area onmouseenter/onmouseleave → show_close 状态，× 条件渲染（槽位 h-8 w-8 固定不跳版） | auto-lang R6 提交；pack 重同步 | ✅ | 实机：默认不见 ×，悬停面板显现；shell_pack 3/3 |
 
+| R7 | 桌面快捷方式全消失；应保留并与小组件有机配合 | 根因=走查拉起方式缺 `AUTO_VM_STORAGE_FILE`（desktop.sh 会注入，直接 exec exe 落 CWD 哈希临时库 → `shell.desktop.icons` 读空）。修：①ui_desktop 缺省对齐 PLAN-018 确定性 per-user 库（已设 env 不覆盖）；②面板默认**右上角**与图标网格（列主序占左）有机共存；③伴随修：dashboard_layout 去 panel_x 内部居中，格位面板相对、调用方单一注入（chrome/face 不再分家） | auto-lang R7 提交 | ✅ | 实机：order=27/cells=50 注入；07-icons-coexist.png 图标+面板共存 |
+
 > 后续走查反馈按 R6… 追加本表；每条含反馈/裁定根因/落地提交/状态/
 > 验证五要素，review 前全部收敛为 ✅ 或转入 §10 待澄清。
 
