@@ -185,8 +185,11 @@ launcher + 切换器）、桌面图标 48px 满幅 + 标题回归、拖拽交互
   reviews PLAN-022-r1），75→80 条读回过（reports 15/architecture 22/
   designs 11/tests 15/reviews 17/goals 0——goals 空影响有说明）。
   **archived**：docs/plans/archive/022-icon-taskbar-polish.md（git mv），
-  completion_kind: delivered。**cleaned** 待清偿（wt-guard + worktree/
-  分支/组目录移除，同日清偿后补记）。
+  completion_kind: delivered。**cleaned**（同日清偿）：worktree 树净 +
+  `plan-022-dev` 已并入 main 核验 → wt-guard 过闸（零 reparse point）→
+  worktree `.wt/os-022/auto-os` 移除，分支 `plan-022-dev` 删（was
+  088bc6e=main 已含），组目录 `.wt/os-022` 移除，`.wt` 零残留。五检查点
+  prepared/landed/ledger_refreshed/archived/cleaned 全 closed。
 
 ## 新会话交接（2026-09-15 收尾快照）
 
