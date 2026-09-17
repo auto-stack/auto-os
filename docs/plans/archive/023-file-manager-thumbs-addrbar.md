@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-023
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-17 r1 pass）
+status: archived              # drafting → executing → execution_done → reviewed → archived（2026-09-17 r1 pass merge 清偿）
+completion_kind: delivered
 feature_name: file-manager-thumbs-addrbar
 author: [agent]
 created_at: 2026-09-17
@@ -356,6 +357,25 @@ pub fn thumb(path str, size int) str;
   全量 --no-fail-fast 跑批 65 min 未归（疑似已知 MCP/线程挂死债）停跑,
   以 tv+集成三 bins+定向触面收口——范围裁定记录在案。| evidence：
   evidence/023/ 四截图 + 本记录命令摘录 | `next: merge`。
+
+- 2026-09-17（merge 清偿）：`stage: merge` | PLAN-023:r1 | `outcome: pass` |
+  **prepared**：reviewed 基线 46fd09dd6,frozen delta=SD-01/02/03(已随
+  32316f8f1/46fd09dd6 在 worktree 分支)。**landed**：auto-lang master 并入
+  22 提交（PLAN-019/637 等,零冲突,框架五文件零触面）→ 合并树刷新验证
+  tv 3743/3743 + plan023_check 8/8 + desktop_mcp 58/0（一次 9427 端口
+  TIME_WAIT 竞态拒连为 transient,单跑复现绿）→ ff 落地 **auto-lang
+  master 02ae9c4f3**；auto-os main 9a5107e（台账+证据簿记）。
+  **ledger_refreshed**：.autoos/specs.json 五条（reports/architecture/
+  designs/tests 各 P023-1 + reviews PLAN-023-r1）,65→70 计数口径见读回
+  （reports 13/architecture 20/designs 9/tests 13/reviews 15）,读回校验过。
+  **archived**：docs/plans/archive/023-file-manager-thumbs-addrbar.md,
+  completion_kind: delivered。**cleaned**（同日清偿）：三仓 wt-guard 逐过
+  （auto-lang 一轮拦截——T-04 vue 轨 pnpm junction 365 枚,按红线 cmd rmdir
+  只删链接不穿透后复检 clean；auto-os/auto-down 一次过）,worktree
+  .wt/os-023/{auto-lang,auto-os,auto-down} 移除,分支 plan-023-dev 三仓
+  各删（auto-lang was 02ae9c4f3=master 已含 / auto-os was 9a5107e=main 已含 /
+  auto-down was fe6c7c2 零改动）,组目录移除,.wt 零残留。五检查点
+  prepared/landed/ledger_refreshed/archived/cleaned 全 closed。
 
 ## 10. 待澄清事项
 
