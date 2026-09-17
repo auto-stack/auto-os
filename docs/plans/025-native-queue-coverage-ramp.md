@@ -241,6 +241,82 @@ smoke）。无预算/自动续跑约束声明。
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-05 依据。
 
+### 5.1 定案记录（T-01，2026-09-17，worktree lang-025 基线 5ceeac30c）
+
+- **D1 聚焦身份 = 候选 A（命中表槽位序 + 帧后重定位）**。证据：
+  native `View::Input` 无任何身份/key 字段（view.rs:494-503——placeholder/
+  value/on_change/on_submit/width/password/style），候选 B 的 path 身份
+  需投影器自记 VNode.path 但 native 无 VNode（vnode.rs:310 先例属解释
+  态轨），候选 C 值指纹在双 input 同值时（003 两框初始 "0"/"32" 尚异，
+  但编辑后可同值）歧义。定案：投影器侧 `focused_input: Option<usize>`
+  = **Input 槽位序**（确定性树序——view() 全物化、a2r 生成按源序构造，
+  命中表登记序即源序）；点击聚焦记槽位；每帧 render 后重定位（槽位
+  越界 → 置 None 留痕）。动态增删 input 致焦点前移的结构变化为 v1 边界
+  （越界即失焦，不猜测——解释态 field 名 refocus client_runtime.rs:184-190
+  的原语 native 不具备，债务随注 §1.7）。
+- **D2 INPUT_TEXT 回写 = 候选 A（投影器同线程代写 thread-local）**。
+  证据链：a2r 生成 on() 对 input 登记变体读
+  `auto_lang::ui::iced::last_input_text()`（ui_gen/rust.rs:1280）并按
+  绑定字段类型 parse（:1290-1313——f64/i32/…；003-converter 双 double
+  字段保型由 parse+unwrap_or 承担，投影器侧不重复保型）；ClientPump
+  单线程泵（client_runtime.rs:2135 step→dispatch→FrameSource::on_input
+  同调用线程），thread-local 写（投影器）与读（生成 on()）同线程成立；
+  020 先例 renderer.rs:22688 同线程代写先例在场。定案：投影器持聚焦框
+  编辑 buffer（聚焦时自 view value 初始化；非聚焦框恒直显 view value）；
+  CharTyped/退格 → buffer 编辑 → `INPUT_TEXT.with(set)` →
+  `component.on(on_change)` → rev++。**on_submit/Enter 不派发**（not-yet
+  随注——解释态臂同边界，client_runtime.rs:445-457 只消费 CharTyped/
+  VK_BACK）。物化零参纪律下 props/events 不需登记（on_change 已是 M 值，
+  覆盖表 props/events 对 native 维持空表——judge 只查 kinds/layouts/
+  style）。
+- **D3 select 开合 = 覆盖序 ops + 投影器侧 `select_open: Option<usize>`
+  槽位**。闭态 = 值盒 + ▾ + 点击开（无消息派发）；开态 = 主块渲染后
+  **追加**选项列 ops（DrawList paint order 天然置顶）+ 命中互斥：开态
+  PointerPressed 只查选项项——命中 → `SelectCallback.call(idx,label)`
+  物化派发 + 关闭 + rev++；未命中（外点）→ 仅关闭（吞掉，不下穿主块）
+  + rev++（关闭也是状态变化——帧回闭态）。Esc（KeyPressed 27）关闭。
+  选项消息在布局期物化（回调 Arc clone 廉价），命中表存 `(rect, M)` 零
+  新类型。键盘跳项 not-yet（随注）。高亮当前项 = BUTTON_BG Quad。
+- **D4 宿主键盘/滚轮映射**。iced 0.14 面：`keyboard::Event::KeyPressed{
+  key, text, .. }` 携 `text: Option<SmolStr>`（可打印字符 → CharTyped
+  直接取）；特殊键（Backspace/Escape/方向）以 `Key::Named` → Windows
+  VK u32 映射（BACK=8/RETURN=13/ESC=27——解释态消费口径
+  client_runtime.rs:450）；滚轮 `mouse::Event::WheelScrolled{delta}` →
+  `Lines{x,y}×LINE_H 像素化 / Pixels 直取` → Scroll{dx,dy}。WM 焦点 =
+  `session.focused: Option<Wid>`（session.rs:629；wm_focus :2408）——
+  broker_key/char/scroll 路由目标 = 焦点窗（区别于 pointer_down 的
+  hit_test）。**生产接线面**：ui_desktop iced 壳层（auto-lang
+  session.rs iced::daemon 侧 :6347 desktop_window_events 同源订阅面）
+  把键盘/滚轮事件映射后调 session broker_*（真机可达性 e2e 期核，
+  ⑤口径：不可达时协议级 CharTyped 注入承载）。
+- **D5 滚轮语义 = on_scroll 全交 app**。Scrollable 命中表项 =
+  `{viewport rect, offset 快照(view.offset), viewport/content 尺寸,
+  ScrollCallback}`；派发时 `offset' = clamp(快照 + (dx,dy), 0..=content-
+  viewport)`——镜像 iced 侧 `vp.absolute_offset()` 为**滚动后**偏移的
+  语义（renderer.rs:2353 证据），回调收新偏移，app 写状态重入 view()
+  （投影器不缓存偏移，Scissor 只裁剪）。on_scroll 不在场 = 滚轮不路由
+  留痕（I3）。
+- **slider 拖拽附带定案 = v1 点击定位**（PointerPressed 一次派发）；
+  按住拖拽连续派发 not-yet 随注（分型命中表无按住态追踪，强加需
+  PointerMoved 按住态机——债面入 §1.7）。
+- **调查新证据（执行期修订，不扩合同）**：
+  1. **View 无 Switch 变体**（view.rs 全枚举核对——native_kind_of
+     coverage.rs:374-413 亦无 switch 臂）：§5.2/§5.5 的 "switch" 臂
+     **落空**，native form 族交付 = input/textarea/checkbox/radio
+     四型（switch 为解释态 aura 标签专属——024 台账 t1_form 夹具经
+     解释态投影，native 轨无可产该 kind 的 View 构造，not-yet 无对象
+     即无缺口）。native_queue_set kinds 不含 switch（I4 分表）。
+  2. **003-converter gate 阻断 token = flex-1 / shadow-sm**（app.at
+     复核——field_col "flex-1 gap-1.5"、卡片 "shadow-sm"）：两 token
+     解释态 target_set 均放行（coverage.rs:133/136），native 渲染面
+     已按解释态同款边界静默降级（native_projector.rs:531-534——shadow
+     no-op、flex 族自然宽）。定案：native_queue_set style_prefixes 补
+     "flex-1"/"shadow"（**降级放行**——语义 = 解释态同款保真边界，
+     入册 §1.7；非静默扩权，覆盖表随注先行）。
+  3. ScrollMetrics offset 语义 = 滚动后绝对偏移（renderer.rs:2353），
+     已并入 D5；slider `on_change: fn(f32)->M` 为 fn 指针（view.rs:724，
+     Copy）——命中表零 Arc 存储直接内联。
+
 ### 5.2 投影器 form 族臂（T-02）
 
 `layout_view_node` 追加 Input/Textarea/Checkbox/Switch/Radio 臂：视觉
@@ -372,14 +448,18 @@ auto-lang 侧在 lang worktree（`D:/autostack/.wt/lang-025/auto-lang`，
 020 同型）；auto-os 侧在 os 组 worktree（`D:/autostack/.wt/os-025/
 auto-os`）。
 
-- **T-01 [lang] 深水调查与 seam 定案**
+- **T-01 [lang] 深水调查与 seam 定案** ✅
   文件：`src/ui/view.rs`、`src/ui/desktop_protocol/native_projector.rs`、
   `client_runtime.rs`、`session.rs`、`iced/renderer.rs`（读面）+ 本计划
   §5.1（写面）。
   动作：D1–D5 + slider 拖拽附带定案；003-converter 双 input 与动态
   增删样本扫描。
   产物：`### 5.1 定案记录`（file:line 证据）。
-  验证：定案记录完备（五决策 + 附带项）；复审通过。
+  验证：定案记录完备（五决策 + 附带项）；复审通过。✅ [✅ 已完成]
+  [2026-09-17 work] 五决策+拖拽附带全落 §5.1；新证据三项（View 无
+  Switch 变体→native form 族=四型；003 gate 阻断=flex-1/shadow-sm→
+  降级放行定案；ScrollMetrics offset=滚动后偏移）已录。证据
+  lang-025 @5ceeac30c 读面核对。
   → AC-02/03/04 前置。新路径：是（调查产物）。
 - **T-02 [lang] 投影器 form 族臂 + 键入闭环**
   文件：`native_projector.rs`（渲染臂/分型命中表/聚焦/编辑 buffer/
