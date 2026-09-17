@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-016
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-15 终复审 pass，next: merge）
+status: archived              # drafting → executing → execution_done → reviewed → archived（2026-09-15 merge 清偿，PLAN-016:r2 收据五检查点全 closed）
 feature_name: file-manager-revamp
 plan_revision: 2               # r1 初版契约；r2 增 Phase 2 UX 反馈批（9 项）
 author: [agent]
@@ -1018,3 +1018,28 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
   p2-list-final.png。
 - **`status: reviewed`**；next: /auto-plan:merge（worktree 双仓待其
   清偿；merge 时注意 os-016-dev 簿记分叉调和）。
+
+### 2026-09-15 merge 收据（PLAN-016:r2）
+
+- `stage: merge` | `plan_id: PLAN-016` | `plan_revision: 2` | `outcome: pass` |
+  `completion_kind: delivered`。
+- **`prepared` ✅**：reviewed 基线 ca24be0（主检出）/ a1ea8c6e1（auto-lang
+  分支）；canonical delta 三件均在分支（SD-01 协议 v1.7 / SD-02
+  auto-man/project.md §opens / SD-03 027 SPEC.md）。
+- **`landed` ✅**：auto-lang master = `9f9f84741`（os-016-dev 快进，含
+  master 终前调和 62336eaea=PLAN-069；祖先链实证 a1ea8c6e1/922a46444/
+  4a5f5e27d 在册）；落地组合复验 = 定向 231/232（唯一败在册红 coverage
+  imagesurface）+ desktop_mcp 58/0 exit 0；auto-os main = `5ecc7d6`
+  （main→os-016-dev 计划文件冲突并集调和[对方晚补记/FR-5c/FR-6 记录存活
+  +本方终态]→分支合回 main 快进）。
+- **`ledger_refreshed` ✅**：.autoos/specs.json 60→65 条——P016-1
+  reports / P016-1 architecture（file=../auto-lang/schema/
+  projection-protocol-v1.md，兄弟检出路径）/ P016-1 designs
+  （file=../auto-lang/examples/ui/027-file-manager/SPEC.md）/
+  P016-1 tests / P016-r1 reviews；读回校验通过（五节各含 P016 条目）。
+- **`archived` ✅**：本文件 git mv → docs/plans/archive/
+  016-file-manager-revamp.md，status=archived。
+- **`cleaned` ⏳→见补记**：wt-guard 双仓 + worktree/分支/组目录清偿
+  （归档后执行，结果补记于本节）。
+- 交接注记：os-016-dev（auto-os wt）c6af080 簿记分叉已在本轮 merge 中
+  并集调和（5ecc7d6），无遗留冲突。
