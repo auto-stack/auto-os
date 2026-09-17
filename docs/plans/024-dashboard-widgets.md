@@ -513,7 +513,10 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | R2 | 面板外侧点一下整个消失——目标是**桌面常驻组件**，除主动点隐藏外不应消失 | 语义裁定：召唤式 → **常驻层**（v2 预留形态提前兑现）。去 scrim/外点关闭/Esc bind；× = 隐藏（visible=0）、dock ▦ 切换恢复；boot 即挂载显示（AUTO_DASHBOARD_BOOT 钩子语义并入默认） | 同上提交 | ✅ | 实机：外点不再消失；×/▦ 显隐切换 |
 | R3 | z 序错误——挡住了前面的 app；应在最底层（仅高于壁纸），所有 app 遮挡它 | dashboard 层从通知邻位顶层挪到壁纸 scrim 之上、桌面图标层与全部 vwin 窗之下（v2 预留的桌面层 z 槽形态）；dashboard Esc 键盘订阅随常驻语义移除 | 同上提交 | ✅ | 实机：计算器窗正确遮挡面板与卡（05-resident-bottom.png）|
 
-> 后续走查反馈按 R4、R5… 追加本表；每条含反馈/裁定根因/落地提交/状态/
+| R4 | 样式太丑——重新设计 UI/UX | 取 stella widget-tabs 设计语言（原版 index.html 只读分析）：面板头部居中 pill tab（激活 `bg-primary/15 text-primary`，clock tab_active 配方同源）+ 右缘 ×；宿主卡面主题感知 glass 填充（dark 轻提亮/light 白玻璃）+ 细边框圆角；.at chrome 重排（标题行 h-12 固定不变，格位算式保持） | auto-lang tab 化提交；pack 重同步 | ✅ | 实机：tab 栏/卡面渲染（06-tabbed-redesign.png）；观感终审待用户 |
+| R5 | CPU 实时轮询类组件常驻占 CPU——建议放次级 tab（stella 多 tab：平时不看不影响 CPU） | 双固定 tab：小组件(main)/系统(system)；face→tab = 注册表 category（system→系统页，025-sys-monitor 天然入住，clock 留主页面）；视图按面板 active_tab 过滤 face（格位按活动页重算）；**孵化会话 Tick 门控**——面板隐藏或非活动 tab 停订 .Tick（订阅随消息周期重评估），常驻零轮询开销 | auto-lang tab 化提交 | ✅（门控逻辑；开销度量留 §10#4 走查） | 实机：tab 切换渲染；系统页才见 sys-monitor 卡 |
+
+> 后续走查反馈按 R6… 追加本表；每条含反馈/裁定根因/落地提交/状态/
 > 验证五要素，review 前全部收敛为 ✅ 或转入 §10 待澄清。
 
 ## 10. 待澄清事项
