@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-023
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-17 work 收口）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-17 r1 pass）
 feature_name: file-manager-thumbs-addrbar
 author: [agent]
 created_at: 2026-09-17
@@ -330,6 +330,32 @@ pub fn thumb(path str, size int) str;
   SpaceBetween 降级 Fill 子件——AC-03 根因）。依赖 worktree
   `.wt/os-023/auto-down`（plan-023-dev，零改动）。 | blockers 无 |
   `next: review`。
+
+- 2026-09-17（复审）：`stage: review` | PLAN-023 | r1 | `outcome: pass` |
+  reviewed_commit auto-lang `46fd09dd6`（= 32316f8f1 + 复审期 SPEC §1.5
+  补强,语义契约不变）| base `009d93ba6` | dependency auto-down
+  plan-023-dev `fe6c7c2`（零改动）| spec_inputs：stdlib/auto/image.at §thumb、
+  027 SPEC §1.5/§2.5 @ 46fd09dd6。
+  **AC 复验**：AC-01 pass（p023-thumbs-grid.png 新拍,三色缩略 + FileIcon
+  对照）；AC-02 pass（queue_media_thumbnail 只入队零解码 + release 配平
+  代码评审 + 实机渐进浮现）；AC-03 pass（shallow 截图胶囊贴搜索框）；
+  AC-04 pass（crumb_gap 三态断言 + collapsed/expanded 截图）；AC-05 pass
+  （vue run 零 TS 错,__vmOnly 降级,坍缩为 model 逻辑双轨同构）；AC-06
+  pass（SPEC 三节落库）。plan023_check.py 复审基线重跑 8/8。
+  **测试门**：cargo tv 3743/3743（codegen 改动主门,全绿）；集成三 bins
+  （schema_drift/docs_gen/component_registry）13/13；定向 lib（ts_adapter/
+  image_pipeline/stdlib/a2r parity）44/45——1 失败为存量（见 R-023-2）；
+  cargo t 快速档 848 过 2 失败（R-023-1,存量）；desktop_mcp 58/0（work 阶段
+  同 commit,复用理由：代码/依赖/配置零变化）。
+  **findings**：R-023-1（存量,非阻断）musk_vm_track p054 t1/t4 icon golden
+  两测 base `009d93ba6` 同败（base-check 检出实证,已清）,本计划无关,归
+  auto-lang 存量债路由；R-023-2（存量,非阻断）plan606 test_029 photo-gallery
+  data-URL 期望同法实证 base 同败；R-023-3（观察）worktree screenshots 目录
+  gitignored 探针截图,merge 清偿；R-023-4（观察,后续打磨）image_surface
+  onerror 未接线——发布后失败的 rendition 本帧空框,下次导航重排队自愈。
+  全量 --no-fail-fast 跑批 65 min 未归（疑似已知 MCP/线程挂死债）停跑,
+  以 tv+集成三 bins+定向触面收口——范围裁定记录在案。| evidence：
+  evidence/023/ 四截图 + 本记录命令摘录 | `next: merge`。
 
 ## 10. 待澄清事项
 
