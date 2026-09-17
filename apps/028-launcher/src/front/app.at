@@ -153,17 +153,34 @@ widget App {
                             }
                             for r in .ranked {
                                 if .sel == r.i {
-                                    button {
-                                        onclick: .Launch(r.name)
-                                        // PLAN-526 T12：行 button 化——hover 类
-                                        // 仅 button 臂消费（row 静默丢弃→实测
-                                        // 无高亮），且 iced button 天然报 Pointer
-                                        // 光标（修复跟随后方窗的穿透）。
-                                        style: "w-full flex items-center gap-3 px-4 py-3 bg-primary/15 text-foreground rounded-none cursor-pointer"
-                                        col {
-                                            style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
-                                            // PLAN-018 rev2：真图标——iconfile: 走位图臂，裸 lucide 名走 svg 臂
-                                            icon (name: r.icon) { style: "h-6 w-6" }
+                                    mouse-area (onclick: .Launch(r.name)) {
+                                    row {
+                                        // 2026-09-15：行容器 button→mouse-area+row——
+                                        // iced button 内容行把子件高度钳到文本行高，
+                                        // 40px 图标被压成横条（矩阵探针 A-E 实测：
+                                        // 同结构 plain row 完美、button 全坏）；行
+                                        // hover 类沿 PLAN-002 B 布局件消费。
+                                        style: "w-full flex items-center gap-2 px-3 py-[18px] bg-primary/15 text-foreground cursor-pointer"
+                                        // 用户裁定（2026-09-15，沿桌面 PLAN-018-FU2
+                                        // 「保留原图圆角板、外框不要」）：iconfile
+                                        // 位图自带圆角板——满幅渲染不再套 chip 外框；
+                                        // 裸 lucide 字标保持品牌色 chip + glyph。
+                                        // 2026-09-15 补：满幅臂必须套定尺寸 col——
+                                        // icon 直接作 button 子件时 h-10/w-10 尺寸
+                                        // 类失效（缩成原始小图，且挤乱行内居中）。
+                                        // 二次修正：col 内 icon 也不能用 w-full/h-full
+                                        //（iced 按钮内容行里 Fill 无定宽父级参照 =
+                                        // 塌缩回原始小图），显式 h-10/w-10。
+                                        if r.full == "1" {
+                                            col {
+                                                style: "h-10 w-10 flex items-center justify-center"
+                                                icon (name: r.icon) { style: "h-10 w-10" }
+                                            }
+                                        } else {
+                                            col {
+                                                style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
+                                                icon (name: r.icon) { style: "h-6 w-6" }
+                                            }
                                         }
                                         col {
                                             style: "flex flex-col"
@@ -172,15 +189,25 @@ widget App {
                                         }
                                         text r.category { style: "ml-auto text-xs text-muted-foreground" }
                                     }
+                                    }
                                 } else {
-                                    button {
-                                        onclick: .Launch(r.name)
-                                        // PLAN-526 T12：同上（hover 高亮 + Pointer）。
-                                        style: "w-full flex items-center gap-3 px-4 py-3 bg-transparent text-foreground hover:bg-primary/10 rounded-none cursor-pointer"
-                                        col {
-                                            style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
-                                            // PLAN-018 rev2：真图标——iconfile: 走位图臂，裸 lucide 名走 svg 臂
-                                            icon (name: r.icon) { style: "h-6 w-6" }
+                                    mouse-area (onclick: .Launch(r.name)) {
+                                    row {
+                                        // 行容器 mouse-area+row（同上选中行）。
+                                        style: "w-full flex items-center gap-2 px-3 py-[18px] bg-transparent text-foreground hover:bg-primary/10 cursor-pointer"
+                                        // 满幅/chip 分流（同上选中行；满幅臂定尺寸
+                                        // col 包装同理——button 直接子 icon 丢尺寸，
+                                        // col 内 icon 显式 h-10/w-10）。
+                                        if r.full == "1" {
+                                            col {
+                                                style: "h-10 w-10 flex items-center justify-center"
+                                                icon (name: r.icon) { style: "h-10 w-10" }
+                                            }
+                                        } else {
+                                            col {
+                                                style: "h-10 w-10 rounded-xl flex items-center justify-center ${r.chip}"
+                                                icon (name: r.icon) { style: "h-6 w-6" }
+                                            }
                                         }
                                         col {
                                             style: "flex flex-col"
@@ -188,6 +215,7 @@ widget App {
                                             text r.sub { style: "text-muted-foreground text-xs" }
                                         }
                                         text r.category { style: "ml-auto text-xs text-muted-foreground" }
+                                    }
                                     }
                                 }
                             }
@@ -236,18 +264,31 @@ widget App {
                             text "All apps" { style: "text-foreground text-sm" }
                             text .gcount { style: "ml-auto text-xs text-muted-foreground" }
                         }
+                        // 2026-09-15 用户裁定：5 列（原 4 列横向过疏）+ 网格
+                        // 区限高滚动——卡片总高不得超过任务栏，超出出滚动条
+                        //（max-h + overflow-y-auto，palette 结果列同款机制）。
+                        col {
+                            style: "w-full max-h-[440px] overflow-y-auto"
                         grid {
-                            cols: 4
+                            cols: 5
                             gap: 3
                             for g in .gridrows {
                                 if .gsel == g.gi {
                                     col {
                                         onclick: .Launch(g.name)
                                         style: "flex flex-col items-center gap-2 p-3 rounded-xl bg-primary/15 cursor-pointer"
-                                        col {
-                                            style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
-                                            // PLAN-018 rev2：真图标（同 palette）
-                                            icon (name: g.icon) { style: "h-7 w-7" }
+                                        // 用户裁定（2026-09-15，沿桌面 PLAN-018-FU2
+                                        // 「保留原图圆角板、外框不要」）：iconfile
+                                        // 位图自带圆角板——满幅渲染不再套 chip 外框
+                                        //（原 h-7 位图居中在 48px chip 里显小）；
+                                        // 裸 lucide 字标保持品牌色 chip + glyph。
+                                        if g.full == "1" {
+                                            icon (name: g.icon) { style: "h-12 w-12" }
+                                        } else {
+                                            col {
+                                                style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
+                                                icon (name: g.icon) { style: "h-7 w-7" }
+                                            }
                                         }
                                         text g.title { style: "text-primary text-xs text-center" }
                                     }
@@ -258,15 +299,20 @@ widget App {
                                         // 的 hover: 静默丢弃——526 Q9① 实测网格态
                                         // 无高亮；VM 轨现与 Vue 原生 :hover 同效）。
                                         style: "flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-primary/10 cursor-pointer"
-                                        col {
-                                            style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
-                                            // PLAN-018 rev2：真图标（同 palette）
-                                            icon (name: g.icon) { style: "h-7 w-7" }
+                                        // 满幅/chip 分流（同上聚焦格）。
+                                        if g.full == "1" {
+                                            icon (name: g.icon) { style: "h-12 w-12" }
+                                        } else {
+                                            col {
+                                                style: "h-12 w-12 rounded-xl flex items-center justify-center ${g.chip}"
+                                                icon (name: g.icon) { style: "h-7 w-7" }
+                                            }
                                         }
                                         text g.title { style: "text-foreground text-xs text-center" }
                                     }
                                 }
                             }
+                        }
                         }
                         row {
                             style: "flex items-center gap-4 mt-4 pt-3 border-t"
@@ -386,7 +432,15 @@ widget App {
                     while ai < napps {
                         if .apps_names[ai] == .recent[ri] {
                             if .cat == "all" || .apps_cats[ai] == .cat {
-                                var row = { i: .ranked.len(), name: .apps_names[ai], title: .apps_titles[ai], icon: .apps_icons[ai], category: .apps_cats[ai], mg: .apps_titles[ai].slice(0, 1), sub: "recent", chip: "bg-[" + .apps_colors[ai] + "21]", tchip: "text-[" + .apps_colors[ai] + "]" }
+                                // full = iconfile 位图旗标（view 满幅渲染、免 chip 外框）
+                                var ic1 str = .apps_icons[ai]
+                                var f1 str = ""
+                                if ic1.len() >= 9 {
+                                    if ic1.slice(0, 9) == "iconfile:" {
+                                        f1 = "1"
+                                    }
+                                }
+                                var row = { i: .ranked.len(), name: .apps_names[ai], title: .apps_titles[ai], icon: ic1, category: .apps_cats[ai], mg: .apps_titles[ai].slice(0, 1), sub: "recent", chip: "bg-[" + .apps_colors[ai] + "21]", tchip: "text-[" + .apps_colors[ai] + "]", full: f1 }
                                 .ranked.push(row)
                             }
                         }
@@ -406,7 +460,14 @@ widget App {
                     }
                     if seen == 0 {
                         if .cat == "all" || .apps_cats[ak] == .cat {
-                            var row2 = { i: .ranked.len(), name: .apps_names[ak], title: .apps_titles[ak], icon: .apps_icons[ak], category: .apps_cats[ak], mg: .apps_titles[ak].slice(0, 1), sub: .apps_cats[ak], chip: "bg-[" + .apps_colors[ak] + "21]", tchip: "text-[" + .apps_colors[ak] + "]" }
+                            var ic2 str = .apps_icons[ak]
+                            var f2 str = ""
+                            if ic2.len() >= 9 {
+                                if ic2.slice(0, 9) == "iconfile:" {
+                                    f2 = "1"
+                                }
+                            }
+                            var row2 = { i: .ranked.len(), name: .apps_names[ak], title: .apps_titles[ak], icon: ic2, category: .apps_cats[ak], mg: .apps_titles[ak].slice(0, 1), sub: .apps_cats[ak], chip: "bg-[" + .apps_colors[ak] + "21]", tchip: "text-[" + .apps_colors[ak] + "]", full: f2 }
                             .ranked.push(row2)
                         }
                     }
@@ -580,7 +641,14 @@ widget App {
                     } else {
                         // Plan 503：非选中分类不出列（分数序保持稳定）。
                         if .cat == "all" || scored[best].category == .cat {
-                            var row3 = { i: .ranked.len(), name: scored[best].name, title: scored[best].title, icon: scored[best].icon, category: scored[best].category, mg: scored[best].title.slice(0, 1), sub: scored[best].category, chip: "bg-[" + scored[best].color + "21]", tchip: "text-[" + scored[best].color + "]" }
+                            var ic3 str = scored[best].icon
+                            var f3 str = ""
+                            if ic3.len() >= 9 {
+                                if ic3.slice(0, 9) == "iconfile:" {
+                                    f3 = "1"
+                                }
+                            }
+                            var row3 = { i: .ranked.len(), name: scored[best].name, title: scored[best].title, icon: ic3, category: scored[best].category, mg: scored[best].title.slice(0, 1), sub: scored[best].category, chip: "bg-[" + scored[best].color + "21]", tchip: "text-[" + scored[best].color + "]", full: f3 }
                             .ranked.push(row3)
                         }
                         used[best] = 1
@@ -604,7 +672,14 @@ widget App {
             .gridrows = []
             var gi2 int = 0
             while gi2 < napps {
-                var row4 = { gi: .gridrows.len(), name: .apps_names[gi2], title: .apps_titles[gi2], icon: .apps_icons[gi2], mg: .apps_titles[gi2].slice(0, 1), category: .apps_cats[gi2], chip: "bg-[" + .apps_colors[gi2] + "21]", tchip: "text-[" + .apps_colors[gi2] + "]" }
+                var ic4 str = .apps_icons[gi2]
+                var f4 str = ""
+                if ic4.len() >= 9 {
+                    if ic4.slice(0, 9) == "iconfile:" {
+                        f4 = "1"
+                    }
+                }
+                var row4 = { gi: .gridrows.len(), name: .apps_names[gi2], title: .apps_titles[gi2], icon: ic4, mg: .apps_titles[gi2].slice(0, 1), category: .apps_cats[gi2], chip: "bg-[" + .apps_colors[gi2] + "21]", tchip: "text-[" + .apps_colors[gi2] + "]", full: f4 }
                 .gridrows.push(row4)
                 gi2 = gi2 + 1
             }
