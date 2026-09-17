@@ -1,15 +1,18 @@
 ---
 plan_id: PLAN-022
-status: execution_done        # 回补记录：工作先行于计划（直接用户请求驱动），复审未做
+status: reviewed              # 2026-09-17 r1 pass（回补计划复审；next=merge）
 feature_name: icon-taskbar-polish
 author: [ZCode 会话 2026-09-15]
 created_at: 2026-09-15
-updated_at: 2026-09-15
+updated_at: 2026-09-17
+plan_revision: 1              # 回补计划无 revision，复审定基线 r1
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
+supersedes_spec_components: []  # showdesk-wallpaper 与标题配色零重叠（grep 实证，无退役）
+new_spec_components:
+  - docs/specs/shell/showdesk-icons.md   # 新增：桌面图标网格/任务栏图标消费/切换器预览发布契约
+  - apps/028-launcher/SPEC.md            # 修改：5 列网格+限高滚动+120% 行高布局语义节
+touched_goals: []             # 本仓无 docs/specs/goals.md（PLAN-023 同例）；空影响说明见规范增量节
 
 affects: [auto-os/shell, auto-os/apps/028-launcher, auto-os/assets/icons, auto-lang/ui-iced-renderer]
 current_step: 10
@@ -98,6 +101,15 @@ launcher + 切换器）、桌面图标 48px 满幅 + 标题回归、拖拽交互
 | `crates/auto-lang/src/ui/session.rs` | `icon_drag: Option<(String, (f32, f32))>`（附拾起起点）+ `icon_drag_moved: bool` |
 | `crates/auto-lang/examples/ui_desktop.rs` | 459-dual-app demo boot 直挂窗退役（双窗隔离验收走专用 example `ui_dual_app`） |
 
+### 规范增量（2026-09-17 复审补立，merge 时落 canonical）
+
+| delta_id | 类型 | 目标 | before/after | rationale | acceptance |
+|---|---|---|---|---|---|
+| SD-01 | add | `docs/specs/shell/showdesk-icons.md` | before：桌面图标网格/任务栏图标消费/切换器预览发布无成文契约（PLAN-018 只钉 iconfile 协议族与资产管线，语义散见注释）；after：①桌面格 48px 满幅 tile（沿 018-FU2 满幅裁定）+未定位图标列主序填充（rows=视口高/80px 扣任务栏预留）+拖拽 6px 位移阈值门双落格动词+标题三级配色（图片壁纸白字+`bg-black/30` 底片、纯色按亮度）；②任务栏 `iconfile:`+`ghost` 变体消费+44px hover/激活底+激活条带 `mt-[3px]` 五臂同值；③切换器预览独立发布（`publish_workspace_previews`+面板开时 400ms ServiceTick 逐可见窗 `request_capture` SWR 补抓、收起零常态开销） | R1-R17 十七轮用户裁定的持久语义钉死，防后续计划回归 | AC-1, AC-2, AC-3, AC-5, AC-6 |
+| SD-02 | modify | `apps/028-launcher/SPEC.md`（新增布局语义节） | before：SPEC 只有接缝/排序规则/键盘流/已知边界/验收入口五节，网格布局无契约；after：5 列网格（`cols: 5` 用户裁定）+`max-h-[440px] overflow-y-auto` 限高滚动+palette 行 `py-[18px]`（120% 行高）+行容器 mouse-area+row（iced button 内容行钳高实测裁定） | R8/R9 布局语义钉死 | AC-4 |
+
+空影响说明：`touched_goals` 为空——本仓不存在 `docs/specs/goals.md`（PLAN-023 同例），goals 记录归 `.autoos/specs.json` goals 节，merge 时派生。
+
 ## 测试设计
 
 - **矩阵探针**（tmp/icon-matrix-probe，已删）：同结构 5 变体一次定案"iced button
@@ -133,7 +145,30 @@ launcher + 切换器）、桌面图标 48px 满幅 + 标题回归、拖拽交互
 
 ## 复审记录
 
-- 未复审（回补记录；如需 review 走 /auto-plan:review）。
+- 2026-09-17（独立新会话复审）：`stage: review` | plan_id PLAN-022 |
+  plan_revision r1（回补计划缺 revision，本次定基线 r1）| `outcome: pass` |
+  reviewed_commit auto-os `d616fa7`（base `65bb9cb`）+ auto-lang `94bc69c22`
+  （主体：拖拽阈值/列主序/459 直挂退役，base `1450d5e`）+ `9bd26d884`
+  （ws-preview 诊断拆除=待澄清①提交前置项清偿）| dependency_revisions：
+  两 lang 提交 merge-base 实证均为 master 合并 `768e8fcd3` 与 023 r1 所测
+  `46fd09dd6` 之祖先（最终 022 lang 状态在 023 r1 回归树内）| spec_inputs：
+  `docs/specs/shell/showdesk-wallpaper.md`（标题配色与其零重叠，无冲突）、
+  `apps/028-launcher/SPEC.md` | acceptance_results：AC-1..AC-5 pass（执行期
+  用户逐条截图实测在案 + HEAD 标记复核：shell.at 7 枚 iconfile 按钮全 ghost
+  变体、`mt-[3px]` 五臂+1 注释、desktop.at `w-12 h-12`+`h-[72px]`+
+  `bg-black/30`、launcher `cols: 5`+`max-h-[440px]`+`py-[18px]`、mapping 5 键、
+  WorkspaceAdd 新建卡 shell.at:416）；AC-6 pass（按其约定口径=逻辑+构建验证：
+  `icon_drag_moved` 门 renderer×5+session×2、6px 阈值、双落格动词同门；手感
+  反馈通道保持开放，见待澄清 4）| findings：F-01（已清偿）回补计划缺
+  plan_revision/规范增量节——本次复审补立 r1 与规范增量（SD-01/SD-02）；
+  非阻塞计划外项：切换器深色对比度（待澄清 5）、kanban/musk 旧图取舍
+  （待澄清 2，用户自理）| evidence：lang 回归门复用（显式理由：被审提交
+  已深居 main 历史，现跑全量测的是 HEAD 非基线）——023 r1 全量 tv
+  3743/3743+集成 13/13+定向 44/45（树含 022 双 lang 提交）+ 023 work 收口
+  desktop_mcp 58/0+vue 零 TS 错（auto-os 侧在 `d616fa7` 之后）+ a2vue 金样
+  对拍重生成（auto-lang `0407a9f9b`，desktop.at 022 网格终版双端同源）|
+  局限声明：运行时行为未现场重演（ui_desktop 未运行），结论重建自工件：
+  计划内执行期用户实测记录 + HEAD 代码标记 + 祖先覆盖回归 | `next: merge`
 
 ## 新会话交接（2026-09-15 收尾快照）
 
