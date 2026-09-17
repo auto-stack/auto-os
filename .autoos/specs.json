@@ -15,7 +15,6 @@
      "title": "PLAN-005 俄罗斯方块 AutoUI 交付报告",
      "content": "标准 AutoUI 俄罗斯方块 app：Vue 通过 HTTP；VM/Rust 支持 merged 与 no-merge；棋盘网格、ghost、next、Dialog、键盘与持久化均已交付。源码位于 apps/036-tetris，规范位于 docs/specs/apps/tetris.md，端口为 17500/17501。"
     },
-
     {
      "id": "P001-1",
      "title": "Stage B P-1 计划随迁批 — 变更摘要（七项桌面域计划 auto-lang → auto-os）",
@@ -93,6 +92,18 @@
      "id": "P018-1",
      "title": "PLAN-018 变更摘要 — app-icon-assets（桌面图标资产化）",
      "content": "双主题精灵表（icons.png/icons_dark.png，28 图块）资产化：slice_icons.py 网格拟合\n切片 28×2 → assets/icons/{light,dark}/<stem>.png + mapping.json（27 id，browser\n预留位不入映射）。AutoUI icon 通道新增 iconfile:<stem> 位图后端（协议族回退链\niconfile:→hicon:→lucide:→占位）：iced 两 raster 合流臂 + vue 双 <img> 对 + SFC\n切换规则；桌面 boot 按 mapping 改写 entry.icon + 注入 AUTO_OS_ICON_ROOT。\n四消费面（桌面格/launcher/dock/任务栏）共用字符串通道。桌面快捷方式全量固定\n（shell.desktop.icons 27 id + desktop.sh 固定 AUTO_VM_STORAGE_FILE）。\n交付：auto-lang master 5cf18fea0（merge os-018-dev）、auto-os main a2eab26+307e526。\ncanonical：auto-lang docs/specs/auto-lang/ui/overview.md §icon 字符串协议族。"
+    },
+    {
+     "id": "P016-1",
+     "file": "docs/plans/archive/016-file-manager-revamp.md",
+     "title": "PLAN-016 变更摘要 — file-manager-revamp（027 现代化+桌面互操作）",
+     "content": "027 五项收口：zinc 硬编码→语义 token+dark_mode（桌面 SetTheme 回写）；emoji→lucide（按扩展名字面量分支）；固定坐标 popover→alert-dialog+锚定 popover+toast()；mock→真实 FS（read_dir+native 三件套 is_dir/size/mtime，cap 500，None 级联禁 metadata JSON 字段读取）；桌面互操作=协议 v1.7 open_with（pac opens 关联校验+auto_open_path 双臂：未运行 launch seed/已运行聚焦写入）。r2 Phase 2 九项 UX（面包屑点击编辑/工具栏图标化/grid 双击）+修复轮（行交互/Enter/系统兜底四象限）。桌面 e2e：txt→auto-edit、jpg→image-viewer（acceptance bus）。vue 轨白屏闭合（popover 回退引号化）。",
+     "related": [
+      "PLAN-016"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
     }
    ]
   },
@@ -115,7 +126,6 @@
      "title": "PLAN-005 三轨模式与应用分层",
      "content": "单一 .at App/Store/API 分层生成 Vue、VM/Iced 与 Rust；Vue 始终走 HTTP，VM/Rust 分别覆盖 merged/no-merge。游戏帧计算留在 Store，后端只承担最高分读取与保存。"
     },
-
     {
      "id": "P009-2",
      "title": "§3-a 桌面薄包装契约 — 架构注记",
@@ -272,19 +282,30 @@
      "title": "icon 字符串协议族与位图后端接线（display_title 同构）",
      "content": "三前缀语义 + 回退链（见 canonical spec）。关键机制：icon_file.rs 全局缓存\n（(stem,dark) 键，失败占位防重试）；boot 接线 apply_icon_mapping 只改写命中\nid，未映射零回归；builder 对带协议前缀 name 原样透传（根修：无条件 lucide:\n前缀曾把 iconfile 值扭曲为 lucide:iconfile:x → 图标空白，实机 1196 HIT 零\nMISS 复验）。主题位 = theme::dark_mode()（PLAN-615 链）。desktop storage\n固定 AUTO_VM_STORAGE_FILE=~/.config/autoos/desktop-storage.json（desktop.sh，\n原按 CWD 哈希散落 tempdir 无法预置 shell.desktop.icons）。"
     },
-
-   {
-    "id": "P021-1",
-    "file": "docs/specs/apps/kanban.md",
-    "title": "PLAN-021 双模式看板——模式=板=kind（只读 lang_plans + 手动 manual）",
-    "content": "boards.json 条目驱动双模式（header 切换+当前板高亮，去条目即消失）；泛化 Card 十三字段双 source 全字段必填（manual id=m+递增十进制）；manual 无状态文件后端（每请求读/AUTO_KANBAN_DATA→data/manual.json/全量重写+全列压实/手工 JSON 转义序列化）；写四端点经 boards_registry kind 门（lang_plans 源禁写不变，move=目标位插入+压实，空标题拒创建）；VM 约束适配：位置参数制 body 串、E5501 入口禁 nil、has_key 判缺失、as_string 物化、m 前缀避 i32 路径参强制、iced 相对路径不可依赖。",
-    "related": [
-     "PLAN-021"
-    ],
-    "status": "published",
-    "created": "2026-09-15",
-    "last_modified": "2026-09-15"
-   }
+    {
+     "id": "P021-1",
+     "file": "docs/specs/apps/kanban.md",
+     "title": "PLAN-021 双模式看板——模式=板=kind（只读 lang_plans + 手动 manual）",
+     "content": "boards.json 条目驱动双模式（header 切换+当前板高亮，去条目即消失）；泛化 Card 十三字段双 source 全字段必填（manual id=m+递增十进制）；manual 无状态文件后端（每请求读/AUTO_KANBAN_DATA→data/manual.json/全量重写+全列压实/手工 JSON 转义序列化）；写四端点经 boards_registry kind 门（lang_plans 源禁写不变，move=目标位插入+压实，空标题拒创建）；VM 约束适配：位置参数制 body 串、E5501 入口禁 nil、has_key 判缺失、as_string 物化、m 前缀避 i32 路径参强制、iced 相对路径不可依赖。",
+     "related": [
+      "PLAN-021"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    },
+    {
+     "id": "P016-1",
+     "file": "../auto-lang/schema/projection-protocol-v1.md",
+     "title": "SD-01 协议 v1.7 open_with 动词 + pac opens 关联键（SD-02）",
+     "content": "open_with<app-id><path>：__desktop_cmd 首个普通注册表窗动词（pump 全窗 drain）。执行臂=注册表校验（未知 app 拒；opens 声明集非空不含目标扩展名拒，toast）→未运行 launch 后写 state auto_open_path/已运行聚焦+写入→目标 Tick 消费（041 ConsumeOpen、031 SettleTick 首批）。path 单行约束（notify 同款）。opens 键：pac 平铺逗号扩展名列表，normalize_opens 小写带点剥空白，AppRegistryEntry.opens；未声明=不参与校验；与 PLAN-015 四名称契约正交（docs/specs/auto-man/project.md §opens）。",
+     "related": [
+      "PLAN-016"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    }
    ]
   },
   {
@@ -302,7 +323,6 @@
      "title": "PLAN-005 棋盘与状态 UI 契约",
      "content": "棋盘使用 10×20 严格网格与零圆角单格，active/locked/ghost 分层；next、摘要、控制按钮和 ready/paused/help/confirm/over 统一使用 AutoUI dialog。原生布局避免 nested styled columns 触发栈溢出。"
     },
-
     {
      "id": "P012-6",
      "title": "SD-04 通知面板关闭模型与锚定 — 右上角紧凑卡（用户裁定）",
@@ -346,6 +366,18 @@
      "id": "P018-3",
      "title": "SD-01/SD-02 规范增量定稿",
      "content": "SD-01 add：auto-lang/docs/specs/auto-lang/ui/overview.md §「icon 字符串协议族\n（PLAN-018）」（三前缀表/回退链/资产根解析序/主题目录）。SD-02 add：本仓\nREADME §图标资产（sheet 设计源地位/再生成命令/mapping schema）。"
+    },
+    {
+     "id": "P016-1",
+     "file": "../auto-lang/examples/ui/027-file-manager/SPEC.md",
+     "title": "SD-03 027 数据层与轨口径契约——真实 FS/None 级联禁令/D-4 删除口径",
+     "content": "列表物化零 JSON：read_dir for-in 字符串物化+直连 native 三件套 is_dir/size/mtime；JsonValue 可选字段级读取产 None 级联 TypeError（禁）。cap 500；排序目录恒先（marks 选择排序，交换漏回写教训）。删除口径 D-4=文件+空目录（非空拒；F-8：空判用 read_dir 原串!=\"[]\"，json.parse([]).len() 缺陷实证）。轨口径 D-3=VM 为桌面事实轨，vue 轨渲染冒烟（fs ts 桥独立工程）。open_with 判定序四象限：环境（AUTO_UI_IN_DESKTOP+opens）内有联→open_with，否则系统 cmd start 兜底。",
+     "related": [
+      "PLAN-016"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
     }
    ]
   },
@@ -364,7 +396,6 @@
      "title": "PLAN-005 M1–M7 功能验收与规则 golden",
      "content": "M1–M7 均已启动并由用户完成基本移动、旋转、软降、硬降、暂停和消行验收；Rust 与 VM fixture golden 覆盖 7×4 形态及 1/2/3/4 行消除计分/压缩。长按/失焦、像素夹具、桌面画廊和 merged 故障矩阵转入 DEBT-005-01..03。"
     },
-
     {
      "id": "P009-3",
      "title": "P-6 验证矩阵与门禁口径 — 测试注记",
@@ -453,19 +484,30 @@
      "title": "PLAN-018 验证矩阵 — 定点+切片校验+实机双主题",
      "content": "切片：--verify 像素级往返 28×2 + mapping 恰等（填充率指标对该画风不可行，\n改像素往返+蒙太奇人眼复核）。定点：icon_file 2/2、plan018_iconfile 1/1、\nui_gen 773/773、app_registry 23/23、desktop 金样绿。实机：dock/桌面格/launcher\n三消费面位图渲染双主题截图（evidence/plan018-*.png），acceptance 通道 summon。"
     },
-
-   {
-    "id": "P021-2",
-    "file": "docs/plans/archive/021-kanban-normal-mode.md",
-    "title": "PLAN-021 测试证据——17 测全绿（8 只读回归 + M1-M9）+ VM 轨 MCP 全链 + 对账 629==629",
-    "content": "playwright 17 测（board.spec 8 回归 + manual.spec M1-M9，fixture 每测重拷隔离，run.mjs 注入三 env）；VM 轨 autoui-verifier MCP：双板按钮/三列/加卡 c_todo 0→1/移动 c_doing 1（按钮通道为双端断言面，拖拽为 Vue 增强）；真实数据对账 629==磁盘 5+624（statusless tracker 入 archived 为 579 既有映射）；门档：不改 auto-lang crates（Category A）。",
-    "related": [
-     "PLAN-021"
-    ],
-    "status": "published",
-    "created": "2026-09-15",
-    "last_modified": "2026-09-15"
-   }
+    {
+     "id": "P021-2",
+     "file": "docs/plans/archive/021-kanban-normal-mode.md",
+     "title": "PLAN-021 测试证据——17 测全绿（8 只读回归 + M1-M9）+ VM 轨 MCP 全链 + 对账 629==629",
+     "content": "playwright 17 测（board.spec 8 回归 + manual.spec M1-M9，fixture 每测重拷隔离，run.mjs 注入三 env）；VM 轨 autoui-verifier MCP：双板按钮/三列/加卡 c_todo 0→1/移动 c_doing 1（按钮通道为双端断言面，拖拽为 Vue 增强）；真实数据对账 629==磁盘 5+624（statusless tracker 入 archived 为 579 既有映射）；门档：不改 auto-lang crates（Category A）。",
+     "related": [
+      "PLAN-021"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    },
+    {
+     "id": "P016-1",
+     "file": "docs/plans/archive/016-file-manager-revamp.md",
+     "title": "PLAN-016 验证矩阵——注入式驱动 MCP 套件 58/0 + 桌面 e2e",
+     "content": "desktop_mcp.py 58 断言 0 失败 exit 0（T1-T14+Phase 2 重启持久化），驱动契约：autoui_fixture 状态写+trigger 同步派发（免疫动作通道丢帧债）、带参 trigger \u001f payload=encode_payload wire 格式、ItemCtx(i) 探测 selected_info 行定位（行名 mouse-area 子树内 VTree 塌缩不可见）、VTree label PUA 哨兵（）须剥离后匹配、子串双命中（新建文件夹⊃新建文件）须 exact 全等。破坏性操作仅对 temp workdir 副本。门禁 cargo tf 3575/3575+tv 3721/3721（-E ffi_dual_019 基线同败）。桌面 e2e：bus 注入 open_with→041 启动消费/031 会话渲染（t07/ac10 截图）。",
+     "related": [
+      "PLAN-016"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    }
    ]
   },
   {
@@ -483,7 +525,6 @@
      "title": "PLAN-005 revision 3 review — pass",
      "content": "用户批准将扩展原生输入/视觉、桌面画廊和 merged 持久化故障矩阵移交 DEBTS。M1–M7 基本功能阶段通过，reviewed_commit=a2eab26dc6f25821b48d5f051ef14d6121651b38，计划进入 merge/archive；后置项见 DEBTS.md。"
     },
-
     {
      "id": "P001-R1",
      "title": "PLAN-001 复审记录 — P-1 计划随迁批（C1–C6 全过）",
@@ -575,19 +616,30 @@
      "title": "PLAN-018 复审记录 — pass（rev2）",
      "content": "review pass（同会话复审，工件重建）：AC-1..6 全 pass（AC-1/2/3/5 独立重跑、\nAC-4/6 新鲜实机捕获）。全量门：tv 3697/3697；快档 4898 例 16 失败全 baseline\n（layout 家族 14——master 已重写该批测试随合并消解；covered_elements 与\np010_popover 各 1——88803e84e base 状态实证同挂）；auto-man 287/287；auto\n11/11。findings：baseline 债务清单扩充另立计划；同会话复审以工件重建缓解；\nauto-os worktree 他属 tetris 脏文件以 patch 安置（.wt/os-018-tetris-wip.patch）。"
     },
-
-   {
-    "id": "PLAN-021-r1",
-    "file": "docs/plans/archive/021-kanban-normal-mode.md",
-    "title": "PLAN-021 r2 复审 pass（5f3b4ff 独立重跑 17 测+P1 curl 链+AC-08 配置驱动+对账 629==629）",
-    "content": "复审 pass（2026-09-15，rev2，reviewed commit 5f3b4ff2a9e6854e6c226f0048aeaec948c598b2，base fc0434f，无 worktree 主检出执行）。AC-01..08 全 pass：17 测独立重跑；P1 curl 链（GET 排序/PUT 引号换行落盘/move 压实/DELETE/未知 cid/lang-plans 拒写）；AC-08 配置移除实测还原；真实对账 629==5+624（语料增长后总数仍等）。同会话复核已声明，裁决自工件重建。findings R-01 iced 相对路径/R-02 语料撕裂读崩后端/R-03 statusless 入折叠——均 info 级非阻断（579/框架侧既有）。执行偏差已记录：无 worktree；ManualBoard 内联 board.at（iced 路由页跨文件组件不渲染）；id m 前缀；beforeEach fixture 隔离。",
-    "related": [
-     "PLAN-021"
-    ],
-    "status": "published",
-    "created": "2026-09-15",
-    "last_modified": "2026-09-15"
-   }
+    {
+     "id": "PLAN-021-r1",
+     "file": "docs/plans/archive/021-kanban-normal-mode.md",
+     "title": "PLAN-021 r2 复审 pass（5f3b4ff 独立重跑 17 测+P1 curl 链+AC-08 配置驱动+对账 629==629）",
+     "content": "复审 pass（2026-09-15，rev2，reviewed commit 5f3b4ff2a9e6854e6c226f0048aeaec948c598b2，base fc0434f，无 worktree 主检出执行）。AC-01..08 全 pass：17 测独立重跑；P1 curl 链（GET 排序/PUT 引号换行落盘/move 压实/DELETE/未知 cid/lang-plans 拒写）；AC-08 配置移除实测还原；真实对账 629==5+624（语料增长后总数仍等）。同会话复核已声明，裁决自工件重建。findings R-01 iced 相对路径/R-02 语料撕裂读崩后端/R-03 statusless 入折叠——均 info 级非阻断（579/框架侧既有）。执行偏差已记录：无 worktree；ManualBoard 内联 board.at（iced 路由页跨文件组件不渲染）；id m 前缀；beforeEach fixture 隔离。",
+     "related": [
+      "PLAN-021"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    },
+    {
+     "id": "P016-r1",
+     "file": "docs/plans/archive/016-file-manager-revamp.md",
+     "title": "PLAN-016 r2 终复审 pass（needs_fix→pass 单循环：FR-7 SD-02 补齐/FR-6 证伪关闭）",
+     "content": "复审 pass（2026-09-15，rev2，reviewed commit a1ea8c6e1，base 8c3b4db57，含 master 合并 32b2e4149=PLAN-020 全批）。AC-01..22 全 pass：AC-11 本轮 58/0 复现；AC-03-07 套件内复现；AC-09/10 复用 09-14 桌面 e2e+结构复核（建议 merge 门冒烟）；AC-12 本日闭合（App.vue:1033 引号化+4027 实拍）。门禁 tf/tv 双绿复用（门禁后仅触 app 层）。findings：FR-7 SD-02 规范节缺失→a1ea8c6e1 补齐；FR-6 并发会话 projector 扰动疑云证伪（实为 find_ids 子串双命中致 NewFolderOpen 误发 a.txt 成目录，922a46444 exact+PUA 修复）。同会话复审已声明，裁决自工件重建。",
+     "related": [
+      "PLAN-016"
+     ],
+     "status": "published",
+     "created": "2026-09-15",
+     "last_modified": "2026-09-15"
+    }
    ]
   }
  ]
