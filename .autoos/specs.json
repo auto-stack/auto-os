@@ -858,7 +858,9 @@
           "related": [
             "PLAN-025"
           ],
-          "status": "published"
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18"
         }
       ]
     }
