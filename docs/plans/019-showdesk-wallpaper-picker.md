@@ -1,10 +1,10 @@
 ---
 plan_id: PLAN-019
-status: executing             # drafting → executing → execution_done → reviewed → archived（复审 blocked——待实机走查，见 §9 末条）
+status: reviewed             # drafting → executing → execution_done → reviewed → archived（2026-09-17 快速复审 pass，见 §9 末条）
 feature_name: showdesk-wallpaper-picker
 author: [zhaopuming]
 created_at: 2026-09-14
-updated_at: 2026-09-14
+updated_at: 2026-09-17
 plan_revision: 2              # rev1 = 起草+执行合同；rev2 = 复审期 SD-01/02 行对齐实现（nav/preview 动词与 __wp_preview 字段）
 
 # /auto-plan:review 结束时填写：
@@ -474,6 +474,45 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   activate/dock_pin）。实机走查 blocker 已由 FU1–FU8 反馈批多轮实机走查
   覆盖（每批均为用户实机走查驱动的修复+验证闭环），unblock 条件成立，
   待快速复审复用 rev2 自动化证据 + 走查结论翻 pass。
+- 2026-09-17 stage:review PLAN-019 rev2 outcome:**pass**（快速复审——
+  rev2 unblock 条件成立后按本节记录取证）。
+  - **基线**：reviewed_commit = auto-os 88f86fa / auto-lang 4fb58361b
+    （F-02 销账后）；base = a657a4e(auto-os) / a9d3b8c67(auto-lang)；依赖
+    auto-down 140775f(detached)；spec_inputs = protocol v1.7（worktree
+    面，含 FU7 __wp_visible/__wp_x/__wp_y 增补）+ docs/specs/shell/
+    showdesk-wallpaper.md（本轮定稿 dd0ade3）。三 worktree 复审时点零
+    未提交实现。plan_revision 维持 2（FU 批次为走查驱动实现细化，语义
+    合同面以本轮 spec 定稿 + protocol §2/§4 为准）。
+  - **独立性声明**：F-02 补测与复审同会话（无独立会话授权）——F-02
+    结论由测试工件重建（新测 + scoped 复跑）；主体结论 = rev2 独立工件
+    重建证据（代码未变部分）+ 新基线复跑（代码已变部分）+ 用户走查事实。
+  - **自动化复跑（新基线，rev2 后代码已变故不直用旧证据）**：scoped
+    家族 38/38 绿（wallpaper/showdesk/desktop_surface/shell/w5/p010/
+    desktop_injects）+ 解析家族与 F-02 新测 39/39 绿；全量日常档
+    --no-fail-fast = **4895/4915**，20 失败**逐条与 rev2 预存红清点吻合**
+    （layout×14 dock 几何环境依赖；c2_param/plan606/plan055/desktop_
+    protocol coverage/external_config_poll 环境敏感；ffi_dual_019 负载
+    抖动），**零新增回归**；p010（rev2 期顺带修正）已转绿；总量 4903→
+    4915（FU7 重写 7 + FU8 触发测 + F-02 +1）。
+  - **acceptance**：AC-02/04/06/09/10 维持 rev2 **pass**（排除规则/归属
+    两分支/键臂/协议对拍 schema_drift 日常档绿/vue 注记在案）；AC-01/
+    03/05/07/08 **partial → pass**——自动化侧全绿维持，实机侧由 FU1–FU8
+    反馈批覆盖：该批即用户（唯一走查权威）多轮实机走查的产物与结论回填
+    （FU1/2/4/5/6 桌面视觉链、FU3 桌面重启验证、FU7 carousel 重设计与
+    FU8 设置面入口均为实机走查裁定），rev2 unblock 动作（SD spec 六步
+    清单 worktree 构建走查）据此完成；用户 2026-09-17 会话确认走查多轮
+    完成并授权翻绿。
+  - **findings**：F-01 已修正（rev2）；F-02 已销账（4fb58361b，本轮
+    scoped 复跑绿）；**F-03（本轮发现，已修正→dd0ade3）** SD-03 spec
+    §SD-02/§验证 滞后 FU7/FU8 实现（栅格 cols-4/导航「立即应用」与滑窗
+    「导航不应用、点选才应用」矛盾；缺 `__wp_visible`/`__wp_x`/`__wp_y`
+    注入面与 `wallpaper_request` 设置面入口）——已对齐现行语义；plan
+    §5-6 SD-02 字段行同步以 protocol §2 为准（FU7 增补三面，记录于此
+    不改行）。
+  - **evidence**：scoped/全量复跑命令与清点如上（cargo t 家族滤串 +
+    --no-fail-fast 全量）；spec 增量冻结 = docs/specs/shell/
+    showdesk-wallpaper.md @ dd0ade3（SD-01..04 + 验证节）。
+  - **outcome: pass → status reviewed**。next: merge（/auto-plan:merge）。
 
 ## 10. 待澄清事项
 
