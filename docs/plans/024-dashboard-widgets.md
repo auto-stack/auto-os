@@ -531,6 +531,8 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
   点亮（色=四分位）；值 ∈ [下界, 下界+3) → 空白占位块（bg-background/70 +
   border）；值 < 下界 → 不渲染。29% = 5 绿 + 第 6 格空白；28%+ 第 6 格变蓝。
   另修：点亮判定全程无 float→int 转换（.as(int) 对 float 垃圾值实证绕行）。
+| R19 | 加音乐播放器小组件（参考 stella mini-player） | 020-music-player `view mini`：圆盘 glyph + 曲名/艺人居中 + 进度时间 + ⏮⏯⏭ 控制行（face 事件直达 app 会话，PlayPause 无曲目自动开播）；category=media → 主 tab。与主窗同 store（current_title/is_playing/progress 同源） | auto-lang R19 提交 | ✅ | 实机：faces=4 全孵化（日志实证）；
+      主 tab 三卡满行 + 系统 tab sysmon |
 | R18 | 除了时钟/系统监控还做了哪些桌面小组件？最好多显示一个 | 如实答：v1 试点仅时钟+系统监控（§4.5 裁定）。本轮补 **013-todo 待办卡**（active_count 大字，store 同源活渲染，纯前端孵化）——主 tab 三卡布局成形（clock/todo/sysmon）；016-calendar 跳过（store today 为写死演示日期 2026-06-17，桌面卡会显示假日期，误导）；kanban/klondike/tetris 战绩卡留 §4.5 后续候选 | auto-lang R18 提交 | ✅ | 实机：faces=3 全孵化日志实证 |
 
   R17b/c 注记：①用户裁定改**按段定色**（一条多色——段色=段上界档位，44% 全绿、满条四色渐变）；②`.cpu.as(int)` 对 float 产出垃圾值（CPU 44% 整条红实证）→ 点亮判定改浮点累加比较，全程无 float→int 转换；③**R17c 档位四等分**（用户裁定：段上界 ≤25 绿 / ≤50 蓝 / ≤75 黄 / >75 红）——38% 内存 = 5 绿 + 2 蓝可见。
