@@ -201,7 +201,7 @@ widget App {
                 for sg in .cpu_segs {
                     if sg.lit == "1" {
                         col {
-                            style: "w-2 h-2 rounded-sm ${.store.cpu_color}"
+                            style: "w-2 h-2 rounded-sm ${sg.color}"
                         }
                     } else {
                         col {
@@ -225,7 +225,7 @@ widget App {
                 for sg in .mem_segs {
                     if sg.lit == "1" {
                         col {
-                            style: "w-2 h-2 rounded-sm ${.store.mem_color}"
+                            style: "w-2 h-2 rounded-sm ${sg.color}"
                         }
                     } else {
                         col {
