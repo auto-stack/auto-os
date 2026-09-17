@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-023
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-17 work 收口）
 feature_name: file-manager-thumbs-addrbar
 author: [agent]
 created_at: 2026-09-17
@@ -27,8 +27,9 @@ affects:
   - auto-lang/examples/ui/027-file-manager/SPEC.md
   - auto-os/docs/plans/023-file-manager-thumbs-addrbar.md
 
-current_step: 0
+current_step: 5
 total_steps: 5
+status_note: 2026-09-17 work 收口——execution_done（待 /auto-plan:review）
 ---
 
 # [PLAN-023] file-manager-thumbs-addrbar
@@ -254,35 +255,61 @@ pub fn thumb(path str, size int) str;
   `crates/auto-lang/src/ui/image_pipeline.rs`（queue_media_thumbnail +
   单测）；`crates/auto-lang/src/vm/ffi/stdlib.rs`（shim_image_thumb +
   注册）；`crates/auto-lang/src/ui_gen/ts_adapter.rs`（VM-only 白名单加
-  "image"）。
+  "image"）；`crates/auto-lang/src/vm/codegen.rs`（**执行期新增**：裸模块
+  前缀白名单 matches! 表加 "image"——`fs`/`json` 等接收者靠该表过编译，
+  image 不加则 handler synthesis 报 Undefined variable 毒化导出，
+  实录 log autoui_fileman_9427）。
 - 操作：按 5.1 实现；三轨声明同步（a2r_std_signature_parity 门）。
-- 验证：`cargo test -p auto-lang --lib image_pipeline`（新 2 用例绿）+
-  `cargo test -p auto-lang --lib a2r_std`（parity 绿）。
+- 验证：`cargo check -p auto-lang --lib --features ui-iced` 绿（57s）；
+  `cargo nextest run -p auto-lang --lib --features ui-iced -E
+  'test(thumbnail_queue) or test(image_natives_register) or test(std_signature)'`
+  3/3 PASS（thumbnail_queue 新用例 + 17 名注册断言 + 三轨签名 parity）。
+  [✅ 已完成] 2026-09-17 auto-lang worktree commit 9d5272cde（codegen 白名单
+  补充随后续提交）。
 - 关联：AC-01/02
 
 ### T-02 app：网格缩略图接线（SD-02）
 - 文件：`examples/ui/027-file-manager/src/front/components/fs_util.at`
   （is_image_ext）、`src/front/app.at`（thumb_src 字段 + 物化守卫 + grid
-  ImageSurface 分支 + vm_track 门）。
-- 验证：`auto run -r vm`（027 目录）实机 grid 截图（AC-01/02）。
-- 依赖：T-01。关联：AC-01/02/05
+  ImageSurface 分支）。
+- 验证：`auto run -r vm` 实机 grid 截图（AC-01/02）。
+- 关联：AC-01/02/05
+- [✅ 已完成] 2026-09-17 commit 32316f8f1。实机截图
+  evidence/023/p023-thumbs-grid.png：三色 png 真彩缩略图 cover 入卡 +
+  notes.txt FileIcon 对照；探针实录 `red.png => [/api/__auto/media/b4dd…/1]`。
+  执行期裁决（计划 5.2 预授权）：**vm_track 门不需要**——vue 轨编译期
+  __vmOnly 降级后调用点与既有 fs.* 桩同口径（vue 轨 NavTo 本就 mock 回退），
+  无新增守卫复杂度。
 
 ### T-03 app：地址栏坍缩（SD-03）
 - 文件：`examples/ui/027-file-manager/src/front/app.at`（model 5 变量 +
   CrumbsExpand 消息/处理臂 + NavTo 策略内联 + 视图三片段 + 段名 truncate）。
 - 验证：实机深路径截图 ×2 形态（AC-03/04）。
 - 依赖：无（独立于 T-01/02，可并行）。关联：AC-03/04/05
+- [✅ 已完成] 2026-09-17 commit 32316f8f1。state 断言 crumb_gap
+  true/false/重导航回坍缩 三态 PASS；截图 evidence/023/p023-crumbs-{collapsed,
+  expanded,shallow}.png。**执行期增量发现（AC-03 根因修复）**：顶栏
+  `justify-between` 在 iced Row SpaceBetween 下 Fill 子件被降级，胶囊恒
+  ~495px 不贴搜索框——去除 justify-between（flex-1 + shrink-0 语义等价）
+  后胶囊撑满至搜索框。为 VM 轨一般性布局知识（SpaceBetween × Fill 互斥），
+  已记 SPEC §1.5。
 
 ### T-04 vue 轨构建验证
 - 操作：027 目录 `auto run`（vue 轨）构建零 TS 错；mock 形态目测
   （FileIcon 回落 + 坍缩逻辑）。
 - 依赖：T-01（白名单）/T-02/T-03。关联：AC-05
+- [✅ 已完成] 2026-09-17。`auto run -p 17910`：零 TS 错，vite ready
+  (localhost:4027)；`image.thumb` 与 fs.* 同单 `__vmOnly` 降级告警在册
+  （Plan 444 形态）；既有 fs_util/tree_util "no widget" 告警为存量。
 
 ### T-05 SPEC + 证据落库
 - 文件：`examples/ui/027-file-manager/SPEC.md`（§1.5/§2.5）；
   auto-os `docs/plans/evidence/023/`（截图收据）；本计划状态推进
   execution_done。
 - 依赖：T-02/03/04。关联：AC-06
+- [✅ 已完成] 2026-09-17。SPEC §1.5/§2.5 落库（commit 32316f8f1）；四张
+  证据截图入 auto-os docs/plans/evidence/023/。**回归门**：既有
+  desktop_mcp.py 套件 58 通过 0 失败（T1–T14 含重启持久化）。
 
 ## 9. 复审记录
 
@@ -291,6 +318,18 @@ pub fn thumb(path str, size int) str;
   shim_image_current_uri 同款、ts_adapter 白名单 Plan 444 先例、
   MediaPriority::Thumbnail 档既有）；无阻塞性待决（5.2 vm_track 门允许
   执行期 trivial 替换更优判别）。`next: work`。
+
+- 2026-09-17（work 收口）：`stage: work` | plan_id PLAN-023 | r1 |
+  `outcome: pass` | auto-lang plan-023-dev `9d5272cde` + `32316f8f1`
+  （base `009d93ba6`）；auto-os main `95872a0` 起计划簿记。 |
+  task_ids T-01..T-05 全闭环 | evidence：cargo check + nextest 3/3
+  （thumbnail_queue/17 名注册/a2r parity）；plan023_check.py 8/8
+  （四张截图 evidence/023/）；desktop_mcp.py 回归 58/0；vue 轨零 TS 错。
+  执行期两笔增量（均在授权内）：codegen 裸模块前缀白名单补 image
+  （Undefined variable 毒化根因）；顶栏去 justify-between（iced
+  SpaceBetween 降级 Fill 子件——AC-03 根因）。依赖 worktree
+  `.wt/os-023/auto-down`（plan-023-dev，零改动）。 | blockers 无 |
+  `next: review`。
 
 ## 10. 待澄清事项
 
