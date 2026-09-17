@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-014
-status: executing              # drafting → executing → execution_done → reviewed → archived（2026-09-17 review needs_fix：F-01..F-04 复开 T-02/T-05/T-09/T-10）
+status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-17 review needs_fix → work repair1 F-01..F-05 全清，复开 T-02/05/09/10 复闭；next: review）
 feature_name: shell-ux-polish-v2
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -16,7 +16,7 @@ affects: [shell/shell.at, shell/desktop.at, shell/switcher.at, shell/notificatio
           auto-lang/schema/projection-protocol-v1.md,
           auto-lang 宿主注入/通知臂（session.rs / renderer.rs / notify 投影面）,
           docs/specs/shell/showdesk-ux-polish.md（新增）]
-current_step: 6
+current_step: 10
 total_steps: 10
 ---
 
@@ -294,11 +294,14 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
    向追加可行）、__desktop_icons.color 与 __desktop_cells.full 漏记双实
    证、__wm_running 注入点 renderer.rs:12840。证据
    `evidence/014/rev2/T01-kaiming-hecha.md`（worktree plan-014-dev）。
-2. **[ ] T-02 W-01**（review needs_fix 复开：F-02 fixture 修复）：删 shell.at 五组死 msg+handler；desktop.at 头注补
+2. **[x] T-02 W-01**（review needs_fix 复开：F-02 fixture 修复）：删 shell.at 五组死 msg+handler；desktop.at 头注补
    color。验证：pack 冒烟（desktop.sh 起桌面，dock/热键回归）+ grep 零残留。
    [✅ 已完成] 2026-09-17 五组全删（ws_hover 随死组退役）；grep 零残留；
    pack 编译冒烟 `shell_packs_compile` PASS（真管线 compile+Init）。
    实机 dock/热键回归 → review 门（双轨截图通道）。
+   [repair1 F-02] fixture `desktop_shell_at_builds_with_dock_defaults`
+   删 `WorkspaceClose` 调用段（W-01 退役合同，pager × 无发送者），注释
+   同步；PASS（auto-lang 679ee141c）。
 3. **[x] T-03 W-02**：spike 宿主排空指纹（10 分钟盒）→ 四 pack 写点统一追加
    语义（或按 Q1 退化注释修正）。验证：同周期双命令日志。
    [✅ 已完成] spike 定案=追加语义可行（parse_records 按 \n/REC_SEP 切分
@@ -314,7 +317,7 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
    即时重注入（v1.6 动词，storage 已清故即时臂=重启全量回同效）；019 菜单
    臂（更换壁纸/显示设置）未动。a2vue 金样重生成含该按钮（vue 产物可见）。
    重启全量回/菜单臂实机回归 → review 门。
-5. **[ ] T-05 W-04**（review needs_fix 复开：F-03 hover 提取回归）：desktop.at `sel_id`/选中块/`launching`；宿主 `__wm_running`
+5. **[x] T-05 W-04**（review needs_fix 复开：F-03 hover 提取回归）：desktop.at `sel_id`/选中块/`launching`；宿主 `__wm_running`
    扩注 desktop 层；rev2 mock 重画并对拍；自愈用例 + 拖拽互洽用例。
    [✅ 已完成] sel_id（IconPress 置位/BlankPress 清空，拖拽阈值臂不受
    影响——选中只置本地态）+ launching（ActivateApp 置位，绝对定位灰点
@@ -323,6 +326,14 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
    律）+ Init/重注入求差自愈；rev2 mock 双主题重画入
    `evidence/014/rev2/`（022 常量：cols 8/gap 8/格 80×72/图标 48 满幅）。
    对拍/拖拽互洽/自愈实机用例 → review 门（宿主投影/scoped 套件已绿）。
+   [repair1 F-03] 根因实锤=**分支体内注释语句**（`Stmt::Comment` 入解
+   析器语句流，else 体 len==2 废 Plan 339 单表达式合同 → 条件样式整链
+   落空串 → 格 style=None → hover 归零；review 疑似的「深度限制」不成
+   立，与深化的相关是伴随现象——W-04 把注释写进了嵌套 else 体）。builder
+   根修 `first_meaningful_stmt`（跳过 Comment/EmptyLine，string/value 两
+   If 臂共用）+ 回归两件；同测试后段 wallpaper 断言在 W-02 追加语义下
+   的 latent 红一并联修（fixture 补 `drain_app_desktop_commands` 排空
+   兼断 ActivateApp 到达宿主）。测试 PASS（auto-lang 679ee141c）。
 6. **[x] T-06 W-06'**：宿主 `__wm_date` 注入；shell.at 时钟两行（无点击臂）。
    验证：跨天刷新用例 + 脏帧独立性。
    [✅ 已完成] `update_shell_clock` 双字段独立变化才写（date_text/clock_text
@@ -345,12 +356,15 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
    发现并修复：召唤注入点漏 note_apps → RebuildNotes IndexError
    （note_apps 域外防御读 + 双注入点补齐）；`notif_center_summon_headless`
    等全绿。两臂实机用例 → review 门。
-9. **[ ] T-09 W-10**（review needs_fix 复开：F-04 fixture 断言更新）：switcher.at sel 预选第 2 项 + 行 onmouseenter 跟随。
+9. **[x] T-09 W-10**（review needs_fix 复开：F-04 fixture 断言更新）：switcher.at sel 预选第 2 项 + 行 onmouseenter 跟随。
    验证：键盘/鼠标混合推进用例。
    [✅ 已完成] RebuildMru `nres>1 → sel=1`（Alt-Tab 惯例）+ HoverSel(int)
    行悬停置 sel（visible 门控；键盘 Advance/Back 从当前 sel 天然互洽）。
    pack 编译冒烟 PASS；混合推进实机用例 → review 门。
-10. **[ ] T-10 W-12'**（review needs_fix 复开：F-01 SD-01 spec 撰写）：schema §6 v1.8 节（四增量 + color 补记；oncontextmenu
+   [repair1 F-04] fixture 断言更新为新合同：summon 后显式断 `sel == 1`
+   （W-10 预选）+ Advance 断回绕 `1 → 0`（confirm 落 rows[0]=Beta 与既有
+   drain 断言连贯）；PASS（auto-lang 679ee141c）。
+10. **[x] T-10 W-12'**（review needs_fix 复开：F-01 SD-01 spec 撰写）：schema §6 v1.8 节（四增量 + color 补记；oncontextmenu
     坐标臂按 Q2 裁定记录）+ 宿主注入面收口 + `shell-pack-sync.py`
     hash 对齐。验证：字段表与 model 声明逐一比对记录。
     [✅ 已完成] schema v1.8（§6 节 + §2 行：running 扩面/date/notes.app+
@@ -361,9 +375,64 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
     __wm_notes_badge）desktop.at（__wm_running）notification_center.at
     （note_apps）全登记，无漏。a2vue desktop 金样重生成（17/17 a2vue
     套件绿）。schema_drift fence PASS。
+    [repair1 F-01] SD-01 spec
+    `docs/specs/shell/showdesk-ux-polish.md` 落盘 auto-os worktree
+    （六节：桌面选中/启动反馈、hidden 去重与恢复、时钟/日期注入面、
+    badge 形态、通知来源跳转、switcher 预选/hover + 验收锚 AC-02..04
+    映射；auto-os e94f4aa）。
 
 ## 9. 复审记录
 
+- 2026-09-17 stage:work PLAN-014 rev2 outcome:**pass**（repair cycle
+  1/3，F-01..F-05 全清）— reviewed_commit 后修复提交：auto-os
+  `e94f4aa`（plan-014-dev，SD-01 spec + 修复收据）/ auto-lang
+  `679ee141c`（auto-os-dev，F-02/F-03/F-04 修复 + 回归两件）；两
+  worktree 提交时点零脏区。worktree 组 `.wt/os-014/` 保留。
+  **findings 处置**：
+  - F-01：SD-01 spec `docs/specs/shell/showdesk-ux-polish.md` 落盘
+    （六节行为合同 + AC 锚映射，auto-os e94f4aa）。
+  - F-02：fixture 删 `WorkspaceClose` 调用段（W-01 退役合同），PASS。
+  - F-03：**根因修正 review 假设**——非「aura_view_builder 求值深度
+    限制」，实为 desktop.at 格样式链嵌套 else **分支体内注释**（W-04
+    引入）被解析器收进语句流（`Stmt::Comment`），else 体 len==2 废
+    Plan 339「单表达式」合同 → 条件样式整链落空串 → `Style::parse("")`
+    失败 → 格 col style 整体 None → hover 变体归零。builder 根修
+    `first_meaningful_stmt`（跳过 Comment/EmptyLine，string/value 两
+    If 臂共用，注释从此任意深度合法）+ 回归两件（端到端
+    `conditional_style_with_comments_in_branches_resolves_hover` +
+    单元 `first_meaningful_stmt_skips_comments_and_blank_lines`）；
+    修复后同测试推进暴露 W-02 追加语义下 wallpaper 断言的 latent 红
+    （review 轮被 hover 断言遮蔽）——fixture 补
+    `drain_app_desktop_commands` 排空（兼断 ActivateApp 到达宿主）。
+    全部 PASS。
+  - F-04：fixture 断言更新 W-10 新合同（summon 后 `sel==1` 预选显式
+    断言 + Advance `1→0` 回绕），PASS。
+  - F-05：worktree desktop-host `gen/front/vue` 生成 src 实际 import
+    reka-ui(65)/@vueuse/core(18)/class-variance-authority(12)/
+    vue-sonner(1) 而 package.json 四者皆缺 → 按授权「gen 等价补齐」补
+    依赖（版本对齐伞内 ui-gallery/widgets-gallery）+ `pnpm install`
+    装齐（5.2s，四包在位）。**codegen 侧债务挂账**：auto-man vue.rs
+    Plan 442 usage 检测漏 desktop-host 场景依赖（package.json 模板漏
+    记），不在本计划授权面。
+  **acceptance_results**：AC-01..05 代码与 scoped 面全绿（F-02/03/04
+  三 fixture 测试 + 新增回归两件 PASS；schema v1.8/hash-lock/字段表比
+  对沿上轮证据不变）。全 ui 套件门（auto-lang worktree，`cargo t
+  --no-fail-fast` 全档 5025 跑）：36 红 = 23 基线（master 24 中
+  `external_config_poll_hot_apply_loopsafe` 本轮 flaky-green——review
+  已证环境类）+ 13 **范围外存量**（musk p053×4/p054×2 + plan051/339/
+  367/370/492_m4/606/632 各 1）。**零新增红实证**：13 extras 在被审
+  提交 bcc7f6c87 干净树上逐一复现（stash A/B），与本修 diff 无关；且
+  全部位于 review 轮 2060 跑的过滤范围之外（review 日志零 p053 命中）
+  ——review 轮跑的是 UI 过滤面，本轮为全档口径，范围差与失败归因留
+  re-review 复核。**遗留环境观察**：`auto`(29724)/`ui_desktop`(13140)
+  桌面进程本轮实测在跑（污染类沿 review 已证口径）。
+  evidence：`docs/plans/evidence/014/rev2/repair1-findings.md`（auto-os
+  worktree）+ /tmp/repair_full_nff.log、/tmp/repair_nff_fails.txt、
+  /tmp/baseline24.txt。
+  **next**：`/auto-plan:review`（re-review；重审门 = 全 ui 套件零新增
+  红【本轮已达，A/B 实证在案】+ vue 轨运行时门补齐【desktop-host gen
+  依赖已装齐，vite 启动待 review 实证】+ 双轨双主题截图对拍/实机装配
+  冒烟沿 022 先例用户走查通道）。
 - 2026-09-17 stage:review PLAN-014 rev2 outcome:**needs_fix** —
   reviewed_commit: auto-os `5c2f5c2b`（plan-014-dev）/ auto-lang
   `bcc7f6c87`（auto-os-dev）；base: auto-os 325095b（main）/ auto-lang
