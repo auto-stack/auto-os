@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-025
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp
 author: [agent]
 created_at: 2026-09-17
@@ -558,6 +558,35 @@ auto-os`）。
   Switch 变体 → native form 族四型；flex-1/shadow 降级放行；ScrollMetrics
   offset=滚动后语义；live 壳键盘订阅缺口 → P025-D1；截图→帧 dump 代留痕
   （⑤口径）。
+- 2026-09-18 /auto-plan:review 复审：`stage: review | PLAN-025 | rev 1 |
+  outcome: pass | reviewed_commit lang plan-025-dev 870ee1574 + os
+  plan-025-dev b4c2c1b | base_commit lang 5ceeac30c / os 4b974c2 |
+  dependency_revisions auto-down 3a052558（detached 兄弟，只读清单）|
+  spec_inputs desktop-protocol-v1.md（§1.7 增量随 T-08 提交）+ KNOWN-DEBT
+  （P020-D2 核销 + P025-D1/D2）+ os 台账 3b 行 | acceptance_results：
+  AC-01 pass（172/173；唯一红 covered_elements_within_target_set = 在册
+  既有红——测试本体与 target_set 依赖零改动 + 基线复核；p020 臂绿）；
+  AC-02 pass（p025 converter 腿：真 exe queue 孵化→broker_char 100→212
+  联动，复审独立复跑）；AC-03 pass（slider 75%/select Medium 腿复跑 +
+  46 项单测/golden）；AC-04 pass（broker_input_production_routes wire 级
+  断言 + t3 e2e 改走 broker_char 同册受益 + 右键/滚轮/Scissor 单测）；
+  AC-05 pass（双向防漏钉 + 003 token 放行 + 金样内容抽查=全精度帧 dump
+  非平凡断言）；AC-06 pass（§1.7 断言与代码抽查一致：view.rs Switch=0/
+  store_input_text/broker×3；互链可解析）；AC-07 pass（client_runtime+
+  native_projector 61/61 + auto-man rust_ui 22/22 + p020 无回归；os diff
+  纯 docs+script 零运行时面 → desktop_mcp 不受影响）| findings：
+  R-1 info rust-workspace 成员表/旧 converter 生成件随构建变更（生成器
+  副作用，T-07 提交说明留痕；015-notes 副作用已还原）；R-2 info SD-03
+  目标钉定 = docs/specs/auto-lang/ui/overview.md:30 provisional 指针行
+  （v1.6→v1.7 + 覆盖集/输入路由随册一句），canonical 编辑不随 review
+  发布、merge 期落笔；R-3 info AC-07 os 侧 desktop_mcp 未跑（零运行时
+  变更，不构成缺失）；R-4 info 帧 dump 代截图（⑤口径/P020-D4 同边界，
+  已授权）| evidence：复审在 lang-025/os-025 worktree HEAD 独立复跑
+  p025_native_input_arm + broker_input_production_routes +
+  t3_examples_queue_end_to_end + 173 项协议套件 + 46 项投影器/覆盖/
+  codegen 套件（本记录即复现命令）；wire 不变量= message.rs 零 diff +
+  PROTOCOL_VERSION 未触；I4=解释态 target_set 零 diff | next: merge
+  （SD-03 一行指针 delta 文本随本记录，merge 期落 canonical）。
 
 ## 10. 待澄清事项
 
