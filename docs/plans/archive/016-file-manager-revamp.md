@@ -1019,7 +1019,7 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
 - **`status: reviewed`**；next: /auto-plan:merge（worktree 双仓待其
   清偿；merge 时注意 os-016-dev 簿记分叉调和）。
 
-### 2026-09-15 merge 收据（PLAN-016:r2）
+### 2026-09-17 merge 收据（PLAN-016:r2）
 
 - `stage: merge` | `plan_id: PLAN-016` | `plan_revision: 2` | `outcome: pass` |
   `completion_kind: delivered`。
@@ -1039,7 +1039,14 @@ opens: ".jpg,.jpeg,.png,.webp,.gif,.bmp"
   P016-1 tests / P016-r1 reviews；读回校验通过（五节各含 P016 条目）。
 - **`archived` ✅**：本文件 git mv → docs/plans/archive/
   016-file-manager-revamp.md，status=archived。
-- **`cleaned` ⏳→见补记**：wt-guard 双仓 + worktree/分支/组目录清偿
-  （归档后执行，结果补记于本节）。
+- **`cleaned` ✅（2026-09-17）**：wt-guard 双仓 clean（auto-os 直接
+  clean；auto-lang 首跑 BLOCKED——gen/front/vue/node_modules 的 pnpm
+  内部 junction（gitignored 生成产物），按闸门指引 cmd rmdir 移除后
+  重跑 clean）。清偿明细：worktree ×4（.wt/os-016/{auto-lang,auto-down}
+  + .wt/os-016-preview/{auto-lang,auto-down}，preview 组为并发会话所建、
+  HEAD 均已在 master）、分支 os-016-dev ×2（auto-lang 9f9f84741/
+  auto-os 5ecc7d6 均 -d 安全删）、组目录 ×2（含 15G lang-target 构建
+  产物与 tmp 探针草稿——结论已录 §9 FR-6，文件未入库按计划销毁）。
+  .wt/ 下 os-016 组零残留。
 - 交接注记：os-016-dev（auto-os wt）c6af080 簿记分叉已在本轮 merge 中
   并集调和（5ecc7d6），无遗留冲突。
