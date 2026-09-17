@@ -517,6 +517,12 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | R5 | CPU 实时轮询类组件常驻占 CPU——建议放次级 tab（stella 多 tab：平时不看不影响 CPU） | 双固定 tab：小组件(main)/系统(system)；face→tab = 注册表 category（system→系统页，025-sys-monitor 天然入住，clock 留主页面）；视图按面板 active_tab 过滤 face（格位按活动页重算）；**孵化会话 Tick 门控**——面板隐藏或非活动 tab 停订 .Tick（订阅随消息周期重评估），常驻零轮询开销 | auto-lang tab 化提交 | ✅（门控逻辑；开销度量留 §10#4 走查） | 实机：tab 切换渲染；系统页才见 sys-monitor 卡 |
 
 | R6 | 右上角 × 应 hover 时再显示 | 面板级 mouse-area onmouseenter/onmouseleave → show_close 状态，× 条件渲染（槽位 h-8 w-8 固定不跳版） | auto-lang R6 提交；pack 重同步 | ✅ | 实机：默认不见 ×，悬停面板显现；shell_pack 3/3 |
+| R8 | resize 虚拟桌面时面板与图标会重叠 | 网格元数不固定而图标/面板尺寸固定——结构性问题，**用户裁定缓行**：待平板网格 v2（格数固定、格尺寸随 resize 缩放）一并解决 | ——（记入 §9.3 候选新计划范围） | ⏸ 缓行 | v2 计划验收 |
+| R9 | 两个 tab 内容全空（无时钟/系统组件） | 根因：dashboard.at model 未声明 `face_tabs` 变量 → write_state_vec 静默失败 → 视图按 active_tab 过滤滤光全部 face。修：model 补 `var face_tabs = []` | auto-lang tab 轮提交；pack 重同步 | ✅ | 实机：主 tab 时钟卡走秒（用户截图 23:58:58） |
+| R10 | 面板尺寸与左侧图标网格不成整数倍，未对齐 | 面板外框吸附图标网格：列距 88（80+8）/行距 80（72+8）/原点 12，宽 10 列（872）高 3 行（232），右上 12px 对齐；内部格位等比缩放 | auto-lang R10 提交 | ✅ | 实机：面板边缘与图标格线对齐 |
+| R11 | os-config 打不开，无法切浅色验证 | 根因：worktree 组缺 `../auto-os-config` 兄弟检出（注册表扫描不到 os-config 条目，齿轮点击 no-op）。修：组内补依赖 worktree（detached main，AGENTS §2 约定）；浅色验证可 `AUTO_UI_THEME=light` 启动 | 组内 `.wt/os-024/auto-os-config` 检出 | ✅ | 实机：齿轮拉起 os-config；浅色 run 供验证 |
+| R12 | 点「系统」tab 无效 | 根因：常驻面板住底层后，桌面图标层**全屏 BlankPress mouse-area** 叠在其上吞掉全部 click（日志零条 SelectTab 实证）。修：dashboard 层上移至图标层之上、app 窗之下（视觉右上与图标网格不重叠，app 遮挡保持——R3 主诉求不变） | auto-lang R12 提交 | ✅ | 实机：tab 切换渲染对应 face |
+| R13 | 时钟内容贴卡片左缘，应容器内居中 | 活卡容器补 align_x/y Center（face 列宽收缩内容，容器居中生效） | auto-lang R12 提交 | ✅ | 实机：时钟在卡内水平垂直居中 |
 
 | R7 | 桌面快捷方式全消失；应保留并与小组件有机配合 | 根因=走查拉起方式缺 `AUTO_VM_STORAGE_FILE`（desktop.sh 会注入，直接 exec exe 落 CWD 哈希临时库 → `shell.desktop.icons` 读空）。修：①ui_desktop 缺省对齐 PLAN-018 确定性 per-user 库（已设 env 不覆盖）；②面板默认**右上角**与图标网格（列主序占左）有机共存；③伴随修：dashboard_layout 去 panel_x 内部居中，格位面板相对、调用方单一注入（chrome/face 不再分家） | auto-lang R7 提交 | ✅ | 实机：order=27/cells=50 注入；07-icons-coexist.png 图标+面板共存 |
 
