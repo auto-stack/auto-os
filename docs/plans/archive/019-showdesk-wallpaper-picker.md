@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-019
-status: reviewed             # drafting → executing → execution_done → reviewed → archived（2026-09-17 快速复审 pass，见 §9 末条）
+status: archived             # drafting → executing → execution_done → reviewed → archived（2026-09-17 merge delivered，收据见 §9 merge 记录）
 feature_name: showdesk-wallpaper-picker
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -542,3 +542,26 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
 3. ←/→ 键臂与既有全局热键表（switcher 等）的注册点关系——T-04 执行时核实，
    冲突则 picker_open 门控天然隔离。
 4. 壁纸路径 fp 算法细节（归一化规则）——T-06 执行期定案并回写 SD-03 spec。
+- 2026-09-17 stage:merge PLAN-019:r2 outcome:**pass**（五检查点全 closed）。
+  - **prepared**：reviewed 基线 auto-os 88f86fa/auto-lang 4fb58361b + spec
+    定稿 dd0ade3；canonical 目标 = docs/specs/shell/showdesk-wallpaper.md
+    （auto-os）+ schema/projection-protocol-v1.md v1.7（auto-lang）。
+  - **landed**：reconcile 后 ff 落地——auto-lang master 768e8fcd3（merge
+    daaa869a4+768e8fcd3 两轮并入 master 并行推进（022/023/637/638），冲突
+    三处合流：renderer.rs desktop_icon_cells 双参（019 布局键控×022 列主
+    序 rows）、LaunchSpec 新字段初始化器、协议文档 v1.7 **双 provenance
+    合流**（PLAN-016 open_with 与本计划撞号——裁决同版合流一节，双增量
+    各带 provenance 前缀）；shell pin 同步 ec5a2d509（shell.at=b5b8b0d433/
+    desktop.at=0ef63b69b4）+ a2vue 金样重生成 0407a9f9b。auto-os main
+    7e2a270（desktop.at 五处冲突全取 main 022 网格终版、019 picker/菜单
+    层保留；图标 8 枚取 main 022 重制版）。scoped 41/41 绿；全量对账
+    4988/5023 = 19 基线预存 + 13 master 存量（master 检出逐条复跑实证）+
+    3 pin 同步前伪影，019 账面零新增。
+  - **ledger_refreshed**：.autoos/specs.json 五节 73→78 条，读回全中
+    （fdfba35）。
+  - **archived**：本件 git mv 至 docs/plans/archive/、status: archived、
+    completion_kind: delivered。
+  - **cleaned**：os-019 组三 worktree（auto-os/auto-lang/auto-down
+    detached）+ auto-os plan-019-dev + auto-lang auto-os-dev 分支清偿，
+    wt-guard 逐组过闸后移除（收据补记随 cleaned 提交）。
+
