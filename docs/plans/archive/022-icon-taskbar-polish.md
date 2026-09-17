@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-022
-status: reviewed              # 2026-09-17 r1 pass（回补计划复审；next=merge）
+status: archived             # drafting → executing → execution_done → reviewed → archived（2026-09-17 r1 pass merge 清偿）
+completion_kind: delivered
 feature_name: icon-taskbar-polish
 author: [ZCode 会话 2026-09-15]
 created_at: 2026-09-15
@@ -169,6 +170,23 @@ launcher + 切换器）、桌面图标 48px 满幅 + 标题回归、拖拽交互
   对拍重生成（auto-lang `0407a9f9b`，desktop.at 022 网格终版双端同源）|
   局限声明：运行时行为未现场重演（ui_desktop 未运行），结论重建自工件：
   计划内执行期用户实测记录 + HEAD 代码标记 + 祖先覆盖回归 | `next: merge`
+
+- 2026-09-17（merge 清偿）：`stage: merge` | PLAN-022:r1 | `outcome: pass` |
+  **prepared**：reviewed 基线 f357db7；实现已先行落库（回补形态，
+  auto-os `d616fa7`/auto-lang `94bc69c22`+`9bd26d884`，复审 merge-base
+  祖先实证）→ 按 legacy 规则建专属沉淀 worktree `.wt/os-022/auto-os`
+  （分支 `plan-022-dev`，自 f357db7）；frozen delta=SD-01/SD-02。
+  **landed**：worktree `088bc6e`（docs/specs/shell/showdesk-icons.md 新增
+  71 行 + apps/028-launcher/SPEC.md 布局语义节 +14 行 + 台账五条）ff 落地
+  **main 088bc6e**——delivery_commit=088bc6e（reviewed f357db7 的文档/
+  投影纯增量 +145 行，实现/依赖零变化，免复审条件核对过）；落地后校验：
+  spec 文件在位、台账 JSON 读回 80 条。**ledger_refreshed**：
+  .autoos/specs.json 五条（reports/architecture/designs/tests 各 P022-1 +
+  reviews PLAN-022-r1），75→80 条读回过（reports 15/architecture 22/
+  designs 11/tests 15/reviews 17/goals 0——goals 空影响有说明）。
+  **archived**：docs/plans/archive/022-icon-taskbar-polish.md（git mv），
+  completion_kind: delivered。**cleaned** 待清偿（wt-guard + worktree/
+  分支/组目录移除，同日清偿后补记）。
 
 ## 新会话交接（2026-09-15 收尾快照）
 
