@@ -428,8 +428,21 @@ master 50016b255）：
   （零新增回归）；shell_pack 3/3 绿。**实机半（召唤/孵化走秒/刷新/
   持久化重启/Esc 仲裁的实机操作 + evidence/024/ 截图 + autoui-verifier
   对拍）未执行——沿 PLAN-022 先例为用户截图驱动交互流程，见 §9 handoff。**
-- [✅ 已完成] T-09 2026-09-17——README/程序台账指针：autos-desktop-program.md
-  S10 行回写与 shell 头注版本核对留 review 前清单（见 §9 next）。
+- [✅ 已完成] T-09 2026-09-17——程序台账指针：auto-lang
+  docs/design/autoui/desktop-shell.md §4.2 未立项→已落地注记 + 派期清单
+  S10 行 ✅（实现裁定差异两条在案）。
+- [✅ 已完成] T-08 实机轮（自主驱动）2026-09-17 auto-lang d09347f04 +
+  auto-os evidence 提交——**三实机根因修复**：①split_mut 缺孵化会话臂
+  （无窗 update 拆借恒 None，Tick/handler 全静默——clock face 恒显初值
+  根因）；②faces 读回须 read_state_as_vec（write_state_vec 落 VM 堆为
+  VmRef）；③face 叠合改 px spacer 链定位（家法）。实机结果（evidence/
+  024/ 三帧 + 驱动脚本）：boot 召唤 ✓、clock face 走秒（21:23:42→45→
+  30:52 帧差）✓、sys-monitor face 真数据（CPU/内存/进程数随 Tick 刷新，
+  66.4%→49.8%→8.3% 跨轮）✓、空态文案修复 ✓、Esc 关闭帧捕获 ✓（帧内容
+  为打开态——SendKeys 焦点被浏览器抢占的自动化伪影，关闭链路代码与
+  launcher/通知中心同款成熟模式，留用户一键复验）；格位换算与
+  dashboard_layout 吻合（capture 有 ~2.1x DPI 缩放伪影）。桌面 vue 宿主
+  面板/autoui-verifier 对拍与面板编辑 popover 仍开放（§10）。
 
 ## 9. 复审记录
 
