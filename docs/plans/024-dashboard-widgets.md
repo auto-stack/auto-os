@@ -534,6 +534,7 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | R19 | 加音乐播放器小组件（参考 stella mini-player） | 020-music-player `view mini`：圆盘 glyph + 曲名/艺人居中 + 进度时间 + ⏮⏯⏭ 控制行（face 事件直达 app 会话，PlayPause 无曲目自动开播）；category=media → 主 tab。与主窗同 store（current_title/is_playing/progress 同源） | auto-lang R19 提交 | ✅ | 实机：faces=4 全孵化（日志实证）；
       主 tab 三卡满行 + 系统 tab sysmon |
 | R20 | 桌面小组件点击时应打开对应 app | 三态打开语义：**孵化会话 → 升格开窗**（新原语 open_window_for_session——为既有 AppSession 建虚拟窗，face 与窗同会话零分家，避免同 app 双会话状态分裂）；**已有窗 → activate 聚焦**（跨分区/负一屏语义复用）；**无会话 → launch**。实现：face 卡包 mouse_area（内层交互优先命中，空白区点击 = 打开；合成消息 `__dashboard_open:<id>` + update 拦截臂 + 尾 drain/sync 同形）。音乐卡控制钮不受影响 | auto-lang R20 提交 | ✅ | 实机：点时钟卡开时钟窗、音乐卡按钮仍就地播放 |
+| R21 | 打开交互三项细化：①双击打开（或 hover 显 open 钮）；②多次点击别开多个，激活第一个；③打开是"调用"关系，小组件常驻不收起 | ①mouse_area 改 on_double_click（桌面图标双击同款；单击留给卡内控件）②三态判定去重排序：已有窗 → activate 聚焦 → 孵化升格 → launch（升格后窗已在，再点即聚焦）③升格语义天然满足（face 与窗同会话常驻，开窗不收面板） | auto-lang R21 提交 | ✅ | 实机：双击开窗/再击聚焦/面板常驻 |
 | R18 | 除了时钟/系统监控还做了哪些桌面小组件？最好多显示一个 | 如实答：v1 试点仅时钟+系统监控（§4.5 裁定）。本轮补 **013-todo 待办卡**（active_count 大字，store 同源活渲染，纯前端孵化）——主 tab 三卡布局成形（clock/todo/sysmon）；016-calendar 跳过（store today 为写死演示日期 2026-06-17，桌面卡会显示假日期，误导）；kanban/klondike/tetris 战绩卡留 §4.5 后续候选 | auto-lang R18 提交 | ✅ | 实机：faces=3 全孵化日志实证 |
 
   R17b/c 注记：①用户裁定改**按段定色**（一条多色——段色=段上界档位，44% 全绿、满条四色渐变）；②`.cpu.as(int)` 对 float 产出垃圾值（CPU 44% 整条红实证）→ 点亮判定改浮点累加比较，全程无 float→int 转换；③**R17c 档位四等分**（用户裁定：段上界 ≤25 绿 / ≤50 蓝 / ≤75 黄 / >75 红）——38% 内存 = 5 绿 + 2 蓝可见。
