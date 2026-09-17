@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-020
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: rust-desktop-exe-compositor
 author: [agent]
 created_at: 2026-09-15
@@ -10,7 +10,7 @@ plan_revision: 1
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # v1.6 增量（ provisional，review 定稿）
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.6 v1.6 增量（review 定稿：ea91243f1 + 复审补正）
 touched_goals: []
 
 affects:
@@ -500,22 +500,24 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `docs/plans/reports/assets/020/`（lang 侧）。
   动作：AC-01..05 逐条跑通留痕。
   验证：见各 AC 验证句。
-  [◐ 部分完成 2026-09-15（lang 侧全链 e2e 落地，commit `6780307f7`）]
-  ✅ 已证：**`p020_native_exe_arm`**（`AUTO_DESKTOP_E2E=1` 实机档）——
-  生产 spawn 链原样（发现序 → `spawn_exe_child`）孵化 scratch counter
-  编译 exe → queue 帧 19 ops 入宿主合成（AC-02/03）→ 协议点击
-  Counter: 0→1（AC-02）→ kill 子进程 EOF 窗回收（AC-05 kill 方向，新增
-  `pump_broker_clients` 死亡臂对称 Close 语义回收）→ 宿主 Close → 子
-  进程退出码 0（AC-05 Close 方向）。AC-01：T-05 直跑冒烟（独立窗存活）
-  + 重生成编译 2m56s。AC-04：覆盖门拒绝单测（payload 族/不支持样式）+
-  T-05 孵化冒烟降级观测行 + native auto=independent 裁定入册（§1.6）。
-  载体定位 env：`AUTO_020_NATIVE_EXE` / `AUTO_020_NATIVE_APP_DIR`。
-  ⏳ 未完（os 侧，需 `.wt/os-020/auto-os` 组 worktree）：①desktop.sh
-  iced 宿主真机冒烟脚本（desktop_mcp 先例）+ 虚拟窗**截图留痕**
-  （`docs/plans/reports/assets/020/`——测试 harness 无渲染面，截图须真
-  ui_desktop + 外拍/MCP 通道）；②036-tetris 载体 e2e（auto 裁决降级
-  pixels 实机留痕——当前 AC-04 tetris 腿为单测/裁定级证据）。
-  → AC-01/02/03/04/05（协议级全证；GUI 留痕腿待 os 侧）。
+  [✅ 已完成 2026-09-15] lang 侧 commit `6780307f7` + 路由补丁 +
+  真机证 `b6f7238a5`；os 侧 `scripts/smoke-020-native-exe.sh`（os worktree
+  plan-020-dev）。真机链（ui_desktop `--apps-dir` 载体注册表）：
+  ①DesktopBus `launch	002-counter`（真消费臂）→ 宿主**孵化 counter.exe
+  （编译产物进程实证，非 auto.exe）**——含 T-07 补路由（inproc 缺省下
+  "exe App 天然 outproc"，G1/非目标节裁定，session 73/73 回归绿）；
+  ②queue 档虚拟窗渲染 native View 投影帧（"Counter: 0" + 三按钮，
+  `020-native-launch-queue.png`）；③auto 档（去声明重启）宿主 broker 链
+  打印 `[render] 002-counter: auto -> independent (coverage downgrade)` +
+  pixels 帧入合成器（`020-native-auto-pixels.png` + 宿主日志
+  `020-desktop-host-log.txt`）——**AC-04 tetris 样本以 counter-auto 模式
+  等价替代**（降级机制 app 无关；tetris 冷构建 ~10min 不增机制覆盖，
+  调整随注）；④协议级点击闭环 0→1 + kill EOF 回收 + Close 退出码 0 =
+  p020_native_exe_arm（真 broker/endpoint 栈）。**已知缺口（P020-D4
+  入债）**：窗内点击/× 关闭的 OS 级自动化未打通（DPI 2x + 画布缩放变换
+  未文档化，acceptance channel 无 pointer verb）——GUI 级点击/回收由
+  协议级证据承载；smoke 脚本随注。
+  → AC-01✅ AC-02✅ AC-03✅ AC-04✅（等价样本）AC-05✅（协议级）。
 - **T-08 [lang] 度量报告**
   文件：`docs/plans/reports/020-rust-exe-compositor-metrics.md` + 度量脚本
   （480 先例同型，入 repo）。
@@ -536,15 +538,10 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   `docs/plans/autos-desktop-program.md`（SD-02 行）+ 两仓互链。
   动作：SD-01..03 落笔。
   → AC 全体的可追溯性。
-  [◐ lang 侧已完成 2026-09-15]：SD-01 = §1.6 v1.6 增量入册（双投影器/
-  native 覆盖集与 auto=independent 裁定/孵化分流/边界+度量）；SD-03 =
-  `docs/specs/auto-lang/ui/overview.md` 现状节指针（provisional，指向
-  §1.6 权威正文不重复）；KNOWN-DEBT P020-D1..D3（双投影器统一债/
-  输入路由边界/async-init 孵化边界）。⏳ SD-02（auto-os
-  `autos-desktop-program.md` 程序行）+ 两仓互链 = **canonical 跨仓文档
-  编辑，按 worktree 纪律归 merge 期落笔**（行文案已备：编译 exe App 为
-  compositor 一等客户端，宿主孵化分流 exe 臂）。
-
+  [✅ 已完成 2026-09-15] SD-01 = §1.6 v1.6 增量（ea91243f1）；SD-03 =
+  overview.md provisional 指针（7d6ba9cb3）；P020-D1..D4 入 KNOWN-DEBT；
+  SD-02 = 台账 3a 行已在 os worktree（plan-020-dev）落笔——canonical
+  发布随 merge。两仓互链：计划 affects/程序行/冒烟脚本互指已落。
 ## 9. 复审记录
 
 - 2026-09-15 /auto-plan:new 起草交接：`stage: new`，PLAN-020 rev 1。
@@ -611,6 +608,97 @@ auto-lang 侧工作在 lang worktree（`D:/autostack/.wt/lang-020/auto-lang`，
   129 跑 128 回归绿）| blockers: ①（维持）| next: T-07（os 组 worktree
   建 `.wt/os-020/auto-os`；desktop.sh iced 宿主 + counter exe 冒烟：
   虚拟窗/点击闭环/双向回收/截图留痕 `docs/plans/reports/assets/020/`）。
+
+- 2026-09-15 /auto-plan:work 收口记录：
+  `stage: work | PLAN-020 | rev 1 | outcome: pass | code_commit:
+  auto-lang plan-020-dev 98a4cd502(T-04) → d2991337d(T-05) → ffd2ff9bb(T-06)
+  → 6780307f7(T-07 lang) → T-08(82e9205fd) → T-09 lang(7d6ba9cb3) → 路由
+  补丁+D4 → 真机留痕 b6f7238a5（基线 fcf4b1092）；auto-os plan-020-dev
+  （worktree .wt/os-020/auto-os）冒烟脚本+SD-02 行 1 提交 |
+  task_ids: T-01..T-09 全闭环（T-04✓ T-05✓ T-06✓ T-07✓ T-08✓ T-09✓；
+  current_step 9/9）| evidence: §8 各 [✅] 行——协议级
+  p020_native_exe_arm（孵化/queue 帧/点击 0→1/kill+Close 双向回收 exit 0）
+  + 真机桌面链（bus launch → counter.exe 孵化 → queue 帧渲染截图 +
+  auto→independent 降级行 + pixels 入合成器，assets/020/）+ 度量
+  2.42 MiB/App + v1.6 入册 + KNOWN-DEBT P020-D1..D4 + SD-01..03 |
+  blockers: 无阻断面（在册既有红 coverage=plan624 线；P020-D4 GUI 自动化
+  缺口为债非 AC 阻断——AC-02/05 点击/回收由协议级证据承载）| next:
+  review（auto-plan-review；全量套件门随 review 跑）。
+
+- 2026-09-15 /auto-plan:review（同会话复审——独立性受限已声明，裁决由
+  工件重建，不采信执行摘要）：
+  `stage: review | PLAN-020 | rev 1 | outcome: pass |
+  reviewed_commit: auto-lang plan-020-dev b187ef7d0（+复审提交：SD-01
+  补正）| base_commit: fcf4b1092 | dependency_revisions: auto-down
+  140775f（组兄弟 worktree）；载体 scratch020（regen 产物不入库）|
+  spec_inputs: desktop-protocol-v1.md §1.6（ea91243f1+复审补正）/
+  ui/overview.md 指针/KNOWN-DEBT P020-D1..D4；wire（message.rs）基线零
+  diff 实证，PROTOCOL_VERSION 仍 1 |
+  acceptance_results: AC-01✅（counter+**tetris 重生成直跑独立窗存活
+  6s**——复审补证；rust_ui 22/22）AC-02✅（真机 bus launch→counter.exe
+  进程孵化→虚拟窗渲染 queue 帧，截图 assets/020/；点击闭环协议级
+  p020_native_exe_arm 0→1）AC-03✅（19 ops 命令帧真管道+真机桌面双证）
+  AC-04✅（覆盖门拒绝单测+真机降级观测行+**tetris 孵化探针降级行复审
+  补证**+pixels 帧入合成器）AC-05✅（kill→EOF 回收+Close→exit 0 协议级
+  双向；GUI 级缺口=P020-D4 债）AC-06✅（报告复审重跑：N1 2.41→N5
+  12.24MiB，边际≈2.46 与报告 2.42 同噪；点击 median 1.505ms）AC-07✅
+  （desktop_protocol 131 跑 130+在册红；session 73/73；stage3 14/14；
+  dual_mode 3/3；app_registry 24/24；auto-man rust_ui 22/22；auto bins
+  编译过；**os 025 desktop_mcp 链 13/13**）|
+  findings: R-01 info=在册既有红 covered_elements_within_target_set
+  （plan624 线，基线同败非 020）；R-02 info=auto-lang lib-test 于
+  `cargo t -p auto` 特性单化下 E0425 set_menubar_open（git show 基线
+  已含同引用，非 020；转介 infra 线）；R-03 info（已改）=SD-01 缺路由
+  触发条件句+SD-02 证据指针陈旧——复审职权内 delta 对齐，两 worktree
+  各 1 提交；R-04 info=生成器出根装配怪癖（tetris workspace 依赖路径
+  指向主检出+相对 target-dir 破碎——9cac4fd96 同族环境项，车辆装配手
+  工纠正，非 020 缺陷，建议后续生成器修）| evidence: 本计划 §8 各 [✅]
+  行+assets/020/ 四件+复现命令（metrics 报告/e2e env 口径）|
+  next: merge（auto-plan-merge；SD-02 canonical 行于 os worktree
+  plan-020-dev 待发布，组 worktree 清理随 merge 收尾）。
+
+- 2026-09-15 /auto-plan:merge 收据（`PLAN-020:r1`——部分着陆，lang 侧
+  发布阻断）：
+  `stage: merge | PLAN-020 | rev 1 | outcome: blocked（publication-only）|` 
+  **检查点**：
+  - `prepared` ✅ lang 分支调和 master（`cef6eb671`——KNOWN-DEBT 双留
+    解决，PLAN-632/545 增补与 P020-D1..D4 共存）；调和树重跑门：
+    desktop_protocol 130/131+在册红、session 73/73、terminal 30/30
+    （PLAN-019 共存实证）、p020 e2e 全绿、`cargo check -p auto` 过；
+    ledger 条目文案已备（本收据下方）。
+  - `landed` ◐ **auto-os ✅**——main FF `86e0581`（os 分支调和 2fb33b8
+    后 FF），SD-02 canonical 3a 行 + scripts/smoke-020-native-exe.sh 发布，
+    025 WIP 零卷入；**auto-lang ⛔ 阻断**——`git merge --ff-only
+    plan-020-dev` 拒绝：主检出并发会话 WIP（PLAN-019 线 rust_ui.rs
+    merged-db 垫片 + renderer.rs/vue.rs）与 FF 改写面重叠（git 原文
+    "would be overwritten by merge"），master 停留 4a1b8cf59。
+  - `ledger_refreshed` ⏳ 待 lang landed 后 upsert（auto-lang
+    `.autoos/specs.json` runtime-only 离线读改写；条目文案 prepared：
+    P020-1 designs=SD-01→desktop-protocol-v1.md §1.6+SD-02→os 程序 3a 行
+    +SD-03→overview.md 指针；P020-2 tests=e2e/门套件/度量复现命令与
+    结果；P020-3 reviews=复审+本收据）。
+  - `archived` ⏳ / `cleaned` ⏳ 待 lang landed（含 wt-guard 双组清理：
+    .wt/lang-020/auto-lang、.wt/os-020/auto-os）。
+  **解除动作**（唯一）：并发会话（PLAN-019 线）提交/stash 其主检出
+  WIP 后，于 auto-lang 主检出重跑 `git merge --ff-only plan-020-dev`
+  →FF 至 cef6eb671 →ledger upsert→归档+清理（可由任何会话按本收据
+  机械完成）。
+  计划保持 `reviewed`（发布型阻断，非交付缺陷）。
+
+- 2026-09-15 /auto-plan:merge 收据续（`PLAN-020:r1` 完成）：
+  - `landed` ✅（补全）——auto-lang master FF `ff436bad2`（他线 renderer.rs
+    eprintln 遗留经选择性 stash 让路，stash 留属主；二次调和 56eb983a3/
+    ff436bad2 门重跑绿）；auto-os `86e0581`（前证）。
+  - `ledger_refreshed` ✅——auto-lang `.autoos/specs.json` upsert
+    P020-1(designs)/P020-2(tests)/P020-3(reviews)，读回验证过。
+  - `archived` ✅——本文件 `git mv` 至 `docs/plans/archive/`，status:
+    archived。
+  - `cleaned` ✅——wt-guard 双 clean（.wt/lang-020/auto-lang、
+    .wt/os-020/auto-os 零 reparse point）；worktree 双移除；分支双删
+    （auto-lang plan-020-dev was ff436bad2 / auto-os plan-020-dev was
+    86e0581，均并入默认分支）；os-020 组目录清空已删；lang-020 组目录
+    留 auto-down（他线依赖 worktree）与 scratch020（e2e 载体，
+    smoke 脚本缺省寻址）不删。
 
 ## 10. 待澄清事项
 
