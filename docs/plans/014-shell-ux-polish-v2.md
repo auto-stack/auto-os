@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-014
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（2026-09-17 review needs_fix → work repair1 F-01..F-05 全清，复开 T-02/05/09/10 复闭；next: review）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-17 re-review pass——repair1 F-01..F-05 全清、零新增红 A/B 实证、vue 门补齐；next: merge）
 feature_name: shell-ux-polish-v2
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -383,6 +383,59 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
 
 ## 9. 复审记录
 
+- 2026-09-17 stage:review PLAN-014 rev2 outcome:**pass**（re-review，
+  repair cycle 1 后）— reviewed_commit: auto-os `e94f4aa`（plan-014-dev）/
+  auto-lang `679ee141c`（auto-os-dev）；base: auto-os 325095b（main）/
+  auto-lang eefb5d84d（master）；dependency: auto-down detached
+  b37b08e（纯构建依赖零改动）。两 worktree 提交时点零脏区。
+  **独立性声明**：评审与 work 修复同会话执行——结论从工件重建（全量
+  套件复跑绑定被审提交、scoped 复跑 23/23、spec 逐条对照实码复读），
+  非执行期摘要转信。spec_inputs: auto-lang schema/projection-protocol-
+  v1.md v1.8（worktree 已提交待 merge 发布）+ SD-01
+  docs/specs/shell/showdesk-ux-polish.md（worktree 待 merge）。
+  **acceptance_results**：
+  - AC-01 pass：五死消息 grep 零残留（唯一命中 = 退役注释行）；
+    `showdesk_wallpaper_verbs_parse_and_encode`（含
+    `parse_records("show_desktop\nwallpaper_pick")` 双记录金样）PASS；
+    SendCmd 单点四 pack（21/18/5/7 写点）。
+  - AC-02/03/04 pass（代码与 scoped 面）：F-02/F-03/F-04 三 fixture +
+    两件新回归（conditional_style_with_comments_in_branches_resolves_
+    hover / first_meaningful_stmt_skips_comments_and_blank_lines）
+    复跑 PASS；a2vue 套件 23/23（含 desktop 金样 + nested_if_style）；
+    schema_drift fence PASS；spec 承重点逐一对照实码符合
+    （ResetIconsBlank 四步链、badge `absolute -top-1 -right-1 h-4
+    rounded-full bg-error` + 9+ 串、OpenSource `app != ""` 守卫 +
+    activate + 收面板、RebuildMru `nres>1 → sel=1`、HoverSel visible
+    门控、launching RunningSync/Init 双收敛臂、时钟双字段独立脏帧）。
+    双轨双主题截图对拍与实机装配冒烟沿计划 §6 既定与 022 先例的用户
+    走查通道（评审记录在案，非本评审新增债）。
+  - AC-05 pass：schema v1.8 节四增量 + §2 行五处 + §2.1 审计补记
+    （color/full）+ Q2 后置记录 + 向后兼容声明；pack model 字段声明
+    比对（__wm_date/__wm_notes_badge@shell.at、__wm_running@desktop.at、
+    note_apps@notification_center.at）全登记；`shell-pack-sync.py`
+    校验复跑四件全等（shell=0c185aa354/desktop=331cca880f/
+    switcher=789f4c4f17/notification_center=52993bd461）。
+  **重审门裁定**：①全 ui 套件零新增红——`cargo t --no-fail-fast`
+  全档复跑（5025 跑/110 skip）：37 红 = 24 基线 + 13 范围外存量（musk
+  p053×4/p054×2 + plan051/339/367/370/492_m4/606/632 各 1），13 项在
+  被审提交 bcc7f6c87 干净树 stash A/B 逐一复现（work 阶段在案，本轮
+  失败清单与 work 轮唯一差 = external_config_poll flaky 回红——review
+  已证 desktop 并发污染类，`auto`/`ui_desktop` 实测在跑）；对 work 轮
+  **零新增**。②vue 轨运行时门——desktop-host gen `pnpm exec vite
+  build` 4.41s 成功（四补装依赖全解析），F-05 就此闭账。
+  **findings**（均 non-blocking，不在本计划授权面）：
+  - N-1：auto-man vue.rs Plan 442 usage 检测漏 desktop-host 场景依赖
+    （生成 package.json 漏记 reka-ui/@vueuse/core/cva/vue-sonner）——
+    本计划以 gen 产物补齐解门，模板/检测侧根修另行处置。
+  - N-2：13 个范围外存量失败（musk VM 轨 + 画廊/timer 域）先于本计划
+    存在于被审提交，归 auto-musk 跟踪伞/相应计划域处置；review 轮
+    2060 跑系 UI 过滤面故未覆盖，本轮全档口径补记。
+  - N-3：desktop 进程并发测试污染类（external_config_poll）为既有
+    已知环境债。
+  evidence：`docs/plans/evidence/014/rev2/repair1-findings.md`（in-repo
+  收据）+ 本记录内命令/结果摘录（5025 跑 37 红、23/23 scoped、vite
+  4.41s、hash 四件全等）；worktree 组 `.wt/os-014/` 保留至 merge。
+  **next**：merge（`/auto-plan:merge`）。
 - 2026-09-17 stage:work PLAN-014 rev2 outcome:**pass**（repair cycle
   1/3，F-01..F-05 全清）— reviewed_commit 后修复提交：auto-os
   `e94f4aa`（plan-014-dev，SD-01 spec + 修复收据）/ auto-lang
