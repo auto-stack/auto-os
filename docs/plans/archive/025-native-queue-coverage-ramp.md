@@ -597,8 +597,10 @@ auto-os`）。
   worktree 产物）。**ledger_refreshed**：lang .autoos/specs.json 离线
   RMW 原子写 upsert P025-1..3 + 回读断言过；os .autoos/specs.json
   （tracked）upsert P025-r1（3e455ec/155f36e）。**archived**：本文件
-  git mv 至 docs/plans/archive/ + status archived。**cleaned**：见下方
-  清理记录。
+  git mv 至 docs/plans/archive/ + status archived。**cleaned**：wt-guard 三 worktree（lang-025/auto-lang、lang-025/auto-down
+  detached、os-025/auto-os）全 clean 后移除；分支 plan-025-dev 双仓删除
+  （lang a46c19d91 / os a6f3eb5 已含于默认分支）；组目录 lang-025/os-025
+  移除。归档收据终版（本提交）。
 
 ## 10. 待澄清事项
 
