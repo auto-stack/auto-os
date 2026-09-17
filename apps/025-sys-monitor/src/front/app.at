@@ -195,6 +195,21 @@ widget App {
                     style: "text-sm font-semibold text-foreground tabular-nums"
                 }
             }
+            // R17：CPU 栅格条（20 段；点亮色随档位绿→蓝→黄→红）
+            row {
+                style: "w-full gap-0.5 items-center"
+                for sg in .cpu_segs {
+                    if sg.lit == "1" {
+                        col {
+                            style: "w-2 h-2 rounded-sm ${.store.cpu_color}"
+                        }
+                    } else {
+                        col {
+                            style: "w-2 h-2 rounded-sm bg-muted/40"
+                        }
+                    }
+                }
+            }
             row {
                 style: "w-full justify-between items-center"
                 text "内存" {
@@ -202,6 +217,21 @@ widget App {
                 }
                 text .store.memLabel {
                     style: "text-sm font-semibold text-foreground tabular-nums"
+                }
+            }
+            // R17：内存栅格条（同款）
+            row {
+                style: "w-full gap-0.5 items-center"
+                for sg in .mem_segs {
+                    if sg.lit == "1" {
+                        col {
+                            style: "w-2 h-2 rounded-sm ${.store.mem_color}"
+                        }
+                    } else {
+                        col {
+                            style: "w-2 h-2 rounded-sm bg-muted/40"
+                        }
+                    }
                 }
             }
             row {

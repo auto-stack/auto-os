@@ -23,6 +23,17 @@ store SysStore {
         // ---- Formatted Labels ----
         var cpuLabel str = "0 %"
         var memLabel str = "0 / 0 GB"
+        // R17：栅格进度条数据面——cpu/mem 百分比（int 0..100）+ 20 段点亮
+        // 数 + 档位色（<50 绿 / <75 蓝 / <75..90 黄 / >=90 红）。face 渲染
+        // 消费（${.store.cpu_color} 插值 + for 循环段）。
+        var cpu_pct int = 0
+        var mem_pct int = 0
+        var cpu_lit int = 0
+        var mem_lit int = 0
+        var cpu_color str = "bg-green-500"
+        var mem_color str = "bg-green-500"
+        var cpu_segs = []
+        var mem_segs = []
         var diskLabel str = "0 KB/s"
         var netLabel str = "0 KB/s"
         var procLabel str = "0"
@@ -348,6 +359,55 @@ store SysStore {
                 .cpuLabel = f"${.cpu} %"
                 .memLabel = f"${usedG_val} / ${totalG_val} GB"
                 .procLabel = f"${.procCount}"
+
+                // R17：分段进度条重算（百分比 → 点亮数 0..20 → 档位色；
+                // seg = {on: "1"/"0"}，view for 循环消费）。
+                .cpu_pct = .cpu.as(int)
+                .mem_pct = (.memUsedMb * 100) / .memTotalMb
+                .cpu_lit = .cpu_pct / 5
+                .mem_lit = .mem_pct / 5
+                if .cpu_pct < 50 {
+                    .cpu_color = "bg-green-500"
+                } else {
+                    if .cpu_pct < 75 {
+                        .cpu_color = "bg-blue-500"
+                    } else {
+                        if .cpu_pct < 90 {
+                            .cpu_color = "bg-yellow-400"
+                        } else {
+                            .cpu_color = "bg-red-500"
+                        }
+                    }
+                }
+                if .mem_pct < 50 {
+                    .mem_color = "bg-green-500"
+                } else {
+                    if .mem_pct < 75 {
+                        .mem_color = "bg-blue-500"
+                    } else {
+                        if .mem_pct < 90 {
+                            .mem_color = "bg-yellow-400"
+                        } else {
+                            .mem_color = "bg-red-500"
+                        }
+                    }
+                }
+                .cpu_segs = []
+                .mem_segs = []
+                var si int = 0
+                while si < 20 {
+                    if si < .cpu_lit {
+                        .cpu_segs.push({lit: "1"})
+                    } else {
+                        .cpu_segs.push({lit: "0"})
+                    }
+                    if si < .mem_lit {
+                        .mem_segs.push({lit: "1"})
+                    } else {
+                        .mem_segs.push({lit: "0"})
+                    }
+                    si += 1
+                }
                 var netTotal = .netSentKbs + .netRecvKbs
                 var netTotal_int = (netTotal * 10.0).as(int)
                 var netTotal_val float = netTotal_int.as(float) / 10.0
