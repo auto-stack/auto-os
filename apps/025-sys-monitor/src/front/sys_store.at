@@ -371,15 +371,17 @@ store SysStore {
                 var cmark float = 5.0
                 var mmark float = 5.0
                 while si < 20 {
+                    // 段色 = 段上界所在四分位（用户裁定 2026-09-17：
+                    // 0-25 绿 / 25-50 蓝 / 50-75 黄 / 75-100 红）。
                     var upper int = (si + 1) * 5
                     var ccol str = "bg-red-500"
-                    if upper < 50 {
+                    if upper <= 25 {
                         ccol = "bg-green-500"
                     } else {
-                        if upper < 75 {
+                        if upper <= 50 {
                             ccol = "bg-blue-500"
                         } else {
-                            if upper < 90 {
+                            if upper <= 75 {
                                 ccol = "bg-yellow-400"
                             }
                         }
