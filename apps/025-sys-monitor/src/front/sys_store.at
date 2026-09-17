@@ -360,20 +360,19 @@ store SysStore {
                 .memLabel = f"${usedG_val} / ${totalG_val} GB"
                 .procLabel = f"${.procCount}"
 
-                // R17b：分段进度条重算——**按段定色**（段 i 的色 = 该段
-                // 上界档位：<25 绿 / <50..74 蓝 / <90 黄 / >=90 红），点亮
-                // 判定 = 值 >= 段上界（浮点累加比较，全程无 float→int
-                // 转换——.as(int) 对 float 产出垃圾值致整条红的实证根因）。
-                // seg = {lit: "1"/"0", color: 档位类}，view for 消费。
+                // R17d：三态段——值 ≥ 下界+3 点亮(st "1", 色=四分位：
+                // ≤25 绿 / ≤50 蓝 / ≤75 黄 / >75 红)；值 ∈ [下界, 下界+3)
+                // 空白占位(st "2")；值 < 下界不渲染(st "0")。点亮判定全程
+                // 无 float→int 转换(.as(int) 对 float 产出垃圾值的实证绕行)。
+                // 用户裁定（2026-09-17，"类似四舍五入"）：接近即占位，段内
+                // 过半才点亮。
                 .cpu_segs = []
                 .mem_segs = []
                 var si int = 0
-                var cmark float = 5.0
-                var mmark float = 5.0
                 while si < 20 {
-                    // 段色 = 段上界所在四分位（用户裁定 2026-09-17：
-                    // 0-25 绿 / 25-50 蓝 / 50-75 黄 / 75-100 红）。
-                    var upper int = (si + 1) * 5
+                    var lower int = si * 5
+                    var fill_at int = lower + 3
+                    var upper int = lower + 5
                     var ccol str = "bg-red-500"
                     if upper <= 25 {
                         ccol = "bg-green-500"
@@ -386,19 +385,26 @@ store SysStore {
                             }
                         }
                     }
-                    var con str = "0"
-                    if .cpu >= cmark {
-                        con = "1"
+                    var cst str = "0"
+                    if .cpu >= fill_at {
+                        cst = "1"
+                    } else {
+                        if .cpu >= lower {
+                            cst = "2"
+                        }
                     }
-                    var mon str = "0"
-                    if (.memUsedMb * 100) >= (mmark * .memTotalMb) {
-                        mon = "1"
+                    var mst str = "0"
+                    var mpct int = (.memUsedMb * 100) / .memTotalMb
+                    if mpct >= fill_at {
+                        mst = "1"
+                    } else {
+                        if mpct >= lower {
+                            mst = "2"
+                        }
                     }
-                    .cpu_segs.push({lit: con, color: ccol})
-                    .mem_segs.push({lit: mon, color: ccol})
+                    .cpu_segs.push({st: cst, color: ccol})
+                    .mem_segs.push({st: mst, color: ccol})
                     si += 1
-                    cmark += 5.0
-                    mmark += 5.0
                 }
                 var netTotal = .netSentKbs + .netRecvKbs
                 var netTotal_int = (netTotal * 10.0).as(int)
