@@ -849,6 +849,16 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "P025-r1",
+          "file": "docs/plans/archive/025-native-queue-coverage-ramp.md",
+          "title": "PLAN-025 native-queue-coverage-ramp 复审 pass + merge 收据（r1）",
+          "content": "复审 pass（2026-09-18，rev1，reviewed lang 870ee1574/os b4c2c1b，base lang 5ceeac30c/os 4b974c2；同会话复审声明+工件重建）。AC-01..07 全 pass：AC-02/03 p025_native_input_arm 三腿真 exe 复跑（003 queue 孵化 broker_char 键入 100→212 联动/slider 75%/select Medium）；AC-04 broker_input_production_routes wire 级 + t3 e2e 走新生产路径；AC-05 双向防漏钉+native 金样；唯一红 covered_elements_within_target_set=在册既有红（plan624 线，本体零改动+基线复核）。4 findings info（rust-workspace 生成器副作用/SD-03 指针钉定/os desktop_mcp 零运行时面豁免/帧 dump 代截图⑤口径）。merge：os 3b 行+smoke-025-native-input.sh 随 plan-025-dev 落 main；lang canonical 随 plan-025-dev 落 master；SD-03 overview.md 指针 v1.6→v1.7 随 worktree 78502d2fa 交付。",
+          "related": [
+            "PLAN-025"
+          ],
+          "status": "published"
         }
       ]
     }
