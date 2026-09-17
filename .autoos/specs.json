@@ -116,6 +116,12 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "P019-1",
+          "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
+          "title": "PLAN-019 变更摘要 — showdesk-wallpaper-picker（负一屏+壁纸 carousel）",
+          "content": "三个自足能力+一个组合入口：①显示桌面=任务栏右缘 sliver toggle 切换宿主保留空分区（否定 win_min 最小化语义，接管 PLAN-014 W-05）；②壁纸 carousel=负一屏上候选壁纸滑窗选换，点选即应用热生效、大图预览、‹›/←→ 滑窗导航（FU7 重设计：底部居中锚点+一次 5 枚+导航不应用点选才应用）；③组合入口=桌面右键「更换壁纸…」发 wallpaper_pick，归属规则「谁切屏谁负责切回」宿主单点收口；④每壁纸图标布局记忆=positions 按壁纸指纹键控切换跟随。协议 v1.7（与 PLAN-016 open_with 双增量并行合流同一版本号）。走查反馈批 FU1–FU8（图标资产/启动崩溃修复/carousel 重设计/设置面 wallpaper_request 入口）全并线。landed=auto-lang master 768e8fcd3(auto-os-dev)/auto-os main 7e2a270(plan-019-dev)。"
         }
       ]
     },
@@ -329,6 +335,12 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "P019-1",
+          "file": "../auto-lang/schema/projection-protocol-v1.md",
+          "title": "SD-01/SD-02 协议 v1.7 负一屏+壁纸 carousel 面（七动词+七字段）",
+          "content": "§4 +show_desktop/showdesk_return（WM 自足，幂等 origin 簿记）/wallpaper_pick/wallpaper_close（组合+归属单点 picker_return_on_close）/wallpaper_browse_dir（rfd pick_folder→SetWallpapersDir 同写臂）/wallpaper_nav（prev|next 窄值；FU7 语义=滑窗不应用）/wallpaper_preview（路径参，空参退栅格）。§2 +__wm_showdesk/__wp_picker/__wp_dir/__wp_current/__wp_items(+wp_paths 平行面)/__wp_visible(滑窗切片)/__wp_preview/__wp_x/__wp_y。排除规则（非动词增量）：负一屏投影过滤/环切跳过/close+send_to 拒/activate 先 return。同版并行：PLAN-016 open_with+__desktop_cmd 发件面扩宽+pac opens:（v1.7 双 provenance 合流）。"
         }
       ]
     },
@@ -414,6 +426,12 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "P019-1",
+          "file": "docs/specs/shell/showdesk-wallpaper.md",
+          "title": "SD-01..04 showdesk-wallpaper 模块 spec——负一屏语义/carousel/归属/布局记忆",
+          "content": "SD-01 保留空分区语义+五条排除规则+sliver 入口；SD-02 carousel（底部锚点 popover 720px、滑窗 5 枚 picker_win 端点 clamp、双态渲染判据 __wp_preview、键盘 PICKER_KEYS_OPEN 原子门控、滚轮直切债归 PLAN-631）；SD-03 归属规则谁切屏谁负责切回+设置面 wallpaper_request 差分入口（FU8）+目录浏览；SD-04 每壁纸布局键控 fp=FNV-1a 64hex+\\→/+ASCII 小写折叠，set_wallpaper 切换迁移臂（旧键快照/新键回退底稿）。"
         }
       ]
     },
@@ -555,6 +573,12 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "P019-1",
+          "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
+          "title": "PLAN-019 验证矩阵——scoped 家族+全量清点对账+实机 FU1–FU8 走查批",
+          "content": "宿主单测：showdesk 状态机/排除规则/pick-close 归属两分支/nav 滑窗 clamp/Esc 链/布局键控迁移/wallpaper_request 差分触发/七动词 encode-parse roundtrip（F-02 销账）全绿；shell pack 编译+hash-lock parity 绿；a2vue 金样重生成对拍绿。全量日常档 --no-fail-fast：4895/4915（复审时点）与 4988/5023（landing reconcile 后）——失败清点逐条实证为预存（019 线基线 layout×14 等环境敏感+master 存量 p010/musk_vm_track/plan050 族 13 项在 master 检出复跑同红），019 账面零新增回归。实机侧=用户多轮走查（FU1–FU8 反馈批即走查产物：图标资产/启动崩溃/carousel 重设计裁定/设置面入口）。"
         }
       ]
     },
@@ -699,6 +723,12 @@
           "status": "published",
           "created": "2026-09-17",
           "last_modified": "2026-09-17"
+        },
+        {
+          "id": "PLAN-019-r2",
+          "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
+          "title": "PLAN-019 r2 复审 pass（快速复审——rev2 实机走查 blocker 经 FU1–FU8 解除+F-02/F-03 销账）",
+          "content": "复审 pass（2026-09-17，rev2 维持，reviewed commit auto-os 88f86fa/auto-lang 4fb58361b，spec 定稿 dd0ade3，base a657a4e/a9d3b8c67）。AC-02/04/06/09/10 维持 pass；AC-01/03/05/07/08 实机侧经 FU1–FU8 用户走查批覆盖翻 pass。findings：F-02 七动词 roundtrip 单测销账（4fb58361b）；F-03 SD-03 spec 滞后 FU7/FU8 已定稿（dd0ade3）。landing 后 reconcile（master/main 并行推进 022/023/637/638）双仓再验 scoped 41/41 绿，协议文档 v1.7 双 provenance 合流（PLAN-016 open_with 撞号裁决：同版双增量合流一节）。"
         }
       ]
     }
