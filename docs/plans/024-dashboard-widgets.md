@@ -525,6 +525,7 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | R13 | 时钟内容贴卡片左缘，应容器内居中 | 活卡容器补 align_x/y Center（face 列宽收缩内容，容器居中生效）。注：R12/R13 首轮交付时旧实例锁 exe 致链接失败、重启的是旧二进制（用户复验"未生效"真因）——解锁重建后交付 | auto-lang R12/R13 提交 + 解锁重建 | ✅ | 实机：时钟在卡内居中（本轮重建后） |
 | R15 | 时钟内容仍不横向居中（R13 后复验） | R13 容器居中只解决卡定位；face 内部 styled text 节点宽度行为使 text 左对齐——修：mini col 加 `w-full` + 时间 text 加 `text-center`（class.rs TextCenter 在册） | auto-lang R15 提交 | ✅ | 实机：时钟/标签卡内居中（用户复验） |
 | R16 | sys-monitor 卡无设计感（三行堆叠左对齐） | 两轮：①三瓷贴横排——258px 窄卡放不下长值换行烂版（用户复验"仍丑"）；②改竖排列表三行（label 左 muted / value 右 semibold，justify-between，任何宽度不换行）；progress 条留 v2（无 progress 叶子） | auto-os R16/R16b 提交 | ✅（待用户终审） | 实机：系统 tab 三行列表 |
+| R17 | sysmon 卡加分档栅格进度条（CPU/内存；绿→蓝→黄→红随值变档） | store tick 百分比 int 化 + 20 段 seg 对象表 + 档位色（插值消费）；mini 视图 CPU/内存行下插段条；Tick 驱动、R5 门控照常（不看零开销）。坑：seg 对象键 `on` 撞 .at 关键字 → 改 `lit` | auto-os R17 提交 | ✅（待用户终审） | 实机：系统 tab 栅格条随值变色 |
 | R16b | 面板与图标网格对齐复验（R10 后"又没对齐"） | 几何自 R10 确认版零改动（R12 层位/R13 对齐/R15 居中/R16 布局均不动 panel_x/尺寸）；疑似观感混淆或截图片段所致——**待用户全桌面截图复判**，若仍偏移则按格线坐标逐像素核对 | —— | 🔍 待复判 | 用户全桌面截图 |
 | R14 | os-config 打开显示 not-migrated，无法切浅色 | os-config 的配置读写走 autoos **daemon**（pac `daemon: autoos`）；worktree 走查环境未孵 daemon → 迁移/主题读写不可用。浅色验证改走桌面自有主题配置：`~/.config/autoos/apps/desktop/config.at`（theme_source manual + dark_theme false，PLAN-601 机制），boot set_dark_mode 全链生效 | 配置文件路径修正一轮（apps/desktop/config.at）；daemon 孵化 defer（带外约定，§5.7 非目标同款） | ✅（浅色验证路径）/ ⏸（daemon 常驻） | 09-light-theme.png + 用户实机浅色走查 |
 
