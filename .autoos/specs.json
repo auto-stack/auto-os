@@ -134,6 +134,18 @@
           "file": "docs/plans/archive/022-icon-taskbar-polish.md",
           "title": "PLAN-022 变更摘要 — icon-taskbar-polish（桌面/任务栏/launcher 图标全轮打磨）",
           "content": "桌面/任务栏/launcher/切换器图标体系整轮打磨（R1–R17 截图逐条用户驱动，回补计划）：真位图图标全量接入（任务栏 iconfile+ghost 变体+pinned/窗口条目 mapping 链+launcher+切换器）、桌面图标 48px 满幅+标题三级配色（图片壁纸 bg-black/30 底片/纯色亮度自适应）、拖拽修复（6px 位移阈值门双落格动词、幽灵跟随、落点格高亮）、列主序排布、launcher 5 列网格+440px 限高滚动+120% 行高（mouse-area 行容器绕 iced button 钳高）、切换器预览独立发布（400ms ServiceTick SWR 补抓）+\"+\"新建桌面卡、DualApp 验收窗退役（双窗隔离走 ui_dual_app）、激活条带 mt-[3px] 五臂下移（R17）。图标资产 10 新 stem+4 重制×双主题+mapping 5 键。landed=auto-os d616fa7/auto-lang 94bc69c22+9bd26d884（2026-09-17 回补落库）。"
+        },
+        {
+          "id": "P014-1",
+          "file": "docs/plans/archive/014-shell-ux-polish-v2.md",
+          "title": "PLAN-014 变更摘要 — shell-ux-polish-v2（rev2 九项 UX 打磨）",
+          "content": "rev1 十四项经重基线裁定保留九项：W-01 五死消息退役+desktop 头注 color 补记；W-02 __desktop_cmd SendCmd 单点追加语义（同周期多命令零丢失，spike 定案）；W-04 桌面图标单击选中（sel_id 白/10 圆角块）+双击启动中反馈（launching 灰点+半透明，RunningSync/Init 双收敛自愈）；W-05 hidden 域串去重+空白菜单恢复默认图标（refresh_desktop_icons 即时回）；W-06 时钟两行+__wm_date 独立脏帧注入；W-07 圆形角标压 notification 位图（9+ 宿主派生 __wm_notes_badge）；W-08 通知整行跳来源（notify_source 分段归因+note_apps+activate 两臂）；W-10 switcher 预选 MRU 第 2 项+HoverSel 跟随；W-12 协议 v1.8（四增量+审计补记）。W-03/09/11/13 被取代/消化删除，W-14 B12 转独立挂账。",
+          "related": [
+            "PLAN-014"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17"
         }
       ]
     },
@@ -365,6 +377,18 @@
           "file": "docs/specs/shell/showdesk-icons.md",
           "title": "SD-01..03 showdesk-icons 模块 spec——桌面网格/任务栏消费/切换器预览契约",
           "content": "SD-01 桌面网格：48px 满幅 tile 不套外框（018-FU2 裁定推广）/格高 h-[72px]/标题三级配色（__desktop_label_dark #hex 直算 luma+图片 32×32 均值按路径缓存，u16 防溢出）/hover bg-white/10/未定位列主序填充（desktop_icon_cells rows 参数，rows=视口高/80px 扣任务栏预留）/拖拽 6px 位移阈值门（icon_drag_moved 统一 __mouse_released 兜底臂+BlankDrop desktop_icon_drop_at 两路落格动词；拒落只清视觉态；幽灵=drag_icon/drop_c/drop_r 数据面坐标锚 popover+落点格高亮；落格写路归 showdesk-wallpaper SD-04）。SD-02 任务栏消费：iconfile: 双主题臂+ghost 去描边+36px 图标 44px hover 底+激活条带 mt-[3px] 五臂同值（pinned 三态+窗口条目二态，R17 3x 放大实测裁定）；条目图标走 mapping 链。SD-03 切换器预览：publish_workspace_previews 独立化（boot/refresh+tick 两调用点）+面板开 400ms ServiceTick 逐可见窗 request_capture SWR 补抓+收起零常态开销+WorkspaceAdd 新建卡；深色对比度非阻塞债。"
+        },
+        {
+          "id": "P014-1",
+          "file": "../auto-lang/schema/projection-protocol-v1.md",
+          "title": "SD-02 协议 v1.8 面（四增量+总线语义+审计补记，零新动词）",
+          "content": "__wm_date（M月D日 周X，与 __wm_clock 同泵独立脏帧）；__wm_running 注入面扩 desktop 层（launching ack 判据，宿主随写召唤 RunningSync）；__wm_notes[].app + note_apps（notify_source 分段归因——联合排空泵按注册表窗段置 source，特权段恒 None；W-14 落地后消参挂账 §10-Q5）；__wm_notes_badge 显示串宿主派生（>9→9+/0→空，unread 计数合同不变）；__desktop_cmd 追加语义（SendCmd 单点，parse_records 换行切分+每周期读+清）；§2.1 __desktop_icons[].color+__desktop_cells[].full 审计补记；oncontextmenu 坐标臂后置（Q2——022 拖拽幽灵臂依赖 cursor 泵）。向后兼容：纯增量字段，缺席消费方零破坏。",
+          "related": [
+            "PLAN-014"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17"
         }
       ]
     },
@@ -468,6 +492,18 @@
           "file": "apps/028-launcher/SPEC.md",
           "title": "SD-02 028-launcher 布局语义——5 列网格/限高滚动/120% 行高/mouse-area 行容器",
           "content": "apps/028-launcher/SPEC.md §网格与 palette 布局语义：grid cols:5（2026-09-15 用户裁定，原 4 列横向过疏）+max-h-[440px] overflow-y-auto 限高滚动（卡片总高不超任务栏，palette 结果列同款机制）；瓦片满幅 tile（iconfile 位图自带圆角板不套 chip 外框，full 臂 40px 定尺寸 col；裸 lucide 字标保留品牌色 chip）；palette 行容器 mouse-area+row 禁 button（iced button 内容行钳子件高度到文本行高，矩阵探针五变体实证）+py-[18px]≈120% 行高+px-3 gap-2 紧凑+满幅臂图标 40px 无缝+候选文本纵向居中。"
+        },
+        {
+          "id": "P014-1",
+          "file": "docs/specs/shell/showdesk-ux-polish.md",
+          "title": "SD-01 showdesk-ux-polish 模块 spec——桌面选中/启动反馈/hidden 恢复/时钟日期/badge/通知跳转/switcher 行为合同",
+          "content": "SD-01 桌面选中态+启动中反馈（sel_id/launching 本地态+RunningSync/Init 求差自愈，与 022 拖拽互洽）；SD-02 hidden 去重+恢复默认图标（shell.desktop.hidden 单源，refresh_desktop_icons 即时回=重启全量回）；SD-03 时钟两行+日期注入面（独立脏帧，无点击臂——日历 app 缺位挂账 Q3）；SD-04 badge 形态（16px 圆压位图右上+9+）；SD-05 通知来源跳转（OpenSource→activate 两臂，空串 no-op，跳转即收面板）；SD-06 switcher 预选第 2 项+hover 跟随（Alt-Tab 惯例，键盘鼠标互洽）。",
+          "related": [
+            "PLAN-014"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17"
         }
       ]
     },
@@ -627,6 +663,18 @@
           "file": "docs/plans/archive/022-icon-taskbar-polish.md",
           "title": "PLAN-022 验证矩阵——HEAD 标记复核 + 023 r1 祖先回归覆盖 + 执行期用户逐条截图实测",
           "content": "代码标记 HEAD 复核：shell.at 7 枚 iconfile 全 ghost+mt-[3px] 五臂（+1 注释）；desktop.at w-12 h-12/h-[72px]/bg-black/30；launcher cols:5/max-h-[440px]/py-[18px]；mapping 5 键；WorkspaceAdd 卡 shell.at:416；renderer icon_drag_moved ×5+session ×2、desktop_icon_cells(rows)、publish_workspace_previews 双调用点、ws-preview eprintln 零残留（9bd26d884）。lang 回归门复用（显式理由：被审提交深居 main 历史，现跑全量测的是 HEAD 非基线）：023 r1 tv 3743/3743+集成 13/13（树含 94bc69c22+9bd26d884，merge-base 实证）+a2vue 金样对拍重生成（auto-lang 0407a9f9b，022 网格终版双端同源）；auto-os 侧 023 work 收口 desktop_mcp 58/0+vue 零 TS 错在 d616fa7 之后。实机：执行期 R1–R17 用户逐条截图验收（条带缝隙 3x 放大实测在案）；AC-6 按约定口径=逻辑+构建验证，手感反馈通道开放。局限：运行时未现场重演（ui_desktop 未运行），结论重建自工件。"
+        },
+        {
+          "id": "P014-1",
+          "file": "docs/plans/archive/014-shell-ux-polish-v2.md",
+          "title": "PLAN-014 验证矩阵——scoped 家族全绿+全量门零新增红（stash A/B）+vue 门 vite build",
+          "content": "auto-lang 侧：三 fixture（desktop_shell_at_builds/switcher_summon_advance/desktop_surface_at_loads）+两回归（conditional_style_with_comments_in_branches_resolves_hover/first_meaningful_stmt_skips_comments_and_blank_lines）+parse_records 双记录金样+a2vue 23/23（含 desktop 金样+nested_if_style）+schema_drift fence 全 PASS；shell_packs_compile 四件真管线 PASS；shell-pack-sync hash 四件全等（0c185aa354/331cca880f/789f4c4f17/52993bd461）。全量门 --no-fail-fast 5025 跑：37 红=24 基线+13 范围外存量（stash A/B 被审提交同红，diff 零新增）；vue 轨运行时门=desktop-host gen vite build 4.41s（四依赖补装后全解析）。双轨双主题截图对拍+实机装配冒烟沿 022 先例用户走查通道（在案）。",
+          "related": [
+            "PLAN-014"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17"
         }
       ]
     },
@@ -789,6 +837,18 @@
           "file": "docs/plans/archive/022-icon-taskbar-polish.md",
           "title": "PLAN-022 r1 复审 pass（回补计划；工件重建——HEAD 标记+祖先回归+计划内实测记录）",
           "content": "复审 pass（2026-09-17，r1 基线补立，reviewed commit auto-os d616fa7（base 65bb9cb）/auto-lang 94bc69c22+9bd26d884（base 1450d5e））。AC-1..5 pass（执行期用户逐条截图实测+HEAD 标记复核）；AC-6 pass 按约定口径（逻辑+构建验证：icon_drag_moved 门/6px 阈值/双落格动词同门，手感通道开放）。findings：F-01 回补计划缺 plan_revision/规范增量——复审补立 r1+SD-01/SD-02 已清偿；非阻塞：切换器深色对比度（待澄清 5）、kanban/musk 旧图取舍（待澄清 2，用户自理）。回归门：023 r1 全量 tv 3743/3743 树含 022 双 lang 提交（merge-base 实证）+a2vue 金样对拍。局限：运行时未现场重演（ui_desktop 未运行），结论重建自工件。landing：canonical 沉淀 showdesk-icons.md 新增+launcher SPEC 布局节+台账五条（本条）。"
+        },
+        {
+          "id": "PLAN-014-r2",
+          "file": "docs/plans/archive/014-shell-ux-polish-v2.md",
+          "title": "PLAN-014 r2 复审 pass（re-review——repair1 全清+零新增红 A/B 实证+vue 门补齐）",
+          "content": "复审 pass（2026-09-17，rev2 维持，reviewed commit auto-os e94f4aa/auto-lang 679ee141c，base 325095b/eefb5d84d）。repair1：F-01 SD-01 spec 落盘；F-02/F-04 fixture 合同更新（W-01 退役段/W-10 预选断言）；F-03 根因修正——分支体注释语句废 Plan339 单表达式合同（非 review 假设的深度限制），builder first_meaningful_stmt 根修+回归两件；F-05 desktop-host gen 四依赖补装+vite build 4.41s。重审门①零新增红（5025 跑 37=24 基线+13 被审提交同红范围外存量）②vue 运行时门补齐 双达成。merge 收据：lang 侧 master 5230f5741 调和（零文件重叠；合并树 39=36 已知+3 chart 族 master 自带纯 master 复现）后 merge --no-ff 落地 844ff9c81+台账 P014-1 发布；os 侧 FF 落地+归档。N-1 codegen usage 检测漏记/N-2 13 存量归 musk 域/N-3 desktop 并发污染类 三项 non-blocking 挂账。",
+          "related": [
+            "PLAN-014"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17"
         }
       ]
     }
