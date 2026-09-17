@@ -32,24 +32,35 @@
 
 ## SD-02 壁纸选择 carousel
 
-- 载体：desktop.at 坐标锚 popover（880px 面板），`__wp_picker == "1"`
-  门控——仅负一屏有意义（组合臂保证）；关态桌面零渲染。
-- 双态渲染（判据 `__wp_preview`，载荷 = 预览图**路径**，"" = 栅格态）：
-  - 栅格态：`grid cols-4` 缩略图（image cover 196×110）。**单击缩略图 =
-    `set_wallpaper` 立即应用**（stella 交互；真桌面即合成预览——图标在
-    新壁纸上实时可见，fill/crop 保真无模拟误差）。当前壁纸 primary 描边
-    （path 等式判据）。「预览」钮进大图。
+- 载体：desktop.at 底部居中 popover（720px 面板；锚点坐标 `__wp_x`/
+  `__wp_y` 由宿主按可用区算好注入——贴任务栏上方留 8px，.at 零算术），
+  `__wp_picker == "1"` 门控——仅负一屏有意义（组合臂保证）；关态桌面零
+  渲染。外点/Esc（popover `ondismiss`）→ `wallpaper_close`，归属规则
+  宿主收口。
+- 双态渲染（判据 `__wp_preview`，载荷 = 预览图**路径**，"" = carousel
+  态）：
+  - carousel 态（FU7 重设计——用户走查裁定）：横向滑窗一次只显 5 枚
+    （`__wp_visible` 宿主切片注入，滑动起点 `picker_win` 宿主簿记、端点
+    clamp）。缩略图 120×68 cover；**单击缩略图 = `set_wallpaper` 立即
+    应用**（真桌面即合成预览——图标在新壁纸上实时可见）。当前壁纸
+    primary 描边（path 等式判据）；pick 打开时游标对齐当前壁纸。「预览」
+    钮进大图。
   - 预览态：大图 contain + ‹›（`wallpaper_nav` 环绕）+ 返回钮（空参
     `wallpaper_preview`）。
+- 导航语义（FU7 定案）：**导航不应用、点选才应用**——‹›/←→ 只移动
+  滑窗/游标；构图对比经点选逐张应用（flip 所见即所得）。滚轮直切需
+  DSL mouse-area 增 wheel 事件——框架债归 PLAN-631 MouseArea 族。
 - 键盘（宿主订阅层 PICKER_KEYS_OPEN 原子门控——仅 picker 开时消费；
   负一屏无文本焦点窗，吞键无副作用）：
-  - ←/→：预览态 = 大图游标环绕；栅格态 = flip 轮换**并立即应用**
-    （游标对齐当前壁纸起步，点选同步游标）。
-  - Esc：预览态 → 回栅格态；栅格态 → 关闭（execute_wallpaper_escape）。
-- 注入面（协议 §2.1）：`__wp_picker`/`__wp_preview`/`__wp_dir`/
-  `__wp_current`/`__wp_items`(+`wp_paths` 平行列表)。候选供源 =
-  `scan_wallpapers_dir`（jpg/jpeg/png 文件名升序）。直写 + view_dirty
-  （不走 shell 指纹门控——桌面面字段直写先例）。
+  - ←/→：carousel 态 = `picker_win` ±1 滑窗（`__wp_visible` 重注入）；
+    预览态 = 大图游标环绕（`__wp_preview` 随写）。
+  - Esc：预览态 → 回 carousel 态；carousel 态 → 关闭
+    （execute_wallpaper_escape）。
+- 注入面（协议 §2）：`__wp_picker`/`__wp_preview`/`__wp_dir`/
+  `__wp_current`/`__wp_items`(+`wp_paths` 平行列表)/`__wp_visible`（滑窗
+  切片）/`__wp_x`/`__wp_y`（底部锚点）。候选供源 = `scan_wallpapers_dir`
+  （jpg/jpeg/png 文件名升序）。直写 + view_dirty（不走 shell 指纹门控
+  ——桌面面字段直写先例）。
 
 ## SD-03 更换壁纸组合与返回归属（用户裁定）
 
@@ -61,6 +72,10 @@
     （选完/Esc/遮罩）自动 `showdesk_return` 回 origin；
   - 用户自入负一屏后开 picker → `return_on_close = false` → 关闭只关
     面板，不代管返回。
+- 设置面入口（FU8）：os-config「切换壁纸」按钮经 config.at
+  `wallpaper_request` 字段值变化通道触发**同一组合臂**（跨进程现成通道
+  ——宿主 400ms mtime 轮询差分只认值变化、不清值，config 单写方仍为
+  daemon/设置面；归属规则同点收口，.at 侧零分支）。
 - 目录浏览：「浏览…」→ `wallpaper_browse_dir`（宿主 rfd pick_folder，
   无父窗绑定 v1）→ 选定走 `set_wallpapers_dir` 同一写臂（config 单源 +
   mtime 热轮询）+ 候选重扫 + 预览/游标簿记复位；取消 no-op。单目录语义
@@ -87,7 +102,8 @@
 
 - 宿主单测（auto-lang，`cargo t <filter>`，Category A 允许——本 spec 由
   改 crates 的计划引入）：showdesk 状态机/排除规则/投影过滤、pick-close
-  归属两分支、nav 游标与 flip、Esc 链、布局键控迁移。
+  归属两分支、nav 滑窗（clamp/端点/游标）、Esc 链、布局键控迁移、
+  `wallpaper_request` 差分触发、七动词 encode/parse roundtrip。
 - 合同对拍：v1.7 §2/§4 字段行与 sync 实现一致；schema_drift 日常档绿。
 - vue a2vue 金样：desktop.at 资产变更后 `AUTO_LANG_UPDATE_GOLDEN=1` 重
   生成（已执行）。
