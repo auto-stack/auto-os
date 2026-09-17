@@ -1,0 +1,252 @@
+// app.at — Article Feed.
+// Plan 506: in-app title bar / Settings panel removed (common header widget
+// retired) — title/theme/accent live in pac.at + os-config, host chrome carries them.
+// Default theme: Dark mode.
+widget Demo009ArticleFeed {
+    msg {
+        ReadArticle1,
+        ReadArticle2,
+        ReadArticle3
+    }
+
+    model {
+        var dark_mode bool = true
+        var accent_color str = "indigo"   // declared for os-config/env seeding (Plan 504 idiom)
+
+        // Header
+        var header_title str = "Blog Posts"
+        var header_subtitle str = "Discover the latest trends, tips, and best practices in modern web development. From UI components to design systems, stay updated with our expert insights."
+
+        // Article 1
+        var art1_tag str = "Tutorial"
+        var art1_author str = "Sarah Chen"
+        var art1_date str = "1 Jan 2024"
+        var art1_title str = "Getting Started with shadcn/ui Components"
+        var art1_excerpt str = "Learn how to quickly integrate and customize shadcn/ui components in your Next.js projects. Covers installation, theming, and best practices for building modern interfaces."
+
+        // Article 2
+        var art2_tag str = "Accessibility"
+        var art2_author str = "Marcus Rodriguez"
+        var art2_date str = "1 Jan 2024"
+        var art2_title str = "Building Accessible Web Applications"
+        var art2_excerpt str = "Explore how to create inclusive web experiences using shadcn/ui accessible components. Discover practical tips for implementing ARIA labels, keyboard navigation, and semantic HTML."
+
+        // Article 3
+        var art3_tag str = "Design Systems"
+        var art3_author str = "Emma Thompson"
+        var art3_date str = "1 Jan 2024"
+        var art3_title str = "Modern Design Systems with Tailwind CSS"
+        var art3_excerpt str = "Dive into creating scalable design systems using Tailwind CSS and shadcn/ui. Learn how to maintain consistency while building flexible and maintainable component libraries."
+    }
+
+    view {
+        col {
+            // ── Main Article Feed Content ──
+            col {
+                // Section Header
+                col {
+                    h2 .header_title {
+                        style: if .dark_mode {
+                            "text-3xl font-extrabold text-zinc-100 tracking-tight text-center"
+                        } else {
+                            "text-3xl font-extrabold text-gray-900 tracking-tight text-center"
+                        }
+                    }
+                    span .header_subtitle {
+                        style: if .dark_mode {
+                            "text-sm text-zinc-400 text-center max-w-xl mt-1"
+                        } else {
+                            "text-sm text-gray-500 text-center max-w-xl mt-1"
+                        }
+                    }
+                    style: "gap-1 items-center mb-2"
+                }
+
+                // Article 1
+                row {
+                    col {
+                        span "📖" {
+                            style: "text-3xl opacity-60"
+                        }
+                        style: if .dark_mode {
+                            "w-32 h-32 rounded-xl bg-zinc-800/80 border border-zinc-700/50 shrink-0 items-center justify-center"
+                        } else {
+                            "w-32 h-32 rounded-xl bg-gray-100 border border-gray-200/50 shrink-0 items-center justify-center"
+                        }
+                    }
+                    col {
+                        row {
+                            span .art1_tag {
+                                style: "text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary"
+                            }
+                            style: "items-center"
+                        }
+                        row {
+                            span .art1_author
+                            span "·"
+                            span .art1_date
+                            style: if .dark_mode {
+                                "text-xs text-zinc-400 gap-1.5 items-center mt-1"
+                            } else {
+                                "text-xs text-gray-500 gap-1.5 items-center mt-1"
+                            }
+                        }
+                        h3 .art1_title {
+                            style: if .dark_mode {
+                                "text-lg font-bold text-zinc-100 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            } else {
+                                "text-lg font-bold text-gray-900 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            }
+                        }
+                        span .art1_excerpt {
+                            style: if .dark_mode {
+                                "text-sm text-zinc-400 mt-1 leading-relaxed"
+                            } else {
+                                "text-sm text-gray-600 mt-1 leading-relaxed"
+                            }
+                        }
+                        button "Read more →" {
+                            variant: "ghost"
+                            onclick: .ReadArticle1
+                            style: "p-0 h-auto text-sm text-primary font-semibold mt-2 hover:underline cursor-pointer"
+                        }
+                        style: "gap-1 flex-1"
+                    }
+                    style: if .dark_mode {
+                        "bg-zinc-900 rounded-2xl border border-zinc-800 p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-zinc-700"
+                    } else {
+                        "bg-white rounded-2xl border border-gray-200 p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-gray-300"
+                    }
+                }
+
+                // Article 2
+                row {
+                    col {
+                        span "♿" {
+                            style: "text-3xl opacity-60"
+                        }
+                        style: if .dark_mode {
+                            "w-32 h-32 rounded-xl bg-zinc-800/80 border border-zinc-700/50 shrink-0 items-center justify-center"
+                        } else {
+                            "w-32 h-32 rounded-xl bg-gray-100 border border-gray-200/50 shrink-0 items-center justify-center"
+                        }
+                    }
+                    col {
+                        row {
+                            span .art2_tag {
+                                style: "text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary"
+                            }
+                            style: "items-center"
+                        }
+                        row {
+                            span .art2_author
+                            span "·"
+                            span .art2_date
+                            style: if .dark_mode {
+                                "text-xs text-zinc-400 gap-1.5 items-center mt-1"
+                            } else {
+                                "text-xs text-gray-500 gap-1.5 items-center mt-1"
+                            }
+                        }
+                        h3 .art2_title {
+                            style: if .dark_mode {
+                                "text-lg font-bold text-zinc-100 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            } else {
+                                "text-lg font-bold text-gray-900 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            }
+                        }
+                        span .art2_excerpt {
+                            style: if .dark_mode {
+                                "text-sm text-zinc-400 mt-1 leading-relaxed"
+                            } else {
+                                "text-sm text-gray-600 mt-1 leading-relaxed"
+                            }
+                        }
+                        button "Read more →" {
+                            variant: "ghost"
+                            onclick: .ReadArticle2
+                            style: "p-0 h-auto text-sm text-primary font-semibold mt-2 hover:underline cursor-pointer"
+                        }
+                        style: "gap-1 flex-1"
+                    }
+                    style: if .dark_mode {
+                        "bg-zinc-900 rounded-2xl border border-zinc-800 p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-zinc-700"
+                    } else {
+                        "bg-white rounded-2xl border border-gray-200 p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-gray-300"
+                    }
+                }
+
+                // Article 3
+                row {
+                    col {
+                        span "🎨" {
+                            style: "text-3xl opacity-60"
+                        }
+                        style: if .dark_mode {
+                            "w-32 h-32 rounded-xl bg-zinc-800/80 border border-zinc-700/50 shrink-0 items-center justify-center"
+                        } else {
+                            "w-32 h-32 rounded-xl bg-gray-100 border border-gray-200/50 shrink-0 items-center justify-center"
+                        }
+                    }
+                    col {
+                        row {
+                            span .art3_tag {
+                                style: "text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary"
+                            }
+                            style: "items-center"
+                        }
+                        row {
+                            span .art3_author
+                            span "·"
+                            span .art3_date
+                            style: if .dark_mode {
+                                "text-xs text-zinc-400 gap-1.5 items-center mt-1"
+                            } else {
+                                "text-xs text-gray-500 gap-1.5 items-center mt-1"
+                            }
+                        }
+                        h3 .art3_title {
+                            style: if .dark_mode {
+                                "text-lg font-bold text-zinc-100 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            } else {
+                                "text-lg font-bold text-gray-900 mt-1 hover:text-primary transition-colors cursor-pointer"
+                            }
+                        }
+                        span .art3_excerpt {
+                            style: if .dark_mode {
+                                "text-sm text-zinc-400 mt-1 leading-relaxed"
+                            } else {
+                                "text-sm text-gray-600 mt-1 leading-relaxed"
+                            }
+                        }
+                        button "Read more →" {
+                            variant: "ghost"
+                            onclick: .ReadArticle3
+                            style: "p-0 h-auto text-sm text-primary font-semibold mt-2 hover:underline cursor-pointer"
+                        }
+                        style: "gap-1 flex-1"
+                    }
+                    style: if .dark_mode {
+                        "bg-zinc-900 rounded-2xl border border-zinc-800 p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-zinc-700"
+                    } else {
+                        "bg-white rounded-2xl border border-gray-200 p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-gray-300"
+                    }
+                }
+
+                style: "w-full flex-1 px-8 py-6 gap-6 items-center justify-start max-w-4xl mx-auto"
+            }
+
+            style: if .dark_mode {
+                "w-full min-h-screen bg-zinc-950 text-zinc-100"
+            } else {
+                "w-full min-h-screen bg-gray-50 text-gray-900"
+            }
+        }
+    }
+
+    on {
+        .ReadArticle1 -> { print("Reading article 1") }
+        .ReadArticle2 -> { print("Reading article 2") }
+        .ReadArticle3 -> { print("Reading article 3") }
+    }
+}

@@ -442,6 +442,23 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   ≈+67%；框 h-10 / 行高 h-14 / layout 常量零影响），17 处按钮统一替换。
   提交：auto-os fc30a51 / auto-lang 047b584f7（assets pin 同步）；shell
   14 测绿。并入本计划 merge。
+- 2026-09-15 走查反馈批 PLAN-019-FU7（用户实机裁定）：壁纸 carousel 重设计——
+  底部居中锚点（`__wp_x/__wp_y` 宿主按可用区算好注入，贴任务栏留 8px）、
+  横向滑窗一次只显 5 枚（`__wp_visible` 切片 + `picker_win` 滑动、端点
+  clamp）、导航不应用/点选才应用；‹›/←→ 滑窗。滚轮直切需 DSL mouse-area
+  增 wheel 事件（框架债，归 PLAN-631 MouseArea 族）。测试重写 7 绿。
+  提交：019 线 auto-lang 081c1d310 / auto-os 9b7c474。
+- 2026-09-14 走查反馈批 PLAN-019-FU5+（走查期间连查连修，均并入 merge）：
+  ①FU4 独立图标资产接入（浅 10 → 浅+深 20 → 全量 28+external.json 防覆盖，
+  dark 缺 auto-edit/system-monitor 暂浅色顶替；main 9c747f3/49bc846/d1d3b65，
+  019 线 a2d1dd0/42dfa6d/3c9950b）；②FU5 图标格回半 160→80px + PITCH 88
+  （main 8af8101/e170022f，019 线 c230ac1/e859cb0bd）；③**启动崩溃修复**：
+  快照抓取 `window::oldest()` 可能命中 0×0 特权层窗口 → wgpu
+  `create_texture Dimension X is zero` 硬崩（Plan 411 已记载同款，站点 2
+  漏守卫）——改显式 host.window + 尺寸守卫（auto-lang bdead4805/78f157ea2，
+  master 同步）；④FU6 浅色重生成 10 枚替换（main 07149a3，019 线 7adfe16）；
+  ⑤master/main 集成合入 019 两分支（iconfile 臂/016/620/625 并行工作，
+  auto-os d21360a、auto-lang f1b192845）——复审证据随集成分支刷新。
 - 2026-09-14 走查反馈批 PLAN-019-FU3（跨域根因，修在 PLAN-018 域）：
   桌面 iconfile tile 在 badge 色块上四角露白——根因 = 018 源精灵表为
   RGB 海报无 alpha，切片烘焙画布底。修 slice_icons.py 抠底（bg=本 tile

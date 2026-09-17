@@ -1,0 +1,83 @@
+// src/gallery/AppViewport.vm.at — PLAN-625 T-10 生成产物(勿手改)
+// AppViewport 的 VM 形态:按 app prop(=selected_id)条件实例化 Demo* 子
+// widget,实时渲染示例。web 臂不经此文件(AppViewport.vue 动态挂载不变)。
+// 重新生成:auto build / auto run(generate_gallery_host)。
+
+use.web component Demo001Helloworld from "src/gallery/demos/001-helloworld.at"
+use.web component Demo002Counter from "src/gallery/demos/002-counter.at"
+use.web component Demo003Converter from "src/gallery/demos/003-converter.at"
+use.web component Demo004ProfileCard from "src/gallery/demos/004-profile-card.at"
+use.web component Demo005Login from "src/gallery/demos/005-login.at"
+use.web component Demo006HeroSection from "src/gallery/demos/006-hero-section.at"
+use.web component Demo007StatsBoard from "src/gallery/demos/007-stats-board.at"
+use.web component Demo008PricingTable from "src/gallery/demos/008-pricing-table.at"
+use.web component Demo009ArticleFeed from "src/gallery/demos/009-article-feed.at"
+use.web component Demo010ContactForm from "src/gallery/demos/010-contact-form.at"
+use.web component Demo011Calculator from "src/gallery/demos/011-calculator.at"
+use.web component Demo012Stopwatch from "src/gallery/demos/012-stopwatch.at"
+use.web component Demo014Weather from "src/gallery/demos/014-weather.at"
+use.web component Demo016Calendar from "src/gallery/demos/016-calendar.at"
+use.web component Demo020MusicPlayer from "src/gallery/demos/020-music-player.at"
+use.web component Demo024Charts from "src/gallery/demos/024-charts.at"
+use.web component Demo026Database from "src/gallery/demos/026-database.at"
+use.web component Demo027FileManager from "src/gallery/demos/027-file-manager.at"
+use.web component Demo029PhotoGallery from "src/gallery/demos/029-photo-gallery.at"
+use.web component Demo031Paint from "src/gallery/demos/031-paint.at"
+
+widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
+    view {
+        col {
+            style: "w-full flex flex-col items-center"
+            col {
+                style: if .viewportMode == "desktop" { "w-[1024px] max-w-full h-[720px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" } else if .viewportMode == "tablet" { "w-[768px] max-w-full h-[1024px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" } else { "w-full h-[720px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" }
+            if .app == "001-helloworld" {
+                Demo001Helloworld {}
+            } else if .app == "002-counter" {
+                Demo002Counter {}
+            } else if .app == "003-converter" {
+                Demo003Converter {}
+            } else if .app == "004-profile-card" {
+                Demo004ProfileCard {}
+            } else if .app == "005-login" {
+                Demo005Login {}
+            } else if .app == "006-hero-section" {
+                Demo006HeroSection {}
+            } else if .app == "007-stats-board" {
+                Demo007StatsBoard {}
+            } else if .app == "008-pricing-table" {
+                Demo008PricingTable {}
+            } else if .app == "009-article-feed" {
+                Demo009ArticleFeed {}
+            } else if .app == "010-contact-form" {
+                Demo010ContactForm {}
+            } else if .app == "011-calculator" {
+                Demo011Calculator {}
+            } else if .app == "012-stopwatch" {
+                Demo012Stopwatch {}
+            } else if .app == "014-weather" {
+                Demo014Weather {}
+            } else if .app == "016-calendar" {
+                Demo016Calendar {}
+            } else if .app == "020-music-player" {
+                Demo020MusicPlayer {}
+            } else if .app == "024-charts" {
+                Demo024Charts {}
+            } else if .app == "026-database" {
+                Demo026Database {}
+            } else if .app == "027-file-manager" {
+                Demo027FileManager {}
+            } else if .app == "029-photo-gallery" {
+                Demo029PhotoGallery {}
+            } else if .app == "031-paint" {
+                Demo031Paint {}
+            } else {
+                col {
+                    style: "w-full h-full min-h-[360px] flex flex-col items-center justify-center gap-2"
+                    text "该示例暂无 VM 内嵌形态" { style: "text-xs text-muted-foreground" }
+                    text "完整交互请使用 auto run（Vue 端）查看" { style: "text-xs text-muted-foreground/80" }
+                }
+            }
+            }
+        }
+    }
+}

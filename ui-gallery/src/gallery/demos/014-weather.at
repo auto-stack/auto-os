@@ -1,0 +1,69 @@
+widget Demo014Weather {
+    msg { TabDaily, TabHourly, Refresh }
+
+    model {
+        var tab str = "daily"
+        var city str = "Beijing"
+        var temp str = "23°"
+        var condition str = "Partly Cloudy"
+        var info str = "Humidity: 65% | Wind: 12 km/h"
+        var forecast str = "Mon 18~25°  Tue 20~28°  Wed 16~22°  Thu 17~24°  Fri 19~27°"
+        var hourly str = "14:00 24°  15:00 25°  16:00 24°  17:00 22°  18:00 20°"
+    }
+
+    view {
+        center {
+            col {
+                row {
+                    text .city { style: "text-2xl font-bold text-gray-800" }
+                    button "Refresh" { onclick: .Refresh, style: "ml-auto px-4 py-2 bg-blue-500 text-white rounded-lg text-sm" }
+                    style: "w-full items-center"
+                }
+                col {
+                    text .condition { style: "text-lg text-blue-100" }
+                    text .temp { style: "text-8xl font-thin text-white" }
+                    text .info { style: "text-sm text-blue-200" }
+                    style: "bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl p-6 mt-4 items-center gap-2 py-6"
+                }
+                row {
+                    if .tab == "daily" {
+                        button "Daily" { onclick: .TabDaily, style: "px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 text-white" }
+                    }
+                    if .tab != "daily" {
+                        button "Daily" { onclick: .TabDaily, style: "px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-600" }
+                    }
+                    if .tab == "hourly" {
+                        button "Hourly" { onclick: .TabHourly, style: "px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 text-white" }
+                    }
+                    if .tab != "hourly" {
+                        button "Hourly" { onclick: .TabHourly, style: "px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-600" }
+                    }
+                    style: "gap-2 mt-6"
+                }
+                if .tab == "daily" {
+                    col {
+                        text "5-Day Forecast" { style: "text-sm font-semibold text-gray-400 uppercase mt-2" }
+                        divider {}
+                        text .forecast { style: "text-gray-700 py-2" }
+                        style: "w-full"
+                    }
+                }
+                if .tab == "hourly" {
+                    col {
+                        text "Today" { style: "text-sm font-semibold text-gray-400 uppercase mt-2" }
+                        divider {}
+                        text .hourly { style: "text-gray-700 py-2" }
+                        style: "w-full"
+                    }
+                }
+                style: "w-full max-w-md p-6 bg-gray-50 min-h-screen"
+            }
+        }
+    }
+
+    on {
+        .TabDaily -> { .tab = "daily" }
+        .TabHourly -> { .tab = "hourly" }
+        .Refresh -> { }
+    }
+}

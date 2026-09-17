@@ -1,0 +1,100 @@
+============================================================
+027-file-manager 桌面 MCP 测试（PLAN-016 T-10 注入式驱动版）
+  auto:    D:\autostack\.wt\os-016\auto-lang\target\debug\auto.exe
+  project: D:\autostack\.wt\os-016\auto-lang\examples\ui\027-file-manager
+  workdir: C:\Users\zhaop\AppData\Local\Temp\fm-mcp-0wk4wyxb
+============================================================
+
+[T1] 启动结构（真实 FS）
+  PASS  T1 booted
+  PASS  T1 独立窗口 in_desktop=false
+  PASS  T1 主目录解析
+  PASS  T1 主目录非空
+  PASS  T1 快捷目录 主目录
+  PASS  T1 快捷目录 桌面
+  PASS  T1 快捷目录 文档
+  PASS  T1 快捷目录 下载
+  PASS  T1 工具栏 新建文件夹
+  PASS  T1 工具栏 新建文件
+  PASS  T1 工具栏 显示/隐藏隐藏项
+  PASS  T1 行渲染计数一致
+  PASS  T1 主目录计数与磁盘一致
+
+[T2] 导航 testdata（fixture 注入 AddrGo）
+  PASS  T2 跳转到位
+  PASS  T2 testdata 计数 4
+  PASS  T2 行渲染 4
+
+[T3] 隐藏项开关
+  PASS  T3 开启后 5 项
+  PASS  T3 关闭后 4 项
+
+[T4] 搜索过滤
+  PASS  T4 搜索框在场
+  PASS  T4 过滤至 1 项
+  PASS  T4 清空恢复 4 项
+
+[T5] 目录导航（nested）
+  PASS  T5 nested 行定位
+  PASS  T5 路径入 nested
+  PASS  T5 inner.txt 计 1 项
+  PASS  T5 返回 testdata
+
+[T6] 新建文件夹 fm-new
+  PASS  fm-new 模态打开
+  PASS  fm-new 输入同步
+  PASS  T6 磁盘落盘
+  PASS  T6 列表计数 5
+
+[T7] 重命名 fm-new → fm-renamed
+  PASS  T7 fm-new 行定位
+  PASS  T7 重命名模态打开
+  PASS  T7 输入同步
+  PASS  T7 确认重命名
+  PASS  T7 新名落盘
+  PASS  T7 旧名移除
+
+[T8] 新建文件 a.txt
+  PASS  T8 fm-renamed 行定位
+  PASS  T8 进入 fm-renamed
+  PASS  a.txt 模态打开
+  PASS  a.txt 输入同步
+  PASS  T8 磁盘落盘
+  PASS  T8 空文件
+
+[T9] 删除文件 a.txt
+  PASS  T9 a.txt 行定位
+  PASS  T9 确认模态出现
+  PASS  T9 确认删除钮
+  PASS  T9 磁盘移除
+
+[T10] 删除空目录 fm-renamed
+  PASS  T10 返回 testdata
+  PASS  T10 fm-renamed 行定位
+  PASS  T10 确认删除钮
+  PASS  T10 空目录磁盘移除
+
+[T11] 排序
+  PASS  T11 sort_col=size
+  PASS  T11 复位 name
+
+[T12] 选中状态
+  PASS  T12 notes.txt 行定位
+  PASS  T12 选定状态
+
+[T14] 错误路径错误态
+  PASS  T14 坏路径 cwd 不变
+  PASS  T14 计数不变
+
+[T13 前置] 视图切换 grid
+  PASS  T13 视图切换钮定位
+  PASS  T13 前置 view_mode=grid
+第一轮 VM 进程已退出。
+
+[Phase 2] 重启 VM 进程验证配置恢复...
+  PASS  T13 重启恢复 view_mode=grid
+第二轮 VM 进程已退出，临时目录已清理。
+
+============================================================
+测试结果: 58 通过, 0 失败
+============================================================

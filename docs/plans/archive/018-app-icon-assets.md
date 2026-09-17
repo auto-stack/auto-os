@@ -405,3 +405,38 @@ completion_kind: delivered
   修复 = slice_icons.py 增 key_background（bg=本 tile 四角中值 + 边界
   连通 flood + baked 投影半透明保留），重切 28×2 verify ok（四角 alpha
   门 + _opaque_corners 满幅白名单）。提交 main 8daabe1。
+- 2026-09-15（FU7，用户实机反馈：iconfile 位图图标圆角呈阶梯毛刺）：
+  根因不在资产（512px AI PNG 自带 2-3px 软边）也不在合成器矢量面
+  （lucide/文字/Quad 均有 AA）——是**位图缩小采样链**：512 原生纹理直挂，
+  iced 缺省 `FilterMethod::Linear` + wgpu 无 mipmap min_filter 缩 ~28×
+  （任务栏 18px 图标盒，PLAN-526 T9）时每屏幕像素仅 2×2 tap，圆角高对比
+  边缘欠采样呈硬阶梯（GPU 行为忠实模拟：18px 档全图半透明覆盖像素
+  5 个 vs 面积平均 58 个；证据图 `.auto/icon-gpu-vs-box.png`、
+  `.auto/icon-corner-compare.png`）。触发面 = 任务栏五钮换 iconfile
+  位图裁定（shell.at 2026-09-15）。修复 = `icon_file::load_sized` 显示档
+  装载：装载期 CPU 一次 Triangle 重采样，tex = 2×显示档（HiDPI ≤2x
+  物理像素覆盖）上限 512，缓存键 `(stem, dark, tex_px)`；renderer 按钮
+  臂（字号档）/Image 臂（style Fixed 宽/高档）双接线；新增
+  `decode_resized_downscales_with_smooth_edges` 单测（16px 档边缘半透明
+  覆盖 ≥8px 断言）。验证：`cargo t -p auto-lang --features ui-iced
+  icon_file` 3/3 绿 + `cargo check -p auto` 绿。代码 = auto-lang 分支
+  `os-018-fu7-dev` commit 13e1952cc（基 master dfab2f201；主检出
+  renderer.rs 有他线在飞 WIP，**未直接并入 master——待评审合入**）。
+
+- 2026-09-15（FU7 闭环收口）：①master 反向合入分支零冲突
+  （merge commit bc4b08982），icon_file 3/3 绿复查——分支即合入就绪态；
+  ②**实机视觉终验 PASS**：FU7 构建 ui_desktop（空 apps-dir 干净任务栏）
+  截图量化——4 枚任务栏图标（launcher 首钮 30px 档 + dock 16px 档）圆角
+  边缘中间色像素 87-402/枚、渐变 **9 个灰阶档**（bg 43 → 体 212 连续），
+  AA 生效锯齿消除（证据 `.auto/fu7-taskbar-final.png`、`.auto/fu7-*-zoom.png`）；
+  ③**dark 缺口已不成立**：auto-edit/system-monitor 的 dark 真身在库（与
+  浅色版字节不同，md5 复核）——FU5"暂以浅色顶替"记录过时，后续批次已
+  补齐。遗留唯一一步：主检出在飞 WIP 落定后于 auto-lang 主检出执行
+  `git merge os-018-fu7-dev` 合入 master，随后 wt-guard 清组目录
+  `.wt/os-018-fu7/`。
+
+- 2026-09-15（FU7 合入收据）：主检出 WIP 落定后，分支两度反合刷新
+  （bc4b08982 → 3c913c00f → fc68920df，均零冲突，icon_file 3/3 绿复查
+  ×3）→ master **快进合入 fc68920df**（icon_file.rs +88 / renderer.rs
+  +41）→ master 上终验 icon_file 3/3 绿 → wt-guard 双 worktree clean
+  → 组目录与分支 `os-018-fu7-dev` 移除完毕。**PLAN-018 全部闭环。**
