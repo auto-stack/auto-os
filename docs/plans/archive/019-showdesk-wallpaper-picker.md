@@ -561,7 +561,10 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
     （fdfba35）。
   - **archived**：本件 git mv 至 docs/plans/archive/、status: archived、
     completion_kind: delivered。
-  - **cleaned**：os-019 组三 worktree（auto-os/auto-lang/auto-down
-    detached）+ auto-os plan-019-dev + auto-lang auto-os-dev 分支清偿，
-    wt-guard 逐组过闸后移除（收据补记随 cleaned 提交）。
+  - **cleaned**（2026-09-17 补记）：wt-guard 三组过闸（clean ×3，零
+    reparse point）→ auto-os worktree 移除 + plan-019-dev 删除（tip
+    7e2a270 = main 同点）；auto-lang worktree 移除 + auto-os-dev 删除
+    （tip 768e8fcd3 = master 同点）；auto-down worktree（detached
+    140775f，∈ 其 master）经 auto-down 仓移除；.wt/os-019 组目录 rmdir
+    清偿，.wt 零 os-019 残留。
 
