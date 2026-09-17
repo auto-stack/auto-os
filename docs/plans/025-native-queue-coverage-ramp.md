@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-025
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp
 author: [agent]
 created_at: 2026-09-17
