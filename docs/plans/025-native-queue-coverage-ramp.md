@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-025
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp
 author: [agent]
 created_at: 2026-09-17
@@ -22,7 +22,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui_gen/rust.rs                           # slider/select codegen 臂
   - auto-lang/crates/auto-man/src/rust_ui.rs                                # 如 fixture 生成链需壳侧配合
   - auto-os/docs/plans/autos-desktop-program.md                             # 程序台账 3b 行
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -241,6 +241,82 @@ smoke）。无预算/自动续跑约束声明。
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-05 依据。
 
+### 5.1 定案记录（T-01，2026-09-17，worktree lang-025 基线 5ceeac30c）
+
+- **D1 聚焦身份 = 候选 A（命中表槽位序 + 帧后重定位）**。证据：
+  native `View::Input` 无任何身份/key 字段（view.rs:494-503——placeholder/
+  value/on_change/on_submit/width/password/style），候选 B 的 path 身份
+  需投影器自记 VNode.path 但 native 无 VNode（vnode.rs:310 先例属解释
+  态轨），候选 C 值指纹在双 input 同值时（003 两框初始 "0"/"32" 尚异，
+  但编辑后可同值）歧义。定案：投影器侧 `focused_input: Option<usize>`
+  = **Input 槽位序**（确定性树序——view() 全物化、a2r 生成按源序构造，
+  命中表登记序即源序）；点击聚焦记槽位；每帧 render 后重定位（槽位
+  越界 → 置 None 留痕）。动态增删 input 致焦点前移的结构变化为 v1 边界
+  （越界即失焦，不猜测——解释态 field 名 refocus client_runtime.rs:184-190
+  的原语 native 不具备，债务随注 §1.7）。
+- **D2 INPUT_TEXT 回写 = 候选 A（投影器同线程代写 thread-local）**。
+  证据链：a2r 生成 on() 对 input 登记变体读
+  `auto_lang::ui::iced::last_input_text()`（ui_gen/rust.rs:1280）并按
+  绑定字段类型 parse（:1290-1313——f64/i32/…；003-converter 双 double
+  字段保型由 parse+unwrap_or 承担，投影器侧不重复保型）；ClientPump
+  单线程泵（client_runtime.rs:2135 step→dispatch→FrameSource::on_input
+  同调用线程），thread-local 写（投影器）与读（生成 on()）同线程成立；
+  020 先例 renderer.rs:22688 同线程代写先例在场。定案：投影器持聚焦框
+  编辑 buffer（聚焦时自 view value 初始化；非聚焦框恒直显 view value）；
+  CharTyped/退格 → buffer 编辑 → `INPUT_TEXT.with(set)` →
+  `component.on(on_change)` → rev++。**on_submit/Enter 不派发**（not-yet
+  随注——解释态臂同边界，client_runtime.rs:445-457 只消费 CharTyped/
+  VK_BACK）。物化零参纪律下 props/events 不需登记（on_change 已是 M 值，
+  覆盖表 props/events 对 native 维持空表——judge 只查 kinds/layouts/
+  style）。
+- **D3 select 开合 = 覆盖序 ops + 投影器侧 `select_open: Option<usize>`
+  槽位**。闭态 = 值盒 + ▾ + 点击开（无消息派发）；开态 = 主块渲染后
+  **追加**选项列 ops（DrawList paint order 天然置顶）+ 命中互斥：开态
+  PointerPressed 只查选项项——命中 → `SelectCallback.call(idx,label)`
+  物化派发 + 关闭 + rev++；未命中（外点）→ 仅关闭（吞掉，不下穿主块）
+  + rev++（关闭也是状态变化——帧回闭态）。Esc（KeyPressed 27）关闭。
+  选项消息在布局期物化（回调 Arc clone 廉价），命中表存 `(rect, M)` 零
+  新类型。键盘跳项 not-yet（随注）。高亮当前项 = BUTTON_BG Quad。
+- **D4 宿主键盘/滚轮映射**。iced 0.14 面：`keyboard::Event::KeyPressed{
+  key, text, .. }` 携 `text: Option<SmolStr>`（可打印字符 → CharTyped
+  直接取）；特殊键（Backspace/Escape/方向）以 `Key::Named` → Windows
+  VK u32 映射（BACK=8/RETURN=13/ESC=27——解释态消费口径
+  client_runtime.rs:450）；滚轮 `mouse::Event::WheelScrolled{delta}` →
+  `Lines{x,y}×LINE_H 像素化 / Pixels 直取` → Scroll{dx,dy}。WM 焦点 =
+  `session.focused: Option<Wid>`（session.rs:629；wm_focus :2408）——
+  broker_key/char/scroll 路由目标 = 焦点窗（区别于 pointer_down 的
+  hit_test）。**生产接线面**：ui_desktop iced 壳层（auto-lang
+  session.rs iced::daemon 侧 :6347 desktop_window_events 同源订阅面）
+  把键盘/滚轮事件映射后调 session broker_*（真机可达性 e2e 期核，
+  ⑤口径：不可达时协议级 CharTyped 注入承载）。
+- **D5 滚轮语义 = on_scroll 全交 app**。Scrollable 命中表项 =
+  `{viewport rect, offset 快照(view.offset), viewport/content 尺寸,
+  ScrollCallback}`；派发时 `offset' = clamp(快照 + (dx,dy), 0..=content-
+  viewport)`——镜像 iced 侧 `vp.absolute_offset()` 为**滚动后**偏移的
+  语义（renderer.rs:2353 证据），回调收新偏移，app 写状态重入 view()
+  （投影器不缓存偏移，Scissor 只裁剪）。on_scroll 不在场 = 滚轮不路由
+  留痕（I3）。
+- **slider 拖拽附带定案 = v1 点击定位**（PointerPressed 一次派发）；
+  按住拖拽连续派发 not-yet 随注（分型命中表无按住态追踪，强加需
+  PointerMoved 按住态机——债面入 §1.7）。
+- **调查新证据（执行期修订，不扩合同）**：
+  1. **View 无 Switch 变体**（view.rs 全枚举核对——native_kind_of
+     coverage.rs:374-413 亦无 switch 臂）：§5.2/§5.5 的 "switch" 臂
+     **落空**，native form 族交付 = input/textarea/checkbox/radio
+     四型（switch 为解释态 aura 标签专属——024 台账 t1_form 夹具经
+     解释态投影，native 轨无可产该 kind 的 View 构造，not-yet 无对象
+     即无缺口）。native_queue_set kinds 不含 switch（I4 分表）。
+  2. **003-converter gate 阻断 token = flex-1 / shadow-sm**（app.at
+     复核——field_col "flex-1 gap-1.5"、卡片 "shadow-sm"）：两 token
+     解释态 target_set 均放行（coverage.rs:133/136），native 渲染面
+     已按解释态同款边界静默降级（native_projector.rs:531-534——shadow
+     no-op、flex 族自然宽）。定案：native_queue_set style_prefixes 补
+     "flex-1"/"shadow"（**降级放行**——语义 = 解释态同款保真边界，
+     入册 §1.7；非静默扩权，覆盖表随注先行）。
+  3. ScrollMetrics offset 语义 = 滚动后绝对偏移（renderer.rs:2353），
+     已并入 D5；slider `on_change: fn(f32)->M` 为 fn 指针（view.rs:724，
+     Copy）——命中表零 Arc 存储直接内联。
+
 ### 5.2 投影器 form 族臂（T-02）
 
 `layout_view_node` 追加 Input/Textarea/Checkbox/Switch/Radio 臂：视觉
@@ -372,58 +448,87 @@ auto-lang 侧在 lang worktree（`D:/autostack/.wt/lang-025/auto-lang`，
 020 同型）；auto-os 侧在 os 组 worktree（`D:/autostack/.wt/os-025/
 auto-os`）。
 
-- **T-01 [lang] 深水调查与 seam 定案**
+- **T-01 [lang] 深水调查与 seam 定案** ✅
   文件：`src/ui/view.rs`、`src/ui/desktop_protocol/native_projector.rs`、
   `client_runtime.rs`、`session.rs`、`iced/renderer.rs`（读面）+ 本计划
   §5.1（写面）。
   动作：D1–D5 + slider 拖拽附带定案；003-converter 双 input 与动态
   增删样本扫描。
   产物：`### 5.1 定案记录`（file:line 证据）。
-  验证：定案记录完备（五决策 + 附带项）；复审通过。
+  验证：定案记录完备（五决策 + 附带项）；复审通过。✅ [✅ 已完成]
+  [2026-09-17 work] 五决策+拖拽附带全落 §5.1；新证据三项（View 无
+  Switch 变体→native form 族=四型；003 gate 阻断=flex-1/shadow-sm→
+  降级放行定案；ScrollMetrics offset=滚动后偏移）已录。证据
+  lang-025 @5ceeac30c 读面核对。
   → AC-02/03/04 前置。新路径：是（调查产物）。
-- **T-02 [lang] 投影器 form 族臂 + 键入闭环**
+- **T-02 [lang] 投影器 form 族臂 + 键入闭环** ✅
   文件：`native_projector.rs`（渲染臂/分型命中表/聚焦/编辑 buffer/
   INPUT_TEXT 写入）、`coverage.rs`（native kinds 扩容）。
   动作：按 §5.2 + D1/D2 定案。
   验证：§6 form 单测 + 集成（双 input CharTyped 联动）全绿；回归门
   （client_runtime/stage3 不动面全绿）。
+  [2026-09-18 work] 分型命中表 HitEntry + Input/Textarea/Checkbox/Radio
+  臂 + 聚焦槽位（D1-A）+ store_input_text 代写闭环（D2-A）；测试
+  12/12 + native_form_full_cycle_over_pipe。lang plan-025-dev 734f34ad5。
   → AC-02/05。
-- **T-03 [lang] slider 臂 + codegen + fixture**
+- **T-03 [lang] slider 臂 + codegen + fixture** ✅
   文件：`native_projector.rs`（slider 渲染/命中/f32 派发）、
   `ui_gen/rust.rs`（slider codegen 臂）、`auto-man` fixture 链。
   动作：按 §5.3 slider。
   验证：slider golden/派发单测 + codegen golden + scratch 载体编译过。
+  [2026-09-18 work] HitEntry::Slider + track/fill/knob 几何 + step 取整
+  派发；codegen fn 指针臂 + fixture slider.at + golden（e2e 期编译反馈
+  修 f32 字面量/math 降级/input value 容差——T-07 一并入册）。e9545479b。
   → AC-03/05。
-- **T-04 [lang] select 臂 + codegen + fixture**
+- **T-04 [lang] select 臂 + codegen + fixture** ✅
   文件：`native_projector.rs`（闭/开态 + 命中互斥 + SelectCallback）、
   `ui_gen/rust.rs`（select codegen 臂）。
   动作：按 §5.3 select + D3 定案。
   验证：select golden/命中/关闭单测 + codegen golden + 集成。
+  [2026-09-18 work] SelectOverlay 覆盖序 + 命中互斥 + Esc/外点关闭；
+  on_choose 物化闭包 codegen（载荷数自适应）+ fixture select.at +
+  golden；usize 非法 .at 载荷类型证据 → fixture 用 str。5a1270bac。
   → AC-03/05。
-- **T-05 [lang] 右键/滚轮路由 + 宿主生产路径**
+- **T-05 [lang] 右键/滚轮路由 + 宿主生产路径** ✅
   文件：`native_projector.rs`（Right/Scroll 消费 + Scissor）、
   `session.rs`（broker_key_event/broker_char/broker_scroll + WM 焦点
   路由）、`host.rs`（如需 ProtocolHost 侧同构）。
   动作：按 §5.4 + D4/D5 定案。
   验证：路由单测 + Scissor 帧断言 + 解释态同册受益实证。
+  [2026-09-18 work] Right/Scroll 消费 + Scissor 溢出裁剪 + broker_key_
+  event/broker_char（焦点窗）/broker_scroll（命中窗）落册；t3 e2e 003
+  键入改走 broker_char（解释态同册受益实证）；D4 边界：live 壳无键盘
+  订阅通道 → 新债 P025-D1 随注（⑤口径协议承载）。89b3616db。
   → AC-04。
-- **T-06 [lang] 覆盖表收口 + parity**
+- **T-06 [lang] 覆盖表收口 + parity** ✅
   文件：`coverage.rs`（native_queue_set/防漏钉/反转测试改写）、
   金样体系（003-converter 三臂）。
   动作：按 §5.5。
   验证：防漏钉 + parity 金样对拍绿。
+  [2026-09-18 work] flex-1/shadow 降级放行（§5.1 定案 2）+ 003 全
+  token 放行单测；双向防漏钉（矩阵 × 投影器臂）；native queue 金样
+  （test/parity/native/003-converter.expected.txt 两阶段全精度锁）；
+  gate 反转改写（T-03 已并）+ underline 样本换防。83e2720f3。
   → AC-05。
-- **T-07 [lang+os] e2e 验收**
+- **T-07 [lang+os] e2e 验收** ✅
   文件：lang `stage3.rs`（p025_native_input_arm）+ 截图留痕
   `docs/plans/reports/assets/025/`；os `scripts/`（smoke 扩展）。
   动作：AC-02..05 逐条跑通留痕。
   验证：见各 AC 验证句。
+  [2026-09-18 work] p025_native_input_arm 三腿真 exe PASS：003 queue 档
+  孵化 + broker_pointer_down 聚焦 + broker_char 键入 "100"→212 联动
+  （AC-02）；slider 75% 点击→75 + select 开→Medium 命中→闭（AC-03）；
+  帧留痕 assets/025/（帧 dump 代截图——⑤口径/020 同边界）；os
+  smoke-025-native-input.sh（os plan-025-dev 4284bc7）。d871f8e50。
   → AC-02/03/04。
-- **T-08 [lang+os] 文档与台账收口**
+- **T-08 [lang+os] 文档与台账收口** ✅
   文件：lang `desktop-protocol-v1.md`（§1.7）、`KNOWN-DEBT-AND-RISKS.md`
   （P020-D2 半句核销 + 新债）、覆盖翻转数据行；os
   `autos-desktop-program.md`（3b 行）+ 两仓互链。
   动作：SD-01..03 落笔。
+  [2026-09-18 work] §1.7 六节增（SD-01）；KNOWN-DEBT P020-D2 半句核销
+  + P025-D1/D2 新债；os 台账 3b 行（SD-02，os plan-025-dev b4c2c1b）；
+  SD-03 模块 spec 对齐按计划措辞留 review 期。870ee1574。
   → AC-06。
 
 ## 9. 复审记录
@@ -433,18 +538,67 @@ auto-os`）。
   AC 与规范增量，路径/命令对两仓核验）；`next: work`（T-01 起步——
   深水定案先行，无需用户解锁）。悬置决策登记 §10（①–⑤），均不阻塞
   T-01 开工。
+- 2026-09-18 /auto-plan:work 收执：`stage: work | PLAN-025 | rev 1 |
+  outcome: pass | lang code_commit 5ceeac30c..870ee1574（plan-025-dev，
+  T-02 734f34ad5 / T-03 e9545479b / T-04 5a1270bac / T-05 89b3616db /
+  T-06 83e2720f3 / T-07 d871f8e50 / T-08 870ee1574；os plan-025-dev
+  4284bc7 + b4c2c1b）| task_ids T-01..T-08 全勾（8/8）| evidence：
+  AC-01 desktop_protocol+stage3+dual_mode+app_registry 172/173（唯一红
+  = covered_elements_within_target_set 在册既有红 plan624 线，基线
+  5ceeac30c 复核同红）+ client_runtime/native_projector 61/61 +
+  auto-man rust_ui 22/22 + p020_native_exe_arm 绿；AC-02/03
+  p025_native_input_arm 三腿真 exe PASS（003 queue 孵化 broker_char 键入
+  100→212 联动 / slider 75% / select Medium，帧留痕 assets/025/）；
+  AC-04 broker_input_production_routes + t3 e2e 走新生产路径（解释态
+  同册受益）；AC-05 native_coverage_matrix_pinned_to_projector 双向钉 +
+  native_gate_accepts_003_style_tokens + native queue 金样；AC-06 §1.7
+  + 台账 3b 行 + KNOWN-DEBT 核销/新债互链可解析；AC-07 回归门全绿（除
+  在册既有红）| blockers 无 | next: review（execution_done，worktree
+  lang-025/os-025 保留）。合同内偏差（证据驱动，均留痕）：View 无
+  Switch 变体 → native form 族四型；flex-1/shadow 降级放行；ScrollMetrics
+  offset=滚动后语义；live 壳键盘订阅缺口 → P025-D1；截图→帧 dump 代留痕
+  （⑤口径）。
+- 2026-09-18 /auto-plan:review 复审：`stage: review | PLAN-025 | rev 1 |
+  outcome: pass | reviewed_commit lang plan-025-dev 870ee1574 + os
+  plan-025-dev b4c2c1b | base_commit lang 5ceeac30c / os 4b974c2 |
+  dependency_revisions auto-down 3a052558（detached 兄弟，只读清单）|
+  spec_inputs desktop-protocol-v1.md（§1.7 增量随 T-08 提交）+ KNOWN-DEBT
+  （P020-D2 核销 + P025-D1/D2）+ os 台账 3b 行 | acceptance_results：
+  AC-01 pass（172/173；唯一红 covered_elements_within_target_set = 在册
+  既有红——测试本体与 target_set 依赖零改动 + 基线复核；p020 臂绿）；
+  AC-02 pass（p025 converter 腿：真 exe queue 孵化→broker_char 100→212
+  联动，复审独立复跑）；AC-03 pass（slider 75%/select Medium 腿复跑 +
+  46 项单测/golden）；AC-04 pass（broker_input_production_routes wire 级
+  断言 + t3 e2e 改走 broker_char 同册受益 + 右键/滚轮/Scissor 单测）；
+  AC-05 pass（双向防漏钉 + 003 token 放行 + 金样内容抽查=全精度帧 dump
+  非平凡断言）；AC-06 pass（§1.7 断言与代码抽查一致：view.rs Switch=0/
+  store_input_text/broker×3；互链可解析）；AC-07 pass（client_runtime+
+  native_projector 61/61 + auto-man rust_ui 22/22 + p020 无回归；os diff
+  纯 docs+script 零运行时面 → desktop_mcp 不受影响）| findings：
+  R-1 info rust-workspace 成员表/旧 converter 生成件随构建变更（生成器
+  副作用，T-07 提交说明留痕；015-notes 副作用已还原）；R-2 info SD-03
+  目标钉定 = docs/specs/auto-lang/ui/overview.md:30 provisional 指针行
+  （v1.6→v1.7 + 覆盖集/输入路由随册一句），canonical 编辑不随 review
+  发布、merge 期落笔；R-3 info AC-07 os 侧 desktop_mcp 未跑（零运行时
+  变更，不构成缺失）；R-4 info 帧 dump 代截图（⑤口径/P020-D4 同边界，
+  已授权）| evidence：复审在 lang-025/os-025 worktree HEAD 独立复跑
+  p025_native_input_arm + broker_input_production_routes +
+  t3_examples_queue_end_to_end + 173 项协议套件 + 46 项投影器/覆盖/
+  codegen 套件（本记录即复现命令）；wire 不变量= message.rs 零 diff +
+  PROTOCOL_VERSION 未触；I4=解释态 target_set 零 diff | next: merge
+  （SD-03 一行指针 delta 文本随本记录，merge 期落 canonical）。
 
 ## 10. 待澄清事项
 
-- **①（T-01 D1）** 聚焦 input 跨帧身份机制：槽位序+重定位 / View 路径
-  身份 / 值指纹——以 003-converter 双 input + 动态增删样本定案。
-- **②（T-01 D2）** INPUT_TEXT 回写通道：倾向投影器同线程代写
-  thread-local（零生成器改动）；显式通道为回退。
-- **③（T-01 附带）** slider 点击定位 vs 按住拖拽连续派发：v1 最小 =
-  点击定位；拖拽视 D1 命中表形态顺带或 not-yet 随注。
-- **④（T-03/T-04）** fixture 形态：仓内 test fixture .at + a2r scratch
-  载体（020 scratch020 先例，不入库）vs 新 examples/ui 条目（examples
-  track 另立）——推荐前者，e2e 载体沿用 scratch。
-- **⑤（T-07）** 真机键盘链 e2e 口径：宿主生产路径真机证据（iced 事件
-  注入面可用时）vs 协议级 CharTyped 注入承载（P020-D4 GUI 自动化债
-  未清前的既有口径）——按 D4 调查结果定，两口径均留痕。
+- **①（T-01 D1）** ✅ 已定案：槽位序+帧后重定位（候选 A）——§5.1 D1。
+- **②（T-01 D2）** ✅ 已定案：投影器同线程代写 thread-local（候选 A，
+  零生成器改动）——§5.1 D2。
+- **③（T-01 附带）** ✅ 已定案：v1 点击定位；拖拽 not-yet 随注（§5.1
+  附带定案 + P025-D2 归册）。
+- **④（T-03/T-04）** ✅ 已按推荐落地：仓内 fixture
+  `tests/fixtures/025-native-input/{slider,select}.at`（codegen golden
+  真源）+ scratch025 载体（不入库，.gitignore，020 scratch020 先例）。
+- **⑤（T-07）** ✅ 已按 D4 调查结果定：真机 iced 事件注入面缺席
+  （P025-D1——live 壳无键盘订阅通道）→ 协议级承载（p025_native_input_arm
+  经 broker_char/broker_scroll **新宿主生产路径**，非直注 client.end），
+  留痕 assets/025/。

@@ -517,6 +517,28 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | R5 | CPU 实时轮询类组件常驻占 CPU——建议放次级 tab（stella 多 tab：平时不看不影响 CPU） | 双固定 tab：小组件(main)/系统(system)；face→tab = 注册表 category（system→系统页，025-sys-monitor 天然入住，clock 留主页面）；视图按面板 active_tab 过滤 face（格位按活动页重算）；**孵化会话 Tick 门控**——面板隐藏或非活动 tab 停订 .Tick（订阅随消息周期重评估），常驻零轮询开销 | auto-lang tab 化提交 | ✅（门控逻辑；开销度量留 §10#4 走查） | 实机：tab 切换渲染；系统页才见 sys-monitor 卡 |
 
 | R6 | 右上角 × 应 hover 时再显示 | 面板级 mouse-area onmouseenter/onmouseleave → show_close 状态，× 条件渲染（槽位 h-8 w-8 固定不跳版） | auto-lang R6 提交；pack 重同步 | ✅ | 实机：默认不见 ×，悬停面板显现；shell_pack 3/3 |
+| R8 | resize 虚拟桌面时面板与图标会重叠 | 网格元数不固定而图标/面板尺寸固定——结构性问题，**用户裁定缓行**：待平板网格 v2（格数固定、格尺寸随 resize 缩放）一并解决 | ——（记入 §9.3 候选新计划范围） | ⏸ 缓行 | v2 计划验收 |
+| R9 | 两个 tab 内容全空（无时钟/系统组件） | 根因：dashboard.at model 未声明 `face_tabs` 变量 → write_state_vec 静默失败 → 视图按 active_tab 过滤滤光全部 face。修：model 补 `var face_tabs = []` | auto-lang tab 轮提交；pack 重同步 | ✅ | 实机：主 tab 时钟卡走秒（用户截图 23:58:58） |
+| R10 | 面板尺寸与左侧图标网格不成整数倍，未对齐 | 面板外框吸附图标网格：列距 88（80+8）/行距 80（72+8）/原点 12，宽 10 列（872）高 3 行（232），右上 12px 对齐；内部格位等比缩放 | auto-lang R10 提交 | ✅ | 实机：面板边缘与图标格线对齐 |
+| R11 | os-config 打不开，无法切浅色验证 | 根因：worktree 组缺 `../auto-os-config` 兄弟检出（注册表扫描不到 os-config 条目，齿轮点击 no-op）。修：组内补依赖 worktree（detached main，AGENTS §2 约定）；浅色验证可 `AUTO_UI_THEME=light` 启动 | 组内 `.wt/os-024/auto-os-config` 检出 | ✅ | 实机：齿轮拉起 os-config；浅色 run 供验证 |
+| R12 | 点「系统」tab 无效 | 根因：常驻面板住底层后，桌面图标层**全屏 BlankPress mouse-area** 叠在其上吞掉全部 click（日志零条 SelectTab 实证）。修：dashboard 层上移至图标层之上、app 窗之下（视觉右上与图标网格不重叠，app 遮挡保持——R3 主诉求不变） | auto-lang R12 提交 | ✅ | 实机：tab 切换渲染对应 face |
+| R13 | 时钟内容贴卡片左缘，应容器内居中 | 活卡容器补 align_x/y Center（face 列宽收缩内容，容器居中生效）。注：R12/R13 首轮交付时旧实例锁 exe 致链接失败、重启的是旧二进制（用户复验"未生效"真因）——解锁重建后交付 | auto-lang R12/R13 提交 + 解锁重建 | ✅ | 实机：时钟在卡内居中（本轮重建后） |
+| R15 | 时钟内容仍不横向居中（R13 后复验） | R13 容器居中只解决卡定位；face 内部 styled text 节点宽度行为使 text 左对齐——修：mini col 加 `w-full` + 时间 text 加 `text-center`（class.rs TextCenter 在册） | auto-lang R15 提交 | ✅ | 实机：时钟/标签卡内居中（用户复验） |
+| R16 | sys-monitor 卡无设计感（三行堆叠左对齐） | 两轮：①三瓷贴横排——258px 窄卡放不下长值换行烂版（用户复验"仍丑"）；②改竖排列表三行（label 左 muted / value 右 semibold，justify-between，任何宽度不换行）；progress 条留 v2（无 progress 叶子） | auto-os R16/R16b 提交 | ✅（待用户终审） | 实机：系统 tab 三行列表 |
+| R17 | sysmon 卡加分档栅格进度条（CPU/内存；绿→蓝→黄→红随值变档） | store tick 百分比 int 化 + 20 段 seg 对象表 + 档位色（插值消费）；mini 视图 CPU/内存行下插段条；Tick 驱动、R5 门控照常（不看零开销）。坑：seg 对象键 `on` 撞 .at 关键字 → 改 `lit` | auto-os R17/R17b/R17c/R17d 提交 | ✅（待用户终审） | 实机：系统 tab 多色栅格条 |
+
+  **R17d 四修（用户裁定"接近即占位，类似四舍五入"）**：段三态——值 ≥ 下界+3
+  点亮（色=四分位）；值 ∈ [下界, 下界+3) → 空白占位块（bg-background/70 +
+  border）；值 < 下界 → 不渲染。29% = 5 绿 + 第 6 格空白；28%+ 第 6 格变蓝。
+  另修：点亮判定全程无 float→int 转换（.as(int) 对 float 垃圾值实证绕行）。
+| R19 | 加音乐播放器小组件（参考 stella mini-player） | 020-music-player `view mini`：圆盘 glyph + 曲名/艺人居中 + 进度时间 + ⏮⏯⏭ 控制行（face 事件直达 app 会话，PlayPause 无曲目自动开播）；category=media → 主 tab。与主窗同 store（current_title/is_playing/progress 同源） | auto-lang R19 提交 | ✅ | 实机：faces=4 全孵化（日志实证）；
+      主 tab 三卡满行 + 系统 tab sysmon |
+| R20 | 桌面小组件点击时应打开对应 app | 三态打开语义：**孵化会话 → 升格开窗**（新原语 open_window_for_session——为既有 AppSession 建虚拟窗，face 与窗同会话零分家，避免同 app 双会话状态分裂）；**已有窗 → activate 聚焦**（跨分区/负一屏语义复用）；**无会话 → launch**。实现：face 卡包 mouse_area（内层交互优先命中，空白区点击 = 打开；合成消息 `__dashboard_open:<id>` + update 拦截臂 + 尾 drain/sync 同形）。音乐卡控制钮不受影响 | auto-lang R20 提交 | ✅ | 实机：点时钟卡开时钟窗、音乐卡按钮仍就地播放 |
+| R18 | 除了时钟/系统监控还做了哪些桌面小组件？最好多显示一个 | 如实答：v1 试点仅时钟+系统监控（§4.5 裁定）。本轮补 **013-todo 待办卡**（active_count 大字，store 同源活渲染，纯前端孵化）——主 tab 三卡布局成形（clock/todo/sysmon）；016-calendar 跳过（store today 为写死演示日期 2026-06-17，桌面卡会显示假日期，误导）；kanban/klondike/tetris 战绩卡留 §4.5 后续候选 | auto-lang R18 提交 | ✅ | 实机：faces=3 全孵化日志实证 |
+
+  R17b/c 注记：①用户裁定改**按段定色**（一条多色——段色=段上界档位，44% 全绿、满条四色渐变）；②`.cpu.as(int)` 对 float 产出垃圾值（CPU 44% 整条红实证）→ 点亮判定改浮点累加比较，全程无 float→int 转换；③**R17c 档位四等分**（用户裁定：段上界 ≤25 绿 / ≤50 蓝 / ≤75 黄 / >75 红）——38% 内存 = 5 绿 + 2 蓝可见。
+| R16b | 面板与图标网格对齐复验（R10 后"又没对齐"） | 几何自 R10 确认版零改动（R12 层位/R13 对齐/R15 居中/R16 布局均不动 panel_x/尺寸）；疑似观感混淆或截图片段所致——**待用户全桌面截图复判**，若仍偏移则按格线坐标逐像素核对 | —— | 🔍 待复判 | 用户全桌面截图 |
+| R14 | os-config 打开显示 not-migrated，无法切浅色 | os-config 的配置读写走 autoos **daemon**（pac `daemon: autoos`）；worktree 走查环境未孵 daemon → 迁移/主题读写不可用。浅色验证改走桌面自有主题配置：`~/.config/autoos/apps/desktop/config.at`（theme_source manual + dark_theme false，PLAN-601 机制），boot set_dark_mode 全链生效 | 配置文件路径修正一轮（apps/desktop/config.at）；daemon 孵化 defer（带外约定，§5.7 非目标同款） | ✅（浅色验证路径）/ ⏸（daemon 常驻） | 09-light-theme.png + 用户实机浅色走查 |
 
 | R7 | 桌面快捷方式全消失；应保留并与小组件有机配合 | 根因=走查拉起方式缺 `AUTO_VM_STORAGE_FILE`（desktop.sh 会注入，直接 exec exe 落 CWD 哈希临时库 → `shell.desktop.icons` 读空）。修：①ui_desktop 缺省对齐 PLAN-018 确定性 per-user 库（已设 env 不覆盖）；②面板默认**右上角**与图标网格（列主序占左）有机共存；③伴随修：dashboard_layout 去 panel_x 内部居中，格位面板相对、调用方单一注入（chrome/face 不再分家） | auto-lang R7 提交 | ✅ | 实机：order=27/cells=50 注入；07-icons-coexist.png 图标+面板共存 |
 
