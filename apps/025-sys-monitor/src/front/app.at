@@ -178,4 +178,41 @@ widget App {
             }
         }
     }
+
+    // PLAN-024 试点：桌面 dashboard 系统概要卡（T-06）——活渲染面，与主窗
+    // 同 SysStore（cpuLabel/memLabel/procLabel 随 app Tick 刷新同源一致）。
+    // 有后端依赖（back.api/daemon）→ 不静默孵化：未运行显示占位卡，
+    // 点击 dashboard_launch 一键启动（D4）。
+    view mini {
+        col {
+            style: "justify-center gap-2 h-full px-4"
+            row {
+                style: "items-center gap-3"
+                text .store.cpuLabel {
+                    style: "text-2xl font-semibold text-foreground tabular-nums"
+                }
+                text "CPU" {
+                    style: "text-xs text-muted-foreground"
+                }
+            }
+            row {
+                style: "items-center gap-3"
+                text .store.memLabel {
+                    style: "text-2xl font-semibold text-foreground tabular-nums"
+                }
+                text "内存" {
+                    style: "text-xs text-muted-foreground"
+                }
+            }
+            row {
+                style: "items-center gap-3"
+                text .store.procLabel {
+                    style: "text-2xl font-semibold text-foreground tabular-nums"
+                }
+                text "进程" {
+                    style: "text-xs text-muted-foreground"
+                }
+            }
+        }
+    }
 }
