@@ -185,35 +185,32 @@ widget App {
     // 点击 dashboard_launch 一键启动（D4）。
     view mini {
         col {
-            style: "w-full h-full justify-center px-2"
+            style: "w-full h-full justify-center px-4 gap-2"
             row {
-                style: "w-full justify-center gap-8"
-                col {
-                    style: "items-center gap-0.5"
-                    text .store.cpuLabel {
-                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
-                    }
-                    text "CPU" {
-                        style: "text-xs text-muted-foreground"
-                    }
+                style: "w-full justify-between items-center"
+                text "CPU" {
+                    style: "text-xs text-muted-foreground"
                 }
-                col {
-                    style: "items-center gap-0.5"
-                    text .store.memLabel {
-                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
-                    }
-                    text "内存" {
-                        style: "text-xs text-muted-foreground"
-                    }
+                text .store.cpuLabel {
+                    style: "text-sm font-semibold text-foreground tabular-nums"
                 }
-                col {
-                    style: "items-center gap-0.5"
-                    text .store.procLabel {
-                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
-                    }
-                    text "进程" {
-                        style: "text-xs text-muted-foreground"
-                    }
+            }
+            row {
+                style: "w-full justify-between items-center"
+                text "内存" {
+                    style: "text-xs text-muted-foreground"
+                }
+                text .store.memLabel {
+                    style: "text-sm font-semibold text-foreground tabular-nums"
+                }
+            }
+            row {
+                style: "w-full justify-between items-center"
+                text "进程" {
+                    style: "text-xs text-muted-foreground"
+                }
+                text .store.procLabel {
+                    style: "text-sm font-semibold text-foreground tabular-nums"
                 }
             }
         }
