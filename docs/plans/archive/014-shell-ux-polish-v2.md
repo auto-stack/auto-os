@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-014
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-17 re-review pass——repair1 F-01..F-05 全清、零新增红 A/B 实证、vue 门补齐；next: merge）
+status: archived             # drafting → executing → execution_done → reviewed → archived（2026-09-17 merge pass——两仓落地+台账+归档+清理五检查点全过，见 §9 合并收据）
 feature_name: shell-ux-polish-v2
 author: [zhaopuming]
 created_at: 2026-09-14
@@ -383,6 +383,39 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
 
 ## 9. 复审记录
 
+- 2026-09-17 stage:merge **PLAN-014:r2** outcome:**pass** — 合并收据
+  （delivery_commit：auto-os main `07aca16`（FF 自 plan-014-dev，含
+  reviewed e94f4aa + 台账 07aca16）；auto-lang master `844ff9c81`
+  （merge --no-ff 自 auto-os-dev 679ee141c，调和 5230f5741））。
+  - **prepared**：被审基线 e94f4aa/679ee141c 复核零脏区；canonical
+    delta = SD-01 docs/specs/shell/showdesk-ux-polish.md（worktree 已
+    提交）+ SD-02 schema/projection-protocol-v1.md v1.8（worktree 已
+    提交）；调和 auto-lang master 5230f5741（零文件重叠）→ 合并树全
+    量门复跑 39 红 = 36 已知（含 external_config_poll 本轮 flaky 绿）
+    + 3 chart 族（plan484_024_charts ×2 + test_plan522_024_chart_geom
+    ——**纯 master 5230f5741 临时 worktree 复现逐一成立，master 自带
+    非合并引入**）；调和 auto-os main（024 簿记 docs-only）。
+  - **landed**：auto-lang master `844ff9c81`（祖先 679ee141c +
+    5230f5741；master 树内容验证：schema v1.8 头 + builder
+    first_meaningful_stmt 在位）；auto-os main `07aca16`（FF，祖先
+    bae8595→e94f4aa→ff9b84b 链；docs/specs/shell/showdesk-ux-polish.md
+    在位；**落地后 `shell-pack-sync.py` 自 main 校验对 auto-lang
+    master 四件全等**）。落地树与合并树运行门字节同源。
+  - **ledger_refreshed**：auto-os `.autoos/specs.json`（tracked，经
+    worktree 提交 07aca16 落地）五条目——reports/architecture/designs/
+    tests `P014-1` ×4 + reviews `PLAN-014-r2` ×1，canonical targets =
+    showdesk-ux-polish.md / ../auto-lang/schema/projection-protocol-
+    v1.md / 归档路径，readback 计数核对过；auto-lang `.autoos/
+    specs.json`（runtime-only 未跟踪）落地后发布 designs/reviews
+    `P014-1` ×2，atomic replace + readback 验证。
+  - **archived**：本文件 `docs/plans/archive/014-shell-ux-polish-v2.md`
+    （git mv），status: archived，completion_kind: delivered。
+  - **cleaned**：auto-lang worktree 移除（wt-guard 首跑 **BLOCKED**
+    ——F-05 pnpm install 在 gen node_modules 引入 365 junction，按
+    guard 处方 `cmd /c rmdir` 只删链接本身零穿透，复闸 clean 后
+    remove）；分支 auto-os-dev 已删（was 35ca46ad1，已含于 844ff9c81）；
+    auto-os worktree/分支/组目录清理见收据回填（下条）。
+  遗留（non-blocking 挂账，见上条 N-1..N-3）。next: 无（终态）。
 - 2026-09-17 stage:review PLAN-014 rev2 outcome:**pass**（re-review，
   repair cycle 1 后）— reviewed_commit: auto-os `e94f4aa`（plan-014-dev）/
   auto-lang `679ee141c`（auto-os-dev）；base: auto-os 325095b（main）/
