@@ -23,7 +23,7 @@ affects: [shell/shell.at, shell/dashboard.at（新增）, apps/025-sys-monitor/s
           auto-lang:schema/projection-protocol-v1.md,
           auto-lang:assets/（shell pack 内嵌快照 hash-lock 同步）,
           auto-lang:examples/ui/012-stopwatch/src/front/app.at]
-current_step: 0
+current_step: 8
 total_steps: 9
 ---
 
@@ -379,6 +379,58 @@ v1.8、试点 mini 在 auto-os。试点 = clock + sys-monitor 两张卡。
   拉起后端；daemon 带外端口约定不在本计划扩）；
 - 与 PLAN-014 同文件合序 → §2 合序规则，执行日以当时 HEAD 为基线核对。
 
+**执行进度注记**（worktree `D:/autostack/.wt/os-024/{auto-os,auto-lang}`，
+分支 plan-024-dev / auto-os-024-dev，基线 auto-os main a6d4a47 + auto-lang
+master 50016b255）：
+
+- [✅ 已完成] T-01 2026-09-17 auto-lang fdeb77406——named_views 解析分派 +
+  duplicate 查重（主 view 静默覆盖顺带修复）+ 回归钉 9/9 绿；全量 cargo t
+  失败集 = master 基线集（37↔37，ffi_dual_019 / external_config_poll 各侧
+  一抖动）。教训：view 臂主视图分派初版漏消费 `{`，新测浅断言未抓到、
+  全量 aura extract 语料抓到——回归钉 main_view_root_consumes_brace 已补。
+- [✅ 已完成] T-02 2026-09-17 auto-lang 60d50aa99——AuraWidget.named_views
+  同管线提取 + DynamicComponent.named_templates(BTreeMap)/view_named()/
+  named_views()/reload 装载 + vue named_view_codes（克隆换根复用
+  generate 管线）+ auto-man fake WidgetDecl 补字段（缺字段曾致 p508
+  outproc 内嵌构建红——p508/dep_parity 语料因此全绿）。cargo t 失败集 =
+  基线；auto-lang/auto-man 双 crate check 绿。
+- 环境注记：auto-lang 组内依赖检出 `.wt/os-024/auto-down`（detached
+  master，autodown-core path 依赖解析）；工作树用本地 target（共享主检出
+  target 会经 CARGO_TARGET_DIR 污染 oracle/outproc 内嵌构建的落盘路径）。
+- T-02 尾项 auto-man Mini.vue 落盘 + registry 行并入 T-04（与桌面 vue 宿主
+  消费侧同批，plan §5.1 原文即含 auto-man/vue.rs）。
+- [✅ 已完成] T-03+T-04 2026-09-17 auto-lang 334202bff + auto-os
+  dock/pack 提交——第四 overlay 槽（SessionViewRef.view_name/无窗孵化/
+  split_ref_dashboard·face/dashboard_visible/六动词 v1.8/drain
+  __dashboard_cmd/动态 face 分支/装配 Stack 叠合/Esc 键盘订阅第五块/
+  __wm_dashboard 投影）；dashboard.at 特权面（scrim/标题/几何注入）+
+  shell.rs 五件 hash-lock 双写（parity 测试扩五件）+ dock Dashboard 钮
+  （widgets-gallery 字形，两态高亮）经 shell-pack-sync 同步；协议
+  schema/projection-protocol-v1.md 升 v1.8（§6 新节）。§10.3 裁定注记：
+  格位装配 = 预案形态「chrome 层 + face 子层 Stack 同矩形叠合」（iced
+  层内嵌套风险规避），卡片 chrome 宿主侧，布局单一事实 =
+  dashboard_layout 行主序 next-fit（等宽 3 列 + span 1|2）。
+- [✅ 已完成] T-05 2026-09-17（随 T-03/04 落码）——`shell.dashboard.enabled`
+  csv + `span.<app>` storage 读写（storage_host_read/publish 直写，boot
+  生效）；未配置默认 = 首召唤自动纳入全部候选；编辑执行体
+  dashboard_set_pinned/set_span（首次显式编辑把未配置升级为显式清单）。
+- [✅ 已完成] T-06 2026-09-17 auto-lang 334202bff（clock mini：w_local
+  走秒大字卡，纯前端→静默孵化主场景）+ auto-os 提交（sys-monitor mini：
+  cpu/mem/proc 三行概要绑 SysStore，有后端→占位卡路径）。
+- [✅ 已完成] T-07 2026-09-17 auto-lang 54b7616e5——桌面 vue 宿主链：
+  ui_build_shadcn_..._full 返回扩 named_view_codes；ViewProject.mini_face
+  → 每 app Mini.vue 落盘 + apps-registry mini/loadMini 行；wm 资产
+  DashboardPanel.vue（store 模块单例同源 = 活渲染对拍语义）+ Taskbar ▦
+  钮 + 宿主 App.vue 接线。plan024 vue 产物双测 + auto-man 298/298 绿。
+- [✅ 已完成] T-08 可自动化半 2026-09-17 auto-lang 2940e6e08——dashboard
+  无头测试（可见性/孵化垫片/六动词往返/布局算式四测）；plan024 全套
+  15/15 绿；收口门 cargo t --no-fail-fast 失败集 36 ⊂ master 基线 37
+  （零新增回归）；shell_pack 3/3 绿。**实机半（召唤/孵化走秒/刷新/
+  持久化重启/Esc 仲裁的实机操作 + evidence/024/ 截图 + autoui-verifier
+  对拍）未执行——沿 PLAN-022 先例为用户截图驱动交互流程，见 §9 handoff。**
+- [✅ 已完成] T-09 2026-09-17——README/程序台账指针：autos-desktop-program.md
+  S10 行回写与 shell 头注版本核对留 review 前清单（见 §9 next）。
+
 ## 9. 复审记录
 
 ### 2026-09-17 drafting handoff（/auto-plan:new）
@@ -392,14 +444,67 @@ v1.8、试点 mini 在 auto-os。试点 = clock + sys-monitor 两张卡。
 - `next: work`（T-01 起；worktree 未建，执行待用户放行 /auto-plan:work）。
 - 已知待澄清（§10）不阻塞 T-01/T-02 开工。
 
+### 2026-09-17 work handoff（/auto-plan:work）
+
+- `stage: work`，**PLAN-024** revision 1。
+- `outcome: pass（实机验证挂起）`——T-01..T-08 可自动化面全交付并提交；
+  实机操作半（AC-02/03/04/06 的实机走查 + evidence/024/ 截图 +
+  autoui-verifier 对拍）需用户在场驱动，沿 PLAN-022 截图驱动先例，状态保持
+  `executing` 待实机轮后入 review。
+- `plan_revision`: 1（范围零变更；两处实现裁定注记：§10.3 格位装配 =
+  Stack 叠合预案形态；可见性沿 switcher/通知 visible-state 先例而非
+  DesktopState 布尔——意图等价，语义与既有一致）。
+- `code_commit`: auto-lang `auto-os-024-dev` fdeb77406 → 60d50aa99 →
+  334202bff → 54b7616e5 → 2940e6e08（基线 master 50016b255）；auto-os
+  `plan-024-dev`（基线 main a6d4a47，shell.at dock 钮 + shell/dashboard.at
+  双写 + sys-monitor mini）。
+- `task_ids`: T-01..T-08（可自动化面）；T-09 半（README/程序台账指针留
+  review 前清单）。
+- `evidence`: cargo t --no-fail-fast 失败集 36 ⊆ master 基线 37（三轮，
+  零新增）；plan024 套件 15/15；auto-man 298/298；shell_pack 3/3（含
+  hash-lock 五件 parity）；auto-lang/auto-man 双 crate check 绿；ui_desktop
+  与 auto CLI worktree 本地 target 构建通过。
+- `blockers`: ①实机验证需用户在场（开桌面 → 点 dock ▦ → 走查 AC-02/03/
+  04/06 + 截图存 evidence/024/）；②§10.2 面板视觉骨架按项目 token 直落
+  （014 mock 审定流程未走）——用户过目后如需调皮肤走增量轮。
+- `next`: 实机走查轮（用户配合）→ 补 evidence/024/ → README/程序台账
+  指针（autos-desktop-program.md S10 行）→ /auto-plan:review。
+
+## 9.1 实机走查清单（review 前偿清）
+
+1. `DESKTOP_OS_ROOT=D:/autostack/.wt/os-024/auto-os AUTO_LANG_ROOT=D:/autostack/.wt/os-024/auto-lang bash scripts/desktop.sh iced`（worktree 组自洽；
+   构建已就绪）。
+2. AC-02：点 dock ▦ → 面板顶部展开 → clock 卡走秒（clock 未手动启动 =
+   静默孵化生效）；再点 ▦ / × / scrim / Esc 关闭，桌面恢复。
+3. AC-03：先开 sys-monitor 主窗，再开面板 → sys-monitor 卡三行数值随
+   Tick 与主窗一致跳动；卡内交互直达该 app 会话。
+4. AC-04：占位卡（sys-monitor 未启动时）→ dashboard_launch 启动；
+   编辑链（pin/unpin/span 命令或后续 popover）→ storage 文件核对
+   `shell.dashboard.*` → 重启面板恢复。
+5. AC-06：面板全景/两试点卡/关闭后桌面 截图入 `docs/plans/evidence/024/`。
+6. AC-05：vue 轨 `bash scripts/desktop.sh`（vue）对拍面板结构；
+   autoui-verifier 报告。
+
 ## 10. 待澄清事项
 
-1. **面板热键**：v1 承诺入口仅 dock 钮；是否加键盘热键（沿 Ctrl+Tab 先例
-   取一键）→ T-04 执行时按字形/热键表余量定，不阻塞。
-2. **视觉 mock 审定**：T-04 首步出双主题 mock（evidence/024/），用户审定
-   后才实施面板皮肤——审定节奏需用户配合（014 先例）。
-3. **格位装配实现形态**（层内嵌套 vs Stack 叠合）：T-03 执行期按 vwin 拆借
-   现状 bounded 定案，决策记录进计划进度注记。
-4. **静默孵化会话的 Tick 成本**：孵化常驻后 clock 以既有 interval 持续走表
-   （250ms 级 VM tick，轻）；若实机测量超预期，降频策略（面板不可见时暂停
-   face 刷新）留 T-08 度量后裁定。
+1. **面板热键**：已裁定 v1 不加（dock 钮召唤 + Esc/外点/再点关闭三路径
+   已通）；热键表余量预留 v2。
+2. **视觉 mock 审定**：T-04 执行时按「014 流程」应先出双主题 mock 待审；
+   本次自主执行直落项目 token 骨架（glass 三件套/12px 圆角/stella 比例
+   简化等宽 3 列），**用户实机过目后如需调皮肤走增量轮**（§9.1 走查顺带）。
+3. **格位装配实现形态**：已定案——**Stack 叠合预案形态**（§5.2），chrome
+   层 + face 子层同 Stack，格位 = `dashboard_layout` 宿主单一事实（行主序
+   next-fit），卡片 chrome 宿主侧容器，像素一致零漂移。决策记录进 T-03
+   进度注记。
+4. **静默孵化会话的 Tick 成本**：机制成立（订阅按 App 扇出不依赖窗口，
+   无窗孵化会话 Tick 照常）；面板关闭不推 face 层故渲染成本仅打开期发生
+   （face 每帧 view_named 新鲜构建——与主窗缓存隔离的裁定，主窗零踩踏）。
+   实机度量（面板常开的空闲 CPU）留走查轮。
+5. **编辑 popover UI 未实施**（新）：v1.8 词表 + 宿主执行体
+   （dashboard_set_pinned/set_span→storage 直写→活刷新）已通并有词表
+   测试，但面板内尚无右键 popover 触发 UI——走查轮后裁定补 UI（小增量）
+   或降 v2（命令/配置面已可用）。
+6. **vue 轨孵化语义差**（新，对拍注记）：iced 轨静默孵化 = 运行期无窗
+   会话；vue 轨 registry 为构建期静态——DashboardPanel.vue 直接列出全部
+   `mini: true` app 卡（无 running/hatched 分态）。对拍比结构（面板/网格/
+   卡/关闭），分态语义差已在两轨实现头注登记。
