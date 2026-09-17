@@ -463,6 +463,17 @@ coverage + p010——后者过期期望已修正）。范围调整：shell 宿�
   层/sliver/协议词表不动——无新投影字段/动词，v1.7 不升版）。宿主可执
   行面随 019 worktree 构建（ui_desktop --example，11:39）；os-config 侧
   auto/src/front/desktop_page.at + desktop_store.at（Regen 门禁绿）。
+- 2026-09-17 F-02 销账（rev2 findings 唯一 nonblocking，merge 前顺手项）：
+  七新动词（show_desktop/showdesk_return/wallpaper_pick/wallpaper_close/
+  wallpaper_browse_dir/wallpaper_nav/wallpaper_preview）encode/parse
+  roundtrip 专项单测 `showdesk_wallpaper_verbs_parse_and_encode` 落
+  session.rs 解析家族区（dock_pin 同型）——全量往返 + 无参五词裸词编码 +
+  shell.at 轨 \n/\t 双轨 + nav 值域外跳过不阻塞 + preview 空参退栅格态
+  守卫。提交 auto-lang 4fb58361b；新测 + scoped 家族 39/39 绿（wallpaper/
+  showdesk/desktop_command/desktop_surface/shell/p010/desktop_injects/
+  activate/dock_pin）。实机走查 blocker 已由 FU1–FU8 反馈批多轮实机走查
+  覆盖（每批均为用户实机走查驱动的修复+验证闭环），unblock 条件成立，
+  待快速复审复用 rev2 自动化证据 + 走查结论翻 pass。
 
 ## 10. 待澄清事项
 
