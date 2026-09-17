@@ -122,6 +122,18 @@
           "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
           "title": "PLAN-019 变更摘要 — showdesk-wallpaper-picker（负一屏+壁纸 carousel）",
           "content": "三个自足能力+一个组合入口：①显示桌面=任务栏右缘 sliver toggle 切换宿主保留空分区（否定 win_min 最小化语义，接管 PLAN-014 W-05）；②壁纸 carousel=负一屏上候选壁纸滑窗选换，点选即应用热生效、大图预览、‹›/←→ 滑窗导航（FU7 重设计：底部居中锚点+一次 5 枚+导航不应用点选才应用）；③组合入口=桌面右键「更换壁纸…」发 wallpaper_pick，归属规则「谁切屏谁负责切回」宿主单点收口；④每壁纸图标布局记忆=positions 按壁纸指纹键控切换跟随。协议 v1.7（与 PLAN-016 open_with 双增量并行合流同一版本号）。走查反馈批 FU1–FU8（图标资产/启动崩溃修复/carousel 重设计/设置面 wallpaper_request 入口）全并线。landed=auto-lang master 768e8fcd3(auto-os-dev)/auto-os main 7e2a270(plan-019-dev)。"
+        },
+        {
+          "related": [
+            "PLAN-022"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17",
+          "id": "P022-1",
+          "file": "docs/plans/archive/022-icon-taskbar-polish.md",
+          "title": "PLAN-022 变更摘要 — icon-taskbar-polish（桌面/任务栏/launcher 图标全轮打磨）",
+          "content": "桌面/任务栏/launcher/切换器图标体系整轮打磨（R1–R17 截图逐条用户驱动，回补计划）：真位图图标全量接入（任务栏 iconfile+ghost 变体+pinned/窗口条目 mapping 链+launcher+切换器）、桌面图标 48px 满幅+标题三级配色（图片壁纸 bg-black/30 底片/纯色亮度自适应）、拖拽修复（6px 位移阈值门双落格动词、幽灵跟随、落点格高亮）、列主序排布、launcher 5 列网格+440px 限高滚动+120% 行高（mouse-area 行容器绕 iced button 钳高）、切换器预览独立发布（400ms ServiceTick SWR 补抓）+\"+\"新建桌面卡、DualApp 验收窗退役（双窗隔离走 ui_dual_app）、激活条带 mt-[3px] 五臂下移（R17）。图标资产 10 新 stem+4 重制×双主题+mapping 5 键。landed=auto-os d616fa7/auto-lang 94bc69c22+9bd26d884（2026-09-17 回补落库）。"
         }
       ]
     },
@@ -341,6 +353,18 @@
           "file": "../auto-lang/schema/projection-protocol-v1.md",
           "title": "SD-01/SD-02 协议 v1.7 负一屏+壁纸 carousel 面（七动词+七字段）",
           "content": "§4 +show_desktop/showdesk_return（WM 自足，幂等 origin 簿记）/wallpaper_pick/wallpaper_close（组合+归属单点 picker_return_on_close）/wallpaper_browse_dir（rfd pick_folder→SetWallpapersDir 同写臂）/wallpaper_nav（prev|next 窄值；FU7 语义=滑窗不应用）/wallpaper_preview（路径参，空参退栅格）。§2 +__wm_showdesk/__wp_picker/__wp_dir/__wp_current/__wp_items(+wp_paths 平行面)/__wp_visible(滑窗切片)/__wp_preview/__wp_x/__wp_y。排除规则（非动词增量）：负一屏投影过滤/环切跳过/close+send_to 拒/activate 先 return。同版并行：PLAN-016 open_with+__desktop_cmd 发件面扩宽+pac opens:（v1.7 双 provenance 合流）。"
+        },
+        {
+          "related": [
+            "PLAN-022"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17",
+          "id": "P022-1",
+          "file": "docs/specs/shell/showdesk-icons.md",
+          "title": "SD-01..03 showdesk-icons 模块 spec——桌面网格/任务栏消费/切换器预览契约",
+          "content": "SD-01 桌面网格：48px 满幅 tile 不套外框（018-FU2 裁定推广）/格高 h-[72px]/标题三级配色（__desktop_label_dark #hex 直算 luma+图片 32×32 均值按路径缓存，u16 防溢出）/hover bg-white/10/未定位列主序填充（desktop_icon_cells rows 参数，rows=视口高/80px 扣任务栏预留）/拖拽 6px 位移阈值门（icon_drag_moved 统一 __mouse_released 兜底臂+BlankDrop desktop_icon_drop_at 两路落格动词；拒落只清视觉态；幽灵=drag_icon/drop_c/drop_r 数据面坐标锚 popover+落点格高亮；落格写路归 showdesk-wallpaper SD-04）。SD-02 任务栏消费：iconfile: 双主题臂+ghost 去描边+36px 图标 44px hover 底+激活条带 mt-[3px] 五臂同值（pinned 三态+窗口条目二态，R17 3x 放大实测裁定）；条目图标走 mapping 链。SD-03 切换器预览：publish_workspace_previews 独立化（boot/refresh+tick 两调用点）+面板开 400ms ServiceTick 逐可见窗 request_capture SWR 补抓+收起零常态开销+WorkspaceAdd 新建卡；深色对比度非阻塞债。"
         }
       ]
     },
@@ -432,6 +456,18 @@
           "file": "docs/specs/shell/showdesk-wallpaper.md",
           "title": "SD-01..04 showdesk-wallpaper 模块 spec——负一屏语义/carousel/归属/布局记忆",
           "content": "SD-01 保留空分区语义+五条排除规则+sliver 入口；SD-02 carousel（底部锚点 popover 720px、滑窗 5 枚 picker_win 端点 clamp、双态渲染判据 __wp_preview、键盘 PICKER_KEYS_OPEN 原子门控、滚轮直切债归 PLAN-631）；SD-03 归属规则谁切屏谁负责切回+设置面 wallpaper_request 差分入口（FU8）+目录浏览；SD-04 每壁纸布局键控 fp=FNV-1a 64hex+\\→/+ASCII 小写折叠，set_wallpaper 切换迁移臂（旧键快照/新键回退底稿）。"
+        },
+        {
+          "related": [
+            "PLAN-022"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17",
+          "id": "P022-1",
+          "file": "apps/028-launcher/SPEC.md",
+          "title": "SD-02 028-launcher 布局语义——5 列网格/限高滚动/120% 行高/mouse-area 行容器",
+          "content": "apps/028-launcher/SPEC.md §网格与 palette 布局语义：grid cols:5（2026-09-15 用户裁定，原 4 列横向过疏）+max-h-[440px] overflow-y-auto 限高滚动（卡片总高不超任务栏，palette 结果列同款机制）；瓦片满幅 tile（iconfile 位图自带圆角板不套 chip 外框，full 臂 40px 定尺寸 col；裸 lucide 字标保留品牌色 chip）；palette 行容器 mouse-area+row 禁 button（iced button 内容行钳子件高度到文本行高，矩阵探针五变体实证）+py-[18px]≈120% 行高+px-3 gap-2 紧凑+满幅臂图标 40px 无缝+候选文本纵向居中。"
         }
       ]
     },
@@ -579,6 +615,18 @@
           "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
           "title": "PLAN-019 验证矩阵——scoped 家族+全量清点对账+实机 FU1–FU8 走查批",
           "content": "宿主单测：showdesk 状态机/排除规则/pick-close 归属两分支/nav 滑窗 clamp/Esc 链/布局键控迁移/wallpaper_request 差分触发/七动词 encode-parse roundtrip（F-02 销账）全绿；shell pack 编译+hash-lock parity 绿；a2vue 金样重生成对拍绿。全量日常档 --no-fail-fast：4895/4915（复审时点）与 4988/5023（landing reconcile 后）——失败清点逐条实证为预存（019 线基线 layout×14 等环境敏感+master 存量 p010/musk_vm_track/plan050 族 13 项在 master 检出复跑同红），019 账面零新增回归。实机侧=用户多轮走查（FU1–FU8 反馈批即走查产物：图标资产/启动崩溃/carousel 重设计裁定/设置面入口）。"
+        },
+        {
+          "related": [
+            "PLAN-022"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17",
+          "id": "P022-1",
+          "file": "docs/plans/archive/022-icon-taskbar-polish.md",
+          "title": "PLAN-022 验证矩阵——HEAD 标记复核 + 023 r1 祖先回归覆盖 + 执行期用户逐条截图实测",
+          "content": "代码标记 HEAD 复核：shell.at 7 枚 iconfile 全 ghost+mt-[3px] 五臂（+1 注释）；desktop.at w-12 h-12/h-[72px]/bg-black/30；launcher cols:5/max-h-[440px]/py-[18px]；mapping 5 键；WorkspaceAdd 卡 shell.at:416；renderer icon_drag_moved ×5+session ×2、desktop_icon_cells(rows)、publish_workspace_previews 双调用点、ws-preview eprintln 零残留（9bd26d884）。lang 回归门复用（显式理由：被审提交深居 main 历史，现跑全量测的是 HEAD 非基线）：023 r1 tv 3743/3743+集成 13/13（树含 94bc69c22+9bd26d884，merge-base 实证）+a2vue 金样对拍重生成（auto-lang 0407a9f9b，022 网格终版双端同源）；auto-os 侧 023 work 收口 desktop_mcp 58/0+vue 零 TS 错在 d616fa7 之后。实机：执行期 R1–R17 用户逐条截图验收（条带缝隙 3x 放大实测在案）；AC-6 按约定口径=逻辑+构建验证，手感反馈通道开放。局限：运行时未现场重演（ui_desktop 未运行），结论重建自工件。"
         }
       ]
     },
@@ -729,6 +777,18 @@
           "file": "docs/plans/archive/019-showdesk-wallpaper-picker.md",
           "title": "PLAN-019 r2 复审 pass（快速复审——rev2 实机走查 blocker 经 FU1–FU8 解除+F-02/F-03 销账）",
           "content": "复审 pass（2026-09-17，rev2 维持，reviewed commit auto-os 88f86fa/auto-lang 4fb58361b，spec 定稿 dd0ade3，base a657a4e/a9d3b8c67）。AC-02/04/06/09/10 维持 pass；AC-01/03/05/07/08 实机侧经 FU1–FU8 用户走查批覆盖翻 pass。findings：F-02 七动词 roundtrip 单测销账（4fb58361b）；F-03 SD-03 spec 滞后 FU7/FU8 已定稿（dd0ade3）。landing 后 reconcile（master/main 并行推进 022/023/637/638）双仓再验 scoped 41/41 绿，协议文档 v1.7 双 provenance 合流（PLAN-016 open_with 撞号裁决：同版双增量合流一节）。"
+        },
+        {
+          "related": [
+            "PLAN-022"
+          ],
+          "status": "published",
+          "created": "2026-09-17",
+          "last_modified": "2026-09-17",
+          "id": "PLAN-022-r1",
+          "file": "docs/plans/archive/022-icon-taskbar-polish.md",
+          "title": "PLAN-022 r1 复审 pass（回补计划；工件重建——HEAD 标记+祖先回归+计划内实测记录）",
+          "content": "复审 pass（2026-09-17，r1 基线补立，reviewed commit auto-os d616fa7（base 65bb9cb）/auto-lang 94bc69c22+9bd26d884（base 1450d5e））。AC-1..5 pass（执行期用户逐条截图实测+HEAD 标记复核）；AC-6 pass 按约定口径（逻辑+构建验证：icon_drag_moved 门/6px 阈值/双落格动词同门，手感通道开放）。findings：F-01 回补计划缺 plan_revision/规范增量——复审补立 r1+SD-01/SD-02 已清偿；非阻塞：切换器深色对比度（待澄清 5）、kanban/musk 旧图取舍（待澄清 2，用户自理）。回归门：023 r1 全量 tv 3743/3743 树含 022 双 lang 提交（merge-base 实证）+a2vue 金样对拍。局限：运行时未现场重演（ui_desktop 未运行），结论重建自工件。landing：canonical 沉淀 showdesk-icons.md 新增+launcher SPEC 布局节+台账五条（本条）。"
         }
       ]
     }

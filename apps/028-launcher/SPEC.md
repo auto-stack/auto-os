@@ -54,6 +54,20 @@ recent 折扣: 名称在 recent 列表第 rk 位（0 起）→ 减 max(5-rk, 1)
   `?? ''`——槽值只做 `!= ""` 比较，见 464 实测注）。
 - `Init`：按槽序恢复。
 
+## 网格与 palette 布局语义（PLAN-022 钉死）
+
+- **grid 形态**：5 列（`cols: 5`，2026-09-15 用户裁定——原 4 列横向过疏）；
+  网格区 `max-h-[440px] overflow-y-auto` 限高滚动（卡片总高不得超过
+  任务栏，超出出滚动条，palette 结果列同款机制）。
+- **应用瓦片**：满幅 tile 语义（沿桌面 PLAN-018-FU2 用户裁定）——
+  iconfile 位图自带圆角板，满幅渲染不套 chip 外框（`full == "1"` 臂
+  40px 定尺寸 col，原 h-7 位图居中在 chip 里显小已废）；裸 lucide 字标
+  保持品牌色 chip + glyph。
+- **palette 行**：行容器 = mouse-area + row，**不用 button**（iced button
+  内容行把子件高度钳到文本行高——矩阵探针五变体实证）；行高
+  `py-[18px]`（≈120% 行高）、`px-3 gap-2` 紧凑、满幅臂图标 40px 无缝、
+  候选文本纵向居中（items-center）。
+
 ## 键盘流（P3）
 
 打开即聚焦（`__focus_input`）→ 输入即过滤重排（`SetQ → ApplyFilter`）→
