@@ -185,32 +185,35 @@ widget App {
     // 点击 dashboard_launch 一键启动（D4）。
     view mini {
         col {
-            style: "justify-center gap-2 h-full px-4"
+            style: "w-full h-full justify-center px-2"
             row {
-                style: "items-center gap-3"
-                text .store.cpuLabel {
-                    style: "text-2xl font-semibold text-foreground tabular-nums"
+                style: "w-full justify-center gap-8"
+                col {
+                    style: "items-center gap-0.5"
+                    text .store.cpuLabel {
+                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
+                    }
+                    text "CPU" {
+                        style: "text-xs text-muted-foreground"
+                    }
                 }
-                text "CPU" {
-                    style: "text-xs text-muted-foreground"
+                col {
+                    style: "items-center gap-0.5"
+                    text .store.memLabel {
+                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
+                    }
+                    text "内存" {
+                        style: "text-xs text-muted-foreground"
+                    }
                 }
-            }
-            row {
-                style: "items-center gap-3"
-                text .store.memLabel {
-                    style: "text-2xl font-semibold text-foreground tabular-nums"
-                }
-                text "内存" {
-                    style: "text-xs text-muted-foreground"
-                }
-            }
-            row {
-                style: "items-center gap-3"
-                text .store.procLabel {
-                    style: "text-2xl font-semibold text-foreground tabular-nums"
-                }
-                text "进程" {
-                    style: "text-xs text-muted-foreground"
+                col {
+                    style: "items-center gap-0.5"
+                    text .store.procLabel {
+                        style: "text-xl font-semibold text-foreground tabular-nums text-center"
+                    }
+                    text "进程" {
+                        style: "text-xs text-muted-foreground"
+                    }
                 }
             }
         }
