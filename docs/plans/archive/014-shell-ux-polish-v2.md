@@ -414,7 +414,11 @@ iced/Vue 双端同 class（505 B1 数据驱动口径）；浅色主题角标 #EF
     ——F-05 pnpm install 在 gen node_modules 引入 365 junction，按
     guard 处方 `cmd /c rmdir` 只删链接本身零穿透，复闸 clean 后
     remove）；分支 auto-os-dev 已删（was 35ca46ad1，已含于 844ff9c81）；
-    auto-os worktree/分支/组目录清理见收据回填（下条）。
+    auto-os worktree 移除（wt-guard clean）+ 分支 plan-014-dev 已删
+    （was 07aca16，已含于 main）；依赖 worktree auto-down（detached
+    b37b08e，纯构建依赖零改动）guard clean 后移除；组目录
+    `.wt/os-014/` 已空移除——`.wt` 零 os-014 残留（两仓 worktree
+    list 复核 0）。
   遗留（non-blocking 挂账，见上条 N-1..N-3）。next: 无（终态）。
 - 2026-09-17 stage:review PLAN-014 rev2 outcome:**pass**（re-review，
   repair cycle 1 后）— reviewed_commit: auto-os `e94f4aa`（plan-014-dev）/
