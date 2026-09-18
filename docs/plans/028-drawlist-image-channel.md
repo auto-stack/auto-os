@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-028
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: drawlist-image-channel
 author: [agent]
 created_at: 2026-09-18
@@ -10,7 +10,7 @@ plan_revision: 1
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.9 v1.9 增量 + 版本表回填（review 定稿）
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.9 v1.9 增量 + 顶表 v1.5–v1.9 回填（review 复核定稿）
 touched_goals: []
 
 affects:
@@ -398,7 +398,7 @@ fixtures.golden.ts 新帧 ↔ remote.rs ts_fixtures 对向；`pnpm test`
 |---|---|---|---|---|---|
 | SD-01 | add | auto-lang/docs/design/autoui/desktop-protocol-v1.md（§1.9 v1.9 增量 + 顶表回填 v1.5–v1.8） | before：DrawOp 五算子无图像，image/icon/avatar 占位保真（§1.8 边界"图像通道归独立线"）；after：`DrawOp::Image`（tag 6）入册——src 词汇表（file/builtin:/data:/http(s)/thumbnail://）+ 解析序与降级纪律（未解析=占位+观测）+ 两投影臂真渲口径 + not-yet 边界（位图过线/字形真渲/web 真位图）；PROTOCOL_VERSION 仍 1；顶表 v1.5–v1.8 欠账顺带清偿 | 协议权威版本化收录图像算子（B 形态硬阻断解除的第一件） | AC-01/02/03/05 |
 | SD-02 | modify | auto-os/docs/plans/autos-desktop-program.md | before：B 前置序列"图像通道立项先行"未交付；after：登记交付行（tag 6/词汇/两臂真渲/thumbnail 能力 + not-yet 三项） | 桌面程序台账 | AC-07 |
-| SD-03 | modify | auto-lang/docs/specs/auto-lang/ui/（review 期按目录实况定） | before：026/027 provisional 无图像面条目；after：broker_surface Image 臂 + 两投影臂真渲 + 词汇/降级纪律条目（provisional） | 模块 spec 对齐实现 | AC-02/03/04 |
+| SD-03 | modify | auto-lang/docs/specs/auto-lang/ui/overview.md（review 期钉定——026/027 落地条目所在卷档；条目文本随 merge 沉淀，review 期不改 canonical） | before：026/027 provisional 无图像面条目；after：broker_surface Image 臂 + 两投影臂真渲 + 词汇/降级纪律条目（provisional） | 模块 spec 对齐实现 | AC-02/03/04 |
 
 零 spec 影响的变更不存在（wire 算子/词汇/降级纪律为协议级知识）；
 ledger（auto-lang `.autoos/specs.json`）随 merge 沉淀。
@@ -588,6 +588,39 @@ merge 即基线）。
   channel 语料件承载；依赖组补 auto-down detached worktree
   （lang-022 先例）；真像素截图腿（ui_desktop canvas 栅格）留 merge
   后 smoke 脚本承载。blockers：无。next：review。
+- 2026-09-18 /auto-plan:review 复审：`stage: review`，PLAN-028 rev 1。
+  `outcome: pass` → status **reviewed**。**独立性声明**：复审在实施
+  同会话内进行——结论从工件重建（提交 diff / 测试复跑 / 基线对拍），
+  不依赖执行者摘要。
+  reviewed_commit：lang f89a0c5eb（worktree plan-028-dev，净树）/
+  os 1eed4ed（worktree plan-028-dev，净树）。base_commit：lang
+  64f157f33（master）/ os 2de26fc（main）。dependency_revisions：
+  auto-down 65279a2（detached 组内 worktree，零修改）。
+  **diff 审查**：message.rs **零删除行**（git diff 64f157f33..f89a0c5eb
+  实证）——tag 1–5 encode/decode 逐字节冻结，Image = 纯追加（I1）；
+  两投影臂 rect 推导行逐字不动（I2）；renderer.rs 仅可见性提权。
+  **acceptance_results**（逐条复跑）：AC-01 pass（message scoped 绿；
+  p508_ts_crosscheck 复跑 PASS；PROTOCOL_VERSION=1 在码）；AC-02
+  pass（p028_image_arm 复跑 PASS——004 真 80×80 op + 语料五形态；
+  assets/028/ 留痕随 f89a0c5eb 入库）；AC-03 pass（负缓存/降级单测
+  + e2e 离线腿）；AC-04 pass（thumbnail 三路径单测 + e2e 注入实驱）；
+  AC-05 pass（改写 golden 全绿 + 三处核销随注 + native Image op
+  出帧由 display_family golden 承载）；AC-06 pass（TS 27/27 复跑）；
+  AC-07 pass（§6 回归门见下）。**回归门**（复审档）：日常档 ui-iced
+  全量 5141 测 = 5101 绿 + 40 红与 master 基线**双向全等**
+  （comm 双向空，最终轮 /tmp 对拍）；cargo tf（全配置无 ui-iced）
+  wt 2 红 ⊆ master 3 红（差集空）；cargo tt wt 6 红 = master 6 红
+  （双向全等——a2r 真编译门/codegen fixture 族为无 ui-iced 特性
+  组合双方共有红，非本计划回归）；cargo tv/tb 豁免（改动面零
+  VM/book——全部实现居 ui-iced 门内，无 ui-iced 构建不含本 diff）。
+  **spec_inputs**：desktop-protocol-v1.md §1.9 + 顶表 v1.5–v1.9
+  （随 f89a0c5eb；六条主张逐一对码核验——词汇表/3s 超时/TTL 2s/
+  冷却 500ms/16KiB write_slot 拒绝/占位色同值三方一致）；SD-02
+  台账行随 os 1eed4ed；SD-03 目标钉定 overview.md（merge 期沉淀）。
+  **findings**：无阻断项。备注：covered_elements_within_target_set
+  为 master 基线既有红（/tmp/m-u.txt 在册），非本计划面。evidence
+  持久化：f89a0c5eb / 1eed4ed 提交本体 + assets/028/ 帧留痕 + 本节
+  汇总行。next：**merge**。
 
 ## 10. 待澄清事项
 
