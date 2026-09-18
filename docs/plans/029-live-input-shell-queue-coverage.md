@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-029
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: live-input-shell-queue-coverage
 author: [agent]
 created_at: 2026-09-18
@@ -23,7 +23,7 @@ affects:
   - auto-lang/docs/design/autoui/desktop-shell-a2r.md                   # 前置序列更新（第一件已交付 → 本件）
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                        # P025-D1 核销
   - auto-os/docs/plans/autos-desktop-program.md                         # 台账 3c2 行
-current_step: 0
+current_step: 1
 total_steps: 9
 ---
 
@@ -284,6 +284,139 @@ pack 五件（auto-os shell/，View 树扫描断言）+ 003-converter/fixture
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-08 依据。
 
+### 5.1 定案记录（T-01，2026-09-18；基线 lang 2c038d889 / os 9149dc3）
+
+**D1 live 接线形态（定案）**：
+- **订阅位 = `desktop_window_events()` 扩臂**（session.rs:7086-7102，
+  `iced::event::listen_with` 闭包现仅 match `Event::Window` 四臂；与
+  renderer.rs:19121-19195 只做 modifier 追踪/鼠标半边的 listen_with
+  并行共存——两订阅均收全事件流，既有事实证明无去重冲突）。键盘/
+  滚轮/IME 臂入此函数，**`status == EventStatus::Ignored` 过滤**
+  （Captured = host 真_widget 已消费不转发；keyboard_subscription
+  跳 Captured 先例 renderer.rs:9050；桌面子窗内容为 broker_surface
+  绘制非真 widget，子窗聚焦时键事件天然 Uncaptured）。
+- **映射纯函数**（session.rs 新增，单测面）：`iced::keyboard::Key`
+  → 桌面事件——`Named(n)` 查 VK 表（Backspace=8/Tab=9/Enter=13/
+  Escape=27/Space=32/PageUp=33/PageDown=34/End=35/Home=36/方向键
+  37-40/Insert=45/Delete=46/F1-F12=0x70-0x7B；**修饰键与其余 Named
+  不转发**；投影器现消费 VK 8/27 实证 native_projector.rs:318-326，
+  InputMsg::KeyPressed.key 语义 = 原始码 message.rs:684-685）→
+  `HostKeyPressed{key,modifiers}`；`Character` 且 text=Some → 每字符
+  `HostChar{ch}`（控制字符不过——char_typed 先例 :455）；
+  `Event::Ime`：Preedit(t,_)→`HostImePreedit`、Commit(t)→
+  `HostImeCommit`、Disabled→`HostImeCancelled`、Enabled→None；
+  `Event::Mouse(WheelScrolled)`：Lines{x,y}×**40.0px** 像素化/
+  Pixels 直通 → `HostWheel{dx,dy}`（投影器 on_scroll 以像素偏移
+  消费 native_projector.rs:524-540；40px/行 = 新约定入册 §1.10）。
+- **DesktopMessage 扩展**：`DesktopEvent` 增六变体（ServiceTick
+  同型泵入 session.rs:2256-2262）：HostKeyPressed{window,key,
+  modifiers}/HostChar{window,ch}/HostImeCommit{window,text}/
+  HostImePreedit{window,text}/HostImeCancelled{window}/HostWheel{
+  window,dx,dy}——**带发生 OS 窗 id**：update 臂门控 `is_desktop()
+  && host.window == window`（HostCtx.window 存桌面窗 id
+  session.rs:2473-2476；防独立 app 窗未捕获键漏路由进虚拟子窗）。
+  broker_* 六函数零改动直用（:3379-3506；键盘/IME 路由 wm.focused
+  焦点窗、滚轮 hit_test 命中窗——滚轮光标取 `host.wm.last_cursor`
+  （Cell<Point> session.rs:663，GlobalPress 同源 renderer.rs:17939
+  先例））。KeyReleased 不转发（broker 无此函数、子侧无消费）。
+- 修饰键态不双读：`__modifiers_changed`（renderer.rs:19186-19194）
+  照常独立维护 desktop.current_modifiers，本接线零牵连。
+
+**D2 真机证据口径（定案：分层合围）**：
+- **主腿（自动、必达）**：e2e `p029_live_input_arm`（AUTO_DESKTOP_E2E
+  门，p025_native_input_arm 形态复用 stage3.rs:393-470 真子进程
+  converter/inputs025 + pump_broker_clients）——驱动**新泵入臂本体**
+  （DesktopEvent::Host* 经 update dispatcher → broker_* → child
+  pipe，即生产代码路径非直调）+ ⑤协议级 broker_* 直调腿保留
+  （:1702-1710 先例延续）。
+- **辅腿（半真机）**：acceptance channel 扩 **key verb**——
+  `DesktopInject` 增 Key 族变体（session.rs:2410-2426 Bus/Handler
+  同型；drain 位 renderer.rs:17440→drain_and_execute_desktop_commands
+  :10602 有 state 直呼 broker_*）+ mcp_server tool_desktop 增
+  "key" action（:2447-2509 bus/handler 模式）。真桌面进程内经真实
+  update 循环驱动生产函数——AUTOUI_ACCEPTANCE=1 手工留痕可用。
+- **SendInput FFI（A 候选）**：落 `sendinput.rs` FFI 模块（user32
+  SendInput + KEYEVENTF_UNICODE 组装，shm.rs 手写 FFI 先例同型）+
+  组装级单测；**真桌面 SendInput e2e 腿本计划 not-yet 随注**——
+  需真桌面 OS 窗 spawn/前台断言/child 观察 channel 三件套，依赖
+  B 程序启动序基建（键盘无坐标问题成立，但观察面缺位；AC-02 由
+  主腿+辅腿+FFI 模块就绪合围满足，手动留痕 C 选项保留）。
+- e2e 焦点前置：SendInput 腿未来启用时须先断言 GetForegroundWindow
+  = 目标窗（计划原文要求，记入 not-yet 注）。
+
+**D3 popover 臂（定案：全 14 placement 渲染，零 not-yet）**：
+- 覆盖序渲染：`PopoverOverlay` 记录（SelectOverlay 同型
+  native_projector.rs:90-98）——open=true 时主块渲染后追加面板 ops
+  （paint order 置顶，render_frame overlays 追加点 :235-259 同位）；
+  open=false 零 ops 且零 hit（open 随帧，投影器零开合状态机）。
+- **placement 全 14 枚举**（view.rs:1017-1046）：Bottom/BottomStart/
+  BottomEnd/Top/TopStart/TopEnd/Left/Right = 锚 rect 偏移推导 + 视口
+  溢出翻转（Bottom↔Top 等对向）；Modal = 半透明全屏 scrim Quad 先
+  于面板 + 视口居中；Edge* = 贴边 sheet（全高/全宽减边距）；Pointer
+  = 投影器存 last right-click 点（right_hits 派发位点 :291-303 顺带
+  记录）。壳实用集实证 = top/top-end/bottom-start + 3 坐标锚
+  （§4 普查），全量渲染消灭 not-yet 面（几何同核边际成本低）。
+- 锚几何：Point{x,y} = 视口坐标直用（BottomStart 语义，a2r 缺省
+  先例 ui_gen/rust.rs:4553）；Widget = 锚件 laid rect 翻转推导。
+- 命中语义（select 互斥先例 :374-388）：开态只查面板项命中（rev
+  序）；未命中 → on_dismiss 派发 + rev++ + **吞**（不落穿）；Esc
+  （key=27 且开态）→ on_dismiss（:319-326 先例位）；Modal scrim
+  命中 = 只关。Popover 子树 content/anchor 均参与主渲染与 hit。
+
+**D4 thumbnail/preview 桥接（定案：A 形态 + fallback 语法）**：
+- `WindowThumbnail{wid,fallback_icon}` → `DrawOp::Image{src:"thumbnail:
+  //{wid}!{fallback_icon}"}`——**fallback 后缀语法**（词汇表增量，
+  零 wire 变化）：宿主 resolve miss 时转解析 `lucide:{fallback_icon}`
+  （缺省 app-window，a2r 缺省先例 ui_gen/rust.rs:3195）→ 占位图标
+  真渲而非灰 quad（I3 升级）；命中真渲走 028 SWR 语义原样
+  （broker_surface.rs:143-163）。
+- `WorkspacePreview{ws}` → `Image{src:"workspace://{ws}!{fallback}"}`
+  ——宿主合成虚拟引用：`workspace_preview::current()`（Published{
+  usable,wallpaper,workspaces} iced/workspace_preview.rs:15-66——
+  012 W3 既有数据面直用）→ 壁纸基色铺底 + 分区 tiles 等比 Contain
+  （tile_rect 纯函数 :87- 复用）+ tile 内 snapshot 命中真缩略/miss
+  灰块；Published 缺席 → fallback 图标。逐帧合成不进永久缓存
+  （thumbnail 同纪律）。
+
+**D5 lucide: 词汇真渲（定案）**：
+- `resolve_drawlist_image` **签名扩** `(src, w: u32, h: u32)`（paint
+  调用点持 rect broker_surface.rs:279-295；thumbnail 路径忽略 size
+  ——快照原始尺寸语义不变；stage3 测试调用点随改）。
+- 语法：`lucide:{name}`（ink 缺省 #FFFFFF——深色壳面约定）/
+  `lucide:{name}#{rrggbb}`（tint）。栅格化：`lucide_svg_doc_with(
+  name, stroke)`（renderer.rs:6118-6135，stroke 按 size 推导 ≥48px→
+  1.5 否则 2.0，直挂臂先例 :5479-5482）→ `currentColor` 文档内替换
+  tint 色（plan619 测试同法 :29031-29032）→ resvg 0.45 + tiny-skia
+  0.11 栅格化（真依赖 Cargo.toml:57/:221-222；测试先例 :29033-29046）
+  → `Handle::from_rgba`。缓存 key `"{src}@{w}x{h}"` 入既有
+  handle_cache（进程级含负缓存 :55-58）；**未知名 → observe_unresolved
+  + None**（宿主占位 + 观测去重，I3）。
+- **D5-b：`svgdoc:` 维持 not-yet**（shell 零用量；通用内联 SVG 独立
+  线——倾向采纳）。
+
+**D6 覆盖扫描与防漏钉（定案）**：
+- kinds 四项入册（coverage.rs:175-203 增 popover/mousearea/
+  windowthumbnail/workspacepreview）；`scan_native_node` 补
+  `View::Popover{anchor,content}` 双子树递归（:562 `_ => {}` 缺口；
+  MouseArea content 递归已在 :561）；防漏钉矩阵双向更新（T-08 落）。
+- **shell 五件扫描载体 = lang 单测**：解析序取 auto-os/shell
+  （$AUTO_OS_ROOT → 兄弟检出 → D:/autostack/auto-os，AGENTS §2 链；
+  红线零链接），五文件走 data-row 同管线（parse→VmBridge::
+  new_from_decls→AuraViewBuilder→scan→judge，coverage.rs:1180-1227
+  实证）断言 Covered；目录/文件缺席 → skip 留痕不 fail（pac.at 静默
+  门先例）。os 侧 e2e 腿 T-09 落。
+
+**D7 翻转复测口径（定案）**：026 口径复用（judged ≥95% 且缺项全在册
+not-yet）；样本 = examples 全量（新 kinds 后 041 popover 例预计翻绿）；
+**shell 五件单列行不入 examples 分母**（§10-⑤ 倾向采纳——shell 非
+examples 样本）；dual-exit（达标即翻 client_entry.rs:119-131 Covered
+臂返 Commands + 解钉 coverage.rs:1243-1247 守卫断言 / 不达标数据留痕
+reports/p029-native-flip-retest-row.md）。
+
+**悬置清偿**：§10 ①→D2 定案（辅腿+FFI 模块，真机 SendInput e2e
+not-yet 随注）；②→D4-A；③→全 14 枚举（超集采纳）；④→not-yet 维持；
+⑤→单列采纳。
+
 ### 5.2 live 接线与真机证据（T-02/T-03）
 
 - **T-02 接线**：desktop_window_events 扩臂（或 D1 定案的订阅位）→
@@ -392,7 +525,14 @@ ledger（auto-lang `.autoos/specs.json`）随 merge 沉淀。
 os `D:/autostack/.wt/os-029/auto-os`。**无前置计划依赖**（028 已
 merge 即基线）。
 
-- **T-01 [lang] 深水调查与定案**
+**开工基线（2026-09-18 /auto-plan:work 进入 executing）**：
+lang master `2c038d889`（起草基线 02c04ad42 已验为其祖先；plan-029-dev
+@ 2c038d889）；os main `9149dc3`（plan-029-dev 同点）。主检出预检：
+lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
+累积残迹 + 3 个计划文档），os 有 73 处他案 WIP（ui-gallery 等）——
+均非本计划路径，原地保留未纳入，落地前需其归属会话自行路由。
+
+- **T-01 [lang] 深水调查与定案** [✅ 已完成 2026-09-18：§5.1 定案记录落笔（D1 订阅位=desktop_window_events 扩臂+Ignored 过滤+VK 表+Host* 六变体带 OS 窗 id；D2 分层合围=主腿新泵入臂 e2e+辅腿 acceptance key verb+SendInput FFI 模块（真机 e2e 腿 not-yet 随注）；D3 全 14 placement；D4-A+fallback 后缀语法；D5 签名扩 size+lucide tint 语法；D6 解析序扫描载体；D7 单列复测）——证据基线 lang 2c038d889/os 9149dc3]
   文件：`ui/session.rs`（desktop_window_events/订阅面）、iced 0.14
   daemon 事件 API 面（registry 源）、`native_projector.rs`、
   `broker_surface.rs`、`ui/iced/renderer.rs`（lucide/snapshot 机具，
