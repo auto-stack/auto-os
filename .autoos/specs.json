@@ -194,6 +194,18 @@
           "title": "PLAN-028 变更摘要 — drawlist-image-channel（B 形态前置序列第一件交付）",
           "content": "图像通道 v1 = src 引用 + 宿主侧解析（零位图字节过线、零新依赖）：wire DrawOp::Image{rect, src, fit}（tag 6 追加式，ImageFit v1 = Stretch，PROTOCOL_VERSION 维持 1）+ src 词汇表（本地文件/builtin:/data:/http(s) 3s 超时/thumbnail://{wid} 虚拟引用；lucide:/svgdoc: 字形线 not-yet）+ 宿主 Frame::draw_image 仓内首用 + 两投影臂同刻度真图升级（rect 推导零变化）+ TS decode tag 6 必达/占位渲染。交付链 lang plan-028-dev f89a0c5eb→merge 6bd85aa2e（master 02c04ad42 ff 落地）+ os plan-028-dev 1eed4ed。known-debt：P026-D1 图像半句核销；P028-D1..D3 not-yet 三项（位图过线/字形真渲/web 真位图）。",
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md"
+        },
+        {
+          "id": "P029-1",
+          "title": "PLAN-029 变更摘要 — live-input-shell-queue-coverage（B 前置序列第二件交付）",
+          "content": "live 输入接线（P025-D1 核销：desktop_window_events 三族臂[Ignored 门] + 映射纯函数[Named→VK/Chars/IME 三态/Lines×40px] + DesktopEvent::LiveInput 泵入 + route_live_input→broker_* 零改动直用）+ 真机证据分层（p029_live_input_arm 五腿 e2e + acceptance key verb + sendinput.rs FFI 组装层[真机 SendInput e2e 腿 not-yet 随注]）+ shell queue 面四 kind（popover 覆盖序/全 14 placement/命中互斥/零开合状态机；mousearea 命中序；windowthumbnail·workspacepreview 桥接）+ lucide: 词汇真渲（P026-D1 字形半句核销）+ workspace:// 宿主合成 + thumbnail !{fallback} 语法 + shell 五件 Covered（B 覆盖门预演）+ 翻转复测 judged 72.7% < 95% 维持不翻。零 wire 变体（PROTOCOL_VERSION 仍 1）。交付链 lang plan-029-dev 8f1aeb42f→56d1596f2 + os plan-029-dev dc223ec。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "related": [
+            "PLAN-029"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18"
         }
       ]
     },
@@ -485,6 +497,18 @@
           "title": "SD-01 协议 v1.9 — 图像 DrawOp 算子 + src 词汇表 + 降级纪律",
           "content": "DrawOp::Image{rect, src, fit}（tag 6 追加式——op 字段定长不可尾部追加，filter/border_radius 不入 wire 未来新 tag）；ImageFit v1 仅 Stretch=1（未知值 UnknownTag 拒收，FrameMode/PixelFormat 同纪律）。src 词汇表（load_image_bytes 单源）：本地文件/builtin:ricepaper|inkwash/data:[mediatype][;base64,]/http(s)://（reqwest 3s）/thumbnail://{wid} 虚拟引用；not-yet 词汇 lucide:/svgdoc: 经 I3 未解析降级。宿主 broker_surface 解析面：进程级 Handle 缓存（key=src 含负缓存）+ Frame::draw_image（iced 0.14 image feature 链）+ http miss 占位先行/后台线程解码/下帧翻真（零新增触发器——鼠标/toast tick/MCP 心跳/帧泵驱动）+ 未解析 IMAGE_PLACEHOLDER 占位 + [drawlist-image] 观测（src 级去重）。thumbnail:// 每帧 snapshot_window_stale 直查（SWR，不进永久句柄缓存）。帧尺寸边界：16KiB Commands 槽 + write_slot 显式超槽拒绝（无静默截断）。",
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md"
+        },
+        {
+          "id": "P029-1",
+          "title": "SD-01 协议 v1.10 增量 — live 输入接线两端 + shell 面四 kind + 词汇增量",
+          "content": "§1.10：live 接线两端入册（壳侧订阅 Ignored 门/映射 VK 表[编辑导航功能键转发集，修饰键不转发]/IME 三态/WHEEL_LINE_PX=40px/wire 修饰位 bit0-3；泵入 LiveInput{window,input}——HostCtx.window 桌面窗过滤+picker 避让；route_live_input 键盘/IME=焦点窗、滚轮=last_cursor 命中窗；KeyReleased 不转发）。四 kind（popover 全 14 placement 几何[对向翻转/钳制/Modal scrim/Edge 贴边/Pointer=右键点/Point 锚恒 BottomStart]+PopoverDismiss 全屏 catcher 命中序+外点/Esc→on_dismiss+吞；mousearea area 先 push/content rev 序胜+hover 族 not-yet；thumbnail/workspace Image 桥接）。词汇：lucide:{name}[#{rrggbb}]（stroke 按 size 推导、tint 缺省 #FFFFFF、缓存键 {src}@{w}x{h}、未知名负缓存）+ thumbnail://{wid}!{fallback} miss→图标 + workspace://{ws}!{fallback} 宿主合成（逐帧不进永久缓存）；svgdoc: 维持 not-yet。降级放行 flex-col-reverse/opacity-。PROTOCOL_VERSION 仍 1。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "related": [
+            "PLAN-029"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18"
         }
       ]
     },
@@ -648,6 +672,18 @@
           "title": "SD-01/02/03 — §1.9 增量落笔 + 台账 3c1 行 + overview provisional 条目",
           "content": "SD-01：desktop-protocol-v1.md §1.9 v1.9 增量六条（wire/词汇表/宿主栅格化与降级/thumbnail 虚拟引用/两投影臂同刻度/TS 面）+ 顶表 v1.5–v1.9 回填（v1.5–v1.8 欠账清偿，日期 git pickaxe 取证）+ §1.8 边界核销随注。SD-02：auto-os 台账 3c1 行（B 前置序列第一件交付登记，os plan-028-dev 1eed4ed）。SD-03：docs/specs/auto-lang/ui/overview.md 图像 DrawOp 通道 provisional 条目（指针节——权威正文 §1.9，测试面/词汇面摘要）。",
           "file": "auto-lang/docs/specs/auto-lang/ui/overview.md"
+        },
+        {
+          "id": "P029-1",
+          "title": "SD-01..04 — §1.10 增量落笔 + a2r 前置序列收口 + 台账 3c2 + overview provisional",
+          "content": "SD-01 §1.10 v1.10 增量+顶表行；SD-02 desktop-shell-a2r.md §10-① 前置序列两件✅（图像 PLAN-028+本件）剩 shell outproc client 可立项 + :183 演进门三件交付注记；SD-03 os 台账 3c2 行（dc223ec）；SD-04 lang docs/specs/auto-lang/ui/overview.md provisional 指针节（028 图像通道同款——review 期目录缺席由 master 655/649 并行建立后补落）。D1-D7 定案记录在计划 §5.1（订阅位/映射表/D2 分层证据/全 14 placement/D4-A+fallback 语法/D5 tint 语法/D7 单列复测）。",
+          "file": "auto-lang/docs/specs/auto-lang/ui/overview.md",
+          "related": [
+            "PLAN-029"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18"
         }
       ]
     },
@@ -867,6 +903,16 @@
           "title": "PLAN-028 测试语料 — t028_* 解析族 + p028_image_arm 真子进程 e2e + 双侧 golden",
           "content": "单测：message.rs image_op_round_trip_and_golden（src 四形态/空 src/直编 golden 载荷锚点 80/未知 fit 拒收）；broker_surface t028_* 四件（data:/builtin: 解析缓存、负缓存与 not-yet 词汇降级、http 占位先行后台落缓存（回环拒绝端口）、thumbnail miss/命中/SWR 三路径（__test_backdate 替身））；display_family golden（Image op 断言）+ climb_004_image_op + t1_display 金样（仅 quad→image 行）。e2e：p028_image_arm（AUTO_DESKTOP_E2E，真子进程 re-exec queue 载体）——004 http 80×80 cravatar op + p028-image-channel 语料五 src 形态一帧 + 宿主解析三路径实驱 + 度量行（frame_bytes=365/src_bytes=245）+ AUTO_028_ASSETS 帧留痕 docs/plans/reports/assets/028/。TS：vitest 27/27（IMAGE_FRAME_HEX 双侧对拍 + 未知 tag 拒收 + 占位渲染）。回归门：日常档 5141 测失败集与 master 基线双向全等（40 项 ui-iced 组合既有红）；tf 差集空；tt 双向全等（6=6）。",
           "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs"
+        },
+        {
+          "id": "P029-1",
+          "title": "PLAN-029 测试语料 — live_input/sendinput/popover/t029 族 + 双 e2e + shell_pack 预演",
+          "content": "单测：live_input_tests 4（VK 表/键盘映射/IME+滚轮+修饰/生产路由落 wire）+ sendinput 组装 4（x64 布局钉死/UNICODE 代理对/VK 对/空零发射）+ popover 3（几何 14 枚举+翻转/开闭态渲染+命中+Esc/Modal scrim 序）+ 桥接语法 1 + mousearea 命中序 1 + t029_* 3（ink/tint/缓存/负缓存+fallback+workspace 合成三路径）+ shell_pack_native_covered（五件 Covered，解析序 AUTO_OS_ROOT→兄弟→主检出）+ 防漏钉矩阵四夹具 + coverage_gate 样本换 hidden。e2e（AUTO_DESKTOP_E2E）：p029_live_input_arm 五腿（⑤协议级/Chars/VK_BACK/ImeCommit 中文/滚轮——t3 native 档 typed 载体）+ p029_shell_face_arm 五腿（五件套 ops 落 wire+popover 命中闭环+mousearea）；帧留痕 lang assets/029/。复测行 p029-native-flip-retest-row.md（44.4%/72.7% 不翻）。",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
+          "related": [
+            "PLAN-029"
+          ],
+          "status": "published"
         }
       ]
     },
@@ -1101,6 +1147,18 @@
           "title": "PLAN-028 drawlist-image-channel rev1 复审 pass 与合并收据",
           "content": "review：outcome pass → reviewed（独立复跑 scoped/e2e/TS 绿；diff 审查 message.rs 零删除行=tag 1–5 冻结、两投影臂 rect 推导不动；回归门 tf/tt/日常档三线基线全等；SD-03 钉定 overview.md）。merge：master 前进两轮 reconcile（652 VM Tick 特征批→KNOWN-DEBT 增补五/六双留冲突解+全量复验 MERGE-BASELINE-EQUAL 5146 测 39 红全在基线集；655 簿记 docs-only 免复验）→ lang master ff 02c04ad42（f89a0c5eb 祖先实证 + 主干冒烟 6/6 绿）。交付：lang 6bd85aa2e（ff 至 02c04ad42）+ os 1eed4ed。",
           "file": "docs/plans/archive/028-drawlist-image-channel.md"
+        },
+        {
+          "id": "P029-r1",
+          "title": "PLAN-029 live-input-shell-queue-coverage rev1 复审 pass 与合并收据",
+          "content": "复审 pass（同会话独立性受限声明——工件重构：独立重跑命令/读 diff/master 实锚）：AC-01..08 全过（e2e 十腿+单测族+翻转守卫+文档锚点重跑）；全量门 tf 3638/3639（1 红=test_display_family_codegen_arm_fixture 确定性红，master 58332cbd 同断言实锚+codegen 输入面 diff 零触碰=预存非 029 引入；ffi_dual_019 flake 观察 635 处方[隔离 3/3 绿+二轮过]）；SD 定稿（SD-04 目录 review 期缺席→merge 期 master 建立后 overview provisional 补落）。合并：lang re-sync master 58332cbd 零冲突+全电池复验绿→delivery 56d1596f2；os 台账 3c2+ledger P029-1×4+P029-r1。",
+          "file": "docs/plans/archive/029-live-input-shell-queue-coverage.md",
+          "related": [
+            "PLAN-029"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18"
         }
       ]
     }
