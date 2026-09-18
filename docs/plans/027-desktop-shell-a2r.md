@@ -570,6 +570,20 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-18 /auto-plan:work 交接：`stage: work`，PLAN-027 rev 1。
+  `outcome: needs_replan`（§10-① 用户裁定主形态 = B——T-07/T-08 为
+  A 形态面随裁定失效，S1/S2 形态无关全部承继）。
+  `code_commit: d6e8da838`（plan-027-dev，base 2808c551a；依赖 worktree
+  .wt/lang-027/auto-down @ fae21d9 只读）；`task_ids: T-01..T-06`。
+  `evidence`：本文件各任务勾选证据 + §10-① 裁定记录；auto-lang 全量
+  失败集与 base 41 项预存红逐一全等（零回归）；对拍捕获
+  set_theme_name wire 缺陷已修（d6e8da838）。
+  `blockers`：无（裁定已获，修订材料齐备）。
+  `next`：/auto-plan:new 有界修订——S3 重排为 B 形态程序
+  （图像通道立项先行 → 025 键盘实测 → 覆盖二批 → shell outproc client +
+  启动序/看门兵；双轨常驻沿裁定）。worktree 保留供复审/merge。
+  status 保持 `executing`（needs_replan 不改状态机位）。
+
 - 2026-09-18 /auto-plan:work 中程记录：`stage: work`，PLAN-027 rev 1。
   T-01..T-06 完成（current_step 6/9）：S1 生成域补面三件 + 拒绝门 +
   词汇门 + mouse-area/div/taskbar 扩面（普查修正 C）落 ui_gen @
@@ -595,11 +609,26 @@ auto-os`。
 
 ## 10. 待澄清事项
 
-- **①（用户裁定，T-07 前硬门）** 主形态 A 链入宿主 vs B outproc
-  （设计 §4/§5；工作假设 = A 推荐——Design 23 矩阵一致/零协议税/
-  图像通道不阻断；B = 图像通道 wire 扩展先行 + 启动序/看门兵）。
-  同问：解释装载路径双轨常驻（工作假设/推荐）vs S3 后退役。
-  **起草时问询未获作答，按推荐继续；work/复审批次须复核或补问。**
+- **①（用户裁定，T-07 前硬门）✅ 已裁定（2026-09-18 work 中）**：
+  **主形态 = B（outproc 特权协议客户端）**；解释装载路径 = **双轨常驻**
+  （推荐项获确认）。裁定原文要旨："A 岂不是要把所有 app 的 Rust 代码
+  组合进桌面二进制？那显然不是操作系统的做法。我们不是有基于
+  RenderQueue 的渲染机制吗？用普通操作系统的机制：桌面是独立进程
+  （且包含 compositor），打开的 app 也是独立进程，渲染经 RenderQueue
+  发给桌面进程统一渲染——这不是之前就规划好的吗？"
+  **档案事实注记**：A 形态只链 shell pack 五件（~1800 行 .at 的生成物），
+  不涉及任何 App——App 两形态下均已是独立进程走 RenderQueue
+  （PLAN-020 客户端 + 025 覆盖爬坡既有）；裁定所引终态图景对 shell 的
+  推论 = shell 也应同律独立进程，与设计文档"桌面=RenderHost、其余皆
+  上层 App"一致，成立。**B 前置件序列**（设计 §4/§5，随裁定生效）：
+  图像 DrawOp 通道（硬阻断——壁纸/缩略图皆图像，DrawList 现仅
+  Quad/Text/TextStyled/Scissor；独立立项）→ 025 键盘路由真机实测 →
+  覆盖二批 display 族 + popover 开合 → shell outproc client（复用 020
+  client gate/ClientOpts 面）+ 启动序/看门兵。
+  **S3 重排走范式修订**：T-07"无窗组件库+宿主装配"与 T-08"ShellSurface
+  inproc 装配"为 A 形态面，随裁定失效；next = /auto-plan:new 有界修订
+  （S1/S2 产物形态无关全部承继——IR/词汇门/typed 载体即 B 的 wire
+  payload 词汇）。
 - **②（T-01 D2）** 消费入口形态：WmSync 消息变体 vs 装配层方法调用
   （以 shell.at 消息流与懒挂载时序定案）。
 - **③（低风险默认）** Stage B 搬迁与编译化先后：默认编译化先行
