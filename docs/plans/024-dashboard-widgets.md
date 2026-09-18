@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-024
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived（work 轮 2026-09-18 收口）
 feature_name: dashboard-widgets (S10 桌面小组件面板)
 author: [zhaopuming]
 created_at: 2026-09-17
@@ -23,7 +23,7 @@ affects: [shell/shell.at, shell/dashboard.at（新增）, apps/025-sys-monitor/s
           auto-lang:schema/projection-protocol-v1.md,
           auto-lang:assets/（shell pack 内嵌快照 hash-lock 同步）,
           auto-lang:examples/ui/012-stopwatch/src/front/app.at]
-current_step: 8
+current_step: 9
 total_steps: 9
 ---
 
@@ -428,6 +428,7 @@ master 50016b255）：
   （零新增回归）；shell_pack 3/3 绿。**实机半（召唤/孵化走秒/刷新/
   持久化重启/Esc 仲裁的实机操作 + evidence/024/ 截图 + autoui-verifier
   对拍）未执行——沿 PLAN-022 先例为用户截图驱动交互流程，见 §9 handoff。**
+- [✅ 已完成] T-09 2026-09-18 收口——调试日志退役（[dashboard]/[desktop-icons] 诊断 eprintln 移除）+ 最终全量回归（cargo t --no-fail-fast 5042 跑 36 失败 ⊆ master 基线 37，零新增）。用户走查 R1–R21 收敛（R8 缓行 v2 / R14 daemon ⏸，其余 ✅），用户确认"剩下的没问题了"。auto-lang auto-os-024-dev 头 fc6267e79。
 - [✅ 已完成] T-09 2026-09-17——程序台账指针：auto-lang
   docs/design/autoui/desktop-shell.md §4.2 未立项→已落地注记 + 派期清单
   S10 行 ✅（实现裁定差异两条在案）。
