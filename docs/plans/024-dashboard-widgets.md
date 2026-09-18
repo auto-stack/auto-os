@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-024
-status: execution_done         # drafting → executing → execution_done → reviewed → archived（work 轮 2026-09-18 收口）
+status: reviewed               # drafting → executing → execution_done → reviewed → archived（review pass 2026-09-18，next: merge）
 feature_name: dashboard-widgets (S10 桌面小组件面板)
 author: [zhaopuming]
 created_at: 2026-09-17
