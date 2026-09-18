@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-029
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed                # drafting → executing → execution_done → reviewed → archived
 feature_name: live-input-shell-queue-coverage
 author: [agent]
 created_at: 2026-09-18
@@ -10,7 +10,8 @@ plan_revision: 1
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.10 v1.10 增量（review 定稿）
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.10 v1.10 增量 + 顶表 v1.10 行（review 定稿）
+  - auto-lang/docs/design/autoui/desktop-shell-a2r.md     # §10-① 前置序列状态 + :183 演进门（review 定稿——SD-04 原拟 docs/specs/auto-lang/ui/ 目录不存在，autoui 正典 = docs/design/autoui/（025/026/028 同例），增量改由 SD-01/02 承载）
 touched_goals: []
 
 affects:
@@ -625,6 +626,32 @@ lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
   真机腿 not-yet、辅腿 acceptance verb 落地；③shell Covered 所需两枚
   样式降级放行（flex-col-reverse/opacity-——flex-1/shadow 同册先例）；
   ④auto-os 桌面 smoke（真机腿）本轮未重跑——B 程序立项后随启动序一并。
+
+
+- 2026-09-18 /auto-plan:review 复审（同会话独立性受限——裁决自工件
+  重构：独立重跑命令/读 diff/master 实锚，不以实施者总结为准）：
+  `stage: review | PLAN-029 | rev 1 | outcome: pass | reviewed_commit
+  lang plan-029-dev ed182efc1 + os plan-029-dev dc223ec | base_commit
+  lang 2c038d889 / os 9149dc3 | dependency_revisions auto-down b1c88de
+  （detached 只读）| spec_inputs desktop-protocol-v1.md v1.9→v1.10 /
+  desktop-shell-a2r.md §10 / KNOWN-DEBT 行 / os 台账 3c1 | acceptance_
+  results AC-01..08 全 pass（重跑证据：live_input 5+sendinput 4+broker
+  routes 2 绿；p029_live_input_arm 五腿 + p029_shell_face_arm 五腿
+  e2e PASS；popover 16 过 1 红=在册预存 p010[KNOWN-DEBT 027 行]；
+  t029 3；shell_pack 5/5 Covered + matrix 1；翻转行 44.4% 重现 + !flip
+  守卫过 + client_entry Covered 臂仍 Pixels；文档锚点/互链/资产
+  （assets/029 ×2 + p029 报告）全在位）| findings：R1[P3 基线]
+  test_display_family_codegen_arm_fixture 确定性红——master 同红实锚
+  （主检出 58332cbd 同断言）+ codegen 输入面 diff 零触碰（ui_gen/
+  tests/ fixtures 未动，纯字符串断言）→ 非 029 引入，独立修复另立；
+  R2[P3 flake] ffi_dual_019 tf 首轮红一次——KNOWN-DEBT 观察 635 在册
+  处方执行（隔离 3/3 绿 + 第二轮全量 PASS）非回归；R3[P3 口径] SD-04
+  目标目录不存在→定稿由 SD-01/02 承载（frontmatter 已更新）|
+  evidence 全量门 cargo tf --no-fail-fast 3639 跑 3638 过 1 红（=R1
+  预存）；两 worktree 干净（实现全 committed）| next: merge（注意：
+  lang master 已前进 2c038d889→58332cbd——merge 期需按 028 先例核对
+  ff/合并路径 + lang 主检出 4 处他案 WIP[opening 预检在案]归属路由）
+  。
 
 ## 10. 待澄清事项
 
