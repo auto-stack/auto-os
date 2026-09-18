@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-027
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-shell-a2r
 author: [agent]
 created_at: 2026-09-18
@@ -22,7 +22,7 @@ affects:
   - auto-lang/docs/design/autoui/desktop-shell-a2r.md             # 状态更新（裁定落定）
   - auto-os/shell/                                                # pack 源（零内容改动，形态迁移 parity 锚）
   - auto-os/docs/plans/autos-desktop-program.md                   # 台账行
-current_step: 0
+current_step: 6
 total_steps: 9
 ---
 
@@ -229,6 +229,114 @@ SD-01 更新其状态）；模块 spec 020/025/026 provisional 链在册。
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-08 依据。
 
+### 5.1 定案记录
+
+**T-01 深水调查（2026-09-18，worktree 实勘：auto-lang @ 2808c551a
+plan-027-dev / auto-os @ 4db1419 plan-027-dev；行号为本日实勘位）**。
+两项普查修正先行（等效实现调整，授权范围内继续）：
+
+- **修正 A（五件非四件）**：shell pack 现为**五件** 1831 行——PLAN-024
+  归档落地新增 `dashboard.at`（149 行，dock Dashboard 面板 overlay，
+  shell.rs:131/136-139 进程内嵌 + pack 同级发现，EMBEDDED 表
+  shell.rs:68-74 五项）。编译域按五件收口（常驻 2：shell/desktop +
+  懒挂载 3：switcher/notification_center/dashboard）；launcher overlay
+  仍走注册表装载路径（apps/028-launcher 非 pack 源，本计划不动——
+  G3"六面"为桌面功能面闭环口径，非六面皆编译）。
+- **修正 B（槽位协议落现有变体）**：`View::WindowThumbnail`/
+  `View::WorkspacePreview` 变体**已在册**（view.rs:878/890；解释侧
+  构造 aura_view_builder.rs:6709-6736；iced 消费 renderer.rs:5146/
+  5230——`AbstractView` 即 `View` 别名 renderer.rs:8，typed View 与
+  解释 View 同一 into_iced 面）。T-03 不新建 AnchorSlot 键机制，直接
+  codegen 发射既有变体；计划 §2"View::AnchorSlot{key}"命名由既有专用
+  变体承接（键 = wid/ws prop）。view.rs:464 既有 `AnchorSlot{index}`
+  为 VM 轨块锚定专用（autodown），不相关不动。
+
+**D1 ShellProjection 结构**：新模块
+`crates/auto-lang/src/ui/shell_projection.rs`，plain-data 可序列化
+（B-ready/I3）。载体 = `ShellProjection`，分面嵌套：
+
+- shell 面（任务栏）：`wins/workspaces/mru: Vec<..>`、
+  `notes: Vec<ShellNote>`、`meta_layout`/`meta_focused_wid`、
+  `running_csv`/`focused_app`/`dock_pinned_csv`、
+  `notes_unread:u64`/`notes_badge`、`notes_visible`/`settings_open`/
+  `showdesk`/`dashboard_visible: bool`、`layout`、`fp`（指纹随载体，
+  门控逻辑留宿主侧）；`dock_pinned: Vec<DockPin>`。
+- desktop 面：`bg`/`icons: Vec<DesktopIcon>`/`hidden_csv`/
+  `cells: Vec<DesktopCell>` + 平行列表 `cell_ids/cs/rs`（handler 下标
+  读合同面保形）/`drag_icon`/`drop_c`/`drop_r`/`drag_moved`/
+  `label_dark`/`cursor_x`/`cursor_y`/`running_csv` +
+  `wp: WallpaperPickerProjection`（picker/preview/dir/current/x/y/
+  items/visible/paths）。
+- clock/date 独立通道 `ShellClock{time,date}`——独立脏帧语义保位
+  （ServiceTick 泵 renderer.rs:9261-9308 分钟/变化才写，不入指纹组）。
+- 召唤事件 `events: Vec<ShellEvent>`（RebuildMru/RebuildNotes/
+  RunningSync 三位）随快照交付，替换 call_handler 直调。
+- **wire 叶面保形原则**：字段叶子保持 wire 串形（"1"/""、wid 串、
+  focused 串）——`.at` 等式消费语义零漂移；容器层 typed（Obj 数组 →
+  Vec<Struct>），B-ready 可序列化成立。
+
+**D2 消费入口形态：候选 B（装配层方法调用）**。shell 编译壳生成形态 =
+`Component<Msg = DynamicMessage>`——事件以既有
+`DynamicMessage::Typed{widget_name,event_name,args}`（interpreter/
+bridge.rs:44-52）承载，桌面事件管线（convert_view_messages / DM::App
+路由 / MCP 面）零改动；投影下行不走消息变体，走
+`ShellSurface::apply_projection(&mut self, &ShellProjection) -> bool`
+（解释壳 impl 逐字节保留现 write_state_* 序列，指纹门控留宿主侧；
+编译壳 impl 存字段+内部置脏）。call_handler 召唤 →
+`ShellSurface::call_handler(&mut self, name: &str) -> bool`（解释壳 =
+bridge_mut().call_handler 现行为；编译壳 = 分派
+RebuildMru/RebuildNotes/RunningSync/ApplyFilter/RebuildFaces handler
+法）。clock/date → `apply_clock`。选 B 弃 A（WmSync 消息变体）缘由：
+特权面载荷 per-face 异构，消息变体需 per-widget 消息管线路由进
+DesktopSession 的 iced Task 域——装配层直调让解释壳 impl 有逐字节
+保行为的锚点（I1），编译壳无需消息包装。
+
+**D3 DesktopBusHandle + HostStorage**：
+
+- `DesktopBusHandle` trait = **枚举载荷单方法**形态：
+  `fn send(&mut self, cmd: DesktopCommand)` + provided
+  `fn send_record(&self, rec: &str)`（= `DesktopCommand::parse_records`
+  逐条 send）。DesktopCommand（session.rs:1323，46 动词 +
+  encode/parse_records 双向）即词表类型化单源——per-verb trait 方法会
+  把 arg 型决策（Wid 解析/N 前缀剥离/bool 串）复制出第二份，违 I2。
+  B-ready：plain enum 可序列化。
+- **codegen 识别策略**：SendCmd 单点 handler 臂为结构锚——`.SendCmd`
+  handler 体转译 `self.__bus.send_record(&rec)`；其余 handler 的
+  `.SendCmd(expr)` 调用点即本地方法调用，无 verb 串解析需求
+  （动词分型在 parse_records 运行时单点，双轨零分叉）。
+- **解释壳桥**：解释轨 __desktop_cmd 字符串通道**原样不动**（I1）；
+  双轨单源 = parse_records + 宿主执行臂共用。HostStorage trait
+  `{ get(&self,key)->String; set(&self,key,&str) }`，宿主实现对接现行
+  storage 运行时（解释态原生位 vm/native_catalog.rs:1118-1126 同后
+  端）；编译壳持 `Arc<dyn HostStorage>` 装配期注入，storage.get/set
+  转译为 handle 调用（None → get ""/set no-op）。
+
+**D4 槽位键协议**：修正 B 落定——`window_thumbnail(wid,
+fallback_icon)` / `workspace_preview(ws, fallback)` codegen 臂直发
+既有变体；宿主合成件消费（快照渲染臂 request_capture/fallback
+语义）双形态同源（同一 into_iced 臂）。无新槽位注册表。
+
+**D5 装配清单 + 生成目标**：
+
+- `ShellManifest`（shell_projection.rs 同册）：
+  `faces: [ShellFace{id, widget, mount}]`，`ShellMount ∈
+  {ResidentBoot, LazyOverlay(召唤动词)}`；五件清单 =
+  shell(ResidentBoot)/desktop(ResidentBoot)/switcher(LazyOverlay)/
+  notification_center(LazyOverlay)/dashboard(LazyOverlay)。
+- wrap_example 新"无窗组件库"形态：产物 = 单 crate
+  （建议 `crates/shell-pack/`，**入库**——宿主构建免生成时序依赖；
+  再生成走 a2r CLI，pack 改动后 regen+build），内容 = 五组件 +
+  `SHELL_MANIFEST` const + `mount_face(id) -> Option<Box<dyn
+  ShellSurface>>` 工厂；path 依赖 auto-lang（DAG：shell-pack →
+  auto-lang ← auto-man 宿主，无环）。Cargo 面细节（workspace 成员/
+  feature 门）T-07 实施期定。
+- **双轨开关语义**：编译壳 = 缺省发布态；`AUTO_SHELL_PACK` env
+  **存在且为目录** 或 `set_shell_pack_override` 显式注入 = 开发态
+  解释壳（改 .at 重启即生效回路，R3）。兄弟检出发现 pack 但无
+  env/override ≠ 解释态（该发现链保留服务 hash parity 测试
+  shell.rs:197-220 与解释轨内嵌回退）。开关判定面在 shell.rs 装配
+  工厂，boot 序/懒挂载时序不变。
+
 ### 5.2 S1 生成域（T-02/T-03/T-04）
 
 - **popover（T-02）**：裸 `popover` 元素 codegen 臂——`View::Popover`
@@ -330,7 +438,7 @@ ledger（auto-lang `.autoos/specs.json`）随 merge 沉淀。
 `D:/autostack/.wt/lang-027/auto-lang`；os `D:/autostack/.wt/os-027/
 auto-os`。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** ✅ 已完成
   文件：`ui/shell.rs`、`ui/session.rs`、`ui/iced/renderer.rs`（注入/
   合成件面）、`ui_gen/rust.rs`、`shell/*.at`（auto-os，读）+ §5.1 写面。
   动作：D1–D5 定案（快照结构/消费入口/handle 形态/槽位键协议/装配
@@ -338,32 +446,109 @@ auto-os`。
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → AC-02/03/04 前置。新路径：是。
-- **T-02 [lang] 裸 popover codegen 臂**
+  [✅ 已完成] [x] 定案 D1–D5 全部落笔 §5.1（2026-09-18）；含两项普查
+  修正（五件 pack / 槽位落既有变体）与 §10-② D2 定案（候选 B）。
+  证据：本文件 §5.1；实勘 worktree auto-lang@2808c551a / auto-os@4db1419。
+- **T-02 [lang] 裸 popover codegen 臂** ✅ 已完成
   文件：`ui_gen/rust.rs`（popover 臂 + 事件认知集）。
   动作：§5.2 popover；shell ×9 真源样本验证。
   验证：codegen golden + shell 编译门增量绿。
   → AC-02。
-- **T-03 [lang] AnchorSlot 槽位协议**
+  [✅ 已完成] [x] `generate_bare_popover` 臂（rust.rs generate_view_tree
+  modal 族后）+ golden ×2。验证：`cargo t -p auto-lang bare_popover`
+  2 passed（worktree 97d0bb75d）；popover 族回归 12/13——1 红为
+  **基线预存**（p010_popover_ondismiss_extracted_from_events，base
+  2808c551a 同红，stash 复证实锤，非 T-02 回归；疑似根因 = desktop.at
+  拖拽幽灵 popover 无 ondismiss 时解释臂落 widget 形态 __popover_close
+  兜底，解释轨零触碰，登记 KNOWN-DEBT 面）。ondismiss 未入
+  add_event_to_builder 认知集（§5.2 原文）——View builder 无通用
+  on_dismiss 槽，识别面收敛 popover 臂本地（定案记录 D3 同律：识别
+  面单点化），证据链在本节。
+- **T-03 [lang] AnchorSlot 槽位协议** ✅ 已完成
   文件：`ui_gen/rust.rs`（发射）、`ui/iced/renderer.rs`（装配层替换）。
   动作：§5.2 槽位（D4 键协议）。
   验证：发射 golden + 替换单测 + thumbnail/preview 样本。
   → AC-02/04。
-- **T-04 [lang] codegen 显式拒绝 + 编译门**
+  [✅ 已完成] [x] 按 D4 修正 B 落地：window_thumbnail/workspace_preview
+  codegen 直发既有 `View::WindowThumbnail/WorkspacePreview` 变体——
+  零 renderer 改动（消费端已在册：变体 view.rs:878/:890，iced 臂
+  renderer.rs:5146/:5230 与解释轨同一 into_iced 面，"装配层替换"由
+  既有消费臂天然承接）。key/fallback 动态表达式支持（loop var 沿
+  Value 下标读惯例）；fallback 缺省 app-window。验证：
+  `cargo t -p auto-lang host_synth_slot` 1 passed（worktree
+  274265345）；thumbnail ×3/preview ×1 真源样本随 T-04 shell 编译门
+  全量验证。
+- **T-04 [lang] codegen 显式拒绝 + 编译门** ✅ 已完成
   文件：`ui_gen/rust.rs`（:4713/:4748-4762 丢弃改拒绝）、新编译门测试。
   动作：§5.2 拒绝门；shell 全量清单入测试。
   验证：拒绝门测试绿（未知样本断言编译错）。
   → AC-02。
-- **T-05 [lang] ShellProjection 投影接缝**
+  [✅ 已完成] [x] worktree 611fbff2f。实施面：
+  ① 拒绝门 = add_prop_to_builder/add_event_to_builder 未知键 emit
+  `compile_error!`（表达式位块；生成期 hard error 需 String 管线全链
+  Result 化——成本不成比例，编译期错同样拦截产物）；布局 hover 事件
+  （onmouseenter 等）= 认知且双轨同弃层（View IR 无布局 hover 槽、解释
+  set_layout_events 同弃——switcher.at row hover parity 保持）。
+  ② **普查修正 C**：mouse-area 零 codegen 臂而 shell 实用 26 处（a5
+  误记"shell 未直接用"）——补臂，事件映射与解释臂
+  convert_mouse_area_untracked 全同源；div→container、taskbar→row 映射
+  同源补齐（任务栏横条缺省 col 会纵堆）。③ view.rs build() 修复：
+  Row/Column 硬编码 onclick None 改落 button_onclick（布局件点击此前
+  "编译过实无行为"——PLAN-012 W3 桌面卡点击类 VM 轨语义的 a2r 对应）。
+  ④ with_button_preset 四臂（双 feature twin）剥除已消费 variant/size
+  （拒绝门防误伤；shell 按钮 ×38 携 variant；动态 style 不注入沿
+  PLAN-571 文档化先例）。⑤ 全量清单门
+  `test_shell_pack_codegen_vocabulary_gate`：真源五件每对
+  (tag,prop/event) 对表断言（表即合同）。
+  验证：拒绝门 ×1 + 词汇门 ×1 + plan571 族回归绿；`cargo t -p
+  auto-lang --no-fail-fast` 全量失败集与 base **41 项逐一全等**
+  （本机预存红：layout ×16/vm_bridge ×4/lucide ×1/p010 ×1/musk ×3
+  等——stash 对照实锤，非本计划回归；p010 疑因见 T-02 证据）。
+  → AC-02。
+- **T-05 [lang] ShellProjection 投影接缝** ✅ 已完成
   文件：`ui/iced/renderer.rs`（sync 改造）、`ui/session.rs`、新
   `ShellProjection` 模块、ui_gen 消费端生成。
   动作：§5.3 投影（D1/D2）。
   验证：指纹门控/原子/召唤对拍单测 + 懒挂载载荷测试。
   → AC-03。
-- **T-06 [lang] DesktopBusHandle + storage 接缝**
+  [✅ 已完成] [x] worktree feat commit（T-05）。实施面：
+  ① 新模块 `ui/shell_projection.rs`——ShellProjection（指纹门控组
+  typed 载体，§5.1 D1 字段表全量）+ ShellEvent 召唤位 + ShellClock
+  独立脏帧通道 + 懒挂载 payload 四件（Switcher/Notes/Launcher/
+  DashboardSnapshot）+ DesktopSurfaceSync + ShellManifest（D5 五件）；
+  B-ready 全 plain data，wire 叶面保形（bool→"1"/"" lowering 单点）。
+  ② sync_shell_windows 单源化：build_shell_projection（派生逻辑逐行
+  平移）+ apply_shell_projection_interpreted（指纹门控保留、写集经
+  interpreted_writes 逐字节一致；desktop 层 __wm_running/RunningSync
+  随行；cursor/drag"只写不置脏"字段不入组——逐事件写语义保持）。
+  ③ **排序调整（授权内）**：懒挂载四召唤注入块的载荷化挪 T-08
+  （payload 类型本任务在册；召唤改造与 ShellSurface trait 同面实施
+  避免二次翻动——T-08 验收时补对拍）。
+  验证：模块单测 ×3 绿 + 既有指纹门控/原子/召唤族 8 测全绿
+  （projection_fingerprint_gates_rewrite_and_view_dirty 等）；
+  renderer 模块 no-fail-fast 失败集 ⊆ 基线 41 项（零回归）。
+  → AC-03（命令面在 T-06）。
+- **T-06 [lang] DesktopBusHandle + storage 接缝** ✅ 已完成
   文件：新 `DesktopBusHandle` trait + 宿主实现（session.rs）、
   `ui_gen/rust.rs` 转译、HostStorage。
   动作：§5.3 命令（D3）+ 解释壳桥。
   验证：46 动词双向对拍 + 桥单源测试（解释壳命令回归）。
+  → AC-03。
+  [✅ 已完成] [x] worktree d6e8da838。实施面：
+  ① DesktopBusHandle（D3 枚举载荷单方法 + provided send_record——
+  SendCmd 锚落点与解释轨同一 parse_records 单点分型）+
+  DesktopBusQueue 进程内队列（T-08 装配消费）。
+  ② **普查修正 D**：设计 §3b-b2"storage.* 零支持/兜底编译失败"已过时
+  ——a2r codegen 现译 shim_storage_*（rust.rs:6598-6609）与解释轨原生位
+  （native_catalog 1106-1108）同一 KV 后端，双轨零分叉已成立；HostStorage
+  trait + ShimHostStorage 委托为装配层显式注入/测试替身面（codegen 不
+  改——避免投机抽象层）。
+  ③ **对拍捕获真 wire 缺陷**：SetThemeName encode 发无人解析的
+  `set_theme_name` 死词（PLAN-601 漏逆向臂；线上发件面走
+  set_theme\t<名>）——修正 encode 搭 set_theme 线上词。AC-03"双向对拍"
+  门的设计意图实证。
+  验证：roundtrip 全量对拍（52 变体显式枚举 + 空参 trailing tab 保形 +
+  队列序保持）绿；session::tests 71/71 绿。
   → AC-03。
 - **T-07 [lang] 无窗组件库生成目标**
   文件：`crates/auto-man/src/rust_ui.rs`（wrap_example 新形态）。
@@ -384,6 +569,18 @@ auto-os`。
   → AC-06/07。
 
 ## 9. 复审记录
+
+- 2026-09-18 /auto-plan:work 中程记录：`stage: work`，PLAN-027 rev 1。
+  T-01..T-06 完成（current_step 6/9）：S1 生成域补面三件 + 拒绝门 +
+  词汇门 + mouse-area/div/taskbar 扩面（普查修正 C）落 ui_gen @
+  97d0bb75d/274265345/611fbff2f；ShellProjection 模块 + sync 单源化 @
+  T-05 commit；DesktopBusHandle/HostStorage + set_theme_name wire 缺陷
+  修正（对拍捕获）@ d6e8da838。全部在 worktree
+  `D:/autostack/.wt/lang-027/auto-lang`（plan-027-dev，base 2808c551a）；
+  依赖 worktree `.wt/lang-027/auto-down`（detached @ fae21d9，只读）。
+  回归归因：auto-lang 全量 no-fail-fast 失败集与 base 41 项本机预存红
+  逐一全等。**下一步 = §10-① 用户确认（T-07 硬门）→ T-07/T-08/T-09。**
+  阻塞：无（等待用户裁定问询）。
 
 - 2026-09-18 /auto-plan:new 起草交接：`stage: new`，PLAN-027 rev 1。
   `outcome: pass`（合同完整：设计文档普查事实全量 file:line 在案，
