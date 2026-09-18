@@ -617,7 +617,7 @@ auto-os`。
   - `archived`——本件 git mv → `docs/plans/archive/
     027-desktop-shell-a2r.md`，status archived，
     completion_kind: delivered。
-  - `cleaned`——（补记随清理提交）
+  - `cleaned`——wt-guard clean ×3（lang-027/auto-lang、lang-027/auto-down、os-027/auto-os 三 worktree 零 reparse point）+ 三 worktree 移除 + plan-027-dev 双分支删除（lang @192e0d36c 已合并 / os @4db1419 主干祖先）+ 组目录 lang-027、os-027 移除；三仓 worktree list 零 027 残留（三查实证）。
 - 收据要点：S3 交接 = B 形态程序另立新计划（图像 DrawOp 通道立项
   先行；/auto-plan:new 承接）；T-07/T-08 退役留痕 §7/§8。
 
