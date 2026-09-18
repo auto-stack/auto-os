@@ -635,7 +635,7 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 | landed | auto-os main 合并 d3f5ec1（shell.at 冲突解：SendCmd 对齐 014 rev2）；auto-lang master 合并 ea311722b（schema 双 v1.8 叠号→v1.9 + assets/shell.at 取 pack 权威 + rust-workspace members 并集；master 上另会话 PLAN-640/014 并行落库，plan484_024_charts 4 测为 637 B4 配方化滞后测试非本计划回归——diff 零 chart 文件归因） |
 | ledger_refreshed | .autoos/specs.json 五条 P024-1（reports/architecture/designs/tests/reviews），源=archive 路径 + docs/specs/shell/dashboard.md + ADR-21 |
 | archived | docs/plans/archive/024-dashboard-widgets.md（本文件），status archived |
-| cleaned | wt-guard 过闸后四 worktree（auto-os/auto-lang/auto-down/auto-os-config）+ 两分支（plan-024-dev/auto-os-024-dev）移除收据见尾部补记 |
+| cleaned | 四 worktree 过闸后全移除（auto-os clean / auto-lang 首闸 BLOCKED——AC-05 验证轮 pnpm junctions，rmdir 仅拆链接清出后复闸 clean / auto-down clean / auto-os-config clean）；分支 plan-024-dev（d4a47ea）与 auto-os-024-dev（44bc12ac3）以 -d 删除=祖先已合实证；组目录 .wt/os-024 移除，.wt 零残留 |
 
 ## 10. 待澄清事项
 
