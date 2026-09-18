@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-026
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp-2
 author: [agent]
 created_at: 2026-09-18
@@ -239,6 +239,106 @@ client_entry 基线 = 025 landed master；025 复审中，分支 plan-025-dev
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-06 依据。
 
+### 5.1 定案记录
+
+（2026-09-18 /auto-plan:work T-01；证据基线 = lang-026 worktree @ master
+e352437b0，025 landed b9e9f6899。file:line 均为该基线。）
+
+**D1 icon/a/badge/card View 形态——定案：全部 codegen 降级（候选 B），
+零 View 变体**。推翻计划倾向（icon 变体）的关键证据：**icon 的 View IR
+承载在 VM 轨既有且成契约**——AuraViewBuilder `convert_image_or_icon`
+（aura_view_builder.rs:6455-6500）把 icon 降级为
+`View::Image{src: "lucide:{name}"}`（PLAN-018 协议前缀 iconfile:/hicon:/
+lucide: 透传 + `with_icon_size` 尺寸契约：显式 w-/h- 类 > size prop >
+共享默认，注释明言"**两端必须一致**，与 ui_gen/vue.rs 的 icon 臂同一套"）。
+新增 View::Icon 变体 = 在 View IR 制造第二个 icon 承载、破坏既有两端
+一致契约，违背计划自身"View IR 收敛"原则（badge/card 降级的同一理由）。
+a2r codegen icon 臂按同型降级。余者：
+
+- a/link → text_styled 降级（下划线不载 = 解释态口径）；"link" => "link"
+  断裂同修（同 tag 族）。
+- badge → Row + shadcn 基类合并（convert_badge aura_view_builder.rs:9157
+  同型：base "inline-flex items-center…" + variant preset + text prop
+  子级兜底）。
+- card → container styled 降级；语义 card 族（cardheader/cardtitle/
+  cardcontent/cardfooter/cardaction/carddescription）同 container 降级。
+- **D1'（display 族 View 承载形态——计划 §5.3 渲染臂落地口径修正）**：
+  spacer/divider/avatar 的 View 构造器为占位 stub（spacer()→View::Empty
+  view.rs:1773、divider()→View::Empty :1778、avatar()→col builder
+  :1783），直用则 native 静默零渲/丢 prop。定案：**a2r codegen 对齐
+  VM 轨既有降级形态**（VM 轨证据：convert_spacer :6813 container+flex-1/
+  user style；convert_divider :6885 container "w-full h-1 bg-gray-200"；
+  convert_sep :8508 orientation 双档 w-full h-px bg-border / w-px h-4
+  中线 Container(center)；convert_avatar :8559 尺寸类缺省 w-10 h-10
+  bg-gray-300 rounded-full + 子件组合；convert_progress :6750
+  View::ProgressBar；convert_grid :6215 View::Grid）。View 构造器 stub
+  本体不动（VM/iced 消费面零扰动）。image → View::image/image_styled
+  （codegen :2936-2953 既有）。
+- modal/tooltip/spinner/tab/option/toggle/radiogroup 映射断裂维持
+  （tag_to_view_fn :4779-4789 映射目标构造器不存在——grep 核实），
+  显式拒绝策略归 shell a2r 设计 S1，KNOWN-DEBT 随注；026 只修
+  badge/card/scroll/icon/a（AC-05 口径）。
+
+**D2 IME 消费最小集——定案：Commit/Cancelled 必须 + preedit 尾拼
+（候选 A）**。机制复用面 = NativeProjector{focused_input, input_buffer,
+dispatch_input_edit}（native_projector.rs:127-135/:421-455）：ImeCommit =
+聚焦 buffer 追加 → INPUT_TEXT 代写 → on_change 派发 → rev++；
+ImePreedit = 暂存字段 + input 臂渲染尾拼（buffer 后接 preedit 串，
+独立 Text op 下划线色区分）；ImeCancelled = 暂存清；无聚焦 = 丢弃 +
+uncovered 观测留痕。消费先例 editor_frame.rs:195-199（三变体全转）。
+宿主生产 = session.rs broker_ime（broker_char :3233 同型：session.focused
+→ ProtocolMsg::Input(InputMsg::Ime*)）+ stage3 单测（025 T-05 broker_
+input_production_routes 同型）。**悬置⑤落定：协议级 ImeCommit 注入为
+证据承载**（025 已定口径的延续——live iced 壳无键盘/滚轮订阅通道 =
+P025-D1 在册债，IME 订阅缺口并入该债随注；iced 0.14 = "0.14.0"
+crates/auto-lang/Cargo.toml:199，真机事件面调查随债清进行）。
+
+**D3 翻转判据——定案**：样本集 = examples/ui 全量 app（.at 解析 →
+AuraViewBuilder 构建 View<DynamicMessage> 树（VM 轨运行时构造器，
+aura_view_builder.rs 模块头文档）→ scan_native_view × judge
+(native_queue_set 扩容后)）。仪器选型注记：AuraViewBuilder 为 VM 轨
+aura→View 既有机制，与 a2r codegen 同以"降级到 View IR"为口径——
+T-02 把 codegen display 臂对齐 VM 形态后，两轨 View 层同构，scan 结果
+即 a2r 语义投影（编译级验证另由 004/scratch exe e2e 承担）。阈值 =
+**≥95% Covered 且缺项清单全在册 not-yet**（payload 族 table/tabs/
+accordion/sidebar/… + imagesurface + 解释态扩展面）→ 翻；否则不翻
+留痕（AC-06 双出口）。翻转语义 = resolve_native_frame_mode
+（client_entry.rs:117-131）Auto 臂改 queue 优先——**覆盖判定前移进
+裁决**：Auto → 扫描判定，Covered → (Commands, false, None)；
+NotCovered → (Pixels, true, 观测行载荷=缺项清单)——降级观测行语义
+保留（探测不 Covered 仍降级留痕）。coverage 表定案：native kinds +
+**image, progress**；layouts + **grid**；"center" **不入册**（View 层
+归一 Container——scan_native_view 无 "center" kind 产出点
+（native_kind_of coverage.rs:431-479 无此映射），登记即违反防漏钉钉②
+"表内 kind 无夹具/无臂即炸"）；其余 display 族（icon/badge/avatar/
+divider/separator/spacer/a/img）**经降级归一不入册**（产出 kind =
+image/text/row/container/empty，全在册）——025"switch 无 View 变体
+不列——分表非缺口"同口径（I4 分表非缺口）。
+
+**D4 语义容器——定案：零登记（计划口径维持）**：article/nav/ul/li/
+section/header/footer/aside/main/figure/details/summary/dl/dt/dd/ol
+在 AuraViewBuilder 走语义容器臂（块流纵排）→ View::Column/Container
+（507 T6 既有）；a2r 侧 `_ => "col"` fallback（rust.rs:4814）同归。
+验证 = 抽样 codegen 冒烟（article/nav/ul 三件）+ 翻转数据行全量覆盖。
+
+**D5 imagesurface——定案：整 kind not-yet（kinds 不登记）**。渲染
+顺带 = native catch-all 占位盒既有（native_projector.rs:931-941
+"覆盖门后动态分支防线"臂——ImageSurface 落此，占位盒 + uncovered_seen
+留痕，"渲染占位顺带"语义已达成）；登记 kind 会令 scan_native_view
+（无事件采集面，coverage.rs:486-541 注记）静默放行 on_wheel/on_pan
+fn 回调族——违背 I3；显式 queue 遇 imagesurface = ensure_covered 拒绝
+留痕维持。与计划推荐（渲染顺带+交互 not-yet）实质等价、实现面最小。
+
+**任务级影响（证据驱动偏差，均留痕）**：T-02 由"View::Icon 变体 +
+四消费端臂"改为"**a2r codegen display 族降级臂**（对齐 VM 轨形态：
+icon/image/badge/card/scroll/a/divider/spacer/avatar/separator + 语义
+容器验证）"——零变体 ⇒ 零四端穷尽性牵动，`cargo check --features
+ui-iced,ui-gpui` 门取消（无编译面变化）；icon 端到端验收口径不变
+（a2r 样本含 icon 可编译 + queue 渲染占位——AC-02）。T-03 渲染臂
+= Image/Progress（Grid 归 T-04）；Badge/Divider/Spacer/Avatar 臂取消
+（codegen 降级后 View 层无此 kind）。total_steps 相应 8→8（T-02 内容
+替换，任务数不变）。
+
 ### 5.2 View IR icon 臂（T-02）
 
 `View::Icon{name: String, size: f32, style: Option<Style>}`（D1-A 定案
@@ -362,7 +462,7 @@ imagesurface 交互/popover）；T-覆盖复测数据行（D3 口径）落报告
 lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
 `D:/autostack/.wt/os-026/auto-os`。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** ✅
   文件：`ui/view.rs`、`ui/desktop_protocol/{native_projector,client_
   runtime,coverage,client_entry}.rs`、`ui_gen/rust.rs`、`ui/session.rs`
   iced 事件面（读）+ 本计划 §5.1（写）。
@@ -371,6 +471,13 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → AC-02/04/06 前置。新路径：是（调查产物）。
+  [2026-09-18 work] §5.1 定案记录落盘（D1 全降级定案——关键证据 =
+  VM 轨 icon→View::Image lucide 承载契约 aura_view_builder.rs:6455
+  "两端必须一致"；D1' 降级形态对齐 VM 轨；D2 preedit 尾拼 + 协议级
+  注入口径；D3 ≥95% 阈值 + AuraViewBuilder 仪器 + kinds+image/progress/
+  layouts+grid 且 center 不入册钉②口径；D4 零登记维持；D5 整 kind
+  not-yet）。任务级偏差：T-02 改 codegen 降级臂、零 View 变体。
+  → AC-02/04/06 前置就绪。
 - **T-02 [lang] View::Icon 变体 + 四消费端臂 + codegen 臂**
   文件：`ui/view.rs`（变体 + builder）、`ui/iced/renderer.rs`、
   `ui/gpui/renderer.rs`（cfg 最小臂）、`ui/vnode_converter.rs`、
