@@ -668,8 +668,11 @@ lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
   P029-1×4[reports/architecture/designs/tests] + P029-r1[reviews]，
   落地后读回验证 5 条 related=PLAN-029）| archived ✅（git mv
   docs/plans/archive/029-live-input-shell-queue-coverage.md + status
-  archived + completion_kind: delivered）| cleaned（见下条回填）。
-  completion_kind: delivered。注：lang/os 主检出他案 WIP 原样保留
+  archived + completion_kind: delivered）| cleaned ✅（wt-guard ×3
+  clean[lang-029/auto-lang + lang-029/auto-down 只读依赖 + os-029/
+  auto-os]→worktree×3/分支×2[plan-029-dev 已删，lang 56d1596f2/os
+  cc3a157 落地实证]/组目录×2[.wt/lang-029、.wt/os-029]移除；os
+  worktree list 仅剩主检出）。completion_kind: delivered。注：lang/os 主检出他案 WIP 原样保留
   未纳入（opening 预检在案）。
 
 ## 10. 待澄清事项
