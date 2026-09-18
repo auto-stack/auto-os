@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-029
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived
 feature_name: live-input-shell-queue-coverage
 author: [agent]
 created_at: 2026-09-18
@@ -23,7 +23,7 @@ affects:
   - auto-lang/docs/design/autoui/desktop-shell-a2r.md                   # 前置序列更新（第一件已交付 → 本件）
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                        # P025-D1 核销
   - auto-os/docs/plans/autos-desktop-program.md                         # 台账 3c2 行
-current_step: 1
+current_step: 9
 total_steps: 9
 ---
 
@@ -541,47 +541,47 @@ lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → 全 AC 前置。新路径：是。
-- **T-02 [lang] live 接线**
+- **T-02 [lang] live 接线** [✅ 已完成 8f1aeb42f：desktop_window_events 三族臂+LiveInput 六型+route_live_input+renderer 臂（桌面窗过滤+picker 避让）；live_input 单测 4 绿 + broker 回归 12 绿]
   文件：`ui/session.rs`（订阅扩臂 + 映射 + DesktopMessage 扩展）。
   动作：§5.2 T-02；broker_* 零改动直用。
   验证：映射/路由单测绿 + broker_* 既有测试回归。
   → AC-01。
-- **T-03 [lang] 真机证据 e2e**
+- **T-03 [lang] 真机证据 e2e** [✅ 已完成 a0671a0dc：①p029_live_input_arm 真子进程五腿 PASS（t3 native 档新增 + typed 载体 P029TypedInputs——a2r last_input_text 合同；native+dynamic 无生产形态实勘留痕）②acceptance key verb（DesktopInject::Key + autoui_desktop action=key 六 kind）③sendinput.rs FFI 组装层单测 4 绿（真机 SendInput e2e 腿 not-yet 随注）；帧留痕 assets/029/live-input-frame.txt；stage3 20/20]
   文件：`stage3.rs`（p029_live_input_arm）+ D2 通道（SendInput FFI
   模块如采纳 / acceptance verb / 脚本）。
   动作：§5.2 T-03；⑤兜底腿。
   验证：e2e 留痕（AUTO_DESKTOP_E2E 门）。
   → AC-02。
-- **T-04 [lang] popover 臂**
+- **T-04 [lang] popover 臂** [✅ 已完成 8ff59f2eb：覆盖序渲染+全 14 placement 几何纯函数+Modal scrim+命中互斥（catcher/面板项 rev 序）+Esc→on_dismiss+零开合状态机；几何/渲染/命中/Modal 单测 3 绿+扫描递归（:562 缺口清偿）]
   文件：`native_projector.rs`（覆盖序渲染 + 锚/placement/scrim +
   命中）、`coverage.rs`（kind + 子树递归）。
   动作：§5.3 T-04；D3 全案。
   验证：golden + 命中单测 + 扫描递归测试。
   → AC-03/06。
-- **T-05 [lang] thumbnail/preview 桥接臂**
+- **T-05 [lang] thumbnail/preview 桥接臂** [✅ 已完成 8ff59f2eb（投影器侧：!{fallback} 语法 Image op）+ 6190fd4e5（宿主侧：workspace:// 合成[壁纸基色+tile_rect+blit]+thumbnail miss→fallback 图标）；三路径单测绿]
   文件：`native_projector.rs`（两变体 → Image op）；如 D4-A 采
   workspace:// 另扩 `broker_surface.rs` 词汇。
   动作：§5.3 T-05。
   验证：三路径单测 + golden。
   → AC-04/06。
-- **T-06 [lang] MouseArea 臂**
+- **T-06 [lang] MouseArea 臂** [✅ 已完成 8ff59f2eb：透传+命中序（area 先 push、content 项 rev 序优先）+click/contextmenu；hover 族 not-yet 随注；命中优先级/右键单测绿]
   文件：`native_projector.rs`（透传 + 命中项）。
   动作：§5.3 T-06。
   验证：golden + 命中单测。
   → AC-06。
-- **T-07 [lang] lucide 词汇真渲**
+- **T-07 [lang] lucide 词汇真渲** [✅ 已完成 6190fd4e5：resolve_drawlist_image 签名扩 (w,h)+lucide tint 语法+resvg/tiny-skia 栅格化+尺寸缓存键+负缓存；P026-D1 字形半句核销；t029_* 单测 3 绿]
   文件：`broker_surface.rs`（词汇扩展）、`renderer.rs`（机具接驳
   ——栅格化/tint 函数化复用）。
   动作：§5.4；D5 全案。
   验证：ink/tint/缓存/降级单测绿。
   → AC-05。
-- **T-08 [lang] 覆盖收口 + 翻转复测**
+- **T-08 [lang] 覆盖收口 + 翻转复测** [✅ 已完成 b6d924f44：kinds 四项入册+防漏钉矩阵四夹具（8ff59f2eb）+shell_pack_native_covered 五件全 Covered（B 覆盖门预演；FlexColReverse/opacity- 降级放行）+复测数据行 p029-native-flip-retest-row.md（overall 44.4%/judged 72.7% → 维持不翻；client_entry 注释指 p029 报告）]
   文件：`coverage.rs`（防漏钉）、`client_entry.rs`（门后翻转点）、
   数据报告（lang reports/）。
   动作：§5.5；D7 dual-exit。
   验证：防漏钉 + shell pack Covered 断言 + 数据行落盘。
   → AC-06/07。
-- **T-09 [lang+os] e2e 与收口**
+- **T-09 [lang+os] e2e 与收口** [✅ 已完成 lang ed182efc1 + os dc223ec：p029_shell_face_arm 五腿 PASS（五件套 ops 落 wire+popover 命中闭环+mousearea；留痕 assets/029/shell-face-frame.txt）+§1.10 v1.10 增量+顶表行+a2r §10-① 前置序列两件✅+KNOWN-DEBT 四行核销/随注+台账 3c2 行]
   文件：lang `stage3.rs`（p029_shell_face_arm）+ 截图 assets/029/ +
   `desktop-protocol-v1.md`（§1.10）+ `desktop-shell-a2r.md`（前置
   序列）+ KNOWN-DEBT（P025-D1 核销）；os 台账 3c2 行 + 互链。
@@ -597,6 +597,34 @@ lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
   翻转数据门现状全部 file:line 在案）；`next: work`（**无前置计划
   依赖**，T-01 可即行）。悬置决策登记 §10（①–⑤），均不阻塞 T-01
   开工。
+
+
+- 2026-09-18 /auto-plan:work 收执：`stage: work | PLAN-029 | rev 1 |
+  outcome: pass | code_commit lang plan-029-dev 8f1aeb42f..ed182efc1
+  （T-02 8f1aeb42f / T-03 a0671a0dc / T-04-06 8ff59f2eb / T-07
+  6190fd4e5 / T-08 b6d924f44 / T-09 ed182efc1；基线 2c038d889）+ os
+  plan-029-dev dc223ec（台账 3c2 行；基线 9149dc3）| task_ids
+  T-01..T-09 全勾（9/9）| evidence：AC-01 映射/路由单测 4 绿 + broker
+  回归 12 绿 + P025-D1 核销落笔；AC-02 e2e 五腿 PASS（真 outproc native
+  子进程——t3 native 档 + typed 载体）+ acceptance key verb + SendInput
+  FFI 模块 4 绿（真机 SendInput e2e 腿 not-yet 随注——AC-02 dual 口径
+  满足）+ 帧留痕 assets/029/；AC-03 popover 几何 14 枚举 + 开闭态/命中/
+  Esc/Modal 单测 + e2e 命中闭环；AC-04 三路径单测 + e2e ops 落 wire；
+  AC-05 ink/tint/缓存/负缓存单测 + e2e lucide op 断言；AC-06 防漏钉
+  矩阵四夹具 + **shell 五件 Covered**（预演断言）；AC-07 复测数据行
+  落盘（44.4%/72.7% < 95% → 维持不翻——禁无数据翻转满足）；AC-08
+  §1.10 + 前置序列 + 台账 3c2 互链落盘；回归门 desktop_protocol 168
+  过（2 红在册预存 plan624/P507-2——与基线同签名）+ session 79 +
+  client_runtime 38 + dual_mode 3 + broker_surface 8 + native_projector
+  32 全绿；ts_fixtures 零触碰（零 TS 面）| blockers 无 | next: review
+  （execution_done；worktree lang-029[+auto-down 只读依赖]/os-029 保留）。
+  合同内偏差（证据驱动，均留痕）：①e2e 载体 converter.exe（p025 形态）
+  无既有构建 → t3 re-exec native 档 + typed 语料（生产 NativeProjector
+  全链；native+dynamic 组合实勘为非生产形态——VM 桥不读 INPUT_TEXT
+  thread-local，留痕 stage3 注释）；②D2 分层定案（§5.1）——SendInput
+  真机腿 not-yet、辅腿 acceptance verb 落地；③shell Covered 所需两枚
+  样式降级放行（flex-col-reverse/opacity-——flex-1/shadow 同册先例）；
+  ④auto-os 桌面 smoke（真机腿）本轮未重跑——B 程序立项后随启动序一并。
 
 ## 10. 待澄清事项
 
