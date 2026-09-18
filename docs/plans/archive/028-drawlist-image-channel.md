@@ -643,8 +643,15 @@ merge 即基线）。
   - `archived`——本件 git mv → `docs/plans/archive/
     028-drawlist-image-channel.md`，status archived，
     completion_kind: delivered。
-  - `cleaned`——见补记（wt-guard ×3 + 三 worktree/双分支/两组目录
-    移除 + 三仓零残留三查）。
+  - `cleaned`——wt-guard：auto-down clean、os-028/auto-os clean、
+    lang-028/auto-lang 初检 BLOCKED（pnpm install node_modules 连接点
+    ——T-06 本计划工件）→ 按 guard 处方逐链接 `cmd /c rmdir` 移除
+    （零穿透）+ node_modules 清除 → 复检 clean ×3。移除：lang-028/
+    auto-lang + lang-028/auto-down（owning 仓 auto-down，detached）+
+    os-028/auto-os 三 worktree；plan-028-dev 双分支删除（lang @
+    02c04ad42 / os @ 3b5d70e，均主干祖先/已合并）；组目录 lang-028、
+    os-028 移除。三仓 worktree list + 分支表 + .wt/ 目录三查零 028
+    残留。
 
 ## 10. 待澄清事项
 
