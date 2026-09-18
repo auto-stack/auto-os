@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-026
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp-2
 author: [agent]
 created_at: 2026-09-18
@@ -649,6 +649,23 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   frame.txt` + `test/parity/native/003-converter.expected.txt` 在册金样
   | next: merge（两仓 plan-026-dev；lang master / os main 已被其他计划
   推进——merge 时先 back-sync 基线再 fold，工件脏面见 findings③）。
+
+- 2026-09-18 /auto-plan:merge 收执：`stage: merge | PLAN-026:r1 |
+  outcome: pass | delivery_commit lang master fc8264f4a / os main
+  01d3483（均 back-sync 后 fast-forward；lang back-sync 82a371657+
+  fc8264f4a 同步验证：tf 3615/3616 唯一红=plan367 基线红 + desktop_
+  protocol 951/952 + e2e 三腿复跑 PASS + flip 数据行 15/36 不翻钉
+  保持；os back-sync 01d3483 零冲突）| checkpoints：
+  prepared（canonical diff = 冻结复审 delta：lang §1.8+SD-03 / os
+  台账 3b2 行已在 branch 交付）→ landed（lang master fc8264f4a 主检
+  出 scoped 冒烟 156/157 唯一红照旧；os main 01d3483）→
+  ledger_refreshed（os .autoos/specs.json P026-1 ×4 节 + P026-r1，
+  worktree 提交后 ff 落 main aa64ceb，回读 5 条验证）→ archived（本
+  文件 git mv + status archived）→ cleaned（见补记）| archive_path
+  docs/plans/archive/026-native-queue-coverage-ramp-2.md | canonical
+  路径 auto-lang/docs/design/autoui/desktop-protocol-v1.md §1.8 +
+  auto-lang/docs/specs/auto-lang/ui/overview.md | ledger 目标 os
+  .autoos/specs.json（P026-1×4 + P026-r1）。
 
 ## 10. 待澄清事项
 
