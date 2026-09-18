@@ -319,7 +319,7 @@ v1.8、试点 mini 在 auto-os。试点 = clock + sys-monitor 两张卡。
 
 | delta_id | add/modify/retire | target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | docs/specs/shell/dashboard.md（新模块 spec） | 新增：S10 Dashboard 面板契约——第四 overlay 槽、`view mini` 声明即注册、faces 两级推导、静默孵化条件（无后端）、配置键 `shell.dashboard.*`、v1.8 词表与注入面 | 设计稿 §4.2 立项落 spec；沿 showdesk-* 模块 spec 先例 | AC-01..07 |
+| SD-01 | add | docs/specs/shell/dashboard.md（新模块 spec） | 新增：S10 Dashboard **常驻小组件层**契约（用户裁定 2026-09-17，取代 v1 召唤式）——z 高于桌面图标层/低于全部 app 窗、boot 常显 + × 隐藏/dock ▦ 切换、`view mini` 声明即注册（faces 两级推导：category 派生 tab）、孵化会话（无 daemon/back_root/exe 门 + face_fields 垫片 + 升格开窗原语）、**tab 化降耗**（main/system 页、非活动页孵化 Tick 停订）、**栅格条三态**（接近即占位/段内过半点亮/四分位变色）、卡点击三态打开（升格/聚焦/launch）、配置键 `shell.dashboard.*`（enabled/span/tab 派生）、协议 v1.8（`__dashboard_faces`/`__dashboard_cmd` 六动词 + `__dashboard_open` 合成消息/`__wm_dashboard`） | 设计稿 §4.2 立项落 spec + 走查 R1–R21 语义修订；沿 showdesk-* 模块 spec 先例 | AC-01..07 |
 | SD-02 | modify | auto-lang:docs/specs/auto-lang/ui/architecture.md | 视图声明节：单一 view → 主 view + 命名视图 `view mini`（多命名）；重复名报错；`view fn`/参数模式语义不变 | 语言小扩展的正名（设计稿「多命名 view」） | AC-01 |
 | SD-03 | modify | auto-lang:schema/projection-protocol-v1.md | v1.7 → v1.8：新增 `__dashboard_faces` 注入 + `__dashboard_cmd` 六动词 + `__wm_dashboard` 判据 | 面板接缝协议化，沿 v1.2 通知中心先例 | AC-02,04,05 |
 
