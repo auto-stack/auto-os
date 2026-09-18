@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-028
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: drawlist-image-channel
 author: [agent]
 created_at: 2026-09-18
@@ -8,6 +8,7 @@ updated_at: 2026-09-18
 plan_revision: 1
 
 # /auto-plan:review 结束时填写：
+completion_kind: delivered
 supersedes_spec_components: []
 new_spec_components:
   - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.9 v1.9 增量 + 顶表 v1.5–v1.9 回填（review 复核定稿）
@@ -621,6 +622,29 @@ merge 即基线）。
   为 master 基线既有红（/tmp/m-u.txt 在册），非本计划面。evidence
   持久化：f89a0c5eb / 1eed4ed 提交本体 + assets/028/ 帧留痕 + 本节
   汇总行。next：**merge**。
+- 2026-09-18 /auto-plan:merge 收据，`PLAN-028:r1`：
+  - `prepared`——reviewed 基线（lang f89a0c5eb / os 1eed4ed，复审
+    os main a243a63）；canonical delta = SD-01（§1.9+顶表，已随
+    f89a0c5eb 在分支）/ SD-02（台账 3c1，1eed4ed 在分支）/ SD-03
+    （overview.md provisional 条目——本轮 merge prepared 落笔）；
+    ledger 目标 = auto-os `.autoos/specs.json` P028-1×4 + P028-r1。
+  - `landed`——master 前进两轮 reconcile：①652 特征批（VM Tick 面，
+    与本计划 ui-iced 图像通道零交集）→ KNOWN-DEBT 增补五/六双留
+    冲突解 + 全量复验 **MERGE-BASELINE-EQUAL**（5146 测 5107 绿 +
+    39 红全在基线集，comm 双向空）= merge 6bd85aa2e；②655 簿记
+    （docs-only，零交集免复验）= merge 02c04ad42。lang master
+    **ff 02c04ad42**（f89a0c5eb 祖先实证 + canonical 在册核验：
+    §1.9/overview 条目/assets/028/ 均在 master + 主干冒烟 6/6 绿）。
+    os main merge **bfd3f38**（1eed4ed + ledger 3b5d70e 随分支落干）。
+  - `ledger_refreshed`——auto-os `.autoos/specs.json` 沉淀 P028-1×4
+    （reports/architecture/designs/tests）+ P028-r1（reviews），读回
+    验证 5 条（related=PLAN-028；file 指针 = protocol-v1.md/
+    overview.md/stage3.rs/归档路径）。
+  - `archived`——本件 git mv → `docs/plans/archive/
+    028-drawlist-image-channel.md`，status archived，
+    completion_kind: delivered。
+  - `cleaned`——见补记（wt-guard ×3 + 三 worktree/双分支/两组目录
+    移除 + 三仓零残留三查）。
 
 ## 10. 待澄清事项
 
