@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-025
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp
 author: [agent]
 created_at: 2026-09-17
@@ -587,6 +587,20 @@ auto-os`）。
   codegen 套件（本记录即复现命令）；wire 不变量= message.rs 零 diff +
   PROTOCOL_VERSION 未触；I4=解释态 target_set 零 diff | next: merge
   （SD-03 一行指针 delta 文本随本记录，merge 期落 canonical）。
+- 2026-09-18 /auto-plan:merge 收执：`stage: merge | PLAN-025:r1 |
+  outcome: pass`。**prepared**：lang worktree SD-03 overview.md 指针
+  78502d2fa + master/main 漂移调和（lang 并 master 两次——KNOWN-DEBT
+  自动合并共存 PLAN-639；os 并 main 两次——计划簿记无冲突）。
+  **landed**：lang master b9e9f6899（含 870ee1574/78502d2fa 祖先已验）
+  + os main a6f3eb5（含 b4c2c1b/155f36e）；落地后 master 复跑协议套件
+  148/149（既有红除外）+ p025 e2e 三腿真 exe PASS（载体 env 指向
+  worktree 产物）。**ledger_refreshed**：lang .autoos/specs.json 离线
+  RMW 原子写 upsert P025-1..3 + 回读断言过；os .autoos/specs.json
+  （tracked）upsert P025-r1（3e455ec/155f36e）。**archived**：本文件
+  git mv 至 docs/plans/archive/ + status archived。**cleaned**：wt-guard 三 worktree（lang-025/auto-lang、lang-025/auto-down
+  detached、os-025/auto-os）全 clean 后移除；分支 plan-025-dev 双仓删除
+  （lang a46c19d91 / os a6f3eb5 已含于默认分支）；组目录 lang-025/os-025
+  移除。归档收据终版（本提交）。
 
 ## 10. 待澄清事项
 
