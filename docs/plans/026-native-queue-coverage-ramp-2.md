@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-026
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp-2
 author: [agent]
 created_at: 2026-09-18
@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/client_entry.rs      # auto 缺省翻转点（T-06 门后）
   - auto-lang/crates/auto-lang/src/ui/session.rs                            # broker_ime 生产路由（025 D4 同型）
   - auto-os/docs/plans/autos-desktop-program.md                             # 3b 行更新
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -477,8 +477,9 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   注入口径；D3 ≥95% 阈值 + AuraViewBuilder 仪器 + kinds+image/progress/
   layouts+grid 且 center 不入册钉②口径；D4 零登记维持；D5 整 kind
   not-yet）。任务级偏差：T-02 改 codegen 降级臂、零 View 变体。
-  → AC-02/04/06 前置就绪。
-- **T-02 [lang] View::Icon 变体 + 四消费端臂 + codegen 臂**
+  → AC-02/04/06 前置就绪。（定案正文见本文件 §5.1 定案记录节；plan
+  rev 维持 1——定案即计划 §5.1 预留的决策产物位。）
+- **T-02 [lang] View::Icon 变体 + 四消费端臂 + codegen 臂** ✅
   文件：`ui/view.rs`（变体 + builder）、`ui/iced/renderer.rs`、
   `ui/gpui/renderer.rs`（cfg 最小臂）、`ui/vnode_converter.rs`、
   `ui_gen/rust.rs`（icon 臂）。
@@ -486,41 +487,81 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   验证：四消费端单测 + codegen golden 绿；`cargo check --features
   ui-iced,ui-gpui` 过。
   → AC-02/05。
-- **T-03 [lang] display 族投影臂 + codegen 断裂修复**
+  [2026-09-18 work] 按 §5.1 D1 裁定改形（零 View 变体）：a2r codegen
+  display 族降级臂全落（icon→lucide Image 尺寸契约/badge Row/card/
+  divider/separator/spacer/avatar container/scroll scrollable/link 子件
+  组合 + 断裂映射移除）；fixture 026-native-display + codegen golden
+  13 断言。ui_gen 793/793。51e99ab49。
+- **T-03 [lang] display 族投影臂 + codegen 断裂修复** ✅
   文件：`native_projector.rs`（Image/Avatar/Progress/Divider/Spacer/
   Badge/Icon 臂）、`ui_gen/rust.rs`（badge/card/scroll/a 修复）。
   动作：按 §5.3 + D1/D5 定案。
   验证：display golden + codegen golden（004/010 fixture）+ scratch
   编译冒烟。
   → AC-02/05。
-- **T-04 [lang] grid/center 布局臂**
+  [2026-09-18 work] Image/Progress 占位保真臂（IMAGE_PLACEHOLDER
+  pub(crate) 复用；fill 比例几何/style.bg 覆盖权）+ node_style_of_view
+  变体收集 + kinds image/progress 入册（防漏钉随臂原子扩）。
+  display_family_placeholder_golden。desktop_protocol 149/150。
+  ba465ae2d。Badge/Divider/Spacer/Avatar 臂取消（T-02 codegen 降级后
+  View 层无此 kind——定案偏差留痕）。
+- **T-04 [lang] grid/center 布局臂** ✅
   文件：`native_projector.rs`（walker grid/center）。
   动作：按 §5.4 + D4 验证。
   验证：grid/center golden + 命中单测 + 语义容器降级链测试。
   → AC-03。
-- **T-05 [lang] IME 闭环两端**
+  [2026-09-18 work] Grid walker（cols 等宽×row-major+bg 两遍法+gap
+  字段优先）+ container center_x/center_y/legacy 尺寸/w-full 臂；
+  layouts+grid；拒面样本 grid→imagesurface 反转改写（D5）。
+  grid_layout_and_hit_golden + center_container_golden。
+  desktop_protocol 151/152。064bc02a8。语义容器降级链 = 翻转数据行
+  全量覆盖（D4 口径）替代抽样。
+- **T-05 [lang] IME 闭环两端** ✅
   文件：`native_projector.rs`（ImeCommit/Cancelled/Preedit 消费）、
   `session.rs`（broker_ime 生产路由）。
   动作：按 §5.5 + D2 定案。
   验证：IME 单测 + broker_ime 路由单测 + 集成注入闭环。
   → AC-04。
-- **T-06 [lang] 覆盖表收口 + 翻转评估**
+  [2026-09-18 work] 投影器三变体消费（Commit 并入 buffer→INPUT_TEXT
+  代写→on_change 派发；Preedit 尾拼差分色 op；Cancelled/Esc 消解；
+  ime_dropped 留痕）+ broker_ime_commit/preedit/cancelled 焦点窗路由。
+  ime_commit_preedit_cancelled_loop + broker_ime_production_routes。
+  desktop_protocol 153/154。26b0aed66。
+- **T-06 [lang] 覆盖表收口 + 翻转评估** ✅
   文件：`coverage.rs`（扩容 + 防漏钉）、`client_entry.rs`（翻转点，
   门后）、翻转数据报告（lang `docs/plans/reports/`）。
   动作：按 §5.6 + D3 口径；三闸评估。
   验证：防漏钉绿；数据行 + 评估结论落盘；达标腿含抽样 e2e。
   → AC-06。
-- **T-07 [lang+os] e2e 验收**
+  [2026-09-18 work] 样式降级放行批 + native_style_token 语义化缺项
+  载荷；翻转数据行（§5.1 D3 仪器）：**overall 16/35 = 45.7% / judged
+  16/21 = 76.2% < 95% 阈值 → 不翻出口**（缺项全在册 not-yet）；翻转
+  点已备（resolve_native_frame_mode 扫描制观测行，Covered 臂 one-line
+  翻转）；报告 p026-native-flip-data-row.md。025 防漏钉样式样本换防
+  underline→opacity-50。c2fd7a5bf..6f1bf07c7。AC-06 走不翻出口
+  （两出口均为 pass 态——悬置③落定：数据留痕下期翻，ramp v3 复评）。
+- **T-07 [lang+os] e2e 验收** ✅
   文件：lang `stage3.rs`（p026_native_display_arm + IME 腿）+ 截图
   `docs/plans/reports/assets/026/`；os `scripts/`（smoke 026 腿）。
   动作：AC-02..05 逐条跑通留痕。
   → AC-02/03/04。
-- **T-08 [lang+os] 文档与台账收口**
+  [2026-09-18 work] p026_native_display_arm 三腿真 exe PASS：004 queue
+  孵化 image 占位 80×80/渐变/按钮 + display026 display 族全件
+  （icon 14×14 占位/badge/divider 4px 满宽/avatar/grid 2×2/center）+
+  003 broker_ime_commit("100")→212 联动（AC-04 协议级承载⑤口径）；
+  帧留痕 assets/026/ 三件；os smoke-026-native-display.sh（os
+  plan-026-dev 679272c）。附带修复：image src 绑定形状容差（004 真源
+  src 曾静默丢失——AC-05）+ native 容器 w-full 满宽。e675e62c5。
+- **T-08 [lang+os] 文档与台账收口** ✅
   文件：lang `desktop-protocol-v1.md`（§1.8）、`KNOWN-DEBT-AND-RISKS.md`
   （图像真渲债 + 新债）；os `autos-desktop-program.md`（3b 行更新）+
   两仓互链。
   动作：SD-01..03 落笔。
   → AC-07。
+  [2026-09-18 work] §1.8 六节增（SD-01）；KNOWN-DEBT P026-D1 图像真渲/
+  P026-D2 断裂映射残余（S1）/P026-D3 auto 缺省维持；os 台账 3b2 行
+  （SD-02，os plan-026-dev 9c40199）；SD-03 ui/overview provisional
+  v1.8 对齐。3e410163a。
 
 ## 9. 复审记录
 
@@ -530,6 +571,43 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   增量）；`next: work`——**前置 = PLAN-025 merge 收口**（解封动作明确：
   025 merge 后开 lang-026/os-026 worktree，T-01 起步无需用户解锁）。
   悬置决策登记 §10（①–⑤），均不阻塞 T-01 开工。
+
+## 9. 复审记录
+
+- 2026-09-18 /auto-plan:new 起草交接：`stage: new`，PLAN-026 rev 1。
+  `outcome: pass`（合同完整：025 落地态/解释态占位保真口径/codegen 断裂
+  清单/IME wire 与消费先例全部 file:line 在案；任务覆盖全部 AC 与规范
+  增量）；`next: work`——**前置 = PLAN-025 merge 收口**（解封动作明确：
+  025 merge 后开 lang-026/os-026 worktree，T-01 起步无需用户解锁）。
+  悬置决策登记 §10（①–⑤），均不阻塞 T-01 开工。
+- 2026-09-18 /auto-plan:work 收执：`stage: work | PLAN-026 | rev 1 |
+  outcome: pass | lang code_commit 51e99ab49..3e410163a（plan-026-dev，
+  基线 master e352437b0 = 025 landed；T-02 51e99ab49 / T-03 ba465ae2d /
+  T-04 064bc02a8 / T-05 26b0aed66 / T-06 c2fd7a5bf+5a560adc1+6f1bf07c7 /
+  T-07 11955d4cc+e675e62c5 / T-08 3e410163a；os plan-026-dev 679272c +
+  9c40199）| task_ids T-01..T-08 全勾（8/8）| worktree lang-026/os-026
+  保留（依赖组 lang-026/auto-down @362d75b detached）| evidence：
+  AC-01 desktop_protocol+session/stage3/dual_mode/app_registry
+  272/273 + ui_gen 793/793 + rust_ui 22/22（唯一红 = covered_elements_
+  within_target_set 在册既有红 plan624 线，基线复核同红）；AC-02
+  p026_native_display_arm 腿①②：004 queue 孵化 image 占位 80×80 +
+  Jane Cooper/Follow 帧（Commands 档）+ display026 display 族全件
+  （icon 14×14 lucide 占位/badge/divider 4px/avatar/grid 2×2/center）；
+  AC-03 grid 命中派发 + center golden（grid_layout_and_hit_golden/
+  center_container_golden）；AC-04 IME 闭环：投影器四段单测 +
+  broker_ime_production_routes 真管道 + e2e 腿③ broker_ime_commit
+  ("100")→212 联动（协议级承载⑤口径）；AC-05 codegen golden 13 断言 +
+  三 scratch 真源 a2r 编译过（004/display026/003）+ src 绑定容差修复
+  + Link 子件组合；AC-06 翻转双出口走**不翻**：judged 76.2% < 95%
+  （数据行报告 p026-native-flip-data-row.md，缺项全在册 not-yet，
+  翻转点已备 one-line）；AC-07 §1.8 + 台账 3b2 行 + KNOWN-DEBT
+  P026-D1..D3 + 帧留痕 assets/026/ 三件互链可解析 | blockers 无 |
+  next: review（execution_done）。合同内偏差（证据驱动，均留痕）：
+  ①D1 全降级（icon 不加变体——VM 轨 lucide 承载契约证据），T-02 改形
+  codegen 降级臂、四消费端牵动取消；②覆盖 kinds 只入 image/progress +
+  layouts grid（其余 display 族降级归一分表非缺口；center 不入册钉②）；
+  ③翻转走不翻出口（数据未达 95% 阈值——AC-06 双出口设计内）；④悬置
+  ①③⑤随定案/裁定落定，②④按 D2/D5 定案收口。
 
 ## 10. 待澄清事项
 
