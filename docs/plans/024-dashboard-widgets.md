@@ -573,6 +573,59 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 小组件块），A 的三步（文件夹格子 → widget 块二维跨度 → 6x4 大块迁移）
 作为原子任务。
 
+### 2026-09-18 复审记录（/auto-plan:review）
+
+- `stage: review`，**PLAN-024** revision 1。
+- `outcome: pass`（附 4 项 finding，全部处置/挂账，见下）。
+- `reviewed_commit`: auto-lang auto-os-024-dev **fc6267e79**；auto-os
+  plan-024-dev **aa47947**（review 基线补齐后）。
+- `base_commit`: auto-os main a6d4a47；auto-lang master 50016b255。
+- `dependency_revisions`: auto-down b37b08e（detached）、auto-os-config
+  1a80716（detached，R11 组内补齐）。
+- `spec_inputs`: schema/projection-protocol-v1.md（v1.8，worktree 已改）；
+  docs/specs/shell/dashboard.md（新，merge 时按 §5.8 SD-01 修订文本发布）；
+  auto-lang ui/architecture.md（SD-02 视图声明节，merge 时落）。
+- **复核限制声明**：本复核在实现会话内进行，结论以工件/命令/实机证据重建，
+  不采信执行摘要。
+- `acceptance_results`:
+  - AC-01 **pass**——plan024+dashboard+shell_pack 21/21；cargo t --no-fail-fast
+    全档 5042 跑 36 失败 ⊆ master 基线 37（零新增，两轮复跑一致）；vue 生成
+    产物含 mini SFC（R18 双测）。
+  - AC-02 **pass**——dock ▦ 召唤/× 隐藏/常驻显隐（R2/R6）、clock 静默孵化
+    走秒（01/02 帧差 + 用户实机）；Esc 关闭走查轮自动化焦点伪影，三路径
+    关闭链路用户人工复验通过。
+  - AC-03 **pass**——sysmon 卡与主窗同源刷新（用户实机确认 + 09 浅色帧）、
+    待办卡 store 同源（勾选联动活渲染）。
+  - AC-04 **partial → 用户接受延后**——存储链/六动词/默认策略 + 单测 ✅；
+    右键编辑 popover UI 入口未实施（F-01，用户走查收口明示接受，挂 §10 #5）。
+  - AC-05 **partial → 环境受限延后**——生成级验证 ✅（Mini.vue×2
+    012/020、registry mini 标记、DashboardPanel.vue、宿主接线）；真跑
+    autoui-verifier 对拍未执行（worktree 缺 npm 依赖 + 浏览器自动化，F-02，
+    unblock = pnpm install + autoui-verifier；013-todo vue 轨被既有
+    API-client-glue 门跳过——非本计划缺陷）。
+  - AC-06 **pass**——试点实机可见截图组（01/02/04/05/06/07/08/10）+ 用户
+    走查确认；占位卡形态代码已实现、本环境 sysmon 必孵化未活演（注记）。
+  - AC-07 **pass（含 F-03）**——cargo t 全档零新增（见上）；shell pack
+    hash-lock 五件 parity ✓；I2 五套 desktop_mcp python 套件未跑（F-03，
+    merge/landing 前 smoke 一套 012-stopwatch）。
+- `findings`:
+  - **F-01**（minor，AC-04）：编辑 popover UI 入口缺失——**用户接受延后**
+    （走查收口"剩下的没问题了"），挂 §10 #5。
+  - **F-02**（minor，AC-05）：真跑 autoui-verifier 对拍未执行——环境受限
+    （npm 依赖 + 浏览器），unblock 动作明确；挂 §10。
+  - **F-03**（minor，AC-07）：五套 desktop_mcp 未跑——merge/landing 前
+    smoke 012-stopwatch 一套。
+  - **F-04**（fixed-in-review）：SD-01 provisional 文本滞后常驻语义——
+    已修订（§5.8，本次提交）。
+- `evidence`: docs/plans/evidence/024/（01–11 证据帧 + 驱动脚本）、
+  plan024_named_view_tests.rs 21 项、台账 §9.2 R1–R21、
+  cargo t --no-fail-fast 两轮（/tmp/wt5_fail.txt、wt6 对比基线 37 零新增）、
+  vue 生成物 gen/front/vue/src/apps/{012,020}/Mini.vue + apps-registry.ts
+  （mini: true ×2）+ src/wm/DashboardPanel.vue。
+- `next`: **merge**（/auto-plan:merge）——merge 时按 §5.8 修订文本发布
+  canonical specs（SD-01 auto-os / SD-02 SD-03 auto-lang）+ 台账派生；
+  merge 前跑 desktop_mcp smoke（F-03）。
+
 ## 10. 待澄清事项
 
 1. **面板热键**：已裁定 v1 不加（dock 钮召唤 + Esc/外点/再点关闭三路径
