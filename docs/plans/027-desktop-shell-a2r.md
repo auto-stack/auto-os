@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-027
-status: execution_done        # rev2 收口完成（T-01..T-06 + T-09'）；next: review
+status: reviewed              # rev2 复审 pass（F-01 修复闭环）；next: merge
 feature_name: desktop-shell-a2r
 author: [agent]
 created_at: 2026-09-18
@@ -10,7 +10,8 @@ plan_revision: 2
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/schema/projection-protocol-v1.md   # typed 快照通道增量（review 定稿）
+  - auto-lang/schema/projection-protocol-v1.md   # v1.10：typed 快照通道入册（SD-02，review 闭环）
+  - auto-lang/docs/specs/auto-lang/ui/design/shell-a2r-seams.md   # S1/S2 接缝面 provisional（SD-04）
 touched_goals: []
 
 affects:
@@ -599,6 +600,49 @@ auto-os`。
 → AC-06/07。
 
 ## 9. 复审记录
+
+- 2026-09-18 /auto-plan:review 复审（F-01 修复闭环后终审）：
+  `stage: review`，PLAN-027 rev 2。`outcome: pass` → **status =
+  reviewed**。`reviewed_commit`：lang plan-027-dev F-01 修复提交
+  （v1.10，63d981d49 之后）+ 全实现链 97d0bb75d/274265345/611fbff2f/
+  T-05/d6e8da838；`base_commit` 2808c551a；`dependency_revisions`
+  auto-down detached fae21d9（只读）。`spec_inputs`：SD-01（设计文档
+  裁定落定 ✅ 63d981d49）、SD-02（协议 v1.10 ✅ 本轮修复——typed 通道
+  载体/apply 语义/懒挂载 payload/清单/总线接缝/双载体声明/对拍记录
+  入册，与实现逐面一致）、SD-03（台账 3c 行 ✅ 1313d00）、SD-04
+  （shell-a2r-seams provisional ✅ 63d981d49）；front matter
+  new_spec_components 已定稿。`acceptance_results`：AC-01 pass（五套
+  实跑 + 全量基线全等；028 五败项与 011 flake 均归因预存——master
+  对照在案，F-02 随 merge 注记）、AC-02 pass（18 测复现）、AC-03
+  pass（F-01 修复后 delta 与实现闭环）、AC-04' pass（SD-01..04 落笔
+  互链）、AC-05/06/07 处置留痕（§7 退役注记）、AC-08 pass（41 项
+  BASELINE-EQUAL）。`findings`：F-01 fixed-in-review；F-02 minor
+  不阻（launcher 套件锚数漂移属桌面维护线）。`next`：merge
+  （auto-plan-merge——land plan-027-dev，沉淀 ledger，归档）。
+
+- 2026-09-18 /auto-plan:review：`stage: review`，PLAN-027 rev 2。
+  `outcome: needs_fix`（F-01）——**status 回 executing**。复审基线：
+  reviewed_commit = lang plan-027-dev 63d981d49（工作树零 dirty），
+  base = 2808c551a，依赖 = auto-down detached fae21d9（只读）。
+  **已验面**：AC-02/03 复现 = 18 测全绿（词汇门/拒绝门/golden/投影门控
+  族/roundtrip/载体单测，审定提交上复跑）；AC-08 全量失败集 41 项与
+  基线全等（T-09' 期）；AC-01 desktop_mcp 五套解释形态实跑 =
+  025-sys-monitor 13/13 ✅、038-minesweeper 25/25 ✅、013-todo 22/22 ✅、
+  011-calculator 2×17/17 ✅（首跑掉线与 master 同签名双侧复现=预存
+  环境 flake）、028-launcher 16 pass/5 fail——败项 master 基线二进制
+  逐项全同（注册表内容/聚焦流随后续计划漂移，**预存非 027 回归**，
+  在册 KNOWN-DEBT 面）；AC-04' 文档面已验（SD-01/03/04 互链可解析）。
+  **findings**：
+  - **F-01（block，AC-03/SD-02）**：规范增量 SD-02（add——
+    `schema/projection-protocol-v1.md` typed 快照通道入册）canonical
+    文本未落笔（rev2 T-09' 任务重写时遗漏，增量表仍保留该行）——
+    协议权威文档零 typed 通道内容（grep 实证）。修正：work 补写
+    typed 通道节（ShellProjection 载体 + apply 推送语义：指纹门控/
+    原子性/召唤事件/clock 独立脏帧双载体并存）→ 复审转 pass。
+  - **F-02（minor，不阻 pass，随 merge 注记）**：028-launcher 套件
+    5 败项为套件期望漂移（基线二进制同败）——登记 KNOWN-DEBT 面
+    （套件锚数更新属桌面程序维护线，非本计划合同）。
+  `next`：work（F-01 修复，单周期间）→ 复审转 pass。
 
 - 2026-09-18 /auto-plan:work 收口交接：`stage: work`，PLAN-027 rev 2。
   `outcome: pass` → **status = execution_done**。`code_commit`：
