@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-026
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-coverage-ramp-2
 author: [agent]
 created_at: 2026-09-18
@@ -608,6 +608,47 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   layouts grid（其余 display 族降级归一分表非缺口；center 不入册钉②）；
   ③翻转走不翻出口（数据未达 95% 阈值——AC-06 双出口设计内）；④悬置
   ①③⑤随定案/裁定落定，②④按 D2/D5 定案收口。
+
+- 2026-09-18 /auto-plan:review 复审收执（实施会话内复审——独立性受限，
+  判定由工件重建而非执行摘要）：`stage: review | PLAN-026 | rev 1 |
+  outcome: pass | reviewed_commit lang 3e410163a（plan-026-dev）+ os
+  9c40199（plan-026-dev）| base_commit lang e352437b0（025 landed
+  master）/ os 9b5fbcf | dependency_revisions auto-down 362d75b
+  （detached 组内兄弟）| spec_inputs desktop-protocol-v1.md（§1.8 v1.8
+  增量，worktree 内随 branch 交付，canonical 随 merge 沉淀——SD-01）+
+  ui/overview.md provisional（SD-03）+ autos-desktop-program.md 3b2 行
+  （SD-02，os 仓）| acceptance_results：AC-01 `cargo tf` 全量档
+  3600/3599（唯一红 = plan367 real_sidebar_at_parses_with_navtree，
+  caption_text 配方未解析——基线红实锤：base e352437b0 独立检出同红，
+  PLAN-637 配方系统 vs plan367 测试，026 diff 未触 parser/examples/
+  stylekit）+ desktop_protocol/session/stage3/dual_mode 272/273 +
+  ui_gen 793/793 + rust_ui 22/22（唯一红同上在册）；AC-02
+  p026_native_display_arm 腿①② PASS（004 image 占位 80×80 + Jane
+  Cooper/Follow 帧断言 Commands 档；display026 icon 14×14/badge/
+  divider 4px 满宽/avatar/grid 2×2/center）+ display_family_placeholder_
+  golden + native_gate_accepts_004；AC-03 grid_layout_and_hit_golden +
+  center_container_golden + e2e grid/center 帧断言 PASS；AC-04
+  ime_commit_preedit_cancelled_loop + broker_ime_production_routes
+  （真管道三变体落 wire）+ e2e 腿③ ImeCommit("100")→212 PASS；AC-05
+  test_display_family_codegen_arm_fixture 13 断言 PASS + 三 scratch
+  真源 a2r 编译过（exe 在案）+ 断裂构造器零发射钉；AC-06 双出口走
+  **不翻**：native_flip_coverage_data_row PASS（not-flip 裁定钉在册）+
+  报告 p026-native-flip-data-row.md + resolve_native_frame_mode
+  Covered 臂 Pixels 代码态核验 + 翻转点注释可解析；AC-07 §1.8 六节 +
+  KNOWN-DEBT P026-D1..D3 + 台账 3b2 行 + assets/026/ 三件 +
+  ui/overview v1.8 指针全在案 | findings：①baseline-red（非阻塞）：
+  plan367 配方红为基线既存，建议归属 PLAN-637 侧或 plan367 测试修复
+  （另立，不入 026）；②轻微（记录不改判）：计划 frontmatter `affects`
+  仍列 Icon 变体文件面（view.rs/iced/gpui/vnode）——D1 定案后未触碰，
+  定案记录已留痕，预测面非合同面；③复审开工时 lang worktree 有生成
+  工件脏改动（015-notes 写穿 = P633-D3 在册债 + rust-workspace 成员
+  清单 churn）——已 `git checkout --` 还原至 HEAD 后出判，载体
+  scratch026 生成件不入库（gitignore）。evidence：本记录命令行 +
+  `docs/plans/reports/p026-native-flip-data-row.md` +
+  `docs/plans/reports/assets/026/{profile-card,display,converter-ime}-
+  frame.txt` + `test/parity/native/003-converter.expected.txt` 在册金样
+  | next: merge（两仓 plan-026-dev；lang master / os main 已被其他计划
+  推进——merge 时先 back-sync 基线再 fold，工件脏面见 findings③）。
 
 ## 10. 待澄清事项
 
