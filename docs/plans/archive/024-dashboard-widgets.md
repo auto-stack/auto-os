@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-024
-status: reviewed               # drafting → executing → execution_done → reviewed → archived（review pass 2026-09-18，next: merge）
+status: archived               # drafting → executing → execution_done → reviewed → archived（2026-09-18 pass→merge landed）
+completion_kind: delivered
 feature_name: dashboard-widgets (S10 桌面小组件面板)
 author: [zhaopuming]
 created_at: 2026-09-17
@@ -625,6 +626,16 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 - `next`: **merge**（/auto-plan:merge）——merge 时按 §5.8 修订文本发布
   canonical specs（SD-01 auto-os / SD-02 SD-03 auto-lang）+ 台账派生；
   merge 前跑 desktop_mcp smoke（F-03）。
+
+## 11. merge 收据（PLAN-024:r1）
+
+| Checkpoint | 证据 |
+|---|---|
+| prepared | reviewed 基线（auto-os aa47947/auto-lang fc6267e79）；canonical diff：SD-01→docs/specs/shell/dashboard.md（新，常驻语义修订版）、SD-02→auto-lang architecture.md ADR-21、SD-03→schema v1.9 叠号；delivery commit auto-os d4a47ea / auto-lang 44bc12ac3 |
+| landed | auto-os main 合并 d3f5ec1（shell.at 冲突解：SendCmd 对齐 014 rev2）；auto-lang master 合并 ea311722b（schema 双 v1.8 叠号→v1.9 + assets/shell.at 取 pack 权威 + rust-workspace members 并集；master 上另会话 PLAN-640/014 并行落库，plan484_024_charts 4 测为 637 B4 配方化滞后测试非本计划回归——diff 零 chart 文件归因） |
+| ledger_refreshed | .autoos/specs.json 五条 P024-1（reports/architecture/designs/tests/reviews），源=archive 路径 + docs/specs/shell/dashboard.md + ADR-21 |
+| archived | docs/plans/archive/024-dashboard-widgets.md（本文件），status archived |
+| cleaned | wt-guard 过闸后四 worktree（auto-os/auto-lang/auto-down/auto-os-config）+ 两分支（plan-024-dev/auto-os-024-dev）移除收据见尾部补记 |
 
 ## 10. 待澄清事项
 
