@@ -19,7 +19,11 @@ use.web component Demo013Todo from "src/gallery/demos/013-todo.at"
 use.web component Demo014Weather from "src/gallery/demos/014-weather.at"
 use.web component Demo015Notes from "src/gallery/demos/015-notes.at"
 use.web component Demo016Calendar from "src/gallery/demos/016-calendar.at"
+use.web component Demo018BookReader from "src/gallery/demos/018-book-reader.at"
+use.web component Demo019VideoApp from "src/gallery/demos/019-video-app.at"
 use.web component Demo020MusicPlayer from "src/gallery/demos/020-music-player.at"
+use.web component Demo021BlogViewer from "src/gallery/demos/021-blog-viewer.at"
+use.web component Demo022Kanban from "src/gallery/demos/022-kanban.at"
 use.web component Demo024Charts from "src/gallery/demos/024-charts.at"
 use.web component Demo026Database from "src/gallery/demos/026-database.at"
 use.web component Demo027FileManager from "src/gallery/demos/027-file-manager.at"
@@ -66,8 +70,16 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
                 Demo015Notes {}
             } else if .app == "016-calendar" {
                 Demo016Calendar {}
+            } else if .app == "018-book-reader" {
+                Demo018BookReader {}
+            } else if .app == "019-video-app" {
+                Demo019VideoApp {}
             } else if .app == "020-music-player" {
                 Demo020MusicPlayer {}
+            } else if .app == "021-blog-viewer" {
+                Demo021BlogViewer {}
+            } else if .app == "022-kanban" {
+                Demo022Kanban {}
             } else if .app == "024-charts" {
                 Demo024Charts {}
             } else if .app == "026-database" {
@@ -84,9 +96,10 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
                 Demo046TabsVariants {}
             } else {
                 col {
-                    style: "w-full h-full min-h-[360px] flex flex-col items-center justify-center gap-2"
-                    text "该示例暂无 VM 内嵌形态" { style: "text-xs text-muted-foreground" }
-                    text "完整交互请使用 auto run（Vue 端）查看" { style: "text-xs text-muted-foreground/80" }
+                    style: "w-full h-full min-h-[360px] flex flex-col items-center justify-center gap-3"
+                    text "该示例暂无内嵌形态（依赖独立运行的后端进程或原生能力）" { style: "text-xs text-muted-foreground" }
+                    text f"独立运行：cd examples/ui/${.app}" { style: "text-xs text-muted-foreground/80 font-mono" }
+                    text "然后执行 auto run（Vue 臂）或 auto run -r vm（VM 臂）" { style: "text-xs text-muted-foreground/60 font-mono" }
                 }
             }
             }

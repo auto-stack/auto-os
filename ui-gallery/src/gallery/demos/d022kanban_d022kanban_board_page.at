@@ -1,0 +1,158 @@
+// pages/board.at — the three-column board. Reads cards from the shared store,
+// filters by column, and offers add / move / delete / drag-and-drop
+// (cf. 018 bookshelf.at).
+use d022kanban_board_store: BoardStore
+
+style kanban_card = "w-full items-center bg-card rounded-lg px-3 py-2 shadow-sm cursor-move"   // Phase B: bg-white → bg-card
+style card_title = "text-sm font-medium text-foreground flex-1"   // Phase B: gray-800 → foreground
+style column_head = "items-center px-1 py-2"
+style del_x = "ml-2 text-xs text-muted-foreground hover:text-destructive"   // Phase B: gray-300/red-500 → muted/destructive
+
+widget board {
+    msg { Init, AddCard, TitleChanged, RemoveCard(int), MoveCard(int, str), DragStart(int), AllowDrop, Drop(str) }
+
+    model {
+        var new_title str = ""
+        // id of the card currently being dragged (set by DragStart, read by Drop).
+        // We use widget state instead of HTML5 dataTransfer because source and
+        // target live in the same widget — simpler and avoids str↔int coercion.
+        var drag_id int = 0
+    }
+
+    view {
+        col {
+            style: "p-4 gap-4"
+            // Add-card row
+            row {
+                style: "gap-2 items-center"
+                input {
+                    placeholder: "Add a card…",
+                    value: .new_title,
+                    oninput: .TitleChanged,
+                    style: "px-3 py-2 border border-border rounded-lg text-sm w-64"
+                }
+                button "+ Add Card" {
+                    onclick: .AddCard,
+                    style: "px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90"
+                }
+            }
+            // Three columns
+            row {
+                style: "w-full gap-4 items-start"
+                // To Do
+                col {
+                    style: "w-80 bg-gray-100 rounded-xl flex-shrink-0 p-3 gap-2"
+                    ondragover.prevent: .AllowDrop
+                    ondrop: .Drop("todo")
+                    row {
+                        style: column_head
+                        text "To Do" { style: "text-sm font-semibold text-foreground" }
+                    }
+                    col {
+                        style: "gap-2"
+                        for card in .BoardStore.cards {
+                            if card.column == "todo" {
+                                row {
+                                    key: card.id
+                                    draggable: true
+                                    ondragstart: .DragStart(card.id)
+                                    style: kanban_card
+                                    text card.title { style: card_title }
+                                    button ">" {
+                                        onclick: .MoveCard(card.id, "doing"),
+                                        style: "ml-auto text-xs text-muted-foreground hover:text-primary"
+                                    }
+                                    button "×" {
+                                        onclick: .RemoveCard(card.id),
+                                        style: del_x
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // In Progress
+                col {
+                    style: "w-80 bg-orange-50 rounded-xl flex-shrink-0 p-3 gap-2"
+                    ondragover.prevent: .AllowDrop
+                    ondrop: .Drop("doing")
+                    row {
+                        style: column_head
+                        text "In Progress" { style: "text-sm font-semibold text-orange-600" }
+                    }
+                    col {
+                        style: "gap-2"
+                        for card in .BoardStore.cards {
+                            if card.column == "doing" {
+                                row {
+                                    key: card.id
+                                    draggable: true
+                                    ondragstart: .DragStart(card.id)
+                                    style: kanban_card
+                                    text card.title { style: card_title }
+                                    button ">" {
+                                        onclick: .MoveCard(card.id, "done"),
+                                        style: "ml-auto text-xs text-muted-foreground hover:text-primary"
+                                    }
+                                    button "×" {
+                                        onclick: .RemoveCard(card.id),
+                                        style: del_x
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // Done
+                col {
+                    style: "w-80 bg-green-50 rounded-xl flex-shrink-0 p-3 gap-2"
+                    ondragover.prevent: .AllowDrop
+                    ondrop: .Drop("done")
+                    row {
+                        style: column_head
+                        text "Done" { style: "text-sm font-semibold text-green-600" }
+                    }
+                    col {
+                        style: "gap-2"
+                        for card in .BoardStore.cards {
+                            if card.column == "done" {
+                                row {
+                                    key: card.id
+                                    draggable: true
+                                    ondragstart: .DragStart(card.id)
+                                    style: kanban_card
+                                    text card.title { style: card_title }
+                                    button "×" {
+                                        onclick: .RemoveCard(card.id),
+                                        style: "ml-auto text-xs text-muted-foreground hover:text-destructive"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    on {
+        .Init -> { BoardStore.Init() }
+        .TitleChanged -> { }
+        .AddCard -> {
+            if .new_title != "" {
+                BoardStore.AddCard(.new_title)
+                .new_title = ""
+            }
+        }
+        .RemoveCard(id int) -> { BoardStore.RemoveCard(id) }
+        .MoveCard(id int, column str) -> { BoardStore.MoveCard(id, column) }
+        .DragStart(id int) -> { .drag_id = id }
+        .AllowDrop -> { }
+        .Drop(column str) -> {
+            if .drag_id != 0 {
+                BoardStore.MoveCard(.drag_id, column)
+                .drag_id = 0
+            }
+        }
+    }
+}

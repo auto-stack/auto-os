@@ -1,0 +1,67 @@
+// d019videoapp_video_store.at — VideoApp shared store (k1 pattern).
+// Holds video list, category/tab/search state, loading state,
+// and dual-backend theme states (d019videoapp_dark_mode & d019videoapp_accent_color).
+
+use d019videoapp_api: list_videos, categories, Video
+
+store VideoStore {
+    model {
+        var videos []Video = []
+        var all_categories []str = []
+        var active_category str = "All"
+        var active_tab str = "recommend"
+        var query str = ""
+        var loading bool = false
+        var d019videoapp_dark_mode bool = true
+        var d019videoapp_accent_color str = "pink"
+        var show_settings bool = false
+    }
+
+    msg {
+        Init,
+        SetCategory(str),
+        SetTab(str),
+        SetQuery(str),
+        ToggleDarkMode,
+        SetAccent(str),
+        ToggleSettings,
+        CloseSettings,
+    }
+
+    on {
+        .Init -> {
+            .loading = true
+            .all_categories = d019videoapp_api.categories()
+            let filter_cat = if .active_category == "All" { "" } else { .active_category }
+            .videos = d019videoapp_api.list_videos(filter_cat, .active_tab, .query)
+            .loading = false
+        }
+        .SetCategory(c str) -> {
+            .active_category = c
+            let filter_cat = if c == "All" { "" } else { c }
+            .videos = d019videoapp_api.list_videos(filter_cat, .active_tab, .query)
+        }
+        .SetTab(t str) -> {
+            .active_tab = t
+            let filter_cat = if .active_category == "All" { "" } else { .active_category }
+            .videos = d019videoapp_api.list_videos(filter_cat, t, .query)
+        }
+        .SetQuery(q str) -> {
+            .query = q
+            let filter_cat = if .active_category == "All" { "" } else { .active_category }
+            .videos = d019videoapp_api.list_videos(filter_cat, .active_tab, q)
+        }
+        .ToggleDarkMode -> {
+            .d019videoapp_dark_mode = !.d019videoapp_dark_mode
+        }
+        .SetAccent(a str) -> {
+            .d019videoapp_accent_color = a
+        }
+        .ToggleSettings -> {
+            .show_settings = !.show_settings
+        }
+        .CloseSettings -> {
+            .show_settings = false
+        }
+    }
+}
