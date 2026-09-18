@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-029
-status: reviewed                # drafting → executing → execution_done → reviewed → archived
+status: archived                # drafting → executing → execution_done → reviewed → archived
 feature_name: live-input-shell-queue-coverage
 author: [agent]
 created_at: 2026-09-18
@@ -652,6 +652,25 @@ lang 有 4 处他案 WIP（examples/rust-workspace/Cargo.toml 之 -back 成员
   lang master 已前进 2c038d889→58332cbd——merge 期需按 028 先例核对
   ff/合并路径 + lang 主检出 4 处他案 WIP[opening 预检在案]归属路由）
   。
+
+
+- 2026-09-18 /auto-plan:merge 合并收据（`PLAN-029:r1` 五检查点）：
+  `stage: merge | PLAN-029 | rev 1 | outcome: pass | delivery_commit
+  lang 56d1596f2（= reviewed ed182efc1 + master re-sync 58332cbd 零冲突
+  + overview.md provisional 增量[文档投影后代——合并树全电池复验绿：
+  check 0 错/live_input 5/sendinput 4/native_projector 32/coverage 15
+  +1 预存/broker_surface 8/shell_pack Covered/双 e2e 十腿]）+ os
+  cc3a157（台账 3c2 + ledger）| prepared ✅（reviewed 基线 + 正典 diff
+  [§1.10/a2r/KNOWN-DEBT/台账/overview] + 投影目标）| landed ✅（lang
+  master ff → 56d1596f2 祖先实证 + 主检出集成电池绿[check 0 错/
+  live_input 5/sendinput 4/projector 32/e2e 五腿]；os main merge
+  82bbc7c 祖先实证）| ledger_refreshed ✅（os .autoos/specs.json
+  P029-1×4[reports/architecture/designs/tests] + P029-r1[reviews]，
+  落地后读回验证 5 条 related=PLAN-029）| archived ✅（git mv
+  docs/plans/archive/029-live-input-shell-queue-coverage.md + status
+  archived + completion_kind: delivered）| cleaned（见下条回填）。
+  completion_kind: delivered。注：lang/os 主检出他案 WIP 原样保留
+  未纳入（opening 预检在案）。
 
 ## 10. 待澄清事项
 
