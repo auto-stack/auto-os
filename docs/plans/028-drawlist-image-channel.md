@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-028
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: drawlist-image-channel
 author: [agent]
 created_at: 2026-09-18
@@ -23,7 +23,7 @@ affects:
   - auto-lang/packages/drawlist-renderer/                                # TS decode/render 臂 + golden
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                         # P026-D1 图像半句核销
   - auto-os/docs/plans/autos-desktop-program.md                          # 台账行（B 前置第一件交付）
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -260,6 +260,92 @@ auto-lang（wire/栅格化/投影臂/TS/文档）+ auto-os（台账/e2e 腿）�
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-07 依据。
 
+### 5.1 定案记录（T-01，2026-09-18，lang worktree @ 64f157f33 实证）
+
+**锚点重核**（§4 锚点取证于 2bdb8bb7d，本表为 64f157f33 复核结果——
+全部成立，仅行号微漂者已更新）：DrawOp 五算子 message.rs:76-103、
+encode :106-152 / decode :154-198 / 未知 tag 拒收 :194、下一可用
+tag = 6；paint_ops broker_surface.rs:74-156；load_image_bytes
+renderer.rs:5840-5904（`/api/__auto/media/` 票据 :5844 / builtin:
+:5862 / data: :5869 / http 3s :5884-5896 / 本地文件 :5898-5899，
+**含负缓存** :5902）；service_snapshot_requests renderer.rs:9290-9323
+（drain → 整窗 screenshot Task → SnapshotShot 回调）；WindowThumbnail
+SWR 消费臂 renderer.rs:5146-5210（stale → request_capture + 旧图续帧
++ `Handle::from_rgba` **每帧重建**）；快照编排泵挂 update drain 臂
+renderer.rs:17429；桌面订阅面 renderer.rs:19015-19132（toast tick
+250ms 条件订阅 / MCP 心跳 / listen_with 鼠标事件）；snapshot.rs 全套
+（request_capture :72 / TTL 2s :32 / 冷却 500ms :61 / stale 读口
+:116 / cache_put :107 / thumbnail_from_screenshot :141）；layout_image
+client_runtime.rs:1340-1356（src 丢弃 :1350）；native Image 臂
+native_projector.rs:890-898；IMAGE_PLACEHOLDER client_runtime.rs:45；
+coverage 两表（解释态 :61/:74、native_queue_set :163-192）；ts_fixtures
+remote.rs:420-552 五锚点；TS readDrawList messages.ts:129-166（未知
+throw :162）/ render.ts :21-61 / fixtures.golden.ts / `vitest run`；
+shm write_slot 超槽显式拒绝 shm.rs:225-233 + Commands 槽 16KiB
+session.rs:3543；iced 0.14 `Frame::draw_image(bounds, impl Into<Image>)`
+（iced_graphics frame.rs:96-100 cfg image）+ `Image{handle,
+filter_method, rotation, border_radius, opacity}`（iced_core image.rs
+:14-68，Handle→Image 缺省 Linear）；p026_native_display_arm stage3.rs
+:883+（AUTO_DESKTOP_E2E 门 :884、quads_of :1029 / texts_of :1037、
+004 占位 80×80 断言 :1052-1060）；载体 004（avatar_url 远程 URL
+app.at:18、w-20 h-20 :33）+ 029（本地文件绝对路径 app.at:120-125，
+`.at` 源已有 `fit:"cover"/"contain"` 但 View 层无 fit 字段——投影器
+无 fit 信息可发）。
+
+- **D1 op 形态与呈现参数**：`DrawOp::Image { rect: WRect, src: String,
+  fit: ImageFit }`（tag 6）；`ImageFit` v1 仅 `Stretch = 1`（拉伸至
+  rect——与占位尺寸盒同位），`from_u8` 未知值 UnknownTag 拒收
+  （FrameMode/PixelFormat 纪律同款）。**op 字段定长，尾部追加不可行**
+  （DrawOp decode 共享 Reader 无载荷尾判据——v1.3 Welcome 尾部追加
+  先例仅适用载荷末字段），故 filter_method/border_radius **不入 wire**
+  （宿主缺省 Linear、方形填充，与现占位零视觉差）；未来需要 = 新 tag
+  （tag 语义冻结）。Cover/Contain 精化另立时同规（新 fit 值被旧端拒收
+  → 届时新 tag）。**http miss 同步语义 = 占位先行 + 后台解码 + 下帧
+  翻真**：paint 路径禁阻塞——file/builtin:/data:（本地字节）同步快
+  路径当帧直绘；http(s):// miss 当帧占位 + spawn 后台线程
+  load_image_bytes（自带进程缓存含负缓存，无重试风暴）→ Handle 缓存
+  → 翻真由宿主任一后续重绘兑现（鼠标/250ms toast tick/MCP 心跳/帧泵
+  驱动——**零新增触发器**，v1 语义成文；桌面 update 必经 view 重建 →
+  canvas 重画）。
+- **D2 src 词汇与解析映射**：入册 = load_image_bytes 词汇四形态
+  （本地文件 / `builtin:ricepaper|inkwash` / `data:[mediatype][;base64],`
+  / `http(s)://`）+ `/api/__auto/media/` 票据前缀随注（宿主本地管线
+  词汇，投影器不特判）+ `thumbnail://{wid}` 虚拟引用（D3）。**not-yet
+  词汇显式成文**：`lucide:`/`svgdoc:` = 字形真渲独立线（P026-D1 后半
+  维持），本计划经 I3 未解析降级（icon 经 codegen 降级形态
+  `image_styled("lucide:…")` 走 Image 臂 → 宿主解析不了 → 占位，行为
+  与现占位口径连续）；未知 scheme = 未解析降级（I3）。
+- **D3 thumbnail:// 解析形态**：**每帧 `snapshot_window_stale(wid)`
+  直查，不进永久 Handle 缓存**（缩略需 SWR 刷新，冻结句柄锁死旧图；
+  WindowThumbnail 臂 from_rgba 每帧重建同律）：命中（含过期）→
+  `Handle::from_rgba` → draw_image；过期 → `request_capture` 静默重抓
+  （SWR）；真 miss → request_capture + 占位当帧，重抓 cache_put 落地
+  后下帧翻真。wid 非数字解析失败 = 未解析降级（D4）。
+- **D4 降级与观测**：未解析（缺文件/负缓存/未知 scheme/字形词汇/wid
+  非法）→ IMAGE_PLACEHOLDER 同色占位 Quad（client_runtime.rs:45 常量
+  复用，视觉连续）+ 观测行 `[drawlist-image]` 前缀 eprintln +
+  ui_console_push 双落（remote.rs enable_remote_ws 先例同款）；
+  **去重 = 进程级 dedup 集**（src 首败打一行，后续静默；命中翻真时
+  打一行 hit）。http 后台抓取失败入负缓存自然止血。
+- **D5 TS 策略**：messages.ts DrawOp 联合增 `{kind:'image', rect, src,
+  fit}`（tag 6 分支——不增即 unknown throw 破会话，防线必达）；fit u8
+  镜像枚举（未知值 throw，与 Rust from_u8 对称）；render.ts image 臂
+  = 灰底占位 fillRect（IMAGE_PLACEHOLDER 同值 rgb(60,60,70)）+
+  **not-yet 注释成文**（web 真位图需 fetch/跨源/data 通道，TS 无 shm
+  ——独立增量）；golden 新帧 `IMAGE_FRAME_HEX` 双侧钉（remote.rs
+  ts_fixtures 增第六锚点）。
+- **D6 帧尺寸与 src 上限**：**拒绝语义已在册，v1 不设投影器侧截断**
+  ——Commands 槽 16KiB（session.rs:3543）+ shm `write_slot` 超槽显式
+  报错（shm.rs:228-233 `payload N exceeds slot size`，无静默截断）。
+  极端超长 src（超大 data: URL）= 帧编码超槽 → 响亮失败（I3 精神）；
+  §1.9 成文 + T-07 度量行记帧字节增量 = src 串长。
+
+**波及面普查**（新增变体的穷尽 match 点，编译期兜底）：paint_ops 外层
+match（broker_surface.rs:78，T-03 增臂）、drawlist_to_text 测试 helper
+（client_runtime.rs:2626，T-05 增臂）、message encode/decode（T-02）；
+其余 DrawOp 消费点均为 filter_map/matches!（quads_of/texts_of/
+scissor 计数）零波及。
+
 ### 5.2 wire 与 codec（T-02）
 
 `DrawOp::Image` 变体 + encode/decode（tag 6）+ round-trip 单测 +
@@ -368,7 +454,7 @@ T-08。lang worktree `D:/autostack/.wt/lang-028/auto-lang`；os
 `D:/autostack/.wt/os-028/auto-os`。**无前置计划依赖**（026/027 已
 merge 即基线）。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** [x]
   文件：`desktop_protocol/message.rs`、`ui/iced/broker_surface.rs`、
   `ui/iced/renderer.rs`（load_image_bytes/缓存/snapshot 面，读）、
   `ui/iced/snapshot.rs`（读）、iced canvas Frame API 面（registry
@@ -377,46 +463,92 @@ merge 即基线）。
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → AC-01..04 前置。新路径：是。
-- **T-02 [lang] wire op + codec + golden（Rust 侧）**
+  [✅ 已完成] 2026-09-18：锚点 64f157f33 全量重核（§5.1 证据表）+
+  D1–D6 六定案落笔（§5.1）；关键新事实 = op 字段定长不可尾部追加
+  （共享 Reader 无载荷尾判据）→ filter/radius 不入 wire；http miss =
+  占位先行+后台解码+零新增触发器翻真（订阅面 19015-19132 证据）；
+  thumbnail 不进永久缓存（SWR 刷新语义）；write_slot 显式超槽拒绝
+  = D6 现成。波及面 = 3 处穷尽 match（编译期兜底）。
+- **T-02 [lang] wire op + codec + golden（Rust 侧）** [x]
   文件：`desktop_protocol/message.rs`（+ 测试）。
   动作：§5.2；tag 6 追加式。
   验证：round-trip + golden 单测绿；既有 golden 零漂移。
   → AC-01。
-- **T-03 [lang] 宿主栅格化 + 缓存 + 降级**
+  [✅ 已完成] `DrawOp::Image{rect, src, fit}` + `ImageFit::Stretch(1)`
+  （from_u8 拒收）encode/decode（message.rs）；`image_op_round_trip_
+  and_golden`（src 四形态/空 src/直编 golden/未知 fit 拒收，载荷长锚点
+  80）PASS；既有五算子 golden 零漂移（per_channel/scissor/textstyled
+  均绿）。commit lang f89a0c5eb。
+- **T-03 [lang] 宿主栅格化 + 缓存 + 降级** [x]
   文件：`ui/iced/broker_surface.rs`（Image 臂 + 解析序 + 缓存 +
   观测）；renderer.rs 缓存面复用/接驳。
   动作：§5.3 T-03；`Frame::draw_image` 仓内首用。
   验证：分派/缓存/降级单测绿（缓存替身）。
   → AC-02/03。
-- **T-04 [lang] thumbnail:// 虚拟引用**
+  [✅ 已完成] paint_ops Image 臂（draw_image(bounds, &handle) /
+  IMAGE_PLACEHOLDER 占位）；`resolve_drawlist_image`（Handle 缓存
+  key=src + 负缓存 + http_inflight 后台线程 + observed_unresolved
+  去重，eprintln+ui_console 双落）；load_image_bytes 提权 pub(crate)
+  单源复用。t028_* 四单测 PASS（data:/builtin:/负缓存/not-yet 词汇/
+  http 占位先行后台落缓存）。
+- **T-04 [lang] thumbnail:// 虚拟引用** [x]
   文件：`broker_surface.rs`（解析臂）、`snapshot.rs`（复用接驳，
   零新机制）。
   动作：§5.3 T-04；命中/miss/重抓三路径。
   验证：三路径单测 + 合成 client 集成。
   → AC-04。
-- **T-05 [lang] 两投影臂真图升级**
+  [✅ 已完成] resolve_thumbnail（snapshot_window_stale 每帧直查不进
+  永久缓存 + 过期 request_capture SWR + miss 占位/request_capture）；
+  snapshot.rs 增 `__test_backdate` 测试替身（__test_session 先例）。
+  `t028_thumbnail_miss_hit_and_swr` 三路径 PASS；p028_image_arm 腿③
+  cache_put 注入实驱 PASS。
+- **T-05 [lang] 两投影臂真图升级** [x]
   文件：`client_runtime.rs`（layout_image）、`native_projector.rs`
   （Image 臂）、`coverage.rs`（随注）。
   动作：§5.4；golden 改写。
   验证：两臂 golden 绿 + 注释核销清单。
   → AC-05。
-- **T-06 [lang] TS 渲染器臂**
+  [✅ 已完成] layout_image（src 字面量/绑定 read_state 代入，rect
+  推导逐字零变化）+ native `View::Image{src, ..}` 臂同刻度；三处
+  注释核销（IMAGE_PLACEHOLDER 转降级兜底语义/client_runtime+native
+  臂随注/coverage 两表随注）。golden 改写归因：climb_004_*_image_op、
+  display_family_placeholder_golden（Image op 断言）、t1_display
+  金样（仅 quad→image 行，几何逐字节不变）、stage3 images_of 定位器
+  ——全绿。
+- **T-06 [lang] TS 渲染器臂** [x]
   文件：`packages/drawlist-renderer/src/{messages,render}.ts` +
   `test/fixtures.golden.ts` + Rust 对向 `remote.rs` ts_fixtures。
   动作：§5.5。
   验证：TS 测试 + 双侧 golden 对拍绿。
   → AC-01/06。
-- **T-07 [lang+os] e2e 与度量**
+  [✅ 已完成] messages.ts tag 6 分支 + `{kind:'image', rect, src,
+  fit}`；render.ts 占位灰底 + web 真位图 not-yet 成文；IMAGE_FRAME_HEX
+  ↔ remote.rs 第六锚点双侧钉；未知 tag 拒收测试维持。`pnpm test`
+  27/27 绿；`p508_ts_crosscheck_golden_bytes` 全量档绿。
+- **T-07 [lang+os] e2e 与度量** [x]
   文件：lang `stage3.rs`（p028_image_arm + p026 断言改写）+ 截图
   `docs/plans/reports/assets/028/`；os smoke 腿（如需）。
   动作：AC-02..05 逐条跑通留痕 + 度量行。
   → AC-02/03/04/05。
-- **T-08 [lang+os] 文档与台账收口**
+  [✅ 已完成] `p028_image_arm`（AUTO_DESKTOP_E2E=1 PASS）：①004 真子
+  进程 queue 帧 80×80 cravatar op；②p028 语料（capability-tests 新
+  件——029 源解释态编译器不可 parse，探针实证 20 错，按 §5.6
+  "029/fixture" 措辞由 fixture 承载）五 src 形态一帧全数入帧；③宿主
+  侧三路径实驱（thumbnail 注入命中/本地文件解析+缓存/离线负缓存）；
+  度量行 frame_bytes=365 src_bytes=245 ops=5 + 解码成本行；AUTO_028_
+  ASSETS 帧留痕 assets/028/ 两件落盘。真像素截图腿（ui_desktop 桌面
+  进程 canvas 栅格）留 merge 后 smoke 承载（smoke-026 同款脚本形态，
+  本期 draw_image 首用保真由双后端 feature 链 + e2e 帧断言背书）。
+- **T-08 [lang+os] 文档与台账收口** [x]
   文件：lang `desktop-protocol-v1.md`（§1.9 + 顶表回填）、
   `KNOWN-DEBT-AND-RISKS.md`（P026-D1 半句核销 + not-yet 三项）；
   os `autos-desktop-program.md`（台账行）+ 两仓互链。
   动作：SD-01..03 落笔。
   → AC-07。
+  [✅ 已完成] §1.9 六条 + 顶表 v1.5–v1.9 回填（v1.5–v1.8 日期 git
+  pickaxe 取证）+ §1.8 边界核销随注；KNOWN-DEBT P026-D1 图像半句
+  核销 + 增补五（P028-D1..D4 入册）；os 台账 3c1 行（os plan-028-dev
+  1eed4ed）；模块 spec（SD-03 provisional）留 review 期定稿落笔。
 
 ## 9. 复审记录
 
@@ -426,6 +558,36 @@ merge 即基线）。
   义务全部 file:line 在案；src 引用路线避开位图过线的 v1 判断有
   普查依据）；`next: work`（**无前置计划依赖**，T-01 可即行）。
   悬置决策登记 §10（①–⑤），均不阻塞 T-01 开工。
+- 2026-09-18 /auto-plan:work 进入：`stage: work`，授权 = 用户本轮
+  "计划028 实施"。worktree 落位：os `D:/autostack/.wt/os-028/auto-os`
+  （branch `plan-028-dev` @ os main 2de26fc）+ lang
+  `D:/autostack/.wt/lang-028/auto-lang`（branch `plan-028-dev` @
+  lang master 64f157f33）。主检出 WIP 预检：auto-os 主检出 ui-gallery
+  demos/registry + widgets-gallery 缓存有他属未提交改动；auto-lang
+  主检出 `examples/rust-workspace/Cargo.toml` 有他属未提交改动——
+  均**不建其上不并收**，本计划全部编辑在 worktree 内。基线漂移注：
+  §4 锚点取证于 lang 2bdb8bb7d，现基线 64f157f33（646 archived），
+  T-01 深水调查全部重核。
+- 2026-09-18 /auto-plan:work 收口：`stage: work`，PLAN-028 rev 1。
+  `outcome: pass`。code_commit：lang plan-028-dev **f89a0c5eb**
+  （T-02..T-07 实现+e2e+文档）+ os plan-028-dev **1eed4ed**（台账
+  3c1 行）。task_ids：T-01..T-08 全勾（§8 逐条证据）。
+  evidence：①AC-01 message.rs tag 6 round-trip/golden/未知 fit 拒收
+  绿 + IMAGE_FRAME_HEX 双侧对拍绿 + 既有 golden 零漂移 + PROTOCOL_
+  VERSION 仍 1；②AC-02 p028_image_arm 腿①②（004 http 80×80 op +
+  语料五形态帧）+ resolve 单测缓存断言 + assets/028/ 留痕；③AC-03
+  负缓存/未解析占位/观测去重单测 + e2e 离线腿（不可达 http 占位
+  当帧）；④AC-04 thumbnail 三路径单测（__test_backdate 替身）+
+  e2e cache_put 注入实驱；⑤AC-05 两臂 golden 改写全绿 + 三处注释
+  核销 + p026 断言改写归因；⑥AC-06 TS 27/27 + decode 防线 + not-yet
+  成文；⑦AC-07 §1.9/顶表回填/KNOWN-DEBT/台账 3c1 落笔 + 回归门
+  全绿（全量失败集与 master 基线 40 项逐一全等——ui-iced 组合既有
+  红族含 musk p053×4，P645-D2 同族在册；gated p028_image_arm 另跑
+  PASS）。环境/路线记录：029 源解释态编译器不可 parse（探针 20 错）
+  → 本地文件腿按 §5.6 "029/fixture" 由 capability-tests/p028-image-
+  channel 语料件承载；依赖组补 auto-down detached worktree
+  （lang-022 先例）；真像素截图腿（ui_desktop canvas 栅格）留 merge
+  后 smoke 脚本承载。blockers：无。next：review。
 
 ## 10. 待澄清事项
 
