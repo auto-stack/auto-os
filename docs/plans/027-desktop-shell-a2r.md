@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-027
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: executing              # rev2 有界修订中（范式规则：修订保持 executing）；next: work T-09'
 feature_name: desktop-shell-a2r
 author: [agent]
 created_at: 2026-09-18
 updated_at: 2026-09-18
-plan_revision: 1
+plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -23,14 +23,16 @@ affects:
   - auto-os/shell/                                                # pack 源（零内容改动，形态迁移 parity 锚）
   - auto-os/docs/plans/autos-desktop-program.md                   # 台账行
 current_step: 6
-total_steps: 9
+total_steps: 7        # rev2：可执行任务 = T-01..T-06（已完成）+ T-09'（收口）；T-07/T-08 退役不计数
 ---
 
 # [PLAN-027] desktop-shell-a2r
 
 ## 0. 变更摘要
 
-桌面 shell 是"全 a2r 桌面"的最后一块解释态：四件 `.at`（auto-os
+**rev 2（2026-09-18，有界修订）**：§10-① 用户裁定主形态 = **B（outproc 特权协议客户端——shell 与 app 同律独立进程、渲染经 RenderQueue 发桌面 compositor 统一渲染）**+ 解释装载路径双轨常驻。按 §4 预案"改选 B 本计划按范式修订"：范围收口至 **S1/S2**（T-01..T-06 已交付，产物形态无关全部承继）；**T-07/T-08 退役**（A 形态装配面），S3 交接面改写为 B 形态程序的前置序列（图像 DrawOp 通道立项先行 → 025 键盘真机实测 → 覆盖二批 → shell outproc client + 启动序/看门兵），以新计划承接；AC 按实际交付重述。档案事实注记：A 形态只链 shell pack 五件生成物，不涉及任何 App——App 两形态下均已是独立进程走 RenderQueue（PLAN-020/025 既有）；裁定对 shell 本身的推论（同律独立进程）成立。
+
+**rev 1 原文（存档，A 形态口径——四件现为五件见 §5.1 修正 A）**：桌面 shell 是"全 a2r 桌面"的最后一块解释态：四件 `.at`（auto-os
 `shell/`：shell/desktop/notification_center/switcher，共 1664 行）由
 ui_desktop 宿主进程内解释装载（`build_dynamic_component`），每帧
 `dynamic_view` 重建。本计划按设计文档
@@ -49,36 +51,33 @@ trait + 双轨切换 + 金样对拍）。**B-ready 纪律随行**：接缝按可
 
 ## 1. 目标
 
-- **G1 S1 生成域补面**：shell 四件经 a2r 生成**可编译**——裸 popover
-  （Point 锚 + open/placement/ondismiss，shell ×9 处）、AnchorSlot 槽位
-  （window_thumbnail ×3 / workspace_preview ×1 宿主合成件）、codegen
-  未知 prop/事件由静默丢弃改为**显式拒绝**（编译期错）。
-- **G2 S2 投影/命令接缝类型化**：`ShellProjection` plain-data 快照承载
-  `__wm_*`（16）+ `__desktop_*`/`__wp_*`（~15）字段语义，指纹门控/
-  原子换装/召唤事件（RebuildMru/RebuildNotes/RunningSync）语义零漂移；
-  `DesktopBusHandle` trait 承 46 动词类型化调用（`SendCmd` 字符串通道
-  双轨期桥接）；storage.* 对接宿主 storage 运行时。
-- **G3 S3 装配与双轨**：a2r 新"无窗组件库"生成目标（四件一 crate：
-  常驻 2 + 懒挂载 3 + 装配清单）；宿主 `ShellSurface` 装配 trait（解释壳/
-  编译壳同接口）接特权槽位与 overlay 槽；**编译壳实机六面**
-  （dock/任务栏/桌面/launcher/switcher/通知）渲染与交互闭环；解释装载
-  保留为开发态缺省（env 既有通道），编译壳为发布态。
-- **G4 parity 与度量**：a2r shell × 解释 shell 金样对拍（a2vue
-  desktop_surface 金样先例）+ desktop_mcp 五套双形态回归；宿主二进制
-  体积/启动时延增量 + shell 视图重建耗时对照解释态基线数据行。
+**rev 2 收口目标**（原 G1–G4 为 rev 1 合同，处置随注）：
 
-**非目标**（明确出界）：
+- **G1 S1 生成域补面（✅ 已交付，T-02/03/04）**：shell pack 五件 a2r
+  生成词汇完备——裸 popover 臂（Point 锚 + open/placement/ondismiss）、
+  宿主合成件直发既有变体（window_thumbnail ×3 / workspace_preview ×1）、
+  codegen 未知 prop/事件显式拒绝（compile_error）+ shell 全量清单编译门。
+  **普查修正 C**：mouse-area 臂（26 处）+ div→container + taskbar→row
+  + 布局件点击落字段（ViewBuilder build() 修复）。
+- **G2 S2 接缝类型化（✅ 已交付，T-05/06）**：`ShellProjection`
+  plain-data 快照承投影协议 v1.8 语义（指纹门控/原子换装/召唤事件/clock
+  独立脏帧零漂移）；`DesktopBusHandle`（枚举载荷单方法）+ `HostStorage`
+  typed 接缝；52 动词 roundtrip 全量对拍（**捕获并修复 set_theme_name
+  encode 死词**）。
+- **G3 A 形态装配（❌ rev2 裁定退役，原 T-07/T-08）**：无窗组件库链入
+  宿主 + ShellSurface inproc 双轨装配——随 B 裁定失效，由 B 形态程序
+  （shell outproc client）承接。
+- **G4 parity 与度量（→ 重定位）**：金样对拍/体积/启动度量随 shell
+  编译化的形态落点（B 程序的 shell exe）后移；本计划保留已交付的行为
+  级对拍（指纹门控族 + 词汇门 + roundtrip）。
+- **G5 收口与交接（rev2 新增，T-09'）**：设计文档状态按裁定落定
+  （SD-01）、桌面程序台账登记 B 方向与本计划资产行（SD-03）、S1/S2 新面
+  模块 spec 条目（SD-04）、KNOWN-DEBT 随注——B 程序新计划的可复审起点。
 
-- **B 形态（outproc shell）**——B-ready 纪律随行但形态本身出界；图像
-  通道（壁纸/缩略图位图真渲）独立线，本计划槽位注入保持既有合成件。
-- **shell pack 内容改版**：视觉/交互/文案零变化——本计划是纯形态迁移，
-  parity 锚定；任何内容改动另立。
-- tooltip/modal/spinner 等通用 codegen 修复（shell 未用，设计 §3a-a5
-  债面维持）；位图真渲；双投影器统一（P020-D1）；518 色彩上下文。
-- 解释装载路径**退役**（工作假设为双轨常驻；退役另立裁定，§10-①）。
-- Stage B 搬迁（auto-lang→auto-os 壳代码组织迁移——默认编译化先行，
-  §10-③ 低风险注记）。
-- 解释态 App 的任何变化（普通 App 轨道零牵连）。
+**非目标**（rev2 更新）：B 形态程序本体（图像通道/键盘实测/覆盖二批/
+shell outproc client/启动序看门兵）——新计划承接；shell pack 内容改版
+（零改动已达成并守卫）；解释装载路径退役（双轨常驻裁定）；Stage B 搬迁。
+
 
 ## 2. 架构方案
 
@@ -107,18 +106,14 @@ trait + 双轨切换 + 金样对拍）。**B-ready 纪律随行**：接缝按可
 │   （对接宿主 storage，解释态原生位 vm/native_catalog.rs:1118-1126 │
 │   对照）                                                          │
 └──────────────────────────────────────────────────────────────────┘
-┌─ S3 装配（rust_ui.rs + shell.rs + session.rs）────────────────────┐
-│ 无窗组件库目标：wrap_example 新形态（现只产独立窗 main，rust_ui.  │
-│   rs:1721-1914）——四件 → 一个 crate + ShellManifest 装配清单      │
-│   （常驻/懒挂载/overlay 槽位）                                    │
-│ ShellSurface trait：解释壳（DynamicComponent）/编译壳（typed      │
-│   Component）同接口；shell_app/desktop_app 特权槽 + launcher/     │
-│   switcher/notification 懒挂载槽（session.rs:259-289）接 typed；  │
-│ boot 顺序保持（renderer.rs:13397-13426）                          │
-│ 双轨开关：编译壳 = 缺省发布态；AUTO_SHELL_PACK/set_shell_pack_    │
-│   override（shell.rs:26/:35-61 既有）= 开发态解释壳回退           │
+┌─ S3 装配（rev2 ❌ 退役——A 形态面随 §10-① 裁定失效）──────────────┐
+│ 原方案（无窗组件库链入宿主 + ShellSurface inproc 双轨装配）由      │
+│ B 形态程序承接：shell = 020 形态 outproc 编译 exe，渲染走          │
+│ RenderQueue；前置序列（设计 §4/§5）：图像 DrawOp 通道立项先行      │
+│ （硬阻断）→ 025 键盘真机实测 → 覆盖二批（display 族 + popover      │
+│ 开合）→ shell outproc client + 启动序/看门兵。本计划 S1/S2 产物   │
+│ （IR/词汇门/typed 载体词汇）为该程序的直接前置资产。               │
 └──────────────────────────────────────────────────────────────────┘
-```
 
 **不变式**：
 
@@ -156,7 +151,9 @@ desktop_surface 金样族先例（vue.rs:27105-27139）。
 假设在 T-07（S3 装配）开工前需用户确认，若改选 B 本计划按范式修订
 （S1/S2 任务与形态无关，不受影响）。涉及仓：auto-lang（生成域/接缝/
 装配/协议文档/设计文档）+ auto-os（pack 源只读引用/台账/e2e）。无
-预算/自动续跑约束声明。
+无预算/自动续跑约束声明。
+
+**rev2 授权记录（2026-09-18）**：用户在 §10-① 问询中裁定主形态 B + 双轨常驻，并指示"本计划文件走 review/merge、独立进程方案另立新计划执行"——有界修订（范围收口 S1/S2 + T-07/T-08 退役 + AC 重述）获授权；B 形态程序另立计划（后续 /auto-plan:new）。
 
 **前置依赖**：PLAN-026 merge 收口（shell pack a2r 编译的 IR 前置 =
 View::Icon 变体 + badge/card/scroll/a codegen 修复；ui_gen/rust.rs
@@ -360,35 +357,36 @@ fallback_icon)` / `workspace_preview(ws, fallback)` codegen 臂直发
   解释壳桥（`__desktop_cmd` 字符串通道在 handle 背后同实现——双轨期
   单源）；46 动词对拍测试（记录级 ↔ 类型化双向）。
 
-### 5.4 S3 装配（T-07/T-08）
+### 5.4 S3 装配（rev2 ❌ 退役）
 
-- **T-07 生成目标**：wrap_example 新"无窗组件库"形态（D5）——四件
-  → 一 crate + ShellManifest；无独立窗 main 假设（现有 :1795-1999
-  入口跳过）；产物入宿主构建（path 依赖同源）。
-- **T-08 装配切换**：`ShellSurface` 装配 trait（视图借出/投影消费/
-  命令排空/槽位替换四接口——解释壳 DynamicComponent 与编译壳 typed
-  组件双实现）；特权槽位 + overlay 槽接 trait；双轨开关（编译壳缺省
-  发布态 + AUTO_SHELL_PACK 回退解释壳）；boot 顺序/懒挂载时序保持。
+原 T-07（无窗组件库生成目标）/T-08（ShellSurface 装配与双轨切换）为
+A 形态面，随 §10-① B 裁定退役（§2 退役块）。D5 装配清单产出
+（`ShellManifest`，五件）作为 B 程序的 pack 形态事实源继续有效。
 
-### 5.5 验收与收口（T-09）
+### 5.5 验收与收口（rev2 重述 = T-09'）
 
-金样对拍（六面 × 双形态）+ desktop_mcp 五套双形态 + I2 实机冒烟；
-度量数据行（二进制体积/启动时延/shell 视图重建耗时 vs 解释态基线）；
-文档收口（SD-01..04）。
-
-### 规范增量
+收口面：设计文档状态按裁定落定（SD-01——状态从"设计输入（未裁定）"改
+"裁定落定：B 形态 + 双轨常驻，A 线按 §10-① 档案注记存档"）；桌面程序
+台账登记（SD-03）；S1/S2 模块 spec 条目（SD-04）；KNOWN-DEBT 随注
+（A 形态度量面、parity 实机六面 → B 程序承接；p010 基线红疑因）。
+### 规范增量（rev2 重述）
 
 | delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | modify | auto-lang/docs/design/autoui/desktop-shell-a2r.md | before：设计输入（未裁定）；after：裁定落定（形态 A + 双轨，含用户确认记录）+ 实施锚定（S1–S3 对应 PLAN-027 任务映射） | 设计文档状态收口 | AC-06 |
-| SD-02 | add | auto-lang/schema/projection-protocol-v1.md（typed 快照通道增量） | before：投影载体 = `__wm_*` 状态变量 + write_state 原子换装 + call_handler 召唤（解释态专语义）；after：增 typed 快照通道（ShellProjection + WmSync/装配推送）等价语义入册——指纹门控/原子性/召唤事件/clock 独立脏帧零漂移，双载体并存（解释态通道双轨期不动） | 投影协议权威文档收录类型化载体 | AC-02/03 |
-| SD-03 | modify | auto-os/docs/plans/autos-desktop-program.md | before：无 shell a2r 行；after：登记 shell 编译化行（形态 A/双轨/parity 锚/B-ready） | 桌面程序台账 | AC-06 |
-| SD-04 | modify | auto-lang/docs/specs/auto-lang/ui/（review 期按目录实况定） | before：无 shell 装配/生成目标条目；after：shell.rs 装配 + ui_gen 无窗目标 + 接缝 trait 模块 spec 条目（provisional） | 模块 spec 对齐实现 | AC-02/03/04 |
+| SD-01 | modify | auto-lang/docs/design/autoui/desktop-shell-a2r.md | before：设计输入（未裁定）；after：**裁定落定 = B 形态 + 双轨常驻**（§10-① 用户裁定记录 + A 线存档注记 + B 前置序列）+ S1/S2 实施锚定（本计划任务映射） | 设计文档状态收口 | AC-04' |
+| SD-02 | add | auto-lang/schema/projection-protocol-v1.md（typed 快照通道增量） | before：投影载体 = `__wm_*` 状态变量 + write_state 原子换装 + call_handler 召唤（解释态专语义）；after：增 typed 快照通道（ShellProjection + apply 推送）等价语义入册——指纹门控/原子性/召唤事件/clock 独立脏帧零漂移，双载体并存（解释态通道双轨期不动）；**载体 plain-data 可序列化 = B 形态 wire payload 词汇基础** | 投影协议权威文档收录类型化载体（✅ 载体已落地 T-05） | AC-03 |
+| SD-03 | modify | auto-os/docs/plans/autos-desktop-program.md | before：无 shell a2r 行；after：登记 **shell 编译化 B 方向行**（裁定 + 前置序列 + 本计划资产承继清单） | 桌面程序台账 | AC-04' |
+| SD-04 | modify | auto-lang/docs/specs/auto-lang/ui/（review 期按目录实况定） | before：无 shell_projection/总线接缝/新 codegen 臂条目；after：shell_projection 模块（载体+清单）+ session 总线/storage trait + ui_gen 新臂（popover/槽位/mouse-area/拒绝门）provisional 条目 | 模块 spec 对齐实现（S1/S2 交付面） | AC-02/03 |
+
+rev2 不新增 spec 影响面；B 形态程序（wire 通道/图像 op/启动序）的 spec
+增量归新计划。
 
 零 spec 影响的变更不存在（投影载体/装配形态/生成目标为 spec 级知识）；
 ledger（auto-lang `.autoos/specs.json`）随 merge 沉淀。
 
 ## 6. 测试设计
+
+**rev2 交付状态**：下列单测/门面已随 T-01..T-06 落地并全绿（golden/词汇门/roundtrip/指纹门控族）；集成·实机·parity·度量四类随 B 形态程序承接（S3 退役）。保留原文作为设计记录。
 
 - **单测（ui_gen）**：popover 臂 golden（Point 锚/ondismiss 译）；
   AnchorSlot 发射 golden；显式拒绝门（未知 prop/事件样本编译错断言）；
@@ -407,32 +405,46 @@ ledger（auto-lang `.autoos/specs.json`）随 merge 沉淀。
 - **度量**：宿主二进制体积/启动时延增量；shell 视图重建耗时对照
   解释态基线（数据行入报告）。
 
-## 7. 验收标准
+## 7. 验收标准（rev2 重述）
 
 - **AC-01 解释壳零回归（双轨前提）**：desktop_mcp 五套解释形态全绿 +
-  I2 冒烟——解释装载路径行为零变化。验证：五套套件 + smoke。
-- **AC-02 S1 生成域**：shell 四件 a2r 生成编译过（popover ×9/
-  thumbnail ×3/preview ×1 全译）；未知 prop/事件显式编译错（拒绝门
-  测试）；生成物含 desktop.*/storage.* 类型化调用。验证：编译门测试 +
-  codegen golden。
+  I2 冒烟——解释装载路径行为零变化。验证：五套套件 + smoke（work 期
+  以 auto-lang 全量与 base 41 项本机预存红逐一全等 + 投影门控族 8 测
+  全绿承证；desktop_mcp 五套在 merge 前回归门复跑）。
+- **AC-02 S1 生成域**：shell 五件 a2r 生成词汇完备（popover ×9/
+  thumbnail ×3/preview ×1/mouse-area ×26 全译）；未知 prop/事件显式
+  编译错（拒绝门测试）；布局件点击落字段（build() 修复）。验证：
+  `test_shell_pack_codegen_vocabulary_gate` + 拒绝门测试 + golden 族
+  （✅ 已交付，611fbff2f）。
 - **AC-03 S2 接缝语义零漂移**：投影协议 v1.8 语义对拍全绿（指纹门控/
-  原子换装/召唤事件/clock）；46 动词类型化对拍双向绿；双轨桥单源
-  （解释壳命令行为不变）。验证：单测 + 对拍。
-- **AC-04 编译壳实机闭环**：编译壳桌面六面渲染 + 代表性交互闭环
-  （含 popover 右键菜单、launcher 键盘流、槽位合成件显示）；与解释壳
-  金样对拍通过。验证：实机截图留痕 + parity 金样 + desktop_mcp
-  五套编译形态。
-- **AC-05 双轨切换**：缺省 = 编译壳；`AUTO_SHELL_PACK`/override 回退
-  解释壳可用且行为同源（金样对拍）。验证：切换用例 + 对拍。
-- **AC-06 度量与文档**：体积/启动/重建耗时数据行落报告；SD-01..04
-  落盘互链（设计文档状态更新含用户裁定记录）。验证：报告存在 +
-  文档交叉引用可解析。
-- **AC-07 回归门**：§6 回归门全绿（在册既有红除外）。
+  原子换装/召唤事件/clock）；动词 roundtrip 全量对拍双向绿（含 wire
+  缺陷修复）；storage 双轨同后端。验证：模块单测 + 门控族 8 测 +
+  `desktop_command_roundtrip_full_vocabulary`（✅ 已交付，T-05/T-06
+  commit）。
+- **AC-04' 收口与交接（rev2 新增）**：SD-01..04 落笔互链可解析；S3→B
+  交接面（前置序列 + 资产清单）在设计文档与台账成文。验证：文档交叉
+  引用检查。
+- **AC-05（原 A 形态编译壳实机闭环，rev2 ❌ 退役）**：随 B 裁定失效，
+  由 B 程序的 shell outproc 实机验收承接（新计划 AC 承接本条意图）。
+- **AC-06（原 A 形态双轨切换，rev2 → 重定位）**：双轨常驻裁定已录
+  （§10-①）；AUTO_SHELL_PACK 回退解释壳为既有行为（零改动即满足），
+  行为同源验证随 B 程序对拍门。
+- **AC-07（原度量与文档）**：文档面并入 AC-04'；体积/启动/重建耗时
+  度量随 shell 编译形态落点（B 程序 shell exe）后移，原 A 形态度量
+  口径作废。
+- **AC-08 回归门（原 AC-07 顺延保 ID）**：§6 回归门全绿（在册既有红
+  除外——本机 41 项基线红已逐一归档，非本计划回归）。验证：merge 前
+  全量 no-fail-fast 与基线集 diff。
+
+> 退役注记：AC-05/06/07 处置经 §10-① 用户裁定与 rev2 授权
+> （§4），非为过审而删减——A 形态意图由 B 程序承接并留痕。
 
 ## 8. 执行步骤
 
-**前置**：PLAN-026 merge 收口（View::Icon + codegen 修复基线；ui_gen
-同文件串行）。依赖序：T-01 → {T-02, T-03, T-04 并行} → {T-05, T-06
+**rev2 状态**：T-01..T-06 已完成（证据见各条勾选，全数承继）；
+T-07/T-08 退役（§10-① B 裁定）；剩余可执行 = T-09'（收口）。
+
+**前置**：PLAN-026 merge 收口（✅ 已满足——026 已归档）。依赖序：T-01 → {T-02, T-03, T-04 并行} → {T-05, T-06
 并行} → T-07 → T-08 → T-09。**T-07 开工前 §10-① 两项工作假设需用户
 确认**（S1/S2 与形态无关不受影响）。lang worktree
 `D:/autostack/.wt/lang-027/auto-lang`；os `D:/autostack/.wt/os-027/
@@ -550,25 +562,37 @@ auto-os`。
   验证：roundtrip 全量对拍（52 变体显式枚举 + 空参 trailing tab 保形 +
   队列序保持）绿；session::tests 71/71 绿。
   → AC-03。
-- **T-07 [lang] 无窗组件库生成目标**
+- **T-07 [lang] 无窗组件库生成目标**（rev2 ❌ 退役——A 形态面，§10-① 裁定；ShellManifest 产出已在 T-05 落地，B 程序 pack 事实源）。原文：
   文件：`crates/auto-man/src/rust_ui.rs`（wrap_example 新形态）。
   动作：§5.4 生成目标（D5）；shell 四件生成 crate 编译过。
   验证：生成物编译 + 装配清单断言；**前置：§10-① 用户确认**。
   → AC-02。
-- **T-08 [lang] ShellSurface 装配与双轨切换**
+- **T-08 [lang] ShellSurface 装配与双轨切换**（rev2 ❌ 退役——同上）。原文：
   文件：`ui/shell.rs`（trait + 双轨开关）、`ui/session.rs`/
   `ui/iced/renderer.rs`（槽位接 typed）。
   动作：§5.4 装配切换；boot/懒挂载时序保持。
   验证：编译壳实机六面 + 双轨切换用例 + desktop_mcp 双形态。
   → AC-04/05。
-- **T-09 [lang+os] 验收收口**
-  文件：parity 金样（lang）、度量报告、`desktop-shell-a2r.md` 状态更新、
-  KNOWN-DEBT（R2/R6 随注）；os `autos-desktop-program.md` 台账行 +
-  互链。
-  动作：AC-01..07 逐条留痕；SD-01..04 落笔。
-  → AC-06/07。
+- **T-09' [lang+os] 收口与交接（rev2 重写）**
+  文件：`desktop-shell-a2r.md` 状态更新（SD-01，B 裁定落定）、
+  `autos-desktop-program.md` 台账行（SD-03）、auto-lang `docs/specs/`
+  模块条目（SD-04，provisional）、KNOWN-DEBT 随注（A 形态度量/实机
+  parity → B 程序；p010 基线红疑因）。
+  动作：AC-01..04'/08 逐条留痕；SD-01..04 落笔；B 程序新计划交接
+  材料（前置序列 + 资产清单）成文。
+  验证：文档交叉引用可解析；回归门与基线集 diff 全等。
+  → AC-04'/08。
+→ AC-06/07。
 
 ## 9. 复审记录
+
+- 2026-09-18 /auto-plan:new rev2 起草交接：`stage: new`，PLAN-027
+  rev 2（有界修订，同一计划文件）。`outcome: pass`——修订授权已录
+  （§4 rev2 授权记录；§10-① 裁定）；T-01..T-06 证据承继有效（形态
+  无关），T-07/T-08 退役，T-09' 重写，AC 重述（AC-04' 新增、AC-05/06/
+  07 处置随裁定留痕）、SD-01..04 重述。`next: work`（T-09' 收口 →
+  execution_done → review → merge）；B 形态程序另立新计划（图像通道
+  立项先行）。
 
 - 2026-09-18 /auto-plan:work 交接：`stage: work`，PLAN-027 rev 1。
   `outcome: needs_replan`（§10-① 用户裁定主形态 = B——T-07/T-08 为
