@@ -661,7 +661,11 @@ lang 侧 worktree `D:/autostack/.wt/lang-026/auto-lang`；os 侧
   出 scoped 冒烟 156/157 唯一红照旧；os main 01d3483）→
   ledger_refreshed（os .autoos/specs.json P026-1 ×4 节 + P026-r1，
   worktree 提交后 ff 落 main aa64ceb，回读 5 条验证）→ archived（本
-  文件 git mv + status archived）→ cleaned（见补记）| archive_path
+  文件 git mv + status archived）→ cleaned（补记：wt-guard clean
+  ×3〔os-026/auto-os、lang-026/auto-lang、lang-026/auto-down〕，祖先链
+  双仓验证后 worktree 移除 + plan-026-dev 双仓分支删除 + 组目录清空；
+  首轮 Permission denied 为部分删除残面——metadata prune + rm -rf 收
+  清，.wt 零 lang-026/os-026 残留）| archive_path
   docs/plans/archive/026-native-queue-coverage-ramp-2.md | canonical
   路径 auto-lang/docs/design/autoui/desktop-protocol-v1.md §1.8 +
   auto-lang/docs/specs/auto-lang/ui/overview.md | ledger 目标 os
