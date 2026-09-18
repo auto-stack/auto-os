@@ -6,8 +6,8 @@
 // - 内容区：明细列表（表格/可排序列头） vs 图标网格
 // - 弹层（PLAN-016 T-03/T-04）：alert-dialog 模态（新建/重命名/删除确认）
 //   + 锚定 popover 右键菜单（shell dock 菜单同款）+ 框架 toast()
-// - 主题（PLAN-016 T-01）：全语义 token + dark_mode 声明——桌面 SetTheme 回写链
-//   即时换肤；vue 轨生成器按 dark_mode 绑根 class
+// - 主题（PLAN-016 T-01）：全语义 token + d027filemanager_dark_mode 声明——桌面 SetTheme 回写链
+//   即时换肤；vue 轨生成器按 d027filemanager_dark_mode 绑根 class
 // - 真实文件系统（PLAN-016 T-05/T-06）：VM stdlib（fs/file/env/json）真实目录
 //   浏览与文件操作；mock 平行数组退役。改日期列依赖 metadata.modified
 //   （PLAN-016 crates 扩展；旧宿主二进制该列显示 "--"）
@@ -53,9 +53,9 @@ widget Demo027FileManager {
         // PLAN-016 T-09：桌面命令总线上行（shell 同款状态面——宿主每周期
         // 读+清；v1.7 起普通注册表窗联合排空，open_with 可达）。
         var __desktop_cmd str = ""
-        // PLAN-016 T-01：主题跟随——桌面切主题时宿主对本变量回写（dark_mode
+        // PLAN-016 T-01：主题跟随——桌面切主题时宿主对本变量回写（d027filemanager_dark_mode
         // 回写链），视图全语义 token 随之换肤；vue 轨按本变量绑根 dark class。
-        var dark_mode bool = true
+        var d027filemanager_dark_mode bool = true
 
         // Tick 驱动延迟引导（250ms 基准 = 012/025 先例）：Init 只做轻量
         // 恢复，重 FS 活（快捷访问探测 + 首目录 listing）挪到首个 Tick——

@@ -21,8 +21,8 @@ widget Demo016Calendar {
     }
 
     model {
-        var dark_mode bool = false
-        var accent_color str = "indigo"
+        var d016calendar_dark_mode bool = false
+        var d016calendar_accent_color str = "indigo"
         // Plan 448 F: weekday header as a list + for (replacing seven
         // hand-unrolled grid-item lines).
         var weekday_labels = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
@@ -110,7 +110,7 @@ widget Demo016Calendar {
                             text "Theme" { style: settings_label }
                             row {
                                 style: "gap-2"
-                                if .CalendarStore.dark_mode {
+                                if .CalendarStore.d016calendar_dark_mode {
                                     button "🌙 Dark" {
                                         onclick: .SetTheme("dark")
                                         style: theme_btn_active
@@ -138,11 +138,11 @@ widget Demo016Calendar {
                             text "Accent Color" { style: settings_label }
                             row {
                                 style: "items-center gap-3 py-1"
-                                button "" { onclick: .SetAccent("indigo"), style: if .CalendarStore.accent_color == "indigo" { "w-6 h-6 p-0 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-indigo-500 hover:scale-110 transition-transform" } }
-                                button "" { onclick: .SetAccent("coral"), style: if .CalendarStore.accent_color == "coral" { "w-6 h-6 p-0 rounded-full bg-rose-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-rose-500 hover:scale-110 transition-transform" } }
-                                button "" { onclick: .SetAccent("ocean"), style: if .CalendarStore.accent_color == "ocean" { "w-6 h-6 p-0 rounded-full bg-sky-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-sky-500 hover:scale-110 transition-transform" } }
-                                button "" { onclick: .SetAccent("sage"), style: if .CalendarStore.accent_color == "sage" { "w-6 h-6 p-0 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-emerald-500 hover:scale-110 transition-transform" } }
-                                button "" { onclick: .SetAccent("amber"), style: if .CalendarStore.accent_color == "amber" { "w-6 h-6 p-0 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-amber-500 hover:scale-110 transition-transform" } }
+                                button "" { onclick: .SetAccent("indigo"), style: if .CalendarStore.d016calendar_accent_color == "indigo" { "w-6 h-6 p-0 rounded-full bg-indigo-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-indigo-500 hover:scale-110 transition-transform" } }
+                                button "" { onclick: .SetAccent("coral"), style: if .CalendarStore.d016calendar_accent_color == "coral" { "w-6 h-6 p-0 rounded-full bg-rose-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-rose-500 hover:scale-110 transition-transform" } }
+                                button "" { onclick: .SetAccent("ocean"), style: if .CalendarStore.d016calendar_accent_color == "ocean" { "w-6 h-6 p-0 rounded-full bg-sky-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-sky-500 hover:scale-110 transition-transform" } }
+                                button "" { onclick: .SetAccent("sage"), style: if .CalendarStore.d016calendar_accent_color == "sage" { "w-6 h-6 p-0 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-emerald-500 hover:scale-110 transition-transform" } }
+                                button "" { onclick: .SetAccent("amber"), style: if .CalendarStore.d016calendar_accent_color == "amber" { "w-6 h-6 p-0 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-offset-card ring-primary" } else { "w-6 h-6 p-0 rounded-full bg-amber-500 hover:scale-110 transition-transform" } }
                             }
                         }
                     }
@@ -171,8 +171,8 @@ widget Demo016Calendar {
     on {
         .Init -> {
             CalendarStore.Init()
-            .dark_mode = .CalendarStore.dark_mode
-            .accent_color = .CalendarStore.accent_color
+            .d016calendar_dark_mode = .CalendarStore.d016calendar_dark_mode
+            .d016calendar_accent_color = .CalendarStore.d016calendar_accent_color
         }
 
         .PrevMonth -> {
@@ -197,17 +197,17 @@ widget Demo016Calendar {
 
         .ToggleDarkMode -> {
             CalendarStore.ToggleDarkMode()
-            .dark_mode = .CalendarStore.dark_mode
+            .d016calendar_dark_mode = .CalendarStore.d016calendar_dark_mode
         }
 
         .SetTheme(t) -> {
             CalendarStore.SetTheme(t)
-            .dark_mode = .CalendarStore.dark_mode
+            .d016calendar_dark_mode = .CalendarStore.d016calendar_dark_mode
         }
 
         .SetAccent(name) -> {
             CalendarStore.SetAccent(name)
-            .accent_color = .CalendarStore.accent_color
+            .d016calendar_accent_color = .CalendarStore.d016calendar_accent_color
         }
     }
 }

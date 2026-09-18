@@ -59,8 +59,8 @@ widget Demo011Calculator {
     }
 
     model {
-        var dark_mode bool = true
-        var accent_color str = "indigo"
+        var d011calculator_dark_mode bool = true
+        var d011calculator_accent_color str = "indigo"
 
         // Expression engine: the full expression being built (e.g. "2*(3+4)").
         var expr str = ""
@@ -115,7 +115,7 @@ widget Demo011Calculator {
                                 style: if .mode == "basic" {
                                     "flex-1 px-2 py-1 text-xs rounded bg-orange-500 text-white font-medium"
                                 } else {
-                                    if .dark_mode {
+                                    if .d011calculator_dark_mode {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
                                     } else {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
@@ -127,7 +127,7 @@ widget Demo011Calculator {
                                 style: if .mode == "scientific" {
                                     "flex-1 px-2 py-1 text-xs rounded bg-orange-500 text-white font-medium"
                                 } else {
-                                    if .dark_mode {
+                                    if .d011calculator_dark_mode {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
                                     } else {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
@@ -139,7 +139,7 @@ widget Demo011Calculator {
                                 style: if .mode == "programmer" {
                                     "flex-1 px-2 py-1 text-xs rounded bg-orange-500 text-white font-medium"
                                 } else {
-                                    if .dark_mode {
+                                    if .d011calculator_dark_mode {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
                                     } else {
                                         "flex-1 px-2 py-1 text-xs rounded bg-secondary text-secondary-foreground hover:bg-muted transition-colors"
@@ -151,7 +151,7 @@ widget Demo011Calculator {
                         // PLAN-615 T-07：int 域显示与 float 表达式引擎隔离）
                         if .mode == "programmer" {
                             text .pline {
-                                style: if .dark_mode {
+                                style: if .d011calculator_dark_mode {
                                     "text-sm text-muted-foreground text-right w-full truncate"
                                 } else {
                                     "text-sm text-muted-foreground text-right w-full truncate"
@@ -159,7 +159,7 @@ widget Demo011Calculator {
                             }
                         } else {
                             text .expr_line {
-                                style: if .dark_mode {
+                                style: if .d011calculator_dark_mode {
                                     "text-sm text-muted-foreground text-right w-full truncate"
                                 } else {
                                     "text-sm text-muted-foreground text-right w-full truncate"
@@ -173,7 +173,7 @@ widget Demo011Calculator {
                         } else {
                             if .mode == "programmer" {
                                 text .pbig {
-                                    style: if .dark_mode {
+                                    style: if .d011calculator_dark_mode {
                                         "text-4xl font-light text-white text-right w-full truncate"
                                     } else {
                                         "text-4xl font-light text-secondary-foreground text-right w-full truncate"
@@ -181,7 +181,7 @@ widget Demo011Calculator {
                                 }
                             } else {
                                 text .display {
-                                    style: if .dark_mode {
+                                    style: if .d011calculator_dark_mode {
                                         "text-4xl font-light text-white text-right w-full truncate"
                                     } else {
                                         "text-4xl font-light text-secondary-foreground text-right w-full truncate"
@@ -278,7 +278,7 @@ widget Demo011Calculator {
                                 }
                             }
                         }
-                        style: if .dark_mode {
+                        style: if .d011calculator_dark_mode {
                             "w-full p-4 bg-background rounded-t-2xl gap-1"
                         } else {
                             "w-full p-4 bg-muted rounded-t-2xl gap-1 border-b border-border"
@@ -299,7 +299,7 @@ widget Demo011Calculator {
                             grid-item { button "pi" { onclick: .SciFn("pi"),    style: key_sci } }
                             cols: 6
                             gap: 1
-                            style: if .dark_mode {
+                            style: if .d011calculator_dark_mode {
                                 "w-full px-2 pt-1 bg-secondary"
                             } else {
                                 "w-full px-2 pt-1 bg-secondary"
@@ -311,39 +311,39 @@ widget Demo011Calculator {
                     // programmer 使用专属 int 键盘，见下方 Programmer 键盘组)。
                     if .mode != "programmer" {
                     grid {
-                        grid-item { button "C"   { onclick: .Clear,         style: if .dark_mode { key_fn_dark } else { key_fn_light } } }
-                        grid-item { button "+/-" { onclick: .Negate,        style: if .dark_mode { key_fn_dark } else { key_fn_light } } }
-                        grid-item { button "%"   { onclick: .Percent,       style: if .dark_mode { key_fn_dark } else { key_fn_light } } }
+                        grid-item { button "C"   { onclick: .Clear,         style: if .d011calculator_dark_mode { key_fn_dark } else { key_fn_light } } }
+                        grid-item { button "+/-" { onclick: .Negate,        style: if .d011calculator_dark_mode { key_fn_dark } else { key_fn_light } } }
+                        grid-item { button "%"   { onclick: .Percent,       style: if .d011calculator_dark_mode { key_fn_dark } else { key_fn_light } } }
                         grid-item { button "/"   { onclick: .Operator("/"), style: key_op } }
 
-                        grid-item { button "7"   { onclick: .Digit(7),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "8"   { onclick: .Digit(8),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "9"   { onclick: .Digit(9),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "7"   { onclick: .Digit(7),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "8"   { onclick: .Digit(8),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "9"   { onclick: .Digit(9),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
                         grid-item { button "*"   { onclick: .Operator("*"), style: key_op } }
 
-                        grid-item { button "4"   { onclick: .Digit(4),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "5"   { onclick: .Digit(5),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "6"   { onclick: .Digit(6),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "4"   { onclick: .Digit(4),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "5"   { onclick: .Digit(5),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "6"   { onclick: .Digit(6),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
                         grid-item { button "-"   { onclick: .Operator("-"), style: key_op } }
 
-                        grid-item { button "1"   { onclick: .Digit(1),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "2"   { onclick: .Digit(2),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "3"   { onclick: .Digit(3),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "1"   { onclick: .Digit(1),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "2"   { onclick: .Digit(2),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "3"   { onclick: .Digit(3),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
                         grid-item { button "+"   { onclick: .Operator("+"), style: key_op } }
 
-                        grid-item { button "("   { onclick: .Paren("("),    style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "0"   { onclick: .Digit(0),      style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "."   { onclick: .Dot,           style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "("   { onclick: .Paren("("),    style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "0"   { onclick: .Digit(0),      style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "."   { onclick: .Dot,           style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
                         grid-item { button "="   { onclick: .Equals,        style: key_op } }
 
-                        grid-item { button ")"   { onclick: .Paren(")"),    style: if .dark_mode { key_digit_dark } else { key_digit_light } } }
-                        grid-item { button "⌫"   { onclick: .Backspace,     style: if .dark_mode { key_fn_dark } else { key_fn_light } } }
+                        grid-item { button ")"   { onclick: .Paren(")"),    style: if .d011calculator_dark_mode { key_digit_dark } else { key_digit_light } } }
+                        grid-item { button "⌫"   { onclick: .Backspace,     style: if .d011calculator_dark_mode { key_fn_dark } else { key_fn_light } } }
                         grid-item { text ""      { style: "bg-transparent" } }
                         grid-item { text ""      { style: "bg-transparent" } }
 
                         cols: 4
                         gap: 1
-                        style: if .dark_mode {
+                        style: if .d011calculator_dark_mode {
                             "w-full p-2 bg-secondary rounded-b-2xl"
                         } else {
                             "w-full p-2 bg-secondary rounded-b-2xl"
@@ -366,7 +366,7 @@ widget Demo011Calculator {
                             grid-item { button "÷"   { onclick: .POp("/"),   style: key_fn_muted } }
                             cols: 4
                             gap: 1
-                            style: if .dark_mode {
+                            style: if .d011calculator_dark_mode {
                                 "w-full px-2 pt-1 bg-secondary"
                             } else {
                                 "w-full px-2 pt-1 bg-secondary"
@@ -382,7 +382,7 @@ widget Demo011Calculator {
                             grid-item { button "F" { onclick: .PDigit("F"), style: if .pbase == "HEX" { "w-full bg-card text-foreground rounded-lg p-3 text-base font-mono" } else { "w-full bg-card text-foreground rounded-lg p-3 text-base font-mono opacity-30" } } }
                             cols: 3
                             gap: 1
-                            style: if .dark_mode {
+                            style: if .d011calculator_dark_mode {
                                 "w-full px-2 pt-1 bg-secondary"
                             } else {
                                 "w-full px-2 pt-1 bg-secondary"
@@ -418,7 +418,7 @@ widget Demo011Calculator {
 
                             cols: 4
                             gap: 1
-                            style: if .dark_mode {
+                            style: if .d011calculator_dark_mode {
                                 "w-full p-2 bg-secondary rounded-b-2xl"
                             } else {
                                 "w-full p-2 bg-secondary rounded-b-2xl"
@@ -426,7 +426,7 @@ widget Demo011Calculator {
                         }
                     }
 
-                    style: if .dark_mode {
+                    style: if .d011calculator_dark_mode {
                         "w-96 bg-background border border-border rounded-2xl overflow-hidden shadow-2xl"
                     } else {
                         "w-96 bg-card border border-border rounded-2xl overflow-hidden shadow-xl"

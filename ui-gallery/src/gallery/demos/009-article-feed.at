@@ -22,8 +22,8 @@ widget Demo009ArticleFeed {
     }
 
     model {
-        var dark_mode bool = true
-        var accent_color str = "indigo"   // declared for os-config/env seeding (Plan 504 idiom)
+        var d009articlefeed_dark_mode bool = true
+        var d009articlefeed_accent_color str = "indigo"   // declared for os-config/env seeding (Plan 504 idiom)
 
         // Header
         var header_title str = "Blog Posts"
@@ -58,14 +58,14 @@ widget Demo009ArticleFeed {
                 // Section Header
                 col {
                     h2 .header_title {
-                        style: if .dark_mode {
+                        style: if .d009articlefeed_dark_mode {
                             "text-3xl font-extrabold text-foreground tracking-tight text-center"
                         } else {
                             "text-3xl font-extrabold text-foreground tracking-tight text-center"
                         }
                     }
                     span .header_subtitle {
-                        style: if .dark_mode {
+                        style: if .d009articlefeed_dark_mode {
                             "text-sm text-muted-foreground text-center max-w-xl mt-1"
                         } else {
                             "text-sm text-muted-foreground text-center max-w-xl mt-1"
@@ -80,7 +80,7 @@ widget Demo009ArticleFeed {
                         span "📖" {
                             style: thumb_emoji
                         }
-                        style: if .dark_mode {
+                        style: if .d009articlefeed_dark_mode {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
                         } else {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
@@ -97,21 +97,21 @@ widget Demo009ArticleFeed {
                             span .art1_author
                             span "·"
                             span .art1_date
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             } else {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             }
                         }
                         h3 .art1_title {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             } else {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             }
                         }
                         span .art1_excerpt {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
                             } else {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
@@ -124,7 +124,7 @@ widget Demo009ArticleFeed {
                         }
                         style: content_col
                     }
-                    style: if .dark_mode {
+                    style: if .d009articlefeed_dark_mode {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-foreground/20"
                     } else {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-foreground/20"
@@ -137,7 +137,7 @@ widget Demo009ArticleFeed {
                         span "♿" {
                             style: thumb_emoji
                         }
-                        style: if .dark_mode {
+                        style: if .d009articlefeed_dark_mode {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
                         } else {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
@@ -154,21 +154,21 @@ widget Demo009ArticleFeed {
                             span .art2_author
                             span "·"
                             span .art2_date
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             } else {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             }
                         }
                         h3 .art2_title {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             } else {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             }
                         }
                         span .art2_excerpt {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
                             } else {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
@@ -181,7 +181,7 @@ widget Demo009ArticleFeed {
                         }
                         style: content_col
                     }
-                    style: if .dark_mode {
+                    style: if .d009articlefeed_dark_mode {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-foreground/20"
                     } else {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-foreground/20"
@@ -194,7 +194,7 @@ widget Demo009ArticleFeed {
                         span "🎨" {
                             style: thumb_emoji
                         }
-                        style: if .dark_mode {
+                        style: if .d009articlefeed_dark_mode {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
                         } else {
                             "w-32 h-32 rounded-xl bg-muted border border-border/50 shrink-0 items-center justify-center"
@@ -211,21 +211,21 @@ widget Demo009ArticleFeed {
                             span .art3_author
                             span "·"
                             span .art3_date
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             } else {
                                 "text-xs text-muted-foreground gap-1.5 items-center mt-1"
                             }
                         }
                         h3 .art3_title {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             } else {
                                 "text-lg font-bold text-foreground mt-1 hover:text-primary transition-colors cursor-pointer"
                             }
                         }
                         span .art3_excerpt {
-                            style: if .dark_mode {
+                            style: if .d009articlefeed_dark_mode {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
                             } else {
                                 "text-sm text-muted-foreground mt-1 leading-relaxed"
@@ -238,7 +238,7 @@ widget Demo009ArticleFeed {
                         }
                         style: content_col
                     }
-                    style: if .dark_mode {
+                    style: if .d009articlefeed_dark_mode {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-lg w-full transition-all hover:border-foreground/20"
                     } else {
                         "bg-card rounded-2xl border border-border p-6 gap-6 items-start shadow-sm w-full transition-all hover:border-foreground/20"
@@ -248,7 +248,7 @@ widget Demo009ArticleFeed {
                 style: "w-full flex-1 px-8 py-6 gap-6 items-center justify-start max-w-4xl mx-auto"
             }
 
-            style: if .dark_mode {
+            style: if .d009articlefeed_dark_mode {
                 "w-full min-h-screen bg-background text-foreground"
             } else {
                 "w-full min-h-screen bg-background text-foreground"

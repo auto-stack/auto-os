@@ -26,8 +26,8 @@ widget Demo020MusicPlayer {
 
     model {
         // 主题魔法变量：保持在根 widget 以驱动生成器深浅色运行时
-        var dark_mode bool = true
-        var accent_color str = "emerald"
+        var d020musicplayer_dark_mode bool = true
+        var d020musicplayer_accent_color str = "emerald"
     }
 
     view {
@@ -112,7 +112,7 @@ widget Demo020MusicPlayer {
             PlayerStore.Load()
         }
         .ToggleDarkMode -> {
-            .dark_mode = !.dark_mode
+            .d020musicplayer_dark_mode = !.d020musicplayer_dark_mode
         }
     }
 }

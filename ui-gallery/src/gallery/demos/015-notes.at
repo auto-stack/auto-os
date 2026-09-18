@@ -4,8 +4,8 @@
 // 「悬浮卡片」外壳（PLAN-360 的卡片化视觉决策被本计划取代，主题色能力沿用）。
 //
 // 主题状态说明：主权在 store（applyAccent 的重放逻辑需要 store 持有
-// dark_mode / accent_color），但 Vue 生成器把根元素的 `:class="{ dark: X }"`
-// 绑到 **widget 本地** 的 dark_mode（vue.rs `dark_mode_on_widget` 分支），
+// d015notes_dark_mode / d015notes_accent_color），但 Vue 生成器把根元素的 `:class="{ dark: X }"`
+// 绑到 **widget 本地** 的 d015notes_dark_mode（vue.rs `dark_mode_on_widget` 分支），
 // 所以 App 保留同名镜像，并在切换 handler 里与 store 同步。
 
 use d015notes_notes_store: NotesStore
@@ -22,8 +22,8 @@ widget Demo015Notes {
     msg { Init, NewNote, ToggleDarkMode, SetMode(str), SetAccent(str), ToggleSettings }
 
     model {
-        var dark_mode bool = true
-        var accent_color str = "indigo"
+        var d015notes_dark_mode bool = true
+        var d015notes_accent_color str = "indigo"
     }
 
     view {
@@ -43,7 +43,7 @@ widget Demo015Notes {
                     button {
                         onclick: .ToggleDarkMode
                         style: icon_btn
-                        if .NotesStore.dark_mode {
+                        if .NotesStore.d015notes_dark_mode {
                             icon (name: "sun", size: 16)
                         } else {
                             icon (name: "moon", size: 16)
@@ -95,15 +95,15 @@ widget Demo015Notes {
         // 双向同步：store 是主题主权（负责 applyAccent），本地镜像驱动根元素 dark class。
         .ToggleDarkMode -> {
             NotesStore.ToggleDarkMode()
-            .dark_mode = .NotesStore.dark_mode
+            .d015notes_dark_mode = .NotesStore.d015notes_dark_mode
         }
         .SetMode(m) -> {
             NotesStore.SetMode(m)
-            .dark_mode = .NotesStore.dark_mode
+            .d015notes_dark_mode = .NotesStore.d015notes_dark_mode
         }
         .SetAccent(name) -> {
             NotesStore.SetAccent(name)
-            .accent_color = .NotesStore.accent_color
+            .d015notes_accent_color = .NotesStore.d015notes_accent_color
         }
         .ToggleSettings -> { NotesStore.ToggleSettings() }
     }

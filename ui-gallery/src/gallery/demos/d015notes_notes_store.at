@@ -62,8 +62,8 @@ store NotesStore {
         var confirm_delete bool = false
 
         // 主题（沿用 PLAN-360/458/601 机制：store 持有，负责 applyAccent 重放）
-        var dark_mode bool = true
-        var accent_color str = "indigo"
+        var d015notes_dark_mode bool = true
+        var d015notes_accent_color str = "indigo"
         var show_settings bool = false
     }
 
@@ -438,27 +438,27 @@ store NotesStore {
         }
 
         .ToggleDarkMode -> {
-            .dark_mode = !.dark_mode
+            .d015notes_dark_mode = !.d015notes_dark_mode
         }
 
         // 显式模式（外观面板的 Dark/Light 两键）——避免「点 Dark 反而切到 Light」。
         // 真正需要翻转时走 ToggleDarkMode：生成器只给 SetAccent/ToggleDarkMode
         // 追加 applyAccent（含暗色亮度补偿 + .dark 元素上的 --primary 覆盖），
-        // 直接写 dark_mode 会漏掉主题色重放（T12-DARK 契约）。
+        // 直接写 d015notes_dark_mode 会漏掉主题色重放（T12-DARK 契约）。
         .SetMode(m) -> {
             if m == "dark" {
-                if .dark_mode == false {
+                if .d015notes_dark_mode == false {
                     .ToggleDarkMode()
                 }
             } else {
-                if .dark_mode == true {
+                if .d015notes_dark_mode == true {
                     .ToggleDarkMode()
                 }
             }
         }
 
         .SetAccent(name) -> {
-            .accent_color = name
+            .d015notes_accent_color = name
         }
 
         .ToggleSettings -> {

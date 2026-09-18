@@ -1,6 +1,6 @@
 // app.at — Hero section. Plan 458: 首个"主题敏感"示例。
 //
-// 根节点声明 dark_mode / accent_color 状态变量 —— 这两个变量名是双端运行时
+// 根节点声明 d006herosection_dark_mode / d006herosection_accent_color 状态变量 —— 这两个变量名是双端运行时
 // 契约(不要改名):VM 渲染器每帧回读并切换 shadcn 明暗调色板与主题主色,
 // Vue 代码gen据此生成 `.dark` class 绑定与 applyAccent(`--primary`)注入。
 // pac.at 里 `theme: "dark"` / `accent: "indigo"` 声明的是启动默认值(也可用
@@ -17,8 +17,8 @@ widget Demo006HeroSection {
     msg { GetStarted, SetTheme(str), SetAccent(str) }
 
     model {
-        var dark_mode bool = true
-        var accent_color str = "indigo"
+        var d006herosection_dark_mode bool = true
+        var d006herosection_accent_color str = "indigo"
     }
 
     view {
@@ -33,7 +33,7 @@ widget Demo006HeroSection {
                 }
                 style: "w-full flex-1 justify-center items-center gap-4 p-8"
             }
-            style: if .dark_mode {
+            style: if .d006herosection_dark_mode {
                 "w-full h-full min-h-screen bg-gradient-to-b from-blue-500 to-purple-600 text-primary-foreground"
             } else {
                 "w-full h-full min-h-screen bg-background text-foreground"
@@ -45,12 +45,12 @@ widget Demo006HeroSection {
         .GetStarted -> { print("Getting started!") }
         .SetTheme(t) -> {
             if t == "light" {
-                .dark_mode = false
+                .d006herosection_dark_mode = false
             }
             if t == "dark" {
-                .dark_mode = true
+                .d006herosection_dark_mode = true
             }
         }
-        .SetAccent(name) -> { .accent_color = name }
+        .SetAccent(name) -> { .d006herosection_accent_color = name }
     }
 }

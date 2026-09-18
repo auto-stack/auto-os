@@ -19,7 +19,7 @@ use d015notes_notes_store: NotesStore
 //   * 共享 SettingsPopover 是卡片 + emoji 形态，与本次扁平化目标冲突；
 //   * 原 `deps/settings` 是指向已删除 examples/ui/common/settings 的悬空链接
 //     （PLAN-616 U12），自定义面板让本示例自包含。
-// 主题能力本身仍走既有 store 链路（dark_mode / accent_color + applyAccent）。
+// 主题能力本身仍走既有 store 链路（d015notes_dark_mode / d015notes_accent_color + applyAccent）。
 
 // PLAN-607 style 配方：筛选胶囊两态与图标按钮。
 // `w-auto` 必需：VM 端按钮无显式宽度会按 Fill 撑开（见 app.at 同注）。
@@ -175,12 +175,12 @@ widget NavTree(on_toggle_dark_mode: msg, on_set_accent: msg, on_set_mode: msg) {
                         style: "w-auto items-center gap-1"
                         button {
                             onclick: .SetMode("dark")
-                            style: if .NotesStore.dark_mode { seg_on } else { seg }
+                            style: if .NotesStore.d015notes_dark_mode { seg_on } else { seg }
                             text "Dark" { style: "text-xs" }
                         }
                         button {
                             onclick: .SetMode("light")
-                            style: if .NotesStore.dark_mode { seg } else { seg_on }
+                            style: if .NotesStore.d015notes_dark_mode { seg } else { seg_on }
                             text "Light" { style: "text-xs" }
                         }
                     }
@@ -188,23 +188,23 @@ widget NavTree(on_toggle_dark_mode: msg, on_set_accent: msg, on_set_mode: msg) {
                         style: "w-auto items-center gap-2.5"
                         button {
                             onclick: .SetAccent("indigo")
-                            style: if .NotesStore.accent_color == "indigo" { "w-5 h-5 border-0 rounded-full p-0 bg-indigo-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-indigo-500" }
+                            style: if .NotesStore.d015notes_accent_color == "indigo" { "w-5 h-5 border-0 rounded-full p-0 bg-indigo-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-indigo-500" }
                         }
                         button {
                             onclick: .SetAccent("coral")
-                            style: if .NotesStore.accent_color == "coral" { "w-5 h-5 border-0 rounded-full p-0 bg-rose-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-rose-500" }
+                            style: if .NotesStore.d015notes_accent_color == "coral" { "w-5 h-5 border-0 rounded-full p-0 bg-rose-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-rose-500" }
                         }
                         button {
                             onclick: .SetAccent("ocean")
-                            style: if .NotesStore.accent_color == "ocean" { "w-5 h-5 border-0 rounded-full p-0 bg-sky-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-sky-500" }
+                            style: if .NotesStore.d015notes_accent_color == "ocean" { "w-5 h-5 border-0 rounded-full p-0 bg-sky-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-sky-500" }
                         }
                         button {
                             onclick: .SetAccent("sage")
-                            style: if .NotesStore.accent_color == "sage" { "w-5 h-5 border-0 rounded-full p-0 bg-emerald-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-emerald-500" }
+                            style: if .NotesStore.d015notes_accent_color == "sage" { "w-5 h-5 border-0 rounded-full p-0 bg-emerald-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-emerald-500" }
                         }
                         button {
                             onclick: .SetAccent("amber")
-                            style: if .NotesStore.accent_color == "amber" { "w-5 h-5 border-0 rounded-full p-0 bg-amber-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-amber-500" }
+                            style: if .NotesStore.d015notes_accent_color == "amber" { "w-5 h-5 border-0 rounded-full p-0 bg-amber-500 ring-2 ring-offset-2 ring-offset-background ring-primary" } else { "w-5 h-5 border-0 rounded-full p-0 bg-amber-500" }
                         }
                     }
                 }
@@ -221,7 +221,7 @@ widget NavTree(on_toggle_dark_mode: msg, on_set_accent: msg, on_set_mode: msg) {
                 button {
                     onclick: .ToggleDarkMode
                     style: ghost_btn
-                    if .NotesStore.dark_mode {
+                    if .NotesStore.d015notes_dark_mode {
                         icon (name: "sun", size: 14)
                     } else {
                         icon (name: "moon", size: 14)

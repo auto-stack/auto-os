@@ -31,8 +31,8 @@ widget Demo029PhotoGallery {
 
     model {
         // ---- 主题契约变量 ----
-        var dark_mode bool = true
-        var accent_color str = "indigo"
+        var d029photogallery_dark_mode bool = true
+        var d029photogallery_accent_color str = "indigo"
 
         // ---- 视图形态 ----
         var mode str = "grid"               // "grid" | "view"
@@ -262,7 +262,7 @@ widget Demo029PhotoGallery {
                                     style: if .density == 4 { "h-7 w-7 text-xs rounded-md bg-background text-foreground font-bold shadow-sm" } else { "h-7 w-7 text-xs rounded-md text-muted-foreground hover:text-foreground" }
                                 }
                             }
-                            if .dark_mode {
+                            if .d029photogallery_dark_mode {
                                 button {
                                     onclick: .ToggleDark
                                     style: icon_btn
@@ -696,7 +696,7 @@ widget Demo029PhotoGallery {
             }
         }
 
-        .ToggleDark -> { .dark_mode = !.dark_mode }
-        .SetAccent(name) -> { .accent_color = name }
+        .ToggleDark -> { .d029photogallery_dark_mode = !.d029photogallery_dark_mode }
+        .SetAccent(name) -> { .d029photogallery_accent_color = name }
     }
 }

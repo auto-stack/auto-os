@@ -9,8 +9,8 @@ store CalendarStore {
         var month int = 6
         var today str = "2026-06-17"
         var selected_date str = "2026-06-17"
-        var dark_mode bool = false
-        var accent_color str = "indigo"
+        var d016calendar_dark_mode bool = false
+        var d016calendar_accent_color str = "indigo"
         var show_settings bool = false
     }
 
@@ -32,8 +32,8 @@ store CalendarStore {
             .month = 6
             .today = "2026-06-17"
             .selected_date = "2026-06-17"
-            .dark_mode = false
-            .accent_color = "indigo"
+            .d016calendar_dark_mode = false
+            .d016calendar_accent_color = "indigo"
         }
 
         .PrevMonth -> {
@@ -59,20 +59,20 @@ store CalendarStore {
         }
 
         .ToggleDarkMode -> {
-            .dark_mode = !.dark_mode
+            .d016calendar_dark_mode = !.d016calendar_dark_mode
         }
 
         .SetTheme(t) -> {
             if t == "dark" {
-                .dark_mode = true
+                .d016calendar_dark_mode = true
             }
             if t == "light" {
-                .dark_mode = false
+                .d016calendar_dark_mode = false
             }
         }
 
         .SetAccent(name) -> {
-            .accent_color = name
+            .d016calendar_accent_color = name
         }
 
         .ToggleSettings -> {
