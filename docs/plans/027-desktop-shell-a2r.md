@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-027
-status: executing              # rev2 有界修订中（范式规则：修订保持 executing）；next: work T-09'
+status: execution_done        # rev2 收口完成（T-01..T-06 + T-09'）；next: review
 feature_name: desktop-shell-a2r
 author: [agent]
 created_at: 2026-09-18
@@ -22,7 +22,7 @@ affects:
   - auto-lang/docs/design/autoui/desktop-shell-a2r.md             # 状态更新（裁定落定）
   - auto-os/shell/                                                # pack 源（零内容改动，形态迁移 parity 锚）
   - auto-os/docs/plans/autos-desktop-program.md                   # 台账行
-current_step: 6
+current_step: 7
 total_steps: 7        # rev2：可执行任务 = T-01..T-06（已完成）+ T-09'（收口）；T-07/T-08 退役不计数
 ---
 
@@ -573,7 +573,7 @@ auto-os`。
   动作：§5.4 装配切换；boot/懒挂载时序保持。
   验证：编译壳实机六面 + 双轨切换用例 + desktop_mcp 双形态。
   → AC-04/05。
-- **T-09' [lang+os] 收口与交接（rev2 重写）**
+- **T-09' [lang+os] 收口与交接（rev2 重写）** ✅ 已完成
   文件：`desktop-shell-a2r.md` 状态更新（SD-01，B 裁定落定）、
   `autos-desktop-program.md` 台账行（SD-03）、auto-lang `docs/specs/`
   模块条目（SD-04，provisional）、KNOWN-DEBT 随注（A 形态度量/实机
@@ -582,9 +582,34 @@ auto-os`。
   材料（前置序列 + 资产清单）成文。
   验证：文档交叉引用可解析；回归门与基线集 diff 全等。
   → AC-04'/08。
+  [✅ 已完成] [x] lang worktree 63d981d49 + auto-os main 1313d00。
+  SD-01：设计文档状态头改"裁定落定 = B + 双轨常驻"、§5 裁定记录
+  （含 A 线事实注记）、§6 改道注、§10 四项全落定、文末实施锚定
+  （S1/S2 提交映射 + S3→B 交接）。SD-04：新 spec
+  `docs/specs/auto-lang/ui/design/shell-a2r-seams.md`（provisional——
+  S1 臂族/拒绝门/词汇门 + S2 载体/总线/storage/对拍门 + 零回归面 +
+  已知限制）+ ui/overview.md 刷新行。KNOWN-DEBT 两行：p010 基线红
+  疑因（拖拽幽灵 popover 解释臂 widget 形态兜底）、按钮动态
+  style+variant preset 不注入双轨分歧候选（B parity 线复核项）。
+  随件：`shell_packs_compile` 冒烟补 dashboard.at（PLAN-024 历史遗漏）。
+  SD-03：台账裁定登记簿 3c 行（B 方向 + 前置序列 + 资产承继清单；
+  初版插入缺换行与行 4 拼接，已修复为干净单行新增）。AC-08 回归门：
+  `cargo t -p auto-lang --no-fail-fast` 全量失败集 41 项与改前基线
+  逐一全等（BASELINE-EQUAL）。
 → AC-06/07。
 
 ## 9. 复审记录
+
+- 2026-09-18 /auto-plan:work 收口交接：`stage: work`，PLAN-027 rev 2。
+  `outcome: pass` → **status = execution_done**。`code_commit`：
+  lang plan-027-dev 63d981d49（T-09' 文档收口；此前实现链
+  97d0bb75d/274265345/611fbff2f/T-05/d6e8da838）+ auto-os main
+  1313d00（SD-03 台账）。`task_ids`：T-01..T-06 + T-09'（全数）；
+  T-07/T-08 退役（§10-①）。`evidence`：各任务勾选证据；AC-01..03/08
+  已验（✅ 注记），AC-04' 本任务落笔（SD-01..04 互链），AC-05/06/07
+  处置留痕；AC-08 回归门 BASELINE-EQUAL（41 项）。`blockers`：无。
+  `next`：/auto-plan:review（复审批次；desktop_mcp 五套在复审回归门
+  复跑）→ merge；B 形态程序另立新计划（图像通道立项先行）。
 
 - 2026-09-18 /auto-plan:new rev2 起草交接：`stage: new`，PLAN-027
   rev 2（有界修订，同一计划文件）。`outcome: pass`——修订授权已录
