@@ -158,6 +158,18 @@
           "file": "docs/plans/archive/024-dashboard-widgets.md",
           "title": "PLAN-024 变更摘要 — dashboard-widgets（桌面常驻小组件层）",
           "content": "S10 Dashboard 立项落地：语言扩展 view mini 多命名视图（named_views 全链路：解析/提取/动态轨 view_named/vue named_view_codes）；常驻小组件层（用户裁定取代召唤式——z 高于图标层低于全部 app 窗，boot 常显，× 隐藏/dock ▦ 切换）；四孵化试点（012 时钟/013 待办/020 音乐/025 系统监控——faces=4 实机）；tab 化降耗（main/system 页、非活动页孵化 Tick 停订）；栅格进度条三态（接近即占位/段内过半点亮/四分位变色）；卡双击三态打开（升格开窗/activate 聚焦/launch）；协议 v1.9（v1.8=014 并行叠号）；走查 R1–R21 收敛（R8 缓行平板网格 v2/R14 daemon ⏸）。canonical：docs/specs/shell/dashboard.md。"
+        },
+        {
+          "related": [
+            "PLAN-026"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P026-1",
+          "file": "docs/plans/archive/026-native-queue-coverage-ramp-2.md",
+          "title": "PLAN-026 变更摘要 — native-queue-coverage-ramp-2（display/布局二批 + IME 闭环 + auto 复测不翻）",
+          "content": "PLAN-026 落地（零 wire 变体，PROTOCOL_VERSION 仍 1）：display/布局二批 native 臂（image 占位保真 80×80 实证/progress 比例几何/grid cols 等宽 walker/container center+legacy 尺寸+w-full 满宽）；a2r codegen 降级臂 D1 定案（icon→lucide Image 尺寸契约、badge 样式 Row、card/divider/spacer/avatar styled container、scroll→scrollable、link 子件组合、image src 绑定容差；断裂映射 badge/card/icon/scroll/link 移除）；IME 闭环两端（投影器 Commit/Preedit 尾拼/Cancelled + 宿主 broker_ime_commit/preedit/cancelled 焦点窗路由）；覆盖表 kinds+image/progress、layouts+grid、样式降级放行批；imagesurface 整 kind not-yet（D5）；auto 复测 judged 76.2%<95% → 维持 independent 不翻（翻转点已备 one-line）。canonical：auto-lang/docs/design/autoui/desktop-protocol-v1.md §1.8。"
         }
       ]
     },
@@ -413,6 +425,18 @@
           "file": "docs/specs/shell/dashboard.md",
           "title": "SD-01..04 dashboard 模块 spec——常驻层/face/孵化/配置契约",
           "content": "SD-01 常驻层：z 高于图标层低于全部 app 窗（R12 图标层 BlankPress 吞 click 故面板须在其上；视觉右上与图标网格不重叠）、boot 常显/× 隐藏/▦ 切换、几何吸附图标网格（列距 88/行距 80/原点 12，872×232 起，内部等比）、tab 双页（category 派生，system→系统页）+ 非活动页 Tick 停订。SD-02 face= view mini 宿主拆借渲染（view_named 同 VM 桥活渲染）、dashboard_layout 行主序 next-fit + px spacer 定位（Stack 子层 padding 不可依 conveyor 家法）、卡双击三态打开（open_window_for_session 升格/activate 聚焦/launch）、占位卡宿主合成。SD-03 faces 两级推导（grep 探测+named_views 确认）、三态 running/hatched/placeholder、孵化门（无 daemon/back_root/exe；inproc 合并 back_port 不算外部依赖）、读回必须 read_state_as_vec 物化。SD-04 shell.dashboard.* enabled/span storage 直读写；编辑 popover 延后（F-01 用户接受）。跨仓：auto-lang ADR-21（架构）、schema v1.9（协议）。"
+        },
+        {
+          "related": [
+            "PLAN-026"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P026-1",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "title": "SD-01 协议 v1.8 增量 — display 族占位保真 + IME 闭环 + auto 裁决（§1.8）",
+          "content": "desktop-protocol-v1.md §1.8：display 族 native 臂入册口径（image/progress kind + grid layout + center/legacy/w-full 消费；icon/badge/avatar/divider/separator/spacer/a 降级归一——分表非缺口；imagesurface 整 kind not-yet）；IME 闭环两端（Ime* v1.0 在册变体启用 + broker_ime 生产路由，live 壳订阅缺口并入 P025-D1）；a2r 降级臂全录（VM 轨形态对齐）；auto 复测数据行（judged 76.2%<95% 不翻，翻转点 resolve_native_frame_mode Covered 臂 one-line）；样式降级放行批逐类随注。SD-03：auto-lang ui/overview.md provisional 指针 v1.8 对齐。"
         }
       ]
     },
@@ -540,6 +564,18 @@
           "file": "docs/specs/shell/dashboard.md",
           "title": "SD-01..04 设计要点——布局算式/三态段/tab 门控/升格原语",
           "content": "dashboard_layout 面单相对坐标+调用方单一 panel_x（chrome/face 同源零漂移；内部居中会导致挪位分家——实证）；20 段三态栅格条（fill_at=lower+3 过半点亮，空白占位块 bg-background/70+border；浮点阈值累加比较——.as(int) 对 float 垃圾值实证绕行）；face 事件路由=内层交互优先命中+卡体 mouse_area 兜底（N6d 同款）；__dashboard_open/launch 合成消息 update 拦截臂+尾 drain/sync 同形；hatch 门文本探测+named_views 精确认证两级；split_mut 第七/八路 windowless 拆借（无孵化臂则 Tick/handler 全静默——实机根因）。"
+        },
+        {
+          "related": [
+            "PLAN-026"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P026-1",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "title": "SD-01 设计要点 — D1 全降级定案/防漏钉钉②口径/翻转双出口",
+          "content": "T-01 定案：icon/a/badge/card 全 codegen 降级（推翻 icon 变体倾向——VM 轨 AuraViewBuilder icon→View::Image lucide 承载契约 aura_view_builder.rs:6455 '两端必须一致'）；divider/spader/avatar 降级形态对齐 VM convert_*（spacer 用 flex-1/样式双档）；覆盖表 center 不入册（View 层归一 Container，scan 无 kind 产出点——防漏钉钉②）；imagesurface 整 kind not-yet（交互回调无采集面，登记即静默放行——I3）；翻转双出口 = ≥95% 达标翻/不达标留痕，两出口均 pass 态禁无数据翻转。"
         }
       ]
     },
@@ -723,6 +759,18 @@
           "file": "crates/auto-lang/src/plan024_named_view_tests.rs",
           "title": "PLAN-024 测试语料——named view 18 项/布局四测/命令往返/全档回归",
           "content": "plan024_named_view_tests（解析/duplicate/回归钉 main_view_root_consumes_brace/vue 产物双测）+session（可见性/孵化垫片/六动词往返）+renderer（dashboard_layout 四测）共 21 项；cargo t --no-fail-fast 全档 5042 跑 36 失败 ⊆ master 基线 37 零新增（两轮复跑一致）；vue 生成级验证（Mini.vue×2+registry mini 标记+DashboardPanel.vue）。教训：view 臂主视图分派初版漏消费 '{'，新测浅断言未抓到、全量 aura extract 语料抓到——回归钉已补。"
+        },
+        {
+          "related": [
+            "PLAN-026"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P026-1",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
+          "title": "PLAN-026 测试语料 — p026_native_display_arm 三腿 + 金样/防漏钉/数据行",
+          "content": "e2e p026_native_display_arm 三腿真 exe（AUTO_DESKTOP_E2E 门 + scratch026 载体）：①profile-card queue 孵化 image 占位 80×80+Jane Cooper/Follow 帧；②display026 display 族全件（icon 14×14 lucide 占位/badge/divider 4px 满宽/avatar 40×40/grid 2×2/center）；③003 broker_ime_commit(\"100\")→212 联动。单测：display_family_placeholder_golden/grid_layout_and_hit_golden/center_container_golden/ime_commit_preedit_cancelled_loop/broker_ime_production_routes/native_flip_coverage_data_row（not-flip 裁定钉）/native_coverage_matrix_pinned_to_projector。帧留痕 docs/plans/reports/assets/026/ 三件；全量 tf 3615/3616（唯一红=plan367 基线红实锤，先于 026）。"
         }
       ]
     },
@@ -921,6 +969,18 @@
           "file": "docs/plans/archive/024-dashboard-widgets.md",
           "title": "PLAN-024 r1 复审 pass（F-01..F-04 处置/挂账）+ 走查台账 R1–R21",
           "content": "review（实现会话内，证据重建）：AC-01/02/03/06/07 pass；AC-04 partial→用户接受延后（F-01 popover UI 挂 §10#5）；AC-05 partial→环境受限延后（F-02 autoui-verifier 真跑需 npm+浏览器，unblock 已记）；F-03 merge 前 desktop_mcp smoke（012 全绿二跑）；F-04 SD-01 常驻语义修订（复核中修）。走查台账 §9.2 R1–R21：R8 缓行（平板网格 v2/§9.3）、R14 daemon ⏸，其余 ✅。evidence/024/ 11 帧+驱动脚本。"
+        },
+        {
+          "related": [
+            "PLAN-026"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P026-r1",
+          "file": "docs/plans/archive/026-native-queue-coverage-ramp-2.md",
+          "title": "PLAN-026 native-queue-coverage-ramp-2 复审 pass + merge 收据（r1）",
+          "content": "复审 pass（2026-09-18，rev1，reviewed lang 3e410163a/os 9c40199，base lang e352437b0/os 9b5fbcf；实施会话内复审声明+工件重建）。AC-01..07 全 pass：cargo tf 全量 3600/3599（唯一红 plan367 real_sidebar_at_parses_with_navtree=基线红实锤——base 独立检出同红，PLAN-637 配方 vs plan367 测试，026 diff 未触面）；p026 e2e 三腿 + 11 项 AC 证据测试复跑全绿；AC-06 不翻出口（judged 76.2%<95%，数据行报告在案）；findings：plan affects 清单预测面残留（记录不改判）+ 复审开工工件脏面已还原（P633-D3 同族）。merge：back-sync lang 91 提交/os 27 提交零冲突，同步后 tf 3615/3616 + e2e 复跑绿；profile-card 载体统一命名（scratch=成员=包名）+ tracked 成员刷新。lang master fc8264f4a / os main 01d3483+。"
         }
       ]
     }
