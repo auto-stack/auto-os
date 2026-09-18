@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-024
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived（2026-09-18 pass→merge landed）
+completion_kind: delivered
 feature_name: dashboard-widgets (S10 桌面小组件面板)
 author: [zhaopuming]
 created_at: 2026-09-17
@@ -23,7 +24,7 @@ affects: [shell/shell.at, shell/dashboard.at（新增）, apps/025-sys-monitor/s
           auto-lang:schema/projection-protocol-v1.md,
           auto-lang:assets/（shell pack 内嵌快照 hash-lock 同步）,
           auto-lang:examples/ui/012-stopwatch/src/front/app.at]
-current_step: 8
+current_step: 9
 total_steps: 9
 ---
 
@@ -319,7 +320,7 @@ v1.8、试点 mini 在 auto-os。试点 = clock + sys-monitor 两张卡。
 
 | delta_id | add/modify/retire | target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | docs/specs/shell/dashboard.md（新模块 spec） | 新增：S10 Dashboard 面板契约——第四 overlay 槽、`view mini` 声明即注册、faces 两级推导、静默孵化条件（无后端）、配置键 `shell.dashboard.*`、v1.8 词表与注入面 | 设计稿 §4.2 立项落 spec；沿 showdesk-* 模块 spec 先例 | AC-01..07 |
+| SD-01 | add | docs/specs/shell/dashboard.md（新模块 spec） | 新增：S10 Dashboard **常驻小组件层**契约（用户裁定 2026-09-17，取代 v1 召唤式）——z 高于桌面图标层/低于全部 app 窗、boot 常显 + × 隐藏/dock ▦ 切换、`view mini` 声明即注册（faces 两级推导：category 派生 tab）、孵化会话（无 daemon/back_root/exe 门 + face_fields 垫片 + 升格开窗原语）、**tab 化降耗**（main/system 页、非活动页孵化 Tick 停订）、**栅格条三态**（接近即占位/段内过半点亮/四分位变色）、卡点击三态打开（升格/聚焦/launch）、配置键 `shell.dashboard.*`（enabled/span/tab 派生）、协议 v1.8（`__dashboard_faces`/`__dashboard_cmd` 六动词 + `__dashboard_open` 合成消息/`__wm_dashboard`） | 设计稿 §4.2 立项落 spec + 走查 R1–R21 语义修订；沿 showdesk-* 模块 spec 先例 | AC-01..07 |
 | SD-02 | modify | auto-lang:docs/specs/auto-lang/ui/architecture.md | 视图声明节：单一 view → 主 view + 命名视图 `view mini`（多命名）；重复名报错；`view fn`/参数模式语义不变 | 语言小扩展的正名（设计稿「多命名 view」） | AC-01 |
 | SD-03 | modify | auto-lang:schema/projection-protocol-v1.md | v1.7 → v1.8：新增 `__dashboard_faces` 注入 + `__dashboard_cmd` 六动词 + `__wm_dashboard` 判据 | 面板接缝协议化，沿 v1.2 通知中心先例 | AC-02,04,05 |
 
@@ -428,6 +429,7 @@ master 50016b255）：
   （零新增回归）；shell_pack 3/3 绿。**实机半（召唤/孵化走秒/刷新/
   持久化重启/Esc 仲裁的实机操作 + evidence/024/ 截图 + autoui-verifier
   对拍）未执行——沿 PLAN-022 先例为用户截图驱动交互流程，见 §9 handoff。**
+- [✅ 已完成] T-09 2026-09-18 收口——调试日志退役（[dashboard]/[desktop-icons] 诊断 eprintln 移除）+ 最终全量回归（cargo t --no-fail-fast 5042 跑 36 失败 ⊆ master 基线 37，零新增）。用户走查 R1–R21 收敛（R8 缓行 v2 / R14 daemon ⏸，其余 ✅），用户确认"剩下的没问题了"。auto-lang auto-os-024-dev 头 fc6267e79。
 - [✅ 已完成] T-09 2026-09-17——程序台账指针：auto-lang
   docs/design/autoui/desktop-shell.md §4.2 未立项→已落地注记 + 派期清单
   S10 行 ✅（实现裁定差异两条在案）。
@@ -571,6 +573,69 @@ boot 即挂载显示。spec delta SD-01 相应节（overlay 槽/关闭仲裁）�
 **落地路径**：PLAN-024 收口 review 后另立新计划（桌面网格 v2：文件夹 +
 小组件块），A 的三步（文件夹格子 → widget 块二维跨度 → 6x4 大块迁移）
 作为原子任务。
+
+### 2026-09-18 复审记录（/auto-plan:review）
+
+- `stage: review`，**PLAN-024** revision 1。
+- `outcome: pass`（附 4 项 finding，全部处置/挂账，见下）。
+- `reviewed_commit`: auto-lang auto-os-024-dev **fc6267e79**；auto-os
+  plan-024-dev **aa47947**（review 基线补齐后）。
+- `base_commit`: auto-os main a6d4a47；auto-lang master 50016b255。
+- `dependency_revisions`: auto-down b37b08e（detached）、auto-os-config
+  1a80716（detached，R11 组内补齐）。
+- `spec_inputs`: schema/projection-protocol-v1.md（v1.8，worktree 已改）；
+  docs/specs/shell/dashboard.md（新，merge 时按 §5.8 SD-01 修订文本发布）；
+  auto-lang ui/architecture.md（SD-02 视图声明节，merge 时落）。
+- **复核限制声明**：本复核在实现会话内进行，结论以工件/命令/实机证据重建，
+  不采信执行摘要。
+- `acceptance_results`:
+  - AC-01 **pass**——plan024+dashboard+shell_pack 21/21；cargo t --no-fail-fast
+    全档 5042 跑 36 失败 ⊆ master 基线 37（零新增，两轮复跑一致）；vue 生成
+    产物含 mini SFC（R18 双测）。
+  - AC-02 **pass**——dock ▦ 召唤/× 隐藏/常驻显隐（R2/R6）、clock 静默孵化
+    走秒（01/02 帧差 + 用户实机）；Esc 关闭走查轮自动化焦点伪影，三路径
+    关闭链路用户人工复验通过。
+  - AC-03 **pass**——sysmon 卡与主窗同源刷新（用户实机确认 + 09 浅色帧）、
+    待办卡 store 同源（勾选联动活渲染）。
+  - AC-04 **partial → 用户接受延后**——存储链/六动词/默认策略 + 单测 ✅；
+    右键编辑 popover UI 入口未实施（F-01，用户走查收口明示接受，挂 §10 #5）。
+  - AC-05 **partial → 环境受限延后**——生成级验证 ✅（Mini.vue×2
+    012/020、registry mini 标记、DashboardPanel.vue、宿主接线）；真跑
+    autoui-verifier 对拍未执行（worktree 缺 npm 依赖 + 浏览器自动化，F-02，
+    unblock = pnpm install + autoui-verifier；013-todo vue 轨被既有
+    API-client-glue 门跳过——非本计划缺陷）。
+  - AC-06 **pass**——试点实机可见截图组（01/02/04/05/06/07/08/10）+ 用户
+    走查确认；占位卡形态代码已实现、本环境 sysmon 必孵化未活演（注记）。
+  - AC-07 **pass（含 F-03）**——cargo t 全档零新增（见上）；shell pack
+    hash-lock 五件 parity ✓；I2 五套 desktop_mcp python 套件未跑（F-03，
+    merge/landing 前 smoke 一套 012-stopwatch）。
+- `findings`:
+  - **F-01**（minor，AC-04）：编辑 popover UI 入口缺失——**用户接受延后**
+    （走查收口"剩下的没问题了"），挂 §10 #5。
+  - **F-02**（minor，AC-05）：真跑 autoui-verifier 对拍未执行——环境受限
+    （npm 依赖 + 浏览器），unblock 动作明确；挂 §10。
+  - **F-03**（minor，AC-07）：五套 desktop_mcp 未跑——merge/landing 前
+    smoke 012-stopwatch 一套。
+  - **F-04**（fixed-in-review）：SD-01 provisional 文本滞后常驻语义——
+    已修订（§5.8，本次提交）。
+- `evidence`: docs/plans/evidence/024/（01–11 证据帧 + 驱动脚本）、
+  plan024_named_view_tests.rs 21 项、台账 §9.2 R1–R21、
+  cargo t --no-fail-fast 两轮（/tmp/wt5_fail.txt、wt6 对比基线 37 零新增）、
+  vue 生成物 gen/front/vue/src/apps/{012,020}/Mini.vue + apps-registry.ts
+  （mini: true ×2）+ src/wm/DashboardPanel.vue。
+- `next`: **merge**（/auto-plan:merge）——merge 时按 §5.8 修订文本发布
+  canonical specs（SD-01 auto-os / SD-02 SD-03 auto-lang）+ 台账派生；
+  merge 前跑 desktop_mcp smoke（F-03）。
+
+## 11. merge 收据（PLAN-024:r1）
+
+| Checkpoint | 证据 |
+|---|---|
+| prepared | reviewed 基线（auto-os aa47947/auto-lang fc6267e79）；canonical diff：SD-01→docs/specs/shell/dashboard.md（新，常驻语义修订版）、SD-02→auto-lang architecture.md ADR-21、SD-03→schema v1.9 叠号；delivery commit auto-os d4a47ea / auto-lang 44bc12ac3 |
+| landed | auto-os main 合并 d3f5ec1（shell.at 冲突解：SendCmd 对齐 014 rev2）；auto-lang master 合并 ea311722b（schema 双 v1.8 叠号→v1.9 + assets/shell.at 取 pack 权威 + rust-workspace members 并集；master 上另会话 PLAN-640/014 并行落库，plan484_024_charts 4 测为 637 B4 配方化滞后测试非本计划回归——diff 零 chart 文件归因） |
+| ledger_refreshed | .autoos/specs.json 五条 P024-1（reports/architecture/designs/tests/reviews），源=archive 路径 + docs/specs/shell/dashboard.md + ADR-21 |
+| archived | docs/plans/archive/024-dashboard-widgets.md（本文件），status archived |
+| cleaned | 四 worktree 过闸后全移除（auto-os clean / auto-lang 首闸 BLOCKED——AC-05 验证轮 pnpm junctions，rmdir 仅拆链接清出后复闸 clean / auto-down clean / auto-os-config clean）；分支 plan-024-dev（d4a47ea）与 auto-os-024-dev（44bc12ac3）以 -d 删除=祖先已合实证；组目录 .wt/os-024 移除，.wt 零残留 |
 
 ## 10. 待澄清事项
 
