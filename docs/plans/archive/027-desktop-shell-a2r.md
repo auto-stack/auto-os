@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-027
-status: reviewed              # rev2 复审 pass（F-01 修复闭环）；next: merge
+status: archived              # PLAN-027:r2 交付完成（2026-09-18 merge；S1/S2 + B 裁定收口；S3→B 程序另立）
 feature_name: desktop-shell-a2r
 author: [agent]
 created_at: 2026-09-18
@@ -600,6 +600,26 @@ auto-os`。
 → AC-06/07。
 
 ## 9. 复审记录
+
+- 2026-09-18 /auto-plan:merge 收据，`PLAN-027:r2`：
+  - `prepared`——reviewed 基线（63d981d49 + v1.10 43163746c）；canonical
+    delta = SD-01..04（已随 worktree 提交在分支）；交付提交链
+    97d0bb75d/274265345/611fbff2f/5bd220412/d6e8da838/63d981d49/
+    43163746c。
+  - `landed`——master 前进（PLAN-642/650/651 簿记与 650 渲染 easy wins）
+    → worktree reconcile merge 192e0d36c（零冲突；全量 no-fail-fast
+    失败集 41 项与基线复跑全等 MERGE-BASELINE-EQUAL）→ lang main ff
+    落地（ancestry：192e0d36c 为现 master 祖先；文件在册 + 门禁族
+    master 冒烟 3/3 绿）。
+  - `ledger_refreshed`——auto-os `.autoos/specs.json` 沉淀
+    P027-1×4（reports/architecture/designs/tests）+ P027-r1（reviews），
+    读回验证 5 条（related=PLAN-027）。
+  - `archived`——本件 git mv → `docs/plans/archive/
+    027-desktop-shell-a2r.md`，status archived，
+    completion_kind: delivered。
+  - `cleaned`——（补记随清理提交）
+- 收据要点：S3 交接 = B 形态程序另立新计划（图像 DrawOp 通道立项
+  先行；/auto-plan:new 承接）；T-07/T-08 退役留痕 §7/§8。
 
 - 2026-09-18 /auto-plan:review 复审（F-01 修复闭环后终审）：
   `stage: review`，PLAN-027 rev 2。`outcome: pass` → **status =

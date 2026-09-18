@@ -170,6 +170,18 @@
           "file": "docs/plans/archive/026-native-queue-coverage-ramp-2.md",
           "title": "PLAN-026 变更摘要 — native-queue-coverage-ramp-2（display/布局二批 + IME 闭环 + auto 复测不翻）",
           "content": "PLAN-026 落地（零 wire 变体，PROTOCOL_VERSION 仍 1）：display/布局二批 native 臂（image 占位保真 80×80 实证/progress 比例几何/grid cols 等宽 walker/container center+legacy 尺寸+w-full 满宽）；a2r codegen 降级臂 D1 定案（icon→lucide Image 尺寸契约、badge 样式 Row、card/divider/spacer/avatar styled container、scroll→scrollable、link 子件组合、image src 绑定容差；断裂映射 badge/card/icon/scroll/link 移除）；IME 闭环两端（投影器 Commit/Preedit 尾拼/Cancelled + 宿主 broker_ime_commit/preedit/cancelled 焦点窗路由）；覆盖表 kinds+image/progress、layouts+grid、样式降级放行批；imagesurface 整 kind not-yet（D5）；auto 复测 judged 76.2%<95% → 维持 independent 不翻（翻转点已备 one-line）。canonical：auto-lang/docs/design/autoui/desktop-protocol-v1.md §1.8。"
+        },
+        {
+          "related": [
+            "PLAN-027"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P027-1",
+          "title": "PLAN-027 变更摘要 — desktop-shell-a2r（rev2 S1/S2 收口 + B 裁定）",
+          "content": "shell pack 五件 a2r 编译化形态无关资产面（~1800 行 .at；S1 生成域 + S2 typed 接缝）。§10-① 用户裁定主形态 = B（outproc——shell 与 app 同律独立进程、RenderQueue 发桌面 compositor 统一渲染）+ 双轨常驻，T-07/T-08（A 形态装配）退役，S3 交接 B 程序（前置序列：图像 DrawOp 通道立项先行 → 025 键盘真机实测 → 覆盖二批 → shell outproc client + 启动序/看门兵）。S1：裸 popover 臂（Point 锚/ondismiss）、合成件直发既有 WindowThumbnail/WorkspacePreview 变体、mouse-area 臂（普查修正 C：a5 误记未用，实勘 26 处）、div→container/taskbar→row、显式拒绝门（未知 prop/事件 compile_error）、五件全量词汇门；随附修复 ViewBuilder.build() 布局件 onclick 丢件 + with_button_preset variant/size 消费。S2：ShellProjection plain-data 载体（指纹门控/原子换装/召唤事件/clock 独立脏帧零漂移；wire 叶面保形 lowering 单点）+ sync_shell_windows 单源化（build+apply）+ DesktopBusHandle（枚举载荷单方法 + send_record 同一 parse_records 单点分型）/DesktopBusQueue/HostStorage（普查修正 D：storage 已 shim 双轨同后端）；52 动词 roundtrip 对拍捕获并修复 SetThemeName encode 死词（PLAN-601 漏逆向）。回归：全量失败集与 base 41 项本机预存红逐一全等（MERGE-BASELINE-EQUAL 含 650 reconcile 后复跑）；landing=master 192e0d36e（reconcile merge 后 ff，plan651 簿记续推）。",
+          "file": "docs/plans/archive/027-desktop-shell-a2r.md"
         }
       ]
     },
@@ -437,6 +449,18 @@
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
           "title": "SD-01 协议 v1.8 增量 — display 族占位保真 + IME 闭环 + auto 裁决（§1.8）",
           "content": "desktop-protocol-v1.md §1.8：display 族 native 臂入册口径（image/progress kind + grid layout + center/legacy/w-full 消费；icon/badge/avatar/divider/separator/spacer/a 降级归一——分表非缺口；imagesurface 整 kind not-yet）；IME 闭环两端（Ime* v1.0 在册变体启用 + broker_ime 生产路由，live 壳订阅缺口并入 P025-D1）；a2r 降级臂全录（VM 轨形态对齐）；auto 复测数据行（judged 76.2%<95% 不翻，翻转点 resolve_native_frame_mode Covered 臂 one-line）；样式降级放行批逐类随注。SD-03：auto-lang ui/overview.md provisional 指针 v1.8 对齐。"
+        },
+        {
+          "related": [
+            "PLAN-027"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P027-1",
+          "title": "SD-02 协议 v1.10 — typed 快照通道 + 命令/storage typed 接缝",
+          "content": "投影协议 v1.10（PLAN-027 SD-02）：ShellProjection plain-data 载体承 §2 字段表全量（typed 容器 + wire 叶面保形 lowering 单点 interpreted_writes）；apply 推送语义与指纹门控条款等价（fp 不变整组跳写/有变原子换装；召唤事件 ShellEvent 位随快照；clock/date 独立通道 ShellClock；cursor/drag 只写不置脏不入组）；懒挂载 payload 四件（Switcher/Notes/Launcher/DashboardSnapshot）+ DesktopSurfaceSync；ShellManifest 五件装配清单（两常驻三懒挂载）。命令上行：DesktopBusHandle 枚举载荷单方法 + send_record（parse_records 同一单点分型，双轨零分叉）+ DesktopBusQueue；storage = shim_storage_* 双轨同后端（HostStorage/ShimHostStorage 显式注入面）。双载体并存：解释态通道原样不动（零回归锚）；typed 通道可序列化 = B 形态 wire payload 词汇基础。模块面 docs/specs/auto-lang/ui/design/shell-a2r-seams.md（provisional）。",
+          "file": "auto-lang/schema/projection-protocol-v1.md"
         }
       ]
     },
@@ -576,6 +600,18 @@
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
           "title": "SD-01 设计要点 — D1 全降级定案/防漏钉钉②口径/翻转双出口",
           "content": "T-01 定案：icon/a/badge/card 全 codegen 降级（推翻 icon 变体倾向——VM 轨 AuraViewBuilder icon→View::Image lucide 承载契约 aura_view_builder.rs:6455 '两端必须一致'）；divider/spader/avatar 降级形态对齐 VM convert_*（spacer 用 flex-1/样式双档）；覆盖表 center 不入册（View 层归一 Container，scan 无 kind 产出点——防漏钉钉②）；imagesurface 整 kind not-yet（交互回调无采集面，登记即静默放行——I3）；翻转双出口 = ≥95% 达标翻/不达标留痕，两出口均 pass 态禁无数据翻转。"
+        },
+        {
+          "related": [
+            "PLAN-027"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P027-1",
+          "title": "SD-01/SD-04 — shell-a2r 设计文档裁定落定 + S1/S2 接缝面 spec",
+          "content": "SD-01：docs/design/autoui/desktop-shell-a2r.md 状态改「裁定落定 = B 形态 + 双轨常驻」（§10-① 用户裁定记录含 A 线事实注记：A 只链 shell 五件不涉 App；B 前置序列成文；§6 S3 改道注；§10 四项全落定；文末实施锚定 S1/S2 提交映射）。SD-04：docs/specs/auto-lang/ui/design/shell-a2r-seams.md（provisional）——S1 臂族契约（popover/合成件/mouse-area/拒绝门/词汇门）+ S2 载体/总线/storage/对拍门 + 零回归面 + 已知限制（按钮动态 style+variant preset 不注入双轨分歧候选、p010 基线红疑因、pack 冒烟补 dashboard）。",
+          "file": "auto-lang/docs/design/autoui/desktop-shell-a2r.md"
         }
       ]
     },
@@ -771,6 +807,18 @@
           "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
           "title": "PLAN-026 测试语料 — p026_native_display_arm 三腿 + 金样/防漏钉/数据行",
           "content": "e2e p026_native_display_arm 三腿真 exe（AUTO_DESKTOP_E2E 门 + scratch026 载体）：①profile-card queue 孵化 image 占位 80×80+Jane Cooper/Follow 帧；②display026 display 族全件（icon 14×14 lucide 占位/badge/divider 4px 满宽/avatar 40×40/grid 2×2/center）；③003 broker_ime_commit(\"100\")→212 联动。单测：display_family_placeholder_golden/grid_layout_and_hit_golden/center_container_golden/ime_commit_preedit_cancelled_loop/broker_ime_production_routes/native_flip_coverage_data_row（not-flip 裁定钉）/native_coverage_matrix_pinned_to_projector。帧留痕 docs/plans/reports/assets/026/ 三件；全量 tf 3615/3616（唯一红=plan367 基线红实锤，先于 026）。"
+        },
+        {
+          "related": [
+            "PLAN-027"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P027-1",
+          "title": "PLAN-027 测试语料 — 词汇门/拒绝门/roundtrip/投影门控族 + desktop_mcp 五套复跑",
+          "content": "门面（master 192e0d36e 复跑绿）：test_shell_pack_codegen_vocabulary_gate（真源五件 (tag,prop/event) 全量对表）、test_codegen_rejects_unknown_prop_and_event（compile_error 断言）、bare_popover/host_synth_slot golden、desktop_command_roundtrip_full_vocabulary（52 变体显式枚举，捕获 SetThemeName 死词）、投影门控族 8 测 + ShellProjection 载体单测。全量：cargo t -p auto-lang --no-fail-fast 失败集 41 项与 base 逐一全等（reconcile merge 后复跑 MERGE-BASELINE-EQUAL）。desktop_mcp 五套解释形态实跑：025-sys-monitor 13/13、038-minesweeper 25/25、013-todo 22/22、011-calculator 2×17/17（flake 与 master 同签名双侧复现=预存）、028-launcher 16 pass/5 fail（败项 master 基线二进制逐项全同=套件期望漂移预存，F-02 随桌面维护线）。",
+          "file": "auto-lang/crates/auto-lang/src/ui/shell_projection.rs"
         }
       ]
     },
@@ -981,6 +1029,18 @@
           "file": "docs/plans/archive/026-native-queue-coverage-ramp-2.md",
           "title": "PLAN-026 native-queue-coverage-ramp-2 复审 pass + merge 收据（r1）",
           "content": "复审 pass（2026-09-18，rev1，reviewed lang 3e410163a/os 9c40199，base lang e352437b0/os 9b5fbcf；实施会话内复审声明+工件重建）。AC-01..07 全 pass：cargo tf 全量 3600/3599（唯一红 plan367 real_sidebar_at_parses_with_navtree=基线红实锤——base 独立检出同红，PLAN-637 配方 vs plan367 测试，026 diff 未触面）；p026 e2e 三腿 + 11 项 AC 证据测试复跑全绿；AC-06 不翻出口（judged 76.2%<95%，数据行报告在案）；findings：plan affects 清单预测面残留（记录不改判）+ 复审开工工件脏面已还原（P633-D3 同族）。merge：back-sync lang 91 提交/os 27 提交零冲突，同步后 tf 3615/3616 + e2e 复跑绿；profile-card 载体统一命名（scratch=成员=包名）+ tracked 成员刷新。lang master fc8264f4a / os main 01d3483+。"
+        },
+        {
+          "related": [
+            "PLAN-027"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P027-r1",
+          "title": "PLAN-027 desktop-shell-a2r rev2 复审 pass 与合并收据",
+          "content": "review：F-01（SD-02 canonical 未落笔）fixed-in-review——协议叠 v1.10 闭环；F-02 minor 不阻（launcher 套件锚数漂移属桌面维护线）。outcome pass → reviewed。merge：lang plan-027-dev（97d0bb75d/274265345/611fbff2f/T-05 5bd220412/d6e8da838/63d981d49/v1.10 43163746c + reconcile 192e0d36c）ff 落 master；os 侧无交付（SD-03 台账 1313d00 与簿记在 os main）。账本本条 + P027-1×4 沉淀；计划归档 docs/plans/archive/027-desktop-shell-a2r.md。",
+          "file": "docs/plans/archive/027-desktop-shell-a2r.md"
         }
       ]
     }
