@@ -182,6 +182,18 @@
           "title": "PLAN-027 变更摘要 — desktop-shell-a2r（rev2 S1/S2 收口 + B 裁定）",
           "content": "shell pack 五件 a2r 编译化形态无关资产面（~1800 行 .at；S1 生成域 + S2 typed 接缝）。§10-① 用户裁定主形态 = B（outproc——shell 与 app 同律独立进程、RenderQueue 发桌面 compositor 统一渲染）+ 双轨常驻，T-07/T-08（A 形态装配）退役，S3 交接 B 程序（前置序列：图像 DrawOp 通道立项先行 → 025 键盘真机实测 → 覆盖二批 → shell outproc client + 启动序/看门兵）。S1：裸 popover 臂（Point 锚/ondismiss）、合成件直发既有 WindowThumbnail/WorkspacePreview 变体、mouse-area 臂（普查修正 C：a5 误记未用，实勘 26 处）、div→container/taskbar→row、显式拒绝门（未知 prop/事件 compile_error）、五件全量词汇门；随附修复 ViewBuilder.build() 布局件 onclick 丢件 + with_button_preset variant/size 消费。S2：ShellProjection plain-data 载体（指纹门控/原子换装/召唤事件/clock 独立脏帧零漂移；wire 叶面保形 lowering 单点）+ sync_shell_windows 单源化（build+apply）+ DesktopBusHandle（枚举载荷单方法 + send_record 同一 parse_records 单点分型）/DesktopBusQueue/HostStorage（普查修正 D：storage 已 shim 双轨同后端）；52 动词 roundtrip 对拍捕获并修复 SetThemeName encode 死词（PLAN-601 漏逆向）。回归：全量失败集与 base 41 项本机预存红逐一全等（MERGE-BASELINE-EQUAL 含 650 reconcile 后复跑）；landing=master 192e0d36e（reconcile merge 后 ff，plan651 簿记续推）。",
           "file": "docs/plans/archive/027-desktop-shell-a2r.md"
+        },
+        {
+          "related": [
+            "PLAN-028"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P028-1",
+          "title": "PLAN-028 变更摘要 — drawlist-image-channel（B 形态前置序列第一件交付）",
+          "content": "图像通道 v1 = src 引用 + 宿主侧解析（零位图字节过线、零新依赖）：wire DrawOp::Image{rect, src, fit}（tag 6 追加式，ImageFit v1 = Stretch，PROTOCOL_VERSION 维持 1）+ src 词汇表（本地文件/builtin:/data:/http(s) 3s 超时/thumbnail://{wid} 虚拟引用；lucide:/svgdoc: 字形线 not-yet）+ 宿主 Frame::draw_image 仓内首用 + 两投影臂同刻度真图升级（rect 推导零变化）+ TS decode tag 6 必达/占位渲染。交付链 lang plan-028-dev f89a0c5eb→merge 6bd85aa2e（master 02c04ad42 ff 落地）+ os plan-028-dev 1eed4ed。known-debt：P026-D1 图像半句核销；P028-D1..D3 not-yet 三项（位图过线/字形真渲/web 真位图）。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md"
         }
       ]
     },
@@ -461,6 +473,18 @@
           "title": "SD-02 协议 v1.10 — typed 快照通道 + 命令/storage typed 接缝",
           "content": "投影协议 v1.10（PLAN-027 SD-02）：ShellProjection plain-data 载体承 §2 字段表全量（typed 容器 + wire 叶面保形 lowering 单点 interpreted_writes）；apply 推送语义与指纹门控条款等价（fp 不变整组跳写/有变原子换装；召唤事件 ShellEvent 位随快照；clock/date 独立通道 ShellClock；cursor/drag 只写不置脏不入组）；懒挂载 payload 四件（Switcher/Notes/Launcher/DashboardSnapshot）+ DesktopSurfaceSync；ShellManifest 五件装配清单（两常驻三懒挂载）。命令上行：DesktopBusHandle 枚举载荷单方法 + send_record（parse_records 同一单点分型，双轨零分叉）+ DesktopBusQueue；storage = shim_storage_* 双轨同后端（HostStorage/ShimHostStorage 显式注入面）。双载体并存：解释态通道原样不动（零回归锚）；typed 通道可序列化 = B 形态 wire payload 词汇基础。模块面 docs/specs/auto-lang/ui/design/shell-a2r-seams.md（provisional）。",
           "file": "auto-lang/schema/projection-protocol-v1.md"
+        },
+        {
+          "related": [
+            "PLAN-028"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P028-1",
+          "title": "SD-01 协议 v1.9 — 图像 DrawOp 算子 + src 词汇表 + 降级纪律",
+          "content": "DrawOp::Image{rect, src, fit}（tag 6 追加式——op 字段定长不可尾部追加，filter/border_radius 不入 wire 未来新 tag）；ImageFit v1 仅 Stretch=1（未知值 UnknownTag 拒收，FrameMode/PixelFormat 同纪律）。src 词汇表（load_image_bytes 单源）：本地文件/builtin:ricepaper|inkwash/data:[mediatype][;base64,]/http(s)://（reqwest 3s）/thumbnail://{wid} 虚拟引用；not-yet 词汇 lucide:/svgdoc: 经 I3 未解析降级。宿主 broker_surface 解析面：进程级 Handle 缓存（key=src 含负缓存）+ Frame::draw_image（iced 0.14 image feature 链）+ http miss 占位先行/后台线程解码/下帧翻真（零新增触发器——鼠标/toast tick/MCP 心跳/帧泵驱动）+ 未解析 IMAGE_PLACEHOLDER 占位 + [drawlist-image] 观测（src 级去重）。thumbnail:// 每帧 snapshot_window_stale 直查（SWR，不进永久句柄缓存）。帧尺寸边界：16KiB Commands 槽 + write_slot 显式超槽拒绝（无静默截断）。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md"
         }
       ]
     },
@@ -612,6 +636,18 @@
           "title": "SD-01/SD-04 — shell-a2r 设计文档裁定落定 + S1/S2 接缝面 spec",
           "content": "SD-01：docs/design/autoui/desktop-shell-a2r.md 状态改「裁定落定 = B 形态 + 双轨常驻」（§10-① 用户裁定记录含 A 线事实注记：A 只链 shell 五件不涉 App；B 前置序列成文；§6 S3 改道注；§10 四项全落定；文末实施锚定 S1/S2 提交映射）。SD-04：docs/specs/auto-lang/ui/design/shell-a2r-seams.md（provisional）——S1 臂族契约（popover/合成件/mouse-area/拒绝门/词汇门）+ S2 载体/总线/storage/对拍门 + 零回归面 + 已知限制（按钮动态 style+variant preset 不注入双轨分歧候选、p010 基线红疑因、pack 冒烟补 dashboard）。",
           "file": "auto-lang/docs/design/autoui/desktop-shell-a2r.md"
+        },
+        {
+          "related": [
+            "PLAN-028"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P028-1",
+          "title": "SD-01/02/03 — §1.9 增量落笔 + 台账 3c1 行 + overview provisional 条目",
+          "content": "SD-01：desktop-protocol-v1.md §1.9 v1.9 增量六条（wire/词汇表/宿主栅格化与降级/thumbnail 虚拟引用/两投影臂同刻度/TS 面）+ 顶表 v1.5–v1.9 回填（v1.5–v1.8 欠账清偿，日期 git pickaxe 取证）+ §1.8 边界核销随注。SD-02：auto-os 台账 3c1 行（B 前置序列第一件交付登记，os plan-028-dev 1eed4ed）。SD-03：docs/specs/auto-lang/ui/overview.md 图像 DrawOp 通道 provisional 条目（指针节——权威正文 §1.9，测试面/词汇面摘要）。",
+          "file": "auto-lang/docs/specs/auto-lang/ui/overview.md"
         }
       ]
     },
@@ -819,6 +855,18 @@
           "title": "PLAN-027 测试语料 — 词汇门/拒绝门/roundtrip/投影门控族 + desktop_mcp 五套复跑",
           "content": "门面（master 192e0d36e 复跑绿）：test_shell_pack_codegen_vocabulary_gate（真源五件 (tag,prop/event) 全量对表）、test_codegen_rejects_unknown_prop_and_event（compile_error 断言）、bare_popover/host_synth_slot golden、desktop_command_roundtrip_full_vocabulary（52 变体显式枚举，捕获 SetThemeName 死词）、投影门控族 8 测 + ShellProjection 载体单测。全量：cargo t -p auto-lang --no-fail-fast 失败集 41 项与 base 逐一全等（reconcile merge 后复跑 MERGE-BASELINE-EQUAL）。desktop_mcp 五套解释形态实跑：025-sys-monitor 13/13、038-minesweeper 25/25、013-todo 22/22、011-calculator 2×17/17（flake 与 master 同签名双侧复现=预存）、028-launcher 16 pass/5 fail（败项 master 基线二进制逐项全同=套件期望漂移预存，F-02 随桌面维护线）。",
           "file": "auto-lang/crates/auto-lang/src/ui/shell_projection.rs"
+        },
+        {
+          "related": [
+            "PLAN-028"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P028-1",
+          "title": "PLAN-028 测试语料 — t028_* 解析族 + p028_image_arm 真子进程 e2e + 双侧 golden",
+          "content": "单测：message.rs image_op_round_trip_and_golden（src 四形态/空 src/直编 golden 载荷锚点 80/未知 fit 拒收）；broker_surface t028_* 四件（data:/builtin: 解析缓存、负缓存与 not-yet 词汇降级、http 占位先行后台落缓存（回环拒绝端口）、thumbnail miss/命中/SWR 三路径（__test_backdate 替身））；display_family golden（Image op 断言）+ climb_004_image_op + t1_display 金样（仅 quad→image 行）。e2e：p028_image_arm（AUTO_DESKTOP_E2E，真子进程 re-exec queue 载体）——004 http 80×80 cravatar op + p028-image-channel 语料五 src 形态一帧 + 宿主解析三路径实驱 + 度量行（frame_bytes=365/src_bytes=245）+ AUTO_028_ASSETS 帧留痕 docs/plans/reports/assets/028/。TS：vitest 27/27（IMAGE_FRAME_HEX 双侧对拍 + 未知 tag 拒收 + 占位渲染）。回归门：日常档 5141 测失败集与 master 基线双向全等（40 项 ui-iced 组合既有红）；tf 差集空；tt 双向全等（6=6）。",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs"
         }
       ]
     },
@@ -1041,6 +1089,18 @@
           "title": "PLAN-027 desktop-shell-a2r rev2 复审 pass 与合并收据",
           "content": "review：F-01（SD-02 canonical 未落笔）fixed-in-review——协议叠 v1.10 闭环；F-02 minor 不阻（launcher 套件锚数漂移属桌面维护线）。outcome pass → reviewed。merge：lang plan-027-dev（97d0bb75d/274265345/611fbff2f/T-05 5bd220412/d6e8da838/63d981d49/v1.10 43163746c + reconcile 192e0d36c）ff 落 master；os 侧无交付（SD-03 台账 1313d00 与簿记在 os main）。账本本条 + P027-1×4 沉淀；计划归档 docs/plans/archive/027-desktop-shell-a2r.md。",
           "file": "docs/plans/archive/027-desktop-shell-a2r.md"
+        },
+        {
+          "related": [
+            "PLAN-028"
+          ],
+          "status": "published",
+          "created": "2026-09-18",
+          "last_modified": "2026-09-18",
+          "id": "P028-r1",
+          "title": "PLAN-028 drawlist-image-channel rev1 复审 pass 与合并收据",
+          "content": "review：outcome pass → reviewed（独立复跑 scoped/e2e/TS 绿；diff 审查 message.rs 零删除行=tag 1–5 冻结、两投影臂 rect 推导不动；回归门 tf/tt/日常档三线基线全等；SD-03 钉定 overview.md）。merge：master 前进两轮 reconcile（652 VM Tick 特征批→KNOWN-DEBT 增补五/六双留冲突解+全量复验 MERGE-BASELINE-EQUAL 5146 测 39 红全在基线集；655 簿记 docs-only 免复验）→ lang master ff 02c04ad42（f89a0c5eb 祖先实证 + 主干冒烟 6/6 绿）。交付：lang 6bd85aa2e（ff 至 02c04ad42）+ os 1eed4ed。",
+          "file": "docs/plans/archive/028-drawlist-image-channel.md"
         }
       ]
     }
