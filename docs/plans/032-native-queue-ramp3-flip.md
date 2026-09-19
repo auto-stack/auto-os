@@ -438,7 +438,7 @@ crate 串行，非硬前置）。
   动作：§5.2 T-03。
   验证：tabs golden + on_select 单测 + 046 a2r 编译（若同批）。
   → AC-01/03。
-  [✅ R1-F2 已修复] 孪生收窄 button-only（commit 7ba0dd2 计划分支尾）
+  [✅ R1-F2 已修复] 孪生收窄 button-only（commit 06243bdb3）
   ——tabs variant 发射 tf/tt 双档恢复绿；顺带治愈 master 既有红
   display_family（icon size 传导恢复）；046 编译复跑过（22s）；ui-iced
   档回归绿。tf/tt 定稿清单 = mouse_area + a2r×4（master 基线既有）+
