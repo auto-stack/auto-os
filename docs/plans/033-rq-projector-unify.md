@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-033
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: reviewed                 # drafting → executing → execution_done → reviewed → archived
 feature_name: rq-projector-unify
 author: [agent]
 created_at: 2026-09-19
@@ -543,6 +543,33 @@ auto-os`。
   波及 123+20+4/测试依赖与重基线口径全部 file:line 在案）；`next:
   work`——**前置 = 032 merge + 主检出 specs.json 冲突清理**。悬置决策
   §10（①–④），D1 回写位为核心，均不阻塞 T-01。
+
+- 2026-09-19 /auto-plan:review 终审：`stage: review | PLAN-033 | rev 1 |
+  pass | reviewed 9c5596d95(lang)/045f0b3(os) | base 857235623(lang)/
+  a54e37f(os) | dep auto-down@10da13b(detached) | spec inputs:
+  desktop-protocol-v1.md §1.13 先行版+KNOWN-DEBT+os 台账 M7 节 |
+  AC-01..06 全 pass | findings: F-033-R1（merge 前置——主检出
+  renderer.rs 两行 [TRACE] eprintln 他方 WIP 仍在场[复审时实核
+  git diff 2 行]——不阻断 review[非本 diff 面]，merge 前须属主处置
+  或显式清理）；F-033-R2（info——全量套件基线在册红谱系：nextest
+  ui-iced 全量 mine 74 ⊆ base 76[comm 差集空=零新增失败，基线
+  857235623 实证]；tf 档 mouse_area/autodown codegen 两红[基线单独
+  复跑同败]；cargo test 全量并行 270 败类[base 同款——在册"master
+  cargo t 破坏"状态]；imagesurface[PLAN-656 尾巴]；015-notes 生成器
+  漂移[660/656 线]——全部基线归因，无一为本计划回归）| evidence：
+  ①nextest 全量对照：`cargo nextest run -p auto-lang --lib
+  --features ui-iced --no-fail-fast` @branch=74 败/@base(detached
+  857235623 临时 worktree)=76 败，comm -23 差集空；②基线单测复跑
+  mouse_area/autodown=FAILED@base、vue/p656 子集=PASS@base 单跑
+  （全量并行才败）；③os 桌面 smoke：`AUTO_LANG_ROOT=.wt/lang-033/
+  auto-lang bash scripts/smoke-031-rqhost.sh` 六腿全 OK（双 -q app
+  共享 daemon/首帧/降级观测/kill 双向）；④桌面 exe 臂：
+  AUTO_DESKTOP_E2E=1 p032_ramp3_flip_arm ok（rust-track 再生→注入
+  →采纳→窗→关窗码 0+零残留）；⑤p033_rq_unify_arm 真机 e2e +
+  assets/033（内存对照行 8016KB vs 225088KB）；⑥AC-04 grep 非
+  注释零 AppProjector + 归档双侧零改动 | next: merge（前置=§10⑤
+  [TRACE] 属主处置；worktree 组三件：lang-033/auto-lang +
+  os-033/auto-os + lang-033/auto-down[零改动可随组收]）。
 
 ## 10. 待澄清事项
 
