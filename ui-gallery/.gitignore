@@ -1,2 +1,5 @@
 src/front/tests/screenshots/
 deps/
+src/front/tests/cdb_logs/
+src/front/tests/*.log
+src/front/tests/*.exe
