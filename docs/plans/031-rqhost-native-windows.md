@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done          # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-man/src/{automan.rs,rust_ui.rs}            # vm 装载链分岔 + rust 轨注入
   - auto-lang/docs/design/autoui/{desktop-protocol-v1.md,virtual-desktop.md} # 协议增量 + 形态入册
   - auto-os/docs/plans/autos-desktop-program.md                      # 台账行
-current_step: 7
+current_step: 8
 total_steps: 8
 ---
 
@@ -618,8 +618,7 @@ auto-os`。
   原子注册（T-02 已落 lock_pipe_second_claim_fails——serve 级
   AlreadyRunning 断言）。
   → AC-03/05。
-- **T-07 [lang+os] e2e 与度量** [ ]（复审 P031-R1..R4 重开——e2e 四腿缺口；已落证据保留）
-  [前次证据 2026-09-19]
+- **T-07 [lang+os] e2e 与度量** [x] [✅ 已完成 2026-09-19（含 R1..R4 修复轮）]
   文件：lang `stage3.rs`（p031_rqhost_arm）+ 截图 assets/031/；os
   smoke 脚本。
   动作：AC-01..06 逐条留痕 + 度量行。
@@ -633,6 +632,20 @@ auto-os`。
   冻结（既有缝，桌面 broker 同益）→ 回退管道内联 FrameReady + 合成
   20KB 帧回归钉；os 侧 smoke-031-rqhost.sh 生产 well-known 全链演示
   PASS（含 -d 旗标只喂 pac 的既有怪癖记录 + exec 形态 spawn 工程坑）。
+  **修复轮（P031-R1..R4，commit 34bb52532）**：R3 末窗门单测
+  last_window_close_exits_daemon（rq_update 真行为四态）+ e2e 关窗 X 腿
+  （WM_CLOSE→app 码 0）+ 末窗自退腿（降级窗关→daemon3 自退码 0+观测行）；
+  R2 键入闭环改集成承载 vm_typing_loop_over_pipe（真管道×真 003 源×真
+  ClientPump×rq_update 输入臂：键入 100→宿主合成帧文本 212[p025 同级]；
+  hello 帧文本不变+revision 零前进=不串扰）——e2e 真机合成输入撤腿=本机
+  ToDesk 输入钩子类环境对合成输入不生效（SendInput 零送达×2 + winit 0.30
+  WM_POINTER 路径忽略 legacy 投递消息；native_dock_e2e T4 同款环境事实
+  先例）；R4 自动孵化 e2e 腿（不预起 daemon→子进程自 spawn→锁持有→末窗
+  自退→锁让出）；R1 rust 轨 e2e 腿（counter 强制重生成→cargo -- 注入→
+  采纳开窗+首帧→WM_CLOSE 码 0；**根修=子进程 stderr PIPE 必须排水
+  [LineTail]——cargo 警告超 4KB 缓冲阻塞写端=构建假死**）。e2e 复跑全绿
+  23.56s（七腿）；desktop_protocol 183 绿+在册红×2（基线同红）；rqhost
+  13/13；rust_ui 复跑 23/23。
   → AC-01..06。
 - **T-08 [lang+os] 文档与台账收口** [x] [✅ 已完成 2026-09-19]
   文件：lang `desktop-protocol-v1.md`（§1.11）、`virtual-desktop.md`
@@ -648,6 +661,16 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:work 修复轮（R1..R4）：`stage: work | PLAN-031 |
+  rev 1 | pass | code: lang 34bb52532（+观测行/排水根修含其中）|
+  task_ids: T-07 | evidence: e2e p031_rqhost_arm 七腿全绿 23.56s（新增
+  关窗 X/末窗自退/自动孵化/rust 轨四腿）；rqhost 13/13（+末窗门四态
+  单测 +键入闭环集成测试[真 003 源 212 联动+零串扰]）；desktop_protocol
+  183 绿+在册红×2 基线同红；rust_ui 23/23 | blockers: 无 | next: review
+  （R1..R4 闭环复审）。执行期环境裁定记录：真机合成输入（SendInput/
+  PostMessage）在本机 ToDesk 钩子类环境不可用——键入闭环按 486 两级
+  退路先例改集成承载；屏幕截图留痕裁撤（agent 桌面覆盖层入镜两轮实证
+  ——留痕=进程清单+daemon stderr+revision 观测行）。
 - 2026-09-19 /auto-plan:review 第一轮：`stage: review | PLAN-031 | rev 1 |
   needs_fix | reviewed_commit: lang 5a64bd474 / os d096fb5 | base: lang
   08526fda8 / os 3cd6b12 | deps: auto-down dep-031@a615d69（零内容改动）|
