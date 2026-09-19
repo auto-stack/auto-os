@@ -89,7 +89,7 @@ store PlayerStore {
         // 扫描本地音乐库
         .Load -> {
             try {
-                let data = json.to_value(Http.get_json("/api/media/scan"))
+                let data = json.to_value(Http.get_json("http://127.0.0.1:3358/apps/020-music-player/api/media/scan"))
                 .playlist = data.entries ?? []
                 .root_missing = data.root_missing ?? false
                 .library_error = ""

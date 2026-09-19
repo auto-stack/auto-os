@@ -1,0 +1,51 @@
+// d017chat_chat_store.at — SharedStore (Plan musk-022 & Plan 544).
+// Consumes the SSE stream via codegen-injected EventSource.
+// NOTE: `stream` MUST be imported here — Plan musk-022 Phase 4 filters
+// stream_endpoints by the store's api_imports, so omitting it silently drops
+// the SSE wiring (T6/T7 regression).
+use d017chat_api_client: list_contacts, list_messages, bot_reply
+
+// TypingEvent: the SSE payload for a typing signal (Plan 399 Phase 12).
+// Backend broadcasts {"event":"Typing","name":"<user>"}. The store reads .name.
+type TypingEvent { name str }
+
+store ChatStore {
+    model {
+        var contacts []Contact = []
+        var messages []Message = []
+        var active_contact_id str = "alice"
+        var search_query str = ""
+        var typing_name str = ""
+        var loading bool = false
+    }
+
+    msg { Init, SelectContact(str), Search(str), NewMessage(Message), Typing(TypingEvent), RefreshMessages, TriggerBot(str) }
+
+    on {
+        .Init -> {
+            .loading = true
+            .contacts = d017chat_api_client.list_contacts()
+            .messages = d017chat_api_client.list_messages()
+            .loading = false
+        }
+        .SelectContact(id) -> {
+            .active_contact_id = id
+        }
+        .Search(query) -> {
+            .search_query = query
+        }
+        .NewMessage(msg) -> {
+            .messages.push(msg)
+        }
+        .Typing(evt) -> {
+            .typing_name = evt.name
+        }
+        .RefreshMessages -> {
+            .messages = d017chat_api_client.list_messages()
+        }
+        .TriggerBot(query) -> {
+            d017chat_api_client.bot_reply(.active_contact_id, query)
+            .messages = d017chat_api_client.list_messages()
+        }
+    }
+}

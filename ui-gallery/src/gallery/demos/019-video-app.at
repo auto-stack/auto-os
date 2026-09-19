@@ -4,7 +4,7 @@ use d019videoapp_d019videoapp_home_page: home
 // Left sidebar navigation with VideoApp logo, Home nav item, and SettingsPanel popup.
 
 use d019videoapp_video_store: VideoStore
-use settings: SettingsPanel
+use d019videoapp_settings: SettingsPanel
 
 // PLAN-637 B5 Phase B 映射（tier 收敛，同 008/009 口径）：zinc-100/gray-900→foreground；
 // zinc-400/300・gray-500/400→muted-foreground；bg-zinc-800/gray-100→bg-muted；
