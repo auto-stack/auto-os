@@ -559,8 +559,11 @@ crate 串行，非硬前置）。
   reports/architecture/designs/tests + P032-r2 reviews；121→126 items，
   读回校验 5/126 ✓；schema 八字段沿 031 同型）。**archived**——本文件
   `docs/plans/archive/032-native-queue-ramp3-flip.md`（git mv）+
-  status: archived + completion_kind: delivered。**cleaned**——见下条
-  补记。主检出冒烟：仪器 judged 22/22 + tabs 发射（ui-iced）绿；并行
+  status: archived + completion_kind: delivered。**cleaned ✅**——wt-guard
+  ×3 clean（lang-032/auto-lang + auto-down 依赖 + os-032/auto-os）→ 三
+  worktree 移除 + 双分支删除（lang plan-032-dev was 30c746af4 = master
+  tip；os plan-032-dev was 86910d1 = main tip——均已落地实证）+ 双组目录
+  （.wt/lang-032、.wt/os-032）移除；worktree list 复核零残留。主检出冒烟：仪器 judged 22/22 + tabs 发射（ui-iced）绿；并行
   会话 WIP（kitchen-sink/ui-cache 等）原样保全未动。
 
 - 2026-09-19 /auto-plan:review R2（增量复审；实施会话内——独立性受限
