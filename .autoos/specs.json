@@ -218,6 +218,18 @@
      "status": "published",
      "created": "2026-09-19",
      "last_modified": "2026-09-19"
+    },
+    {
+     "id": "P031-1",
+     "title": "PLAN-031 变更摘要 — rqhost-native-windows（第四运行形态交付）",
+     "content": "rqhost 共享合成器原生窗：auto run -q（vm/rust 两轨）= 宿主 OS 普通原生窗 × 共享 daemon（用户裁定砍 standalone）。rendezvous 采纳协议（well-known autodesk-rqhost + adopt␟<name> 管道串记录[DesktopBus 约定族，双动词兼容 incubate] + 锁管道 FILE_FLAG_FIRST_PIPE_INSTANCE 单实例仲裁 + per-adoption wait_connect 线程化）+ 客户端权威采纳（rqhost 无 resolver——Hello 凭据直接 activate）+ 生命周期语义（关窗→Close→码 0/app EOF→窗回收/宿主死→exit-on-EOF 策略档[桌面档 30s 重连不变]/末窗关→daemon 自退/15ms 帧泵）+ 输入按窗路由（window_id 路由键 + 029 LiveInput 族直调）+ CLI 两轨（-q/--render-queue + auto rqhost 子命令 + rust 轨 --autodesk-rqhost 标记注入[cargo -- 分隔符前置修复]）+ 大帧超 16KiB shm 槽回退管道内联（静默弃帧冻结根修，桌面 broker 同益）。零 wire 变体（PROTOCOL_VERSION 仍 1）。实测 daemon ~314MB + 每 app 边际 7-9MB private。交付链 lang plan-031-dev 08526fda8→05cc85485/27e833bc9（merge 调和含）+ os plan-031-dev a6dbc71→21b2cc4。",
+     "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+     "related": [
+      "PLAN-031"
+     ],
+     "status": "published",
+     "created": "2026-09-19",
+     "last_modified": "2026-09-19"
     }
    ]
   },
@@ -533,6 +545,18 @@
      "status": "published",
      "created": "2026-09-19",
      "last_modified": "2026-09-19"
+    },
+    {
+     "id": "P031-1",
+     "title": "SD-01/02 — 协议 §1.12 v1.12 增量 + Design 23 §4 第四形态行",
+     "content": "desktop-protocol-v1.md §1.12（rqhost 第四运行形态：rendezvous 采纳协议/客户端权威/生命周期语义/输入按窗路由/大帧回退/输入闭环承载裁定[ToDesk 合成输入环境不可用→集成承载]/边界注记[icon 忽略/单机器域/job object KD 债]/与 PLAN-030 ad-hoc attach 同源互链——节号 v1.12 = master 调和重编号，030 先落 §1.11）+ virtual-desktop.md Design 23 §4 后端矩阵增 Win/Mac·rqhost 共享合成器 B 形态行（standalone 裁定记录 + 314MB/7-9MB 实测注记）。",
+     "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+     "related": [
+      "PLAN-031"
+     ],
+     "status": "published",
+     "created": "2026-09-19",
+     "last_modified": "2026-09-19"
     }
    ]
   },
@@ -716,6 +740,18 @@
      "file": "auto-lang/docs/specs/auto-lang/ui/overview.md",
      "related": [
       "PLAN-030"
+     ],
+     "status": "published",
+     "created": "2026-09-19",
+     "last_modified": "2026-09-19"
+    },
+    {
+     "id": "P031-1",
+     "title": "SD-03/04 — 台账 3d 行 + ui overview provisional 指针节",
+     "content": "autos-desktop-program.md 裁定登记簿 3d 行（rendezvous/客户端权威/生命周期/输入路由/CLI 两轨/大帧根修 + 七腿 e2e 证据）+ specs/auto-lang/ui/overview.md rqhost provisional 指针节（13 项测/七腿；§1.12 互链；输入闭环承载裁定注记）。计划全文 docs/plans/archive/031-rqhost-native-windows.md（归档后路径）。",
+     "file": "auto-os/docs/plans/autos-desktop-program.md",
+     "related": [
+      "PLAN-031"
      ],
      "status": "published",
      "created": "2026-09-19",
@@ -957,6 +993,18 @@
      "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
      "related": [
       "PLAN-030"
+     ],
+     "status": "published",
+     "created": "2026-09-19",
+     "last_modified": "2026-09-19"
+    },
+    {
+     "id": "P031-1",
+     "title": "PLAN-031 测试语料 — rqhost 13 项 + e2e 七腿 + smoke",
+     "content": "rqhost 单测/集成 13（rendezvous 往返/锁仲裁/零装载采纳/并发接纳/泵回收 EOF/ensure 退避/全循环×真 ClientPump/输入不串扰/策略档/vm fork 凭据/大帧回退/末窗门四态/键入闭环[键入 100→212 联动+零串扰]）+ e2e p031_rqhost_arm 七腿（AUTO_DESKTOP_E2E 门：单/多 app、竞态、resize、kill 双向、关窗 X→码 0、末窗自退、真实自动孵化、rust 轨、降级显式；零残留清洁断言；留痕 reports/assets/031/[进程清单+daemon stderr]）+ os 冒烟 smoke-031-rqhost.sh（生产 well-known 全链）。回归门：desktop_protocol 190 绿+基线红×2；tf 3639/3643（4 红=master 谱系在册转交：ui_gen×2/kitchen_sink/ffi_dual_019）。",
+     "file": "auto-lang/src/ui/desktop_protocol/rqhost.rs",
+     "related": [
+      "PLAN-031"
      ],
      "status": "published",
      "created": "2026-09-19",
@@ -1215,6 +1263,18 @@
      "file": "docs/plans/archive/030-shell-outproc-client.md",
      "related": [
       "PLAN-030"
+     ],
+     "status": "published",
+     "created": "2026-09-19",
+     "last_modified": "2026-09-19"
+    },
+    {
+     "id": "P031-r3",
+     "title": "PLAN-031 rqhost-native-windows rev1 三轮复审 pass 与合并收据",
+     "content": "三轮复审（全实施会话内、工件重构口径）：第一轮 needs_fix P031-R1..R4（rust 轨零真机/键入腿/关窗+末窗门/自动孵化 e2e 缺腿）→ 修复轮四腿补齐 + 大帧根修；第二轮 needs_fix P031-R5/R6（e2e 脏文件卫生[实证击穿 tf 首跑]/delta 新鲜度）+ tf 全量门 4 红三重归因=master 谱系转交（022 旧树全绿+diff 零重叠+夹具内聚）→ 修复轮零残留断言+三处同步；第三轮 pass（AC-01..08 全过；R1..R4 证据按重复复审条款复用[实现字节不变]）。reviewed@lang af3bd9fd2/os e0cd1ce；merge 调和 master+70/os+21（§1.11 节号撞→031 重编号 §1.12/v1.12；台账 3c3/3d 共存；DesktopBus 臂+surfaces 尾段调和补面；合并树 e2e 七腿 PASS 76.68s + scoped 190 绿 + tf 3639/3643 同四在册红）。",
+     "file": "auto-os/docs/plans/archive/031-rqhost-native-windows.md",
+     "related": [
+      "PLAN-031"
      ],
      "status": "published",
      "created": "2026-09-19",
