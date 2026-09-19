@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-032
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done               # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-ramp3-flip
 author: [agent]
 created_at: 2026-09-19
@@ -10,7 +10,7 @@ plan_revision: 1
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
 new_spec_components:
-  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.12 v1.12 增量（review 定稿）
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.13 v1.13 增量（031 先占 §1.12——drafting 时预计 v1.12，依 merge 序实取 §1.13）
 touched_goals: []
 
 affects:
@@ -20,7 +20,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui_gen/rust.rs                         # tabs/tab a2r 断裂映射（依 D2 定案）
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                          # P026-D3 处置 + 新债随注
   - auto-os/docs/plans/autos-desktop-program.md                           # M7-a 批次行 + 裁定行
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -236,6 +236,90 @@ P026-D3 在册（KNOWN-DEBT :2278）。
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-06 依据。
 
+### 5.1 定案记录（T-01，2026-09-19，lang-032 worktree @ master 0c6b03fd3）
+
+**基线实测**（仪器复跑，含随附测试面两修复——见本节末）：overall
+16/37 = 43.2%（047-bp-admin 新例入场 36→37）、**judged 16/22 = 72.7%**
+（仪器桶 15 = parse-fail×10 + bridge-fail×4 + no-widget×1）、六缺项与
+p029 报告逐字一致：018（fixed/hidden/z-1）/021（sticky/top-1/z-1）/
+024（style-grid）/041（hidden）/046（tag:tabs）/012（native-unstyled）。
+补齐后 judged 预期 22/22 = 100% ≥ 95% 过门。
+
+- **D1 定位族 = A 分层**（采倾向）。absolute+offset 真渲：
+  `layout_view_block`/`layout_view_container` 内流循环完成后（父块尺寸
+  已量出）延迟放置——absolute 子级不入流不占 cursor，临时 ctx 走线量
+  尺寸（Popover tmp 先例 native_projector.rs:1336-1352）→ 锚点 = 父
+  内容盒原点 + offsets（top-/left- 直加；bottom-/right- 按父盒尺寸
+  反算——018 bookshelf.at:61 "absolute bottom-0 left-0 right-0" 徽条
+  即此形态）→ `shift_draw_op`/hit 平移后**追加主序之后**（覆盖序，
+  Popover 平移臂 :1370-1383 先例）。z 相对层级 = 同层追加序内按 z
+  排序；完整栈序 out of scope（I3 随注）。fixed/sticky 降级放行：
+  prefixes +"fixed"/"sticky" + 渲染 in-flow no-op（opacity/overflow
+  先例 :266-270/:702-712）；真源核对 018 app.at:24（"hidden md:flex
+  flex-col fixed inset-y-0 z-40" 桌面侧栏）、021 app.at:27（"sticky
+  top-0 z-30" 导航条）——判定翻绿、渲染保真边界显式随注；真渲债
+  §10-④ 登记。
+- **D2 tabs a2r 断裂 = 同批修**（采倾向）。断裂证据：`tag_to_view_fn`
+  "tabs"→"tabs" / "tab"→"tab"（rust.rs:5717-5718）发射 `View::tabs()`
+  （缺 `Vec<String>` 实参）/`View::tab()`（不存在）——046 a2r 轨不可
+  编译。修复：`generate_view_tree` 专属 `tag == "tabs"` 臂（input/
+  slider/select 先例 rust.rs:2870/3706/3763），按 convert_tabs 契约
+  （aura_view_builder.rs:1410-1439：tabslist 透明 / tabstrigger 标签+
+  value / tabscontent 内容 / tab 平铺）发射
+  `View::tabs(vec![..]).contents(vec![..]).selected(运行时 position
+  表达式).variant(..).on_select(闭包物化载荷消息——select 臂 :3757
+  -3762 先例).build()`；"tabs"/"tab" 断裂映射移除（026 T-02 link/a
+  先例，残余落 `_ => "col"` 兜底）。VM 轨扫描面补：`scan_native_node`
+  对 `View::Tabs` 落 `_ => {}`（coverage.rs:586）——contents 子树递归
+  缺口同批清偿（防漏钉②纪律）。
+- **D3 hidden = display:none + 响应式覆盖规则**。SC::Hidden → 子树
+  整体不渲染不占位。覆盖规则：parser 剥响应式前缀（class.rs:748
+  sm/md/lg/xl/2xl → rest）——"hidden md:flex" 解析为 [Hidden, Flex]
+  并存，CSS 桌面档 md:flex 胜（Tailwind 生成序 + 桌面目标假设；Inline
+  文档注释 class.rs:191 即此模式在案）→ 规则 = Hidden 在场且**无**
+  display 族类（Flex/FlexRow/FlexCol/FlexColReverse/Block/Inline/
+  InlineBlock/InlineFlex）才跳过。实现：NodeStyle.hidden 布尔 +
+  `layout_view_node` 单一 choke（:911 style 取出后、arm 分派前返
+  `Laid{(0,0)}` 零 ops）——全布局臂聚合连锁（flex-1/居中两遍法）零
+  贡献自然成立。真源：018 app.at:24（hidden md:flex=可见）/:65
+  （md:hidden=隐藏）；041 status_bar.at:8,32,33 + app.at:123-129。
+- **D4 样式 grid = 堆叠族/容器单 choke 分岔**。024 真源 =
+  `col (style: "grid grid-cols-2 gap-2")`（app.at:138）——**Column**
+  带类非 Container：分岔 choke = `layout_view_group`（Row/Column/List）
+  + `layout_view_container` 入口检测 grid_cols → 复用 Grid walker
+  （:1160-1208 提取 helper，与 View::Grid 变体臂共用；变体臂字段优先，
+  互斥不冲突）。语义子集：GridCols(n) 主驱（等宽列 row-major、行高
+  = 行内最大、gap 通道既有）；GridRows(m) → cols=ceil(cells/m)；裸
+  Grid 无 cols → cols=1。token "style-grid" 维持 + prefixes 精确放行。
+- **D5 012 映射 = SC::SelfCenter 补臂**。实测缺口类 = `self-center` →
+  SC::SelfCenter（class.rs:1321；iced 适配器 :1197 消费交叉轴自对齐）
+  ——coverage token 表无臂落兜底 "native-unstyled"（coverage.rs:764）；
+  012 App 视图 unit_label/冒号分隔标签用（app.at:257/348 等）。其余
+  新类（drop-shadow-md/uppercase/tabular-nums）parser 无解析臂整类
+  跳过 → 不产 token 非缺口。修复：token 表补臂 + prefixes "self-"
+  放行 + 投影器消费 = NodeStyle.center_children（layout_view_block
+  :857 子级居中通道既有——真渲轻量，非降级放行）。
+- **D6 翻转判据 = judged ≥95% + 缺项全在册**（026/029 沿承）。仪器
+  需升级：当前只算 overall（coverage.rs:1257-1259）——补 judged 率
+  （剔除仪器桶 parse-fail/extract-fail/bridge-fail/no-widget）。过门
+  翻转清单：①client_entry.rs:156 Covered 臂 Pixels→Commands（行号较
+  计划 drafting 时 :128 漂移，031 合并所致）；②观测行 → flipped@ramp3
+  文案（:158-161）；③coverage.rs:1271-1275 防漏断言反转 `assert!
+  (!flip)` → `assert!(flip)`（翻转后跌破门即红——降级需显式裁定，
+  非静默回归）；④台账 M7-a 裁定行 + p032 数据行报告；⑤auto 档抽样
+  e2e（缺省 queue 生效断言）。不过门出口：数据行更新 + 显式不翻留痕。
+
+**随附 master 测试面修复**（本计划验证面解锁——p029 记录的仪器命令
+`--features ui-iced --lib` 在 master 编译失败 E0432：022 合入的
+terminal/iced/widget.rs:1236 `use iced_test::simulator` 未挂特性门
+（iced_test 属 `iced-layout-tests` 集 Cargo.toml:71）→ 补
+`#[cfg(feature = "iced-layout-tests")]` 门；`--features
+iced-layout-tests` 亦断：layout_tests.rs:2176/2328/2435 三处
+`View::Scrollable` 字面量缺 PLAN-656 新字段（view.rs:739-744
+axes/scrollbar_policy/controller）→ 补缺省（ScrollAxes::Y/Auto/
+None，vnode_converter.rs:1029 full-path 先例）。归因 = 022/656 合并
+门未跑对方特性集；随注 KNOWN-DEBT T-08 收口）。
+
 ### 5.2 五族补齐（T-02/T-03/T-04/T-05）
 
 - **T-02 小改族**：①012 映射臂 + ③hidden（prefixes 放行 + NodeStyle
@@ -319,7 +403,7 @@ T-08。lang worktree `D:/autostack/.wt/lang-032/auto-lang`；os
 `D:/autostack/.wt/os-032/auto-os`。**建议 031 merge 后开工**（同
 crate 串行，非硬前置）。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [x] [lang] 深水调查与定案**
   文件：`coverage.rs`（token 表/prefixes/仪器）、`native_projector.rs`
   （walker/臂先例）、`view.rs`（Tabs）、`ui_gen/rust.rs`（tab 映射）、
   018/021/024/041/046/012 真源 + §5.1（写面）。
@@ -327,45 +411,148 @@ crate 串行，非硬前置）。
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → 全 AC 前置。新路径：定案产物。
-- **T-02 [lang] 012 映射 + hidden**
+  [✅ 已完成] §5.1 定案记录六条全落（D1 分层/D2 同批修/D3 display:none+
+  响应式覆盖/D4 堆叠族单 choke/D5 SelfCenter/D6 judged 口径+仪器升级）；
+  基线仪器复跑实测（overall 16/37=43.2%，judged 16/22=72.7%，六缺项
+  逐字对齐 p029）；随附 master 测试面两修复（022 iced_test 特性门 +
+  656 Scrollable 字面量）解锁仪器命令——commit plan-032-dev。
+- **T-02 [x] [lang] 012 映射 + hidden**
   文件：`coverage.rs` + `native_projector.rs`。
   动作：§5.2 T-02；D3/D5。
   验证：单测 + golden（018/041/012 样本）绿。
   → AC-01。
-- **T-03 [lang] tabs kind**
+  [✅ 已完成] D5=SelfCenter 补臂+center_children 真渲；D3=prefixes⑧
+  +NodeStyle.hidden 单一 choke + 块流 gap 序整段跳过 + display 族响应式
+  覆盖（hidden md:flex 桌面可见/md:hidden 隐藏）。测试：hidden_display_
+  none_golden（对照金样：布局与 B 不存在逐坐标等价）/hidden_responsive_
+  override_visible/self_center_aligns_golden/native_gate_examples_012_
+  041_covered 全绿；防漏钉 coverage_gate 翻样 truncate；desktop_protocol
+  模块 194 过 2 红——两红（covered_elements_within_target_set 的
+  imagesurface 登记漂移 + demo parity 隔离序）经 stash 基线核验均为
+  master 既有红，非本任务引入（解释态域，I4 出界，随注记录）。仪器
+  judged 16/22 → 18/22（012/041 翻绿，018 缺项收敛 fixed/z）。commit
+  plan-032-dev。
+- **T-03 [x] [lang] tabs kind**
   文件：`coverage.rs` + `native_projector.rs` + `ui_gen/rust.rs`
   （依 D2）。
   动作：§5.2 T-03。
   验证：tabs golden + on_select 单测 + 046 a2r 编译（若同批）。
   → AC-01/03。
-- **T-04 [lang] 样式 grid**
+  [✅ 已完成] kinds+tabs + View::Tabs 投影臂（等宽托盘/选中 bg/fg 差分/
+  default+enclosed[选中下划线]两变体/Top+Bottom/TabSelect 命中 →
+  TabsSelectCallback.call(index) 物化——VM 轨 value 串在回调内包装）+
+  scan contents 递归补漏。a2r：generate_view_tree 专属臂（labels/
+  contents 折叠、value 绑定运行时 position、variant full-path、onselect
+  闭包物化载荷——select 臂先例）+ tag_to_view_fn tabs/tab 断裂映射移除。
+  测试：tabs_tray_golden_and_select_loopback（default/enclosed × 点击
+  切换闭环）+ test_tabs_codegen_view_tabs_folding（发射形状）+
+  **test_tabs_codegen_046_compiles（真源 046 全量生成 cargo build 过
+  209s，#[ignore] e2e 档本会话显式跑）** + 046 门 Covered + 防漏钉矩阵
+  夹具补 Tabs。回归：desktop_protocol 195 过 2 既有红；ui_gen 791 过
+  24 红 = master 基线同数（零新回归）。仪器 judged 19/22。commit
+  plan-032-dev。
+- **T-04 [x] [lang] 样式 grid**
   文件：`coverage.rs` + `native_projector.rs`。
   动作：§5.2 T-04；D4。
   验证：024 golden + 与 View::Grid 同构断言。
   → AC-01。
-- **T-05 [lang] 定位族**
+  [✅ 已完成] prefixes⑩ style-grid + NodeStyle.grid_cols/grid_rows +
+  layout_view_block 入口单一分岔 choke（group/container/scrollable 全路
+  径经此——较 D4 原案双 choke 更收敛）复用 Grid walker（:1160 提取为
+  layout_grid_cells 单源，View::Grid 变体臂同构零变化）。解析序：
+  GridCols(n) 优先 / GridRows(m)→ceil(cells/m) / 裸 Grid 不记档（无模
+  板单列与纵向堆叠视觉等价）。测试：style_grid_golden_isomorphic_to_
+  variant（同构断言[含 gap-2=Tailwind Fixed(2)→8px 刻度注记] + grid-
+  rows-2×4=2 列）+ 024 门 Covered。回归：desktop_protocol 196 过 2 既
+  有红。仪器 judged 20/22（024 翻绿）。commit plan-032-dev。
+- **T-05 [x] [lang] 定位族**
   文件：`coverage.rs` + `native_projector.rs`。
   动作：§5.2 T-05；D1 口径落地。
   验证：018/021 golden（含降级随注断言）。
   → AC-01。
-- **T-06 [lang] 复测 + 翻转（dual-exit）**
+  [✅ 已完成] absolute+offset 真渲：place_absolute_children 延迟放置
+  （脱离流零占位不贡献父高/left-top 优先·right-bottom 按父盒尺寸反算
+  [堆叠族自身 fixed 高为既有丢弃边界——锚定按内容盒自洽随注]/同层 z
+  稳定排序/覆盖序追加主序后——Popover 平移臂先例/detached_ctx 快照
+  透传）；fixed/sticky 降级放行（in-flow no-op——真渲债 §10-④ 另立）；
+  prefixes⑪ 定位族八项。golden：absolute_overlay_golden（bottom 反算/
+  过约束 left 胜/z 序/覆盖序/零流内占位）+ fixed_sticky_degraded_
+  inflow_golden（对照等价——降级非错绘钉）。018/021 门 Covered——
+  **六缺项全清，仪器 judged 22/22 = 100%**（overall 22/37 = 59.5%，
+  防漏断言维持绿——judged 口径升级属 T-06）。desktop_protocol 198 过
+  2 既有红。commit plan-032-dev 1a2062771。
+- **T-06 [x] [lang] 复测 + 翻转（dual-exit）**
   文件：`client_entry.rs`（:128 门后）+ `coverage.rs`（assert 反转—
   若翻）+ 数据报告。
   动作：§5.3；D6 全清单。
   验证：仪器数据行 + 断言态一致 + 台账行。
   → AC-02。
-- **T-07 [lang+os] e2e 与回归**
+  [✅ 已完成·过门翻转] 复测 judged 22/22 = 100% ≥ 95% → 翻转：①
+  Covered 臂 Pixels→Commands（client_entry.rs:156）；②观测行 native
+  auto -> queue … flipped@ramp3；③仪器 judged 口径升级（剔除 parse-
+  fail/extract-fail/bridge-fail/no-widget 桶）+ 防漏断言反转 assert!
+  (flip)（跌破门即红——降级需显式裁定）；④p032 数据行报告落盘
+  （reports/p032-native-flip-row.md：对差表/保真边界随注/翻转清单；
+  台账 M7-a 裁定行随 T-08 SD-02 落笔）；⑤auto 档抽样 e2e = T-07
+  翻转抽样腿。翻转态钉测试 native_auto_default_flipped_to_queue
+  （Auto×Covered=Commands + NotCovered 降级路径不变）。回归：199 过
+  2 既有红；shell 五件 Covered 维持（I2）。commit plan-032-dev。
+- **T-07 [x] [lang+os] e2e 与回归**
   文件：lang `stage3.rs`（六例腿 + 翻转抽样腿）+ assets/032/；os
   smoke 如需。
   动作：AC-01..05 逐条留痕。
   → AC-03/05。
-- **T-08 [lang+os] 文档与台账收口**
+  [✅ 已完成] p032_ramp3_flip_arm（AUTO_DESKTOP_E2E=1 实跑全绿）：四
+  进程腿（012[auto 翻转抽样——子进程 resolve 裁决 Commands +
+  flipped@ramp3 观测行]/021/024/046[queue 档]）首帧钩子 + frame_mode
+  =Commands + 046 tabs on_select 交互闭环（Beta 点击 → panel 切换）+
+  024 grid 几何（Line/Bar 同行异列）+ assets/032/ 四帧留痕；018
+  （truncate）/041（codeeditor）运行时视图真 not-yet → 拒收留痕腿
+  （ensure_covered Err 载荷逐字断言——I3/AC-04 e2e 面）。**运行时口径
+  发现**（native_gate_runtime_views_of_six 钉）：生产 auto 裁决消费
+  component.view()（路由解析后）——较仪器静态 App 壳扫描宽；D5 族
+  运行时面补臂（Inset 四槽真渲组合 absolute/LineClamp 放行随注/
+  FlexWrap token 归 flex- 前缀）清偿 021/024 两例；018/041 家族出界
+  留债（T-08 KNOWN-DEBT）。回归：desktop_protocol 201 过 2 既有红 +
+  auto-man rust_ui 25/25 + 仪器 judged 22/22 维持 + shell 五件
+  Covered 维持；os smoke 以 DesktopSession 级 e2e 承载（os 侧本计划
+  零代码变更——仅台账文档）。commit plan-032-dev 9c33707cf。
+- **T-08 [x] [lang+os] 文档与台账收口**
   文件：lang `desktop-protocol-v1.md`（§1.12）+ KNOWN-DEBT；os 台账
   M7-a 行 + 互链。
   动作：SD-01..03 落笔。
   → AC-06。
+  [✅ 已完成] SD-01 = §1.13 v1.13 增量（031 先占 §1.12——drafting 时
+  预计依 merge 序，实取 §1.13）+ 版本表行：五族口径/翻转裁定/数据门
+  口径升级/运行时口径差/保真边界随注（lang 47b86d730）。SD-03 =
+  KNOWN-DEBT：P026-D3 核销（翻转收束）+ 新债 P032-D1（定位族真渲
+  分层）/P032-D2（line-clamp·flex-wrap no-op）/P032-D3（运行时口径
+  缺口 truncate/codeeditor→M7-c）/P032-D4（特性集互盲合并门——022/
+  656 随附修复归因）。SD-02 = os 台账 M7-a 行 ✅ 交付裁定 + P026-D3
+  核销注记 + **M7-c② tabs 解锁注记**（jade-garden/auto-musk 可开工）
+  + 裁定行（judged 22/22、p032 报告/§1.13 互链——os plan-032-dev
+  12775b8）。回归门补录：session:: 86/86 绿。
 
 ## 9. 复审记录
+
+- 2026-09-19 /auto-plan:work 执行收口：`stage: work`，PLAN-032 rev 1。
+  `outcome: pass`——T-01..T-08 全闭环：D1–D6 定案（§5.1）→ 五族补齐
+  （T-02 012/hidden、T-03 tabs 全链 + a2r 断裂修复、T-04 样式 grid、
+  T-05 定位族分层）→ 复测 **judged 22/22 = 100% ≥ 95% 过门翻转**
+  （T-06：Covered 臂 Commands + flipped@ramp3 + 仪器 judged 口径 +
+  防漏断言反转）→ 六例 e2e + 运行时口径发现与 D5 族补臂（T-07）→
+  SD-01..03 收口（T-08）。`code_commit`: lang plan-032-dev
+  87ed66ebd→47b86d730（七提交）；os plan-032-dev 12775b8。`task_ids`:
+  T-01..T-08。`evidence`: p032-native-flip-row.md + assets/032/ 四帧 +
+  防漏钉矩阵/门/golden/翻转态钉/运行时口径钉测试集（desktop_protocol
+  201 过 2 既有红[stash 基线核验]；ui_gen 791 过 24 红 = master 基线
+  同数；auto-man rust_ui 25/25；session 86/86；046 a2r 真源 cargo
+  build 过 209s）。`blockers`: 无。`next: review`（六 AC 就绪：AC-01
+  仪器+六例门钉/AC-02 翻转三证+钉/AC-03 tabs 双轨+046 编译/AC-04 防漏
+  钉矩阵+零回归+shell 五件/AC-05 e2e+assets/AC-06 §1.13+债+台账互链）。
+  悬置决策 §10 ①–④ 已随 T-01 定案销项；运行时口径差（新发现）与
+  D5 族补臂按"等价局部实现调查调整在案"路径处置并全留痕（§5.1/复审
+  本条/p032 报告/KNOWN-DEBT P032-D3）。
 
 - 2026-09-19 /auto-plan:new 起草交接：`stage: new`，PLAN-032 rev 1
   （M7-a 首件——台账终态批次 b2e9cce 登记）。`outcome: pass`（合同
@@ -375,7 +562,9 @@ crate 串行，非硬前置）。
   悬置决策 §10（①–④），①定位族口径为核心（分层为倾向），均不阻塞
   T-01。
 
-## 10. 待澄清事项
+## 10. 待澄清事项（T-01 定案销项——原四问全决，见 §5.1）
+
+
 
 - **①（T-01 D1）** 定位族口径：分层（absolute+offset 真渲 +
   fixed/sticky 降级放行随注——推荐）vs 全真渲（深水——fixed/sticky
