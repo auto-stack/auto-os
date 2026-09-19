@@ -1,0 +1,48 @@
+// PLAN-658 T-04: gallery back-proxy client (generated, 勿手改)
+pub type ViewerControl = {
+    status: str
+}
+
+pub fn viewer_health() str {
+    return json.to_value(Http.get_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/health"))
+}
+
+pub fn open_file(path str) str {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/open-file", "{" + "\"path\":" + json.from_value(path) + "}"))
+}
+
+pub fn open_directory(path str) str {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/open-directory", "{" + "\"path\":" + json.from_value(path) + "}"))
+}
+
+pub fn open_path(path str) str {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/open-path", "{" + "\"path\":" + json.from_value(path) + "}"))
+}
+
+pub fn snapshot(session str) str {
+    return json.to_value(Http.get_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/snapshot?" + "session=" + url.encode(session)))
+}
+
+pub fn current_uri(session str) str {
+    return json.to_value(Http.get_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/current-uri?" + "session=" + url.encode(session)))
+}
+
+pub fn names(session str) []str {
+    return json.to_value(Http.get_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/names?" + "session=" + url.encode(session)))
+}
+
+pub fn navigate(session str, delta int) str {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/navigate", "{" + "\"session\":" + json.from_value(session) + "," + "\"delta\":" + json.from_value(delta) + "}"))
+}
+
+pub fn request_view(session str, index int, viewport_width int, viewport_height int, quality int) str {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/request-view", "{" + "\"session\":" + json.from_value(session) + "," + "\"index\":" + json.from_value(index) + "," + "\"viewport_width\":" + json.from_value(viewport_width) + "," + "\"viewport_height\":" + json.from_value(viewport_height) + "," + "\"quality\":" + json.from_value(quality) + "}"))
+}
+
+pub fn close_session(session str) bool {
+    return json.to_value(Http.post_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/close", "{" + "\"session\":" + json.from_value(session) + "}"))
+}
+
+pub fn image_stats(session str) str {
+    return json.to_value(Http.get_json("http://127.0.0.1:3358/apps/031-image-viewer/api/viewer/stats?" + "session=" + url.encode(session)))
+}

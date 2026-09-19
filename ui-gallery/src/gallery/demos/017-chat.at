@@ -1,0 +1,138 @@
+// app.at — Chat shell (WeChat-style multi-contact & bot enhancements).
+// Plan 051 C7 试点：header 秒表计时器（timer 块 demo，vue/VM 双轨）。
+// Plan 544: 现代双栏布局（左侧 ChatSidebar + 右侧 MessageThread + Composer）。
+use d017chat_chat_store: ChatStore
+use d017chat_chat_sidebar: ChatSidebar
+use d017chat_message_thread: MessageThread
+use d017chat_composer: Composer
+use d017chat_api_client: send_message, list_messages, set_typing
+
+pub style caption_text = "text-xs text-muted-foreground"
+
+style main_shell = "flex-1 gap-3 min-h-0 overflow-hidden"
+
+widget Demo017Chat {
+    msg {
+        Tick,
+        Init,
+        SendMessage(str),
+        Typing(str),
+        ClockTick,
+        SelectContact(str),
+        SearchContacts(str),
+        TriggerBotReply(str)
+    }
+
+    model {
+        var __p658_sse int = -1
+        var interval int = 200
+        var clock_secs int = 0
+    }
+
+    timer {
+        ClockTick (every_ms: 1000)
+    }
+
+    computed {
+        active_name => if .ChatStore.active_contact_id == "alice" { "Alice" } else if .ChatStore.active_contact_id == "bob" { "Bob" } else if .ChatStore.active_contact_id == "autobot" { "AutoBot 🤖" } else { "Tech Support" }
+        active_avatar => if .ChatStore.active_contact_id == "alice" { "👩‍💼" } else if .ChatStore.active_contact_id == "bob" { "👨‍💻" } else if .ChatStore.active_contact_id == "autobot" { "🤖" } else { "🛠️" }
+        active_status => if .ChatStore.active_contact_id == "autobot" { "AI Assistant • Online" } else { "Online • Available" }
+    }
+
+    view {
+        col {
+            style: "w-full h-screen flex-col bg-muted/20 p-3 gap-3 overflow-hidden"
+            // Header Bar
+            row {
+                style: "items-center justify-between px-5 py-2.5 bg-card rounded-xl shadow-xs border border-border"
+                row {
+                    style: "items-center gap-2"
+                    text "💬" { style: "text-xl" }
+                    h2 "Chat" { style: "text-lg font-bold text-foreground tracking-tight" }
+                    text "WeChat Edition" { style: "text-xs font-medium text-muted-foreground ml-2 px-2.5 py-0.5 bg-muted rounded-full border border-border/50" }
+                }
+                row {
+                    style: "items-center gap-3"
+                    if .ChatStore.loading {
+                        text "Loading…" { style: caption_text }
+                    }
+                    text f"⏱ ${.clock_secs}s" { style: "text-xs text-muted-foreground tabular-nums font-mono" }
+                }
+            }
+
+            // Main Dual-column Body
+            row {
+                style: main_shell
+                ChatSidebar(
+                    contacts: .ChatStore.contacts,
+                    active_id: .ChatStore.active_contact_id,
+                    search_query: .ChatStore.search_query,
+                    on_select: .SelectContact,
+                    on_search: .SearchContacts
+                )
+                col {
+                    style: main_shell
+                    MessageThread(
+                        messages: .ChatStore.messages,
+                        typing_name: .ChatStore.typing_name,
+                        active_name: .active_name,
+                        active_avatar: .active_avatar,
+                        active_status: .active_status,
+                        on_trigger_bot: .TriggerBotReply
+                    )
+                    Composer(on_send: .SendMessage, on_typing: .Typing)
+                }
+            }
+        }
+    }
+
+    on {
+    .Tick -> {
+        if .__p658_sse < 0 {
+            .__p658_sse = http.sse_open("http://127.0.0.1:3358/apps/017-chat/api/stream")
+        }
+        var __n = 0
+        while __n < 8 {
+            let __evt = http.sse_poll(.__p658_sse)
+            if __evt == "" {
+                break
+            }
+            if __evt == "[DONE]" {
+                .__p658_sse = -1
+                break
+            }
+            let __v = json.to_value(__evt)
+            if __v.event == "NewMessage" {
+                ChatStore.NewMessage(__v)
+            } else {
+                if __v.event == "Typing" {
+                    ChatStore.Typing(__v)
+                }
+            }
+            __n = __n + 1
+        }
+    }
+        .Init -> {
+            ChatStore.Init()
+        }
+        .ClockTick -> {
+            .clock_secs = .clock_secs + 1
+        }
+        .SendMessage(text) -> {
+            d017chat_api_client.send_message("You", text)
+            ChatStore.messages = d017chat_api_client.list_messages()
+        }
+        .Typing(name) -> {
+            d017chat_api_client.set_typing(name)
+        }
+        .SelectContact(id) -> {
+            ChatStore.SelectContact(id)
+        }
+        .SearchContacts(query) -> {
+            ChatStore.Search(query)
+        }
+        .TriggerBotReply(query) -> {
+            ChatStore.TriggerBot(query)
+        }
+    }
+}
