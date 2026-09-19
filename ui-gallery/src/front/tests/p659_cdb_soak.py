@@ -44,6 +44,15 @@ LOG_DIR = HERE / "cdb_logs"
 CATCH_CHAIN = (
     ".echo ===P659_CRASH_CAUGHT===; .lastevent; .exr -1; r; kv 80; "
     "~#k 250; ~*k 40; lm; .echo ===P659_CAPTURE_DONE===; q")
+# PLAN-659 T-02：Rust panic（unwind，非 SEH——sxe 链不可达）的断点臂：
+# panic_fmt/bounds_check 处打全栈后 `g` 续跑（不杀进程，tokio 捕获语义
+# 保持），腐坏索引族（virt_memory.rs:409/:519 审计在案）由此拿现场。
+PANIC_BP_CHAIN = (
+    ".echo ===P659_RUST_PANIC===; r; kv 60; ~#k 60; g")
+PANIC_BPS = [
+    "auto!core::panicking::panic_fmt",
+    "auto!core::panicking::panic_bounds_check",
+]
 DEATH_CODES = ["0xC00000FD", "0xC0000409", "0xC0000005", "0xC0000374"]
 DEATH_NAMES = {
     "c00000fd": "stack_overflow",
@@ -101,7 +110,12 @@ def launch_cdb(port: int, log_file: Path):
     # 进程默认启用 debug heap，实测画廊生成期即死——详见计划 §5）。
     init = "; ".join(
         f'sxe -c "{CATCH_CHAIN}" -c2 "{CATCH_CHAIN}" {code}'
-        for code in DEATH_CODES) + "; g"
+        for code in DEATH_CODES)
+    for sym in PANIC_BPS:
+        # bu = 延迟断点：初始断点期 exe 符号未载，bp 会拿 UMPDC.dll
+        # 解析失败（实测）；bu 在模块载入时解析。
+        init += f'; bu {sym} "{PANIC_BP_CHAIN}"'
+    init += "; g"
     env = dict(
         os.environ,
         AUTOUI_MCP_PORT=str(port),
@@ -162,8 +176,22 @@ def parse_crash(log_file: Path):
     except FileNotFoundError:
         return None
     m = re.search(r"^===P659_CRASH_CAUGHT===\s*$", text, re.M)
-    if not m:
+    rust_panics = len(re.findall(r"^===P659_RUST_PANIC===", text, re.M))
+    if not m and rust_panics == 0:
         return None
+    if not m:
+        # 仅 Rust panic 断点命中（进程未死，tokio 捕获语义）——报腐坏族
+        # 计数 + 首个 panic 帧样本。
+        after = text.split("===P659_RUST_PANIC===", 1)[1]
+        frames = re.findall(r"^\S+!(\S+\+0x[0-9a-f]+)", after, re.M)
+        return {
+            "death": "rust_panic_captured",
+            "code": None,
+            "last_event": f"{rust_panics} rust panic(s)",
+            "fault_frames": frames[:12],
+            "rust_panics": rust_panics,
+            "log": str(log_file),
+        }
     after = text[m.end():]
     code = None
     for cm in re.finditer(r"code (c0000[0-9a-f]+)", after):
@@ -276,7 +304,7 @@ def main():
         else:
             proc.wait(timeout=60)
 
-        crash = parse_crash(log_file) if outcome == "crash_captured" else None
+        crash = parse_crash(log_file)
         audit_new = audit_new_lines(audit_before)
         rec = {
             "round": rnd, "outcome": outcome, "crash": crash,
