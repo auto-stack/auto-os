@@ -1,7 +1,8 @@
 ---
 plan_id: PLAN-032
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-ramp3-flip
+completion_kind: delivered
 author: [agent]
 created_at: 2026-09-19
 updated_at: 2026-09-19
@@ -540,6 +541,27 @@ crate 串行，非硬前置）。
   12775b8）。回归门补录：session:: 86/86 绿。
 
 ## 9. 复审记录
+
+- 2026-09-19 /auto-plan:merge 收据（PLAN-032:r1，五 checkpoint）：
+  `stage: merge`，`outcome: pass`。**prepared**——reviewed 基线 lang
+  06243bdb3/os 12775b8（R2 pass rev1）+ 冻结增量 SD-01..03（canonical
+  已在交付提交内：协议 §1.13/KNOWN-DEBT/台账 M7-a 行）。**landed**——
+  lang：rebase master 两次（期间并行会话前移 b69c7344c→d2566829f；
+  冲突两处：widget.rs cfg 门 = master 656 会话同语义先行[采 HEAD 去
+  重复，旧→新映射 87ed66ebd→3bf5a292]，KNOWN-DEBT 自动并合）+
+  range-diff 8 提交等价 + 冲突解映射在案 + 落地前 scoped 刷新绿 →
+  **master tip = 30c746af4**（ff-only 无合并提交）；os：台账五件入册
+  （P032-1×4 + P032-r2）+ rebase（autos-desktop-program.md 冲突 = 并集
+  解[保留 658 后主线的 P-RQ-PIX 副线债段 + 本计划 M7-a 裁定行块]——
+  首次 continue 曾误带冲突标记入库，已 amend 正解，旧→新映射
+  12775b8→94a4a8b'→86910d1）→ **main tip = 86910d1**（ff-only）。
+  **ledger_refreshed**——auto-os `.autoos/specs.json` 五件入册（P032-1
+  reports/architecture/designs/tests + P032-r2 reviews；121→126 items，
+  读回校验 5/126 ✓；schema 八字段沿 031 同型）。**archived**——本文件
+  `docs/plans/archive/032-native-queue-ramp3-flip.md`（git mv）+
+  status: archived + completion_kind: delivered。**cleaned**——见下条
+  补记。主检出冒烟：仪器 judged 22/22 + tabs 发射（ui-iced）绿；并行
+  会话 WIP（kitchen-sink/ui-cache 等）原样保全未动。
 
 - 2026-09-19 /auto-plan:review R2（增量复审；实施会话内——独立性受限
   声明同 R1，裁定从工件重建）：`stage: review`，PLAN-032 rev 1。
