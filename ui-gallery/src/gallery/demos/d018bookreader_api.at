@@ -1,0 +1,70 @@
+// d018bookreader_api.at — Book Reader API.
+// CRUD over books + chapters + reading progress. All endpoints delegate to
+// d018bookreader_db.rs (Plan 399 route B: full coverage, no State<Db> fallback, no mixed
+// state). Frontend consumes Book/Chapter via `use back.api`.
+
+/// A book in the library.
+pub type Book = {
+    id: int
+    title: str
+    author: str
+    chapter_count: int
+    word_count: int
+    progress: int
+    status: str
+    cover_color: str
+}
+
+/// A single chapter within a book.
+pub type Chapter = {
+    book_id: int
+    number: int
+    title: str
+    body: str
+    word_count: int
+}
+
+use d018bookreader_db
+
+/// GET /api/books — list every book in the library.
+#[api(method = "GET", path = "/api/books")]
+pub fn list_books() []Book {
+    return d018bookreader_db.all_books()
+}
+
+/// POST /api/books — add a new book (auto-generates chapters + cover).
+#[api(method = "POST", path = "/api/books")]
+pub fn create_book(title str, author str) Book {
+    return d018bookreader_db.create_book(title, author)
+}
+
+/// DELETE /api/books/:id — remove a book (and its chapters).
+#[api(method = "DELETE", path = "/api/books/:id")]
+pub fn delete_book(id int) bool {
+    return d018bookreader_db.delete_book(id)
+}
+
+/// GET /api/books/:id — fetch a single book by id.
+#[api(method = "GET", path = "/api/books/:id")]
+pub fn get_book(id int) ?Book {
+    return d018bookreader_db.find_book(id)
+}
+
+/// GET /api/books/:id/chapters — list chapters of a book.
+#[api(method = "GET", path = "/api/books/:id/chapters")]
+pub fn list_chapters(book_id int) []Chapter {
+    return d018bookreader_db.chapters_of(book_id)
+}
+
+/// GET /api/chapters — read a specific chapter by book + number.
+/// (Query params book_id + number.)
+#[api(method = "GET", path = "/api/chapters")]
+pub fn get_chapter(book_id int, number int) Chapter {
+    return d018bookreader_db.get_chapter(book_id, number)
+}
+
+/// PUT /api/books/:id/progress — persist reading progress (0-100).
+#[api(method = "PUT", path = "/api/books/:id/progress")]
+pub fn update_progress(id int, progress int) Book {
+    return d018bookreader_db.update_progress(id, progress)
+}

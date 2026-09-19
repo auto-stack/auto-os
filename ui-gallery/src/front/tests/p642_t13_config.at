@@ -1,0 +1,4 @@
+desktop {
+    dark_theme : true
+    theme_source : "manual"
+}

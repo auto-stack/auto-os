@@ -1,0 +1,32 @@
+// d018bookreader_book_store.at — shared BooksStore. Persists the library + reading progress across
+// all route pages (k1 pattern). Each page does `use store: BooksStore`.
+use d018bookreader_api: list_books, create_book, delete_book, update_progress
+
+store BooksStore {
+    model {
+        var books []Book = []
+        var loading bool = false
+    }
+
+    msg { Init, AddBook(str, str), RemoveBook(int), SetProgress(int, int) }
+
+    on {
+        .Init -> {
+            .loading = true
+            .books = d018bookreader_api.list_books()
+            .loading = false
+        }
+        .AddBook(title str, author str) -> {
+            d018bookreader_api.create_book(title, author)
+            .books = d018bookreader_api.list_books()
+        }
+        .RemoveBook(id int) -> {
+            d018bookreader_api.delete_book(id)
+            .books = d018bookreader_api.list_books()
+        }
+        .SetProgress(id int, progress int) -> {
+            d018bookreader_api.update_progress(id, progress)
+            .books = d018bookreader_api.list_books()
+        }
+    }
+}

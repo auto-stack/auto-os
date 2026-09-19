@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-man/src/{automan.rs,rust_ui.rs}            # vm 装载链分岔 + rust 轨注入
   - auto-lang/docs/design/autoui/{desktop-protocol-v1.md,virtual-desktop.md} # 协议增量 + 形态入册
   - auto-os/docs/plans/autos-desktop-program.md                      # 台账行
-current_step: 0
+current_step: 7
 total_steps: 8
 ---
 
@@ -297,6 +297,156 @@ Design 23（virtual-desktop.md §4 后端矩阵）无第四形态行——SD-02
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-07 依据。
 
+### 5.1 定案记录（T-01 产物，基线 lang-031@08526fda8 全量 file:line 重核）
+
+**D1 采纳协议形态**：
+- well-known 管道名 **`autodesk-rqhost`**（`autodesk-broker` broker.rs:22 同族）。
+  测试缝 = env `AUTO_RQHOST_WELLKNOWN`（pid 后缀管道——P489 `adjudicate_on`
+  可测性缝同型，生产行为零变化）。多会话隔离：Windows `\\.\pipe\` 命名
+  空间机器级全局，v1 单实例=单机器域（与 `autodesk-broker` 同口径），
+  多用户终端服务器隔离随 §1.11 注记为已知边界。
+- adopt 记录语法 **`adopt␟<app_name>`**（DesktopBus 管道串约定族，verb=
+  adopt），应答 `adopt␟<per-app pipe>`。**不含 render 档位字段**：-q
+  唯一档=queue，Hello 无 frame_mode 请求位（I1 零 wire 变体）；将来
+  pixels-on-rqhost 按 broker `incubate␟<name>␟<mode>` 第三字段先例追加式扩展。
+- per-app 管道命名 `<wellknown>-app-<n>`（broker.rs:121 同型）。
+- **resolver 桩形态定案：不引入 ProtocolHost**——rqhost 自建 `RqClient`
+  （HostEndpoint + SurfaceStore + shm 直用，stage3.rs:38-55 `BrokerClient`
+  同型轻装；动作臂=session.rs:3677-3815 `broker_apply_actions` 同构改写）：
+  ResolveAndAttach 直接以 Hello 凭据 activate（app_id/wid = rqhost 自有
+  计数器，rect=(0,0,w,h) 窗口本地坐标），**根本不设 resolver 闭包**——
+  "客户端权威"落在适配层结构上，桌面链 broker_apply_actions 零牵连（I4）。
+  理由：ProtocolHost 绑 `&mut DesktopSession`（host.rs:105-122——462
+  虚拟窗 WM 对象，rqhost I4 出界）；计划 §2 架构盒本就枚举
+  HostEndpoint+shm+activate 而非 DesktopSession。
+
+**D2 发现/孵化/竞态**：
+- 探测：`transport::connect(wellknown, timeout)` 连上即关（broker.rs:56-59
+  模板）。connect 内建 FILE_NOT_FOUND(2)/PIPE_BUSY(231) deadline 重试
+  （transport.rs:222-229）——spawn 后就绪前窗口期由探测超时预算吸收。
+- `ensure_rqhost`：探测（~500ms 短超时）→ 失败 → spawn `auto rqhost`
+  （current_exe 寻址，outproc_auto_binary 同位复用 session.rs:2956-2978）
+  → 就绪退避重试（间隔 100ms 起指数退避，预算 ~8s）→ adopt。
+- **并发冷启动竞态定案 = 锁管道原子注册（候选 B，推翻原倾向 A）**：
+  tokio 1.53.1 `ServerOptions::first_pipe_instance`（FILE_FLAG_FIRST_PIPE_
+  INSTANCE；注册源 tokio-1.53.1/src/net/windows/named_pipe.rs:1990-2005
+  实证——"ensure that they are the only process listening…subsequent
+  instances will fail with PermissionDenied"）。rqhost 启动先在锁管道
+  `<wellknown>-lock` 以 first_instance create：成功=唯一实例（句柄驻留
+  进程寿命）；PermissionDenied=已有实例 → 干净退出（码 0）。锁管道永不
+  accept/永不重建（避开 serve_once 重听循环与 first_instance 多实例互斥
+  ——adopt 管道本身沿用 broker 重听模式）。理由：候选 A 的探测-自杀窗
+  非原子（双 spawn 同时探测失败双双驻留），锁管道 OS 级原子零窗口。
+  transport 增 `listen_first_instance` API（pipe mod 内，非 Windows 空）。
+- **新事实（影响 T-02 设计）**：broker `serve_once` 第二个 `wait_connect`
+  （broker.rs:128）阻塞整个 serve 环——rust 轨 cargo build 分钟级延迟
+  不得阻塞 adopt 环路 → rqhost 的 per-app `wait_connect` **线程化**
+  （每次采纳一枚线程，连接后推 pending 队列，daemon tick 消费）。
+
+**D3 多窗宿主形态**：
+- 窗口注册表：daemon State 内 `iced::window::Id ↔ RqClient`（BTreeMap）。
+  开窗在 update 内 `iced::window::open(Settings{size: Hello.wh,…})`，Task
+  随 update 返回派发（detach_surface_to_os_window session.rs:3837-3864
+  drop-task 先例证明登记即刻生效，正道仍走 Task 返回）；title 经 daemon
+  `.title(TitleFn)` 按注册表解析（iced-0.14.0/src/daemon.rs:189-203）。
+- Hello.icon：iced Settings 有 `icon: Option<Icon>`（iced_core-0.14.0/
+  src/window/settings.rs:85-86 实证）但 Icon 需 RGBA+尺寸元数据，Hello
+  携带的是编码字节 → **v1 忽略 + 观测行一次**，解码入册 §1.11 边界注记。
+- view 按窗：注册表命中 → `drawlist_element(client.composed())`；未命中
+  → 占位文本（renderer.rs:18574-18594 先例）。DrawListPainter 挂载 =
+  broker_surface.rs:39/:465-472 `DrawListPainter`/`drawlist_element` 泛型化
+  `<M>`（现绑死 DesktopMessage；canvas `Program<M>` 本就泛型 + PhantomData，
+  既有调用点类型推断零改动）。
+- resize：OS `Event::Window(Resized)` → `ControlMsg::Resize` 下发（AppEndpoint
+  Active 接受 endpoint.rs:331-335）→ 客户端重排新帧；宿主侧表面尺寸簿记更新。
+- 帧泵节奏：daemon 订阅 `iced::time::every(15ms)`（桌面 400ms ServiceTick
+  对原生窗输入→帧响应太钝；15ms≈60fps 上限，空泵成本=N 管 try_recv 可忽略）。
+
+**D4 输入路由**：
+- `listen_with` 闭包（renderer.rs:19288-19363 模板）产 `Message::Input
+  {window, …}` → 注册表反查 client → InputMsg 下发。鼠标坐标=窗内坐标
+  即表面坐标（broker_pointer_down session.rs:3476-3510 的 hit_test+平移
+  在原生窗形态退化为恒等——免 hit_test）。
+- LiveInput 族直调：`live_inputs_from_keyboard`/`live_input_from_input_
+  method`/`live_input_from_wheel` + `wire_modifiers`（session.rs:2341-2439，
+  pub 纯函数，029 在 master）——rqhost 自己的 listen_with 闭包内调用，
+  Ignored 门同 desktop_window_events（session.rs:7258-7289）；零提升零改签名。
+- 焦点门控：OS 窗焦点天然绑定事件流（事件自带 window_id）——键盘路由=
+  发生窗（替代桌面 wm.focused 焦点窗语义）；无 WM focus 语义引入（I4）。
+- PointerPressed/Released：rqhost listen_with 增 Mouse 事件臂直订（桌面
+  仅 CursorMoved/ButtonReleased——rqhost 需按下事件映射 InputMsg::
+
+  PointerPressed/Released）。
+
+**D5 生命周期**：
+- 末窗关闭：`Event::Window(Closed)` → 注册表移除 → 空且曾有窗 → 
+  `iced::exit()`。上游实证：daemon "will not stop running when all its
+  windows are closed"（iced-0.14.0/src/daemon.rs:22-24——计划预判 R:14165
+  注释正确）；boot 零窗待命不退（有窗标记门）。
+- app EOF → pump 检出（is_eof/Err）→ `window::close` + 端点/表面/shm
+  释放（pump_broker_clients session.rs:3417-3474 回收臂同构）。
+- 用户关窗 → CloseRequested/Closed → `ControlMsg::Close` 下发 → app
+  ExitRequest → ReclaimWindow（endpoint.rs:547-553 既有状态机）→ app
+  退出码 0（ClientExit::Closed）。
+- **rqhost 死 → app exit-on-EOF**：`ClientTarget` 增 `Rqhost { pipe }`
+  变体——connect 走 Direct 同型；Commands 臂 reconnect=**None**
+  （client_runtime.rs:2341-2345：无策略即 `ClientExit::HostLost` 即退——
+  语义现成，缺口仅在 client_entry.rs:89-90/:189-190 桌面档硬编
+  Some(30s/50ms)）+ HostLost 出口观测行。桌面档（Direct/Broker）默认
+  30s 重连不变（I2）。枚举加变体对旧生成物源兼容（生成 gate 只构造
+  不穷尽匹配，rust_ui.rs:1833-1897 实证）。
+
+**D6 CLI 面**：
+- `Run` 增 `-q/--render-queue`（clap bool；`-q` 短名空闲实证——Run 现占
+  d/p/B/F/r，main.rs:402-433）；`--rq-host=<target>` **未实现预留**（出现
+  即显式报错"预留"，desktop 实现归 030 线）。
+- vm 轨分岔（对计划的微调，记录在案）：-q gate 落 main.rs Run 臂
+  run_if_client_entry（:929-943）**同位之后、pac/api 侦测后**（~:1005，
+  保证 vm/rust 判定与主流程同源）——ensure_rqhost+adopt → **env
+  `AUTO_RQHOST_PIPE=<pipe>` 注入** → 主流程照常 am.run() → run_vm_ui
+  （后端/主题/CWD 装载链零改，rust_ui.rs:2956-3144）→ lib.rs 
+  run_file_dynamic_ui_inner（build_dynamic_component 后、run_dynamic_iced
+  前，lib.rs:4834+）读 env 分岔 → `client_entry::run_dynamic_client
+  (Rqhost)`。Hello 凭据：title=`AUTO_VM_TITLE` env 缺省 app 名；
+  wh=`AUTO_VM_WINDOW` 解析（renderer.rs:6399-6413 同式；fit/缺席→480×320
+  缺省，broker 子同款）。理由：main.rs:931 直叉需复刻 run_vm_ui 的
+  CWD/主题/后端序——env 门+装载链内分岔才是"装载链零改"的字面兑现。
+- rust 轨：同 gate（is_rust_api/render=rust）→ args 前注
+  `--autodesk-client=<pipe> --autodesk-render=queue --autodesk-rqhost`
+  （第三标记使生成 gate 选 Rqhost 目标——生成器 rust_ui.rs:1833-1897 增
+  解析臂；旧生成物不识标记 → Direct+queue 渲染通但宿主死 30s 挂等，
+  重生成后全语义——e2e 用新鲜生成物；注入点在 run_if_client_entry gate
+  之后防 gate 劫持）→ cargo run 透传（rust_ui.rs:2839-2853 既有）。
+- `auto rqhost` 子命令（Commands 枚举新变体 main.rs:365 族）：`auto rqhost
+  [--pipe <name>]`（缺省 well-known；测试 pid 后缀）；match 臂 → 
+  `rqhost::run_daemon(pipe)`。
+- `-q` × vue/tauri/jet/arkts render：显式报错退出（出界组合）。
+
+**D7 保真清单口径**：
+- -q 渲染面 = DrawListPainter（与桌面 broker 窗同一栅格化器）→ 保真集合
+  与桌面 outproc 队列臂同源：**vm 轨解释态全保真**（AppProjector 全
+  vocabulary 投影，无覆盖门）；超覆盖演示 = popover 等 not-yet 词汇处
+  占位盒 + 观测行（I3 既有纪律，broker_surface.rs:441-457 占位臂现成）。
+- native 轨 -q 走 `ensure_covered` 既有门（client_entry.rs:179-182）。
+- 清单落盘：desktop-protocol-v1.md §1.11 附注行（引 029 覆盖数据面，
+  不重跑全量）+ os 仓 smoke 演示位（跑一个超覆盖 demo 验占位可见）。
+- e2e 载体：vm=01-helloworld/003-converter（examples/ui 在册）；rust=
+  a2r 重生成（examples/rust-workspace/counter 级）。
+
+**调查修正与增量事实**（vs §4 普查）：
+- 行号漂移（086861a2b→08526fda8）：pump_broker_clients 3444→**3417**；
+  broker_apply_actions 3674→**3677**；outproc_auto_binary 2952→**2956**；
+  broker serve_once :91-130/**:128 第二 wait_connect 阻塞**（新事实，D2
+  线程化依据）；LiveInput 族 :2316-2439 精确一致。
+- "宿主是内容权威"缺口确认：broker_apply_actions resolver MISS `continue`
+  静默弃连（session.rs:3691-3696）——rqhost 适配层无此臂（D1 结构性根除）。
+- iced 0.14 daemon API 全实证：`iced::daemon(boot,update,view)` +
+  `.title/.subscription` + `.run()`（daemon.rs:27-31）；`iced::exit`
+  （iced_runtime lib.rs:124）；window::open/close（iced_runtime window.rs:
+  272/284）。
+- ClientExit/ReconnectPolicy：`reconnect=None` 即 exit-on-EOF 现成语义
+  （client_runtime.rs:2341-2345）——G5③ 实现面比计划预估更薄。
+
 ### 5.2 rqhost 核心（T-02/T-03/T-04）
 
 - **T-02 rendezvous + 采纳端点**：rqhost 模块——well-known serve
@@ -393,7 +543,7 @@ Design 23（virtual-desktop.md §4 后端矩阵）无第四形态行——SD-02
 `D:/autostack/.wt/lang-031/auto-lang`；os `D:/autostack/.wt/os-031/
 auto-os`。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** [x] [✅ 已完成 2026-09-19]
   文件：`desktop_protocol/{broker,host,endpoint,transport,client_
   entry}.rs`、`ui/session.rs`（LiveInput/泵/开窗先例，读）、
   `crates/auto/src/main.rs`（CLI）、iced 0.14 daemon 多窗/管道命名
@@ -402,47 +552,151 @@ auto-os`。
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；复审通过。
   → 全 AC 前置。新路径：是（rqhost 模块）。
-- **T-02 [lang] rendezvous + 采纳端点**
+  证据：§5.1 定案记录 D1–D7 全落（基线 lang-031@08526fda8 重核；
+  D2 竞态翻案锁管道原子注册[tokio first_pipe_instance 注册源实证]；
+  D1 裁定不引入 ProtocolHost 自建 RqClient；D6 vm 轨分岔点微调
+  env 门+装载链内分岔；§10 ①–⑤ 全闭）。
+- **T-02 [lang] rendezvous + 采纳端点** [x] [✅ 已完成 2026-09-19]
   文件：新 `desktop_protocol/rqhost.rs` + `mod.rs` 注册。
   动作：§5.2 T-02；resolver 桩（桌面链零牵连）。
   验证：单测绿（并发接纳/零装载/探测）。
+  证据：commit c33cebe38——单测 6/6 绿（rendezvous 往返/探测吞掉、锁管道
+  双声明+serve 级 AlreadyRunning、未知 app 名零装载采纳到 Active、3 客户端
+  并发 surface 不撞、帧合成 Ack/回收/EOF、ensure 退避全序替身孵化器）；
+  transport/broker 既有测试零回归（9/9+3/3）。D1 裁定不引入 ProtocolHost
+  （自建 RqClient 复用 BrokerClient）；D2 定案锁管道原子注册
+  （tokio first_pipe_instance，CLAIM_DENIED_MARKER 免疫 OS 消息本地化）。
   → AC-01/02/03。
-- **T-03 [lang] 多窗 daemon + `auto rqhost`**
+- **T-03 [lang] 多窗 daemon + `auto rqhost`** [x] [✅ 已完成 2026-09-19]
   文件：`rqhost.rs`（daemon 装配/泵/view/末窗退出）、`crates/auto/
   src/main.rs`（子命令）。
   动作：§5.2 T-03。
   验证：单测 + 集成（单客户端全循环）绿。
+  证据：commit 801ed51fb——broker_surface 泛型化（DrawListPainter<M>，
+  唯一消费面类型推断承接）；rq_update/rq_view/rq_subscription + 15ms 帧泵
+  + 末窗退出门（无在册窗∧无待定∧曾有窗→iced::exit）+ resize 下发；
+  集成 rqhost_full_cycle_over_pipe：真 ClientPump 全循环（采纳→握手→帧
+  →resize→Close→Reclaim→BufferRelease→ClientExit::Closed）7/7 绿；
+  auto rqhost [--pipe] 子命令 + auto 构建通过。
   → AC-01/04/06。
-- **T-04 [lang] 输入按窗路由**
+- **T-04 [lang] 输入按窗路由** [x] [✅ 已完成 2026-09-19]
   文件：`rqhost.rs`（window_id 映射 + LiveInput 复用接驳）。
   动作：§5.2 T-04。
   验证：分派单测（不串扰）。
+  证据：commit 3c8363e68——Live/CursorMoved/PointerPressed/Released 四臂
+  + live_input_msgs 六型映射（029 纯函数直调）+ last_cursor 窗级簿记 +
+  Ignored 门订阅；input_routes_by_window_without_crosstalk：双客户端双窗
+  四型输入 A 端按序全收 wid 随行正确/B 端静默（8/8 绿）。
   → AC-01/02。
-- **T-05 [lang] 客户端接入 + 策略档**
+- **T-05 [lang] 客户端接入 + 策略档** [x] [✅ 已完成 2026-09-19]
   文件：`desktop_protocol/client_entry.rs`（adopt 助手 + 策略参数）、
   `crates/auto/src/cmd_autodesk.rs`（vm 轨 -q 分岔）。
   动作：§5.3 T-05；默认行为零变化（I2）。
   验证：单测（两态/退避/策略档）。
+  证据：commit 8b1602838——ClientTarget::Rqhost{wellknown,app_name}
+  （rendezvous 采纳内建）+ reconnect_for 策略档（Rqhost=None exit-on-EOF
+  + 观测行；Direct/Broker=30s/50ms 不变）+ lib.rs run_file_dynamic_ui_
+  inner env 门分岔（AUTO_RQHOST_PIPE=wellknown——装载链零改，D6 微调
+  落位）+ run_vm_rqhost_client 凭据 env 消费；单测 +3（策略档 I2 断言/
+  ensure 就绪退避/vm fork 凭据+生命周期）10/10 绿。**设计修正**（测试
+  暴露）：原 ensure 采纳后弃端会烧掉一次性 per-app 管道实例——ensure
+  改只探活（ensure_rqhost_ready），采纳内建到 ClientTarget::Rqhost 与
+  各轨客户端；serve 兼容 incubate 动词（broker 族记录——旧生成物零改
+  接 rqhost）。
   → AC-01/04。
-- **T-06 [lang] CLI 两轨 + ensure_rqhost + 竞态**
+- **T-06 [lang] CLI 两轨 + ensure_rqhost + 竞态** [x] [✅ 已完成 2026-09-19]
   文件：`crates/auto/src/main.rs`（-q 旗标）、`crates/auto-man/
   src/{automan,rust_ui}.rs`（vm 分岔/rust 注入）。
   动作：§5.3 T-06；D2 竞态处理。
   验证：单测 + 竞态用例绿。
+  证据：commit 149d299c7——Run -q/--render-queue + gate（am.run 前：
+  ensure→双信号并发注入[vm env + rust args 前注]各轨只认各的；出界
+  render 显式报错；--rq-host 预留位拒绝）；生成 gate --autodesk-rqhost
+  标记臂（旧生成物安全忽略退化 broker 档）；run_rust_ui cargo `--`
+  分隔符前置修复（`- 开头透传参数原被 cargo 吞）；单测×3（gate 校验
+  档位/注入形状/生成内容 rqhost 臂）+ CLI help 冒烟；D2 竞态 = 锁管道
+  原子注册（T-02 已落 lock_pipe_second_claim_fails——serve 级
+  AlreadyRunning 断言）。
   → AC-03/05。
-- **T-07 [lang+os] e2e 与度量**
+- **T-07 [lang+os] e2e 与度量** [ ]（复审 P031-R1..R4 重开——e2e 四腿缺口；已落证据保留）
+  [前次证据 2026-09-19]
   文件：lang `stage3.rs`（p031_rqhost_arm）+ 截图 assets/031/；os
   smoke 脚本。
   动作：AC-01..06 逐条留痕 + 度量行。
+  证据：e2e p031_rqhost_arm 六腿真机 PASS（①003-converter 采纳→开窗
+  →首帧 ②001-helloworld 共享双窗 + 第二 daemon 锁管道码 0 退 ③
+  SetWindowPos→resize 观测行 ④kill 双向[app→EOF 窗回收观测/daemon→
+  host lost 观测行+码 0] ⑤未解析 image→[drawlist-image] 占位观测行
+  ⑥度量行[daemon 314MB + 每 app 7-9MB private] + Win32 PrintWindow
+  BMP 截图/进程清单/daemon-stderr 留痕 reports/assets/031/）；
+  **附带根修**：e2e 首跑暴露 client_runtime push_frame 超槽帧静默弃帧
+  冻结（既有缝，桌面 broker 同益）→ 回退管道内联 FrameReady + 合成
+  20KB 帧回归钉；os 侧 smoke-031-rqhost.sh 生产 well-known 全链演示
+  PASS（含 -d 旗标只喂 pac 的既有怪癖记录 + exec 形态 spawn 工程坑）。
   → AC-01..06。
-- **T-08 [lang+os] 文档与台账收口**
+- **T-08 [lang+os] 文档与台账收口** [x] [✅ 已完成 2026-09-19]
   文件：lang `desktop-protocol-v1.md`（§1.11）、`virtual-desktop.md`
   （Design 23 §4 增行 + 裁定记录）；os 台账行 + 互链。
   动作：SD-01..04 落笔。
+  证据：SD-01 协议顶表 v1.11 行 + §1.11 全节（PROTOCOL_VERSION 仍 1，
+  I1）；SD-02 Design 23 §4 后端矩阵 Win/Mac·rqhost B 形态行 + 内存
+  注记（314MB+7-9MB 实测）+ standalone 裁定记录；SD-03 os 台账裁定
+  登记簿 3d 行（030 预订 3c3 不撞）；SD-04 ui overview.md rqhost
+  provisional 指针节（§1.10 节式）。交叉引用：§1.11 ↔ Design 23 §4 ↔
+  台账 3d ↔ PLAN-030 同源注记互链可解析。
   → AC-07/08。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:review 第一轮：`stage: review | PLAN-031 | rev 1 |
+  needs_fix | reviewed_commit: lang 5a64bd474 / os d096fb5 | base: lang
+  08526fda8 / os 3cd6b12 | deps: auto-down dep-031@a615d69（零内容改动）|
+  spec_inputs: desktop-protocol-v1.md@§1.11 + virtual-desktop.md@Design23§4
+  + specs auto-lang/ui/overview.md + autos-desktop-program.md@3d 行 |
+  acceptance: AC-01 partial / AC-02 partial / AC-03 partial / AC-04 partial /
+  AC-05 fail / AC-06 pass / AC-07 pass / AC-08 pass |
+  findings: P031-R1..R4（下）| evidence: 复审员重跑 rqhost 11/11 绿 +
+  session 71/71 绿 + cmd_autodesk 2/2 绿 + e2e p031_rqhost_arm 复跑 PASS
+  3.10s（AUTO_DESKTOP_E2E=1，真机）；diff 范围与 affects 清单逐一对应
+  （17 文件，无越界）；spec delta 四落点锚定核验；在册红×2 基线对照
+  沿用工作期同提交同配置记录（复审期不再 stash——栈跨 worktree 共享
+  已实证交叉风险）；cargo tf 全量门推迟至 pass 轮（needs_fix 代码将
+  变更，重跑浪费）| next: work 修复 R1..R4（全在 T-07 范围）。
+  **独立性声明：本轮在实施会话内复审——结论自工件重构（测试重跑 +
+  测试体重读枚举腿位），未采信执行摘要。**
+
+  **P031-R1**（fail；AC-05/T-07）：rust 轨 e2e 腿缺席——`-r rust -q`
+  全链运行时零执行（生成 gate `--autodesk-rqhost` 解析臂、cargo `--`
+  透传、a2r 产物上下文的 Rqhost 采纳仅编译级/内容断言）。修正：T-07
+  补 rust 腿（counter 级重生成 → -q → 原生窗首帧 → 关窗退出；首跑
+  cargo build 分钟级，加预算）。
+  **P031-R2**（partial；AC-01/AC-02/T-07）：e2e 缺"003 键入→换算
+  联动帧变"与"双窗输入互不串扰"腿——输入闭环现仅单测（真管道
+  dispatch）+vm_fork 协议级；AC-01/02 明文 e2e 口径。修正：SendInput
+  腿（029 sendinput.rs 组装层 + 前台化）或协议级注入腿入 e2e 文；
+  帧变观测 = PrintWindow 前后像素差或 daemon 帧计数观测行。
+  **P031-R3**（partial；AC-01/AC-04/T-07）：用户关窗（X）→app 退出码
+  0 路径无 e2e；**AC-04"末窗关闭→rqhost 退出"门（无窗∧无待定∧曾有
+  窗→iced::exit）零测试（单测亦无）**。修正：PostMessage WM_CLOSE 关
+  converter 窗→app 码 0；再关末窗→daemon 进程退出（wait_pid）；
+  末窗门补 rq_update 级单测（条件判定提取可测或 serve stop 旗标副作用）。
+  **P031-R4**（partial；AC-03/T-07）：真实自动孵化 e2e 缺席——e2e/
+  smoke 均预起 daemon；ensure spawn 真 `auto rqhost` 仅替身孵化器单测。
+  修正：冷启动腿（不预起 daemon → 直接 spawn -q 子进程 → 窗/首帧 →
+  daemon 由子进程孵化断言）。
+- 2026-09-19 /auto-plan:work 执行收口：`stage: work | PLAN-031 | rev 1 |
+  pass | code: lang plan-031-dev 08526fda8..5a64bd474（T-07 2feca90da/T-08 5a64bd474；T-02 c33cebe38/
+  T-03 801ed51fb/T-04 3c8363e68/T-05 8b1602838/T-06 149d299c7/T-07 e2e/
+  T-08 文档）+ os plan-031-dev（smoke + 台账 3d）| T-01..T-08 全勾 |
+  证据：rqhost 单测/集成 11 绿；e2e p031_rqhost_arm 六腿真机 PASS
+  （AUTO_DESKTOP_E2E）+ 留痕 reports/assets/031/（BMP 截图×2/进程清单
+  /daemon-stderr）；os smoke 生产管道全链 PASS；回归门 desktop_protocol
+  181 绿 + 在册红×2（coverage target_set/demo parity——merge-base 基线
+  全量并行同红，豁免口径 AC-07）+ session 71 绿 + auto-man rust_ui 23
+  绿 + codec golden 零漂移（suite 内含）；§5.1 定案 D1-D7 全兑现（D2
+  竞态锁管道原子注册/T-05 设计修正[ensure 只探活，采纳内建
+  ClientTarget::Rqhost——原设计会烧一次性管道实例，测试暴露]记录在案）|
+  blockers: 无 | next: review（/auto-plan:review）。
 - 2026-09-19 /auto-plan:new 起草交接：`stage: new`，PLAN-031 rev 1
   （030 号被并行会话取用于 shell-outproc-client，本计划顺延 031——
   取号脚本守卫核过无撞）。`outcome: pass`（合同完整：broker 上门
@@ -454,15 +708,30 @@ auto-os`。
 
 ## 10. 待澄清事项
 
-- **①（T-01 D2）** 并发冷启动竞态：第二实例自杀退出（推荐——简单
-  可测）vs 管道名原子注册（Windows 命名空间语义 T-01 核）。
-- **②（T-01 D1）** well-known 管道名与多会话隔离（单用户单实例 vs
-  会话域实例）；rendezvous 记录语法（沿 broker 管道串约定族）。
-- **③（T-01 D5）** rqhost 死时 app 策略：exit-on-EOF（推荐——原生
-  app 心智）vs 重找宿主（将来 `--rq-host` 生态）；桌面档 30s 重连
-  默认不变。
-- **④（T-01 D6）** `auto rqhost` 子命令（推荐）vs Run 隐藏旗标；
-  Hello.icon → 窗口 icon 支持面（不支持则 v1 忽略随注）。
-- **⑤（T-01 D7）** 保真清单口径：-q 全保真 examples 名单逐例判定
-  文档化（smoke 演示位）；`--rq-host=` 参数面预留（desktop 实现出界
-  归 030 线，接口先留）。
+- **（执行期发现，转交）examples 生成物漂移**：lang-031 worktree 测试
+  跑动偶发物化 `examples/rust-workspace/015-notes/src/main.rs` +
+  `Cargo.toml` 重生成 diff（lucide icon 映射/012-clock 成员剔除——与
+  主检出 656 会话的同类未提交 WIP 内容**不同源**；master 已提交
+  main.rs 相对现行生成器已陈旧）。已在 031 worktree 恢复 HEAD 不夹带；
+  归属建议 = 生成物刷新批次（656 会话或独立小批）。
+- **（执行期发现，技能面）git stash 栈跨 worktree 共享**：本组
+  stash/pop 与并行会话存在交叉风险（本轮实证主检出 WIP 未受损）——
+  后续并行会话建议弃用 stash 改 worktree 内 commit 分支。
+
+- ~~①（T-01 D2）~~ 并发冷启动竞态：**已定案（T-01）**——锁管道原子
+  注册（tokio `first_pipe_instance`，OS 级原子零窗口；推翻第二实例
+  探测自杀案——其窗口非原子）。见 §5.1 D2。
+- ~~②（T-01 D1）~~ well-known 管道名与多会话隔离：**已定案（T-01）**——
+  `autodesk-rqhost` 固定名 + 测试缝 env `AUTO_RQHOST_WELLKNOWN`；
+  单实例=单机器域（broker 同口径），多用户终端服务器随 §1.11 注记。
+  rendezvous 记录 = `adopt␟<app_name>`（无 render 字段，I1）。见 §5.1 D1。
+- ~~③（T-01 D5）~~ rqhost 死时 app 策略：**已定案（T-01）**——
+  exit-on-EOF（`ClientTarget::Rqhost` 变体 + reconnect=None 现成语义）；
+  桌面档 30s 重连默认不变。见 §5.1 D5。
+- ~~④（T-01 D6）~~ `auto rqhost` 子命令：**已定案（T-01）**——子命令
+  （`--pipe` 参数化）；Hello.icon → iced Settings 有 icon 位但需 RGBA
+  尺寸元数据，v1 忽略 + 观测行。见 §5.1 D6/D3。
+- ~~⑤（T-01 D7）~~ 保真清单口径：**已定案（T-01）**——vm 轨解释态
+  全保真 + not-yet 词汇占位/观测行（I3 现成纪律）；native 轨走
+  ensure_covered 既有门；`--rq-host=` 参数面预留未实现（显式报错）。
+  见 §5.1 D7。
