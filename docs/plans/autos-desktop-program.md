@@ -89,6 +89,25 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 - [x] 454+455 完成 —— ✅ 早已满足（= 462/463 已归档）
 - [x] auto-cosmic 宿主复活评估（libcosmic 依赖决策，Linux 环境）—— ✅ 509 T1 兑现（2026-09-01）：三路线矩阵裁定 **B**（Smithay+桌面协议宿主）；libcosmic 出局证据 = git-only 无版本锚 + fork iced 与主线 0.14 并存 + Windows 不构建；报告 `docs/plans/reports/509-smithay-route-verdict.md`
 
+## 终态批次（M7）：全 a2r 桌面（2026-09-19 规划；用户确认 ①→②→③ 序）
+
+> B 前置序列（3c1 图像通道 / 3c2 live 输入 + shell queue 面 / 3c3 shell
+> outproc v1）与 031 rqhost 第四形态之后的收口批次。**不合成单一执行
+> 计划**（合并规模 ≈ 仓史最大计划三倍、三波风险特征异质——数据门驱动 /
+> 深水布局语义 / 逐 app 探索性，030 rev1 needs_replan 教训在案），按波
+> 次计划推进；本节为波次依赖图与出口判据的唯一事实源（防腐规则 1/2）。
+
+| 波次 | 内容 | 承接债 | 出口判据 |
+|---|---|---|---|
+| **M7-a 覆盖 ramp v3 + 缺省翻转** | judged 六缺项补齐：012 映射兜底（native_style_token）/ tabs 整 kind（投影臂 + a2r tab 断裂）/ hidden（display:none 跳过）/ 样式 grid（GridCols→Grid walker）/ 定位族（absolute+offset 真渲 + fixed/sticky 口径定案）→ auto 缺省复评 | P026-D3 | 复测 judged ≥95% 过门 → `resolve_native_frame_mode` Covered 臂翻转（+防漏断言反转 + 裁定行）；不达标显式不翻（dual-exit，禁无数据翻转） |
+| **M7-b shell a2r 编译面 + overlay outproc 化** | shell-lib 组件库生成模式替解释面 outproc child（NativeProjector 替换点已就位）；switcher/通知/dashboard/launcher 四面 outproc（z 带/活渲染材料/iced 聚焦链三阻塞点逐解） | P030-D1 / P030-D3 | 编译 shell exe 全链（孵化/帧/输入/看门兵）+ 四面 outproc + 解释壳 parity 对拍 |
+| **M7-c app 组合批量 a2r** | 三梯队：①面内近邻 = klondike（icon/card）/ minesweeper（grid）/ kanban（input/textarea）/ launcher（icon/mouse-area/input/grid）/ tetris（dialog 折叠形态核对）；②tabs 户 = jade-garden（tab×27）/ auto-musk（tab×16 + alert-dialog×7 + table×1，17821 行拆批）——**依赖 M7-a tabs**；③table 族 = sys-monitor（table 全家 + svg + alert-dialog×16，table kind 捆绑立项）；特殊线 auto-term（terminal kind） | —（逐 app codegen 缺口即发现即修，缺口按 app 记账） | 各 app `auto build -r rust` + `desktop_exe:` 声明 + 三轨回归绿；超面 kind 缺口逐个入册或立项 |
+| **M7-d 全 a2r 桌面收口** | 整桌面度量（对照 508 inproc 0.86 / 020 queue 2.42 MiB/App 基线）+ 全链 smoke + 终态入册（Design 23 里程碑收笔） | — | 度量报告 + 终态验收留痕 |
+
+**顺序**：M7-a → {M7-b, M7-c①} 可并行（文件面错开：投影器/覆盖表 ‖ 生成器/宿主装配 ‖ app 仓）→ M7-c②③（②依赖 M7-a 的 tabs）→ M7-d 压轴。
+
+**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
+
 ## 裁定登记簿
 
 程序最大的风险不是丢任务，是旧裁定在新代码/新文档里悄悄复活。每次翻转裁定记一行，
