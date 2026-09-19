@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-033
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: rq-projector-unify
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/{rqhost,shell_client,stage3,mod}.rs # 更名/测试迁移
   - auto-lang/docs/design/autoui/desktop-protocol-v1.md                  # §1.14 + 更名 canonical 同步（~11 行）
   - auto-os/docs/plans/autos-desktop-program.md                          # M7 行 + 副线债裁定落定
-current_step: 0
+current_step: 3
 total_steps: 8
 ---
 
@@ -263,6 +263,84 @@ P020-D1 更名注记 + 主线载体澄清（2026-09-19，KNOWN-DEBT 工作区在
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-07 依据。
 
+### 5.1 定案记录（T-01，2026-09-19；证据 = lang-033 worktree @857235623）
+
+- **D1 = A：回写位在 `DynamicComponent::on()` 内**（拆 Typed 后、handler
+  前）。实据：a2r 生成物同构面 `ui_gen/rust.rs:1278-1314`——生成 on() 对
+  input 绑定事件先 `last_input_text()` 读通道、**全绑定字段类型保值写回**、
+  再跑 handler 体；VM 侧对齐 = on() 在 INPUT_TEXT 通道非空且
+  `event_name ∈ input_state_map` 时借 `parse_input_value_for_field` +
+  `bridge.write_state` 写回（逻辑同 `on_with_input_for` :2040-2047）。
+  003 零参闭包（`oninput: () => {...}`，app.at:38/:49）handler_param_count
+  =Some(0) 不走参注入臂，但字段写回落位 → handler 体读 `.celsius` 正确；
+  单参 handler 沿用既有 :1807-1814 注入（两臂叠加 = on_with_input_for
+  语义位对位）。**单写点钉死**：on()（native/pixels 投影臂入口）与
+  on_with_input_for（renderer 自开窗轨入口）是互斥派发入口——每条输入
+  事件恰好走其一、各写一次；不存在同事件双写路径（派发侧无先 on 后
+  on_with_input_for 的串联调用面——renderer.rs:16912-16916 二选一实证）。
+- **D2 = B（泵侧驱动，经 Component 缺省钩子）**：`Component` 追加缺省
+  `fn fire_due_timers(&mut self) -> bool { false }`（component.rs——与
+  tick_interval_ms/tick_msg 同族后端中立钩子；单通道
+  tick_msg:Option<Msg> 无法表达 VM 多 timer（TimerEntryRuntime
+  {widget,event,every_ms,when} 逐条独立间隔+门控，dynamic.rs:644-670
+  + timesources 统一表 :672-720——候选 A 结构性不可行）。DynamicComponent
+  override：timesources 逐条 next-fire Instant 簿记（平行 Vec 字段），
+  到期 → Timer 条目走 `fire_timer`（when 门控内置 :1146-1174）→ Tick
+  条目走 `on_with_input_for(widget,"Tick",None)`（renderer.rs:16912-16916
+  同分流）；挂载过滤 = always_mounted ∪ mounted_types 含 widget 类型
+  （renderer 订阅级 mount 过滤的近似面，差异随注）。NativeProjector::
+  poll_tick 首行消费（true → rev+=1）；节拍源 = ClientPump 空拍
+  poll_session_tick（recv_wait(25) 空转臂，client_runtime.rs:2263-2273）
+  ——泵节拍不变。a2r 结构体零影响（缺省 false）。
+- **D3 = 泵侧读走（双点：Input 派发后 + poll_tick 后）**：`Component`
+  追加缺省 `fn drain_desktop_commands(&mut self) -> Vec<String>`；
+  DynamicComponent override 镜像 shell_client.rs:201-222（read_state +
+  清空 + '\n' 分行）。NativeProjector 泛型转发（`component` 字段直通）；
+  ClientPump 在 Input 派发臂与 poll_session_tick 臂 drain →
+  `ControlMsg::DesktopBus{wid, record}` 上行（shell_client.rs:404-448
+  先例同款；宿主消费 = host.rs:248 收件箱 + DesktopBus↔DesktopCommand
+  解析互通 :547-556；rqhost 宿主侧记录面）。wid 取 AppEndpoint 握手
+  Welcome 落地值（实现时核对 endpoint 字段名）。
+- **D4 = A：孪生迁 RqProjector 重基线**（B 结构性不可行——AppProjector
+  删后孪生无法编译；且 T-02 后 VM app 真实渲染即 native 布局，孪生随
+  native 才忠实）。remote.rs:208-236 `remote_twin_hits` 改
+  `RqProjector<DynamicComponent>` + render_frame + 字符串命中提取：
+  HitEntry::Msg → DynamicMessage::Typed.event_name → "button:<name>"；
+  HitEntry::Input.on_change → event_name → input_state_map →
+  "input:<field>"。为此在 native_projector 加
+  `impl RqProjector<DynamicComponent>` 专属块 `hit_regions()`（具体型
+  impl 块合法，泛型 FrameSource impl 不冲突）。几何重录 = 命中矩形按
+  native 布局新值（孪生本义=镜像真实命中面）。
+- **D5 分层清单**：
+  **删**（主体随 AppProjector/walker 消亡，逐条归因）：climb_001-005
+  （历史爬坡证据——Plan 500 报告在案，001-005 由 stage3 e2e + rqhost
+  vm_typing + 覆盖门接续覆盖）、parity_matrix_queue_golden /
+  parity_matrix_covers_target_set / parity_001_queue_golden（对照
+  AppProjector 自身 golden）、t3/t4/t5/t6 widget 几何族 ~24 件（块流
+  walker 专属语义；native 等价覆盖 = coverage 门 22/22 + native_
+  projector 单测 + stage3 e2e + p032 数据行——逐家族重录 24 份几何
+  golden 的维护成本 > 增量价值）。
+  **迁**（保断言意图换 RqProjector<DynamicComponent> 重基线）：
+  projector_counter_layout_and_hits、projector_click_dispatches_vm_
+  handler（VM 源 hits/texts 对账）；run_client_full_cycle_over_pipe
+  （→run_client_session）；stage3_child_body :270（→ensure_covered +
+  run_client_session）；session P508 launch_outproc_child_body :6625
+  （同型）；rqhost vm_typing_loop_over_pipe（改接后天然断言 = AC-01
+  证据载体）。stage3/session 各 `process_model=Outproc` 测试点（stage3
+  :733/:1552/:1893/:2080/:2276、session :6648、remote :284/:679）→ 改
+  outproc_spawner 注入触发（T-04 后触发条件），逐处归因。
+  **留**：handler_token_rules / fstr_template_matches_parser_shape
+  （纯函数，不依赖投影器）；dual_mode.rs 零依赖不动。
+- **D6 = 忽略留痕**：`shell.apps.process_model` 键无代码写点（全仓
+  grep 仅 boot 读 renderer.rs:12940-12946 + 枚举/测试）——拔除
+  ProcessModel 枚举 + from_storage + desktop.process_model 字段 +
+  launch_app :3131 门 + hatch_mini_app :4957 门 + boot 读入函数；
+  boot 位留一行探测：读到 "outproc" 时 eprintln 迁移注记（退役非静默
+  I3）。AUTO_SHELL_MODEL（ShellModel，030 shell 专属）不混淆不动。
+  launch_app_outproc 三分 → 二分（测试 spawner / native exe）；
+  spawn_outproc_child（:3075）删；launch_app 触发 = outproc_spawner
+  在场 ∨ native exe 发现。
+
 ### 5.2 改接与 VM 补齐（T-02/T-03）
 
 - **T-02 改接**：client_entry Commands 臂换 NativeProjector 装配 +
@@ -354,14 +432,17 @@ specs.json UU 冲突清理。依赖序：T-01 → T-02 → T-03 → {T-04, T-05
 `D:/autostack/.wt/lang-033/auto-lang`；os `D:/autostack/.wt/os-033/
 auto-os`。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [x] 深水调查与定案** `[✅ 已完成 2026-09-19]`
   文件：`client_entry.rs`、`dynamic.rs`（on/on_with_input_for/mount/
   timer 面）、`native_projector.rs`（poll_tick/dispatch 面）、
   `remote.rs`（孪生）、`session.rs`（spawn 三分流/process_model）、
   shell_client.rs（drain 先例）+ §5.1（写面）。
   动作：D1–D6 定案（D1 回写位为核心）。
   产物：`### 5.1 定案记录`（file:line 证据）。
-  验证：定案完备；复审通过。
+  验证：定案完备（D1=A on() 内单写点[a2r 同构 rust.rs:1278-1314]/
+  D2=B Component 缺省 fire_due_timers 钩子+泵侧消费/D3=泵双点 drain+
+  DesktopBus/D4=A 孪生迁 native 重基线/D5 分层清单[删 ~32 件+迁 7
+  面]/D6 忽略留痕——全 file:line 在案）。
   → 全 AC 前置。新路径：定案产物。
 - **T-02 [lang] 改接**
   文件：`client_entry.rs`（Commands 臂 seam）。
@@ -374,18 +455,28 @@ auto-os`。
   动作：§5.2 T-03。
   验证：003 换算/timer/命令三闭环单测绿。
   → AC-02。
-- **T-04 [lang] AppProjector 拔根**
+- **T-04 [x] AppProjector 拔根** `[✅ 2026-09-19]`
   文件：`client_runtime.rs`（本体/泛型收口）、`session.rs`（re-exec
   臂/process_model）、`cmd_autodesk.rs`（装载臂）、`client_entry.rs`
   （解释 pixels 臂）。
   动作：§5.3 T-04；D6 处置面。
-  验证：编译门 + 拔除 grep 清单 + spawn 二分断言。
+  验证：编译门 ✅（commit 3f2de9dd5）+ spawn 二分（spawner/native-exe，
+  纯解释第三形态显式报错文案）+ grep 清单（代码零 AppProjector 类型
+  引用——残余为历史注记待 T-06 归并）+ L3 v2a 快照面补齐
+  （Component::apply_state_snapshot 钩子，l3_v2a e2e 绿）。
   → AC-04。
-- **T-05 [lang] remote 孪生 + 测试迁移**
+- **T-05 [x] remote 孪生 + 测试迁移** `[✅ 2026-09-19]`
   文件：`remote.rs`（D4 处置）、`stage3.rs`/`client_runtime.rs`/
   `session.rs`/`rqhost.rs`（D5 重基线清单）。
   动作：§5.3 T-05；逐条归因留痕。
-  验证：迁移后套件绿（重基线清单核）。
+  验证：迁移后套件绿 ✅——desktop_protocol 173/174（唯一红 =
+  covered_elements_within_target_set **在册红**：imagesurface 为
+  PLAN-656 T-10 表同步尾巴，stash 对照 base 同败，与本计划无关）；
+  rqhost 13/13（vm_typing 经 native 断言 = AC-01 证据）+ session
+  73/73 + t3_examples 七例 e2e + p508 outproc 生产链绿。重基线归因：
+  003 键入 "0100"（native buffer 原文显示语义）/p507 checkbox needle
+  （button:ToggleOk）/Wid·surface 相对化（进程级计数序依赖）/删
+  climb+parity+t3-t6 族 ~32 件 + t3_independent e2e（D5 删清单）。
   → AC-04/06。
 - **T-06 [lang] 更名 RqProjector**
   文件：代码 123 处 + canonical 文档 + 两侧 specs.json。
@@ -405,6 +496,15 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:work 开工：`stage: work`，PLAN-033 rev 1。前置
+  核验：①032 已 merge 归档（os archive/032-* + lang master 30c746af4
+  在链）✅；②auto-lang 主检出 specs.json 冲突已清（零 marker）✅。
+  worktree 组建：lang `D:/autostack/.wt/lang-033/auto-lang` @
+  plan-033-dev（base master 857235623）+ os `D:/autostack/.wt/os-033/
+  auto-os` @ plan-033-dev（base main a54e37f）。**主检出 WIP 悬置**：
+  auto-lang master 工作树有 `crates/.../iced/renderer.rs` 两行
+  `[TRACE]` eprintln 调试残留（他方会话 MCP/menubar 调试遗留）——不
+  并入本计划，留主检出由属主处置（见 §10 ⑤）。
 - 2026-09-19 /auto-plan:new 起草交接：`stage: new`，PLAN-033 rev 1。
   `outcome: pass`（合同完整：改接 seam/三模板/输入三轨对照与回写缺口/
   timer 与 desktop_cmd 缺口/AppProjector 消费面含 remote 孪生/更名
@@ -422,3 +522,7 @@ auto-os`。
   vs 随远程线另裁留痕。
 - **④（T-01 D5）** climb_001-005 历史爬坡测试处置：迁 RqProjector
   重录 golden vs 删（历史证据价值 vs 维护成本）。
+- **⑤（环境）** auto-lang 主检出 renderer.rs 两行 [TRACE] eprintln
+  调试残留（他方会话 WIP，2026-09-19 work 开工发现）——属主自行处置
+  （revert 或 route 入 fix worktree）；本计划 worktree 不受影响，merge
+  时若仍在需先清。
