@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-032
-status: execution_done               # drafting → executing → execution_done → reviewed → archived
+status: executing               # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-ramp3-flip
 author: [agent]
 created_at: 2026-09-19
@@ -20,7 +20,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui_gen/rust.rs                         # tabs/tab a2r 断裂映射（依 D2 定案）
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                          # P026-D3 处置 + 新债随注
   - auto-os/docs/plans/autos-desktop-program.md                           # M7-a 批次行 + 裁定行
-current_step: 8
+current_step: 7
 total_steps: 8
 ---
 
@@ -350,7 +350,7 @@ None，vnode_converter.rs:1029 full-path 先例）。归因 = 022/656 合并
 
 | delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
 |---|---|---|---|---|---|
-| SD-01 | add | auto-lang/docs/design/autoui/desktop-protocol-v1.md（§1.12 v1.12 增量） | before：v1.11 覆盖下 judged 六缺项在册（tabs/hidden/style-grid/定位族/012 映射），auto 缺省 independent（"flip pending ramp v3"观测行）；after：五族口径入册（tabs kind 全链 + hidden 跳过语义 + 样式 grid 分岔 + 定位族分层[absolute 真渲 + fixed/sticky 降级随注——依 D1 定案]）+ 翻转裁定结果（缺省 queue 或显式不翻 + 数据行）——PROTOCOL_VERSION 仍 1（零 wire 变体） | 协议权威版本化收录 ramp v3 与缺省裁定 | AC-01/02/03 |
+| SD-01 | add | auto-lang/docs/design/autoui/desktop-protocol-v1.md（§1.13 v1.13 增量——复审定稿：031 先占 §1.12，drafting 时预计号依 merge 序实取） | before：v1.12 覆盖下 judged 六缺项在册（tabs/hidden/style-grid/定位族/012 映射），auto 缺省 independent（"flip pending ramp v3"观测行）；after（已验证实现态）：五族口径入册（tabs kind 全链 + hidden 跳过语义[display 族响应式覆盖] + 样式 grid 分岔[GridCols 优先/GridRows 反推/裸 Grid 等价堆叠] + 定位族分层[absolute 真渲 + fixed/sticky 降级随注——依 D1 定案]）+ D5 族运行时面（SelfCenter/Inset/LineClamp/FlexWrap）+ 翻转裁定（缺省 queue，judged 22/22 = 100%）+ 数据门口径升级（judged 计算 + 防漏断言反转）+ 运行时口径差（component.view() vs 静态壳——018/041 真 not-yet 拒收留痕）+ 保真边界随注——PROTOCOL_VERSION 仍 1（零 wire 变体） | 协议权威版本化收录 ramp v3 与缺省裁定 | AC-01/02/03 |
 | SD-02 | modify | auto-os/docs/plans/autos-desktop-program.md | before：M7-a 行 = 待执行；after：M7-a 行更新（五族口径 + 翻转结果 + M7-c② tabs 解锁注记）+ 裁定行（若翻） | 桌面程序台账 M7 批次 | AC-06 |
 | SD-03 | modify | auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md | before：P026-D3 = 维持 independent 复测未达标；after：处置（翻则核销；不翻则数据行更新）+ 新债（fixed/sticky 真渲——若分层） | 债账 | AC-06 |
 
@@ -432,13 +432,18 @@ crate 串行，非硬前置）。
   master 既有红，非本任务引入（解释态域，I4 出界，随注记录）。仪器
   judged 16/22 → 18/22（012/041 翻绿，018 缺项收敛 fixed/z）。commit
   plan-032-dev。
-- **T-03 [x] [lang] tabs kind**
+- **T-03 [ ] [lang] tabs kind**
   文件：`coverage.rs` + `native_projector.rs` + `ui_gen/rust.rs`
   （依 D2）。
   动作：§5.2 T-03。
   验证：tabs golden + on_select 单测 + 046 a2r 编译（若同批）。
   → AC-01/03。
-  [✅ 已完成] kinds+tabs + View::Tabs 投影臂（等宽托盘/选中 bg/fg 差分/
+  [→ 复审 R1 重开——F-2：tabs variant 发射在无 ui 特性档（cargo tf/tt）
+  丢失，根因 = with_button_preset 的 no-`ui` "恒等孪生"（ui_gen/rust.rs
+  :5166）对非 button tag 也剥 variant/size prop（契约违例——ui 孪生只动
+  button）。修复 = 孪生收窄为 button-only + tf/tt 复绿。原完成证据（ui-
+  iced 档全绿 + 046 编译[复审复跑 70s 过]）保留在案。]
+  [原完成记录] kinds+tabs + View::Tabs 投影臂（等宽托盘/选中 bg/fg 差分/
   default+enclosed[选中下划线]两变体/Top+Bottom/TabSelect 命中 →
   TabsSelectCallback.call(index) 物化——VM 轨 value 串在回调内包装）+
   scan contents 递归补漏。a2r：generate_view_tree 专属臂（labels/
@@ -534,6 +539,43 @@ crate 串行，非硬前置）。
   12775b8）。回归门补录：session:: 86/86 绿。
 
 ## 9. 复审记录
+
+- 2026-09-19 /auto-plan:review R1（实施会话内复审——独立性受限已在
+  裁定前声明；裁定从工件重建：代码态/测试复跑/双基线对拍，不采信执行
+  者摘要）：`stage: review`，PLAN-032 rev 1。`outcome: needs_fix`。
+  `reviewed_commit`: lang plan-032-dev 47b86d730（base 0c6b03fd3，worktree
+  干净复核）；os plan-032-dev 12775b8（base 9d6941a）；计划文档 os main
+  bf05d05。`acceptance_results`：AC-01 pass（仪器 judged 22/22 = 100%
+  复跑 + 六例门钉绿）/AC-02 pass（Covered 臂 Commands :157 + 观测行
+  flipped@ramp3 + assert!(flip) 反转态 + 翻转态钉 + p032 报告在案）/
+  AC-03 **partial**（VM 轨投影 golden + 046 真源 a2r cargo build 复跑
+  70s 过；但发射测试 test_tabs_codegen_view_tabs_folding 在 cargo tf/tt
+  档红——见 F-2）/AC-04 pass（防漏钉矩阵 + shell 五件 + 八 family
+  golden 复跑绿；零回归对拍见下）/AC-05 pass（e2e 二跑全绿；一跑红
+  归因 = 与后台全量门并发 CPU 争抢的环境因素——串行绿，随注）/AC-06
+  pass（§1.13 锚点 + 版本表行 + P032-D×4 + P026-D3 核销 + 台账裁定行
+  互链全解析；SD-01 表 §号失配已复审定稿修正）。
+  `findings`：**F-2 [major·AC-03/T-03]**——tabs `variant` prop 发射在
+  无 `ui` 特性档丢失：with_button_preset 的 no-`ui` 恒等孪生
+  （ui_gen/rust.rs:5166）无视 tag 无条件 remove("variant")/remove
+  ("size")——ui 孪生（:5097）只对 button 合并 preset；PLAN-641 起
+  tabs 亦持 variant 词表 → tf（无 ui-iced）/tt（test-trans）档下
+  `tabs variant:"enclosed"` 生成物丢形态。证据：tf 分支 4 红 vs master
+  2 红（净增 = 本测试）；tt 7 vs 6（同）；隔离复跑 + 生成码 diff
+  （仅 .variant 缺席）。修正：孪生收窄 `if tag != "button" { return
+  Borrowed }`（对齐其文档契约"恒等"），tf/tt 复绿 + 046 编译复跑为
+  完成判据。**F-1 [bookkeeping·已复审定稿]**——SD-01 增量表残留
+  drafting 时 §1.12 号（031 先占 §1.12，实落 §1.13）+ after 规则未含
+  D5 族运行时面——已修正。`evidence`: 双基线对拍（branch vs master
+  @0c6b03fd3 组内 detached worktree）——tf 净增 1（tabs 发射）、tt 净增
+  1（同）；ffi_dual_019 分支全量档红但隔离双跑绿（37s/7s）= 负载
+  flake 非回归；既有红清单（mouse_area/display_family/a2r×4）两基线
+  同集。**运维事件披露**：复审中一次 `git stash pop` 误弹他会话 stash
+  （stash 列表全仓共享——"On plan-637-dev: 026-final"）入本 worktree，
+  已 `git reset`+`checkout` 完整恢复（0 脏文件复核）；对方 stash 因
+  pop 冲突不删除机制完好未损（stash@{0} 复核在案）。master 期间前移
+  0c6b03fd3→b69c7344c（他会话合入）——merge 时调和。`next: work`（携
+  F-2 单点修复；修复后 tf/tt 复绿 + 本记录补 R2）。
 
 - 2026-09-19 /auto-plan:work 执行收口：`stage: work`，PLAN-032 rev 1。
   `outcome: pass`——T-01..T-08 全闭环：D1–D6 定案（§5.1）→ 五族补齐
