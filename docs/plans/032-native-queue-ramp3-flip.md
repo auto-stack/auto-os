@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-032
-status: executing               # drafting → executing → execution_done → reviewed → archived
+status: execution_done               # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-ramp3-flip
 author: [agent]
 created_at: 2026-09-19
@@ -20,7 +20,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui_gen/rust.rs                         # tabs/tab a2r 断裂映射（依 D2 定案）
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                          # P026-D3 处置 + 新债随注
   - auto-os/docs/plans/autos-desktop-program.md                           # M7-a 批次行 + 裁定行
-current_step: 7
+current_step: 8
 total_steps: 8
 ---
 
@@ -432,17 +432,18 @@ crate 串行，非硬前置）。
   master 既有红，非本任务引入（解释态域，I4 出界，随注记录）。仪器
   judged 16/22 → 18/22（012/041 翻绿，018 缺项收敛 fixed/z）。commit
   plan-032-dev。
-- **T-03 [ ] [lang] tabs kind**
+- **T-03 [x] [lang] tabs kind**
   文件：`coverage.rs` + `native_projector.rs` + `ui_gen/rust.rs`
   （依 D2）。
   动作：§5.2 T-03。
   验证：tabs golden + on_select 单测 + 046 a2r 编译（若同批）。
   → AC-01/03。
-  [→ 复审 R1 重开——F-2：tabs variant 发射在无 ui 特性档（cargo tf/tt）
-  丢失，根因 = with_button_preset 的 no-`ui` "恒等孪生"（ui_gen/rust.rs
-  :5166）对非 button tag 也剥 variant/size prop（契约违例——ui 孪生只动
-  button）。修复 = 孪生收窄为 button-only + tf/tt 复绿。原完成证据（ui-
-  iced 档全绿 + 046 编译[复审复跑 70s 过]）保留在案。]
+  [✅ R1-F2 已修复] 孪生收窄 button-only（commit 7ba0dd2 计划分支尾）
+  ——tabs variant 发射 tf/tt 双档恢复绿；顺带治愈 master 既有红
+  display_family（icon size 传导恢复）；046 编译复跑过（22s）；ui-iced
+  档回归绿。tf/tt 定稿清单 = mouse_area + a2r×4（master 基线既有）+
+  ffi_dual_019（4 跑 2 红 2 绿、隔离×3/模块整组绿 = 重负载 flaky 谱系
+  在册，非回归）。
   [原完成记录] kinds+tabs + View::Tabs 投影臂（等宽托盘/选中 bg/fg 差分/
   default+enclosed[选中下划线]两变体/Top+Bottom/TabSelect 命中 →
   TabsSelectCallback.call(index) 物化——VM 轨 value 串在回调内包装）+
@@ -539,6 +540,23 @@ crate 串行，非硬前置）。
   12775b8）。回归门补录：session:: 86/86 绿。
 
 ## 9. 复审记录
+
+- 2026-09-19 /auto-plan:work R1-F2 修复收口：`stage: work`，PLAN-032
+  rev 1（needs_fix 重入）。`outcome: pass`——F-2 单点修复：
+  with_button_preset 的 no-`ui` 孪生收窄 button-only（非 button 恒等
+  返回；button 的 variant/size preset 剥除保留——与 ui 孪生范围及
+  自身"恒等"文档契约对齐）。`code_commit`: lang plan-032-dev
+  47b86d730→R1-F2 修复提交。`task_ids`: T-03（重开→闭合）。`evidence`:
+  ①tabs 发射测试无 ui 档（nextest lib 裸跑）绿；②tf 全量 no-fail-fast
+  两轮：1-2 红 = mouse_area（master 基线既有）± ffi_dual_019（2/4 轮
+  现、隔离×3 绿、ffi_dual 模块整组 23/23 绿——重负载 flaky，master
+  在册红谱系含其）；③tt 全量 5 红 = master 基线 6 红的子集
+  （**display_family 被本修复治愈**——icon size 传导恢复的正向效应，
+  净 -1）；④ui-iced 档回归（tabs golden/发射/门/仪器）绿；⑤046 真源
+  a2r 编译复跑过（22s）。`blockers`: 无。`next: review`（R2——增量
+  审 F-2 闭合 + 双档清单；其余 AC R1 已 pass 且代码未动）。**随注**：
+  ffi_dual_019 的批内非确定性（同码 2 红 2 绿）建议随 B 程序 CI 化时
+  定 attribution——本计划不立项。
 
 - 2026-09-19 /auto-plan:review R1（实施会话内复审——独立性受限已在
   裁定前声明；裁定从工件重建：代码态/测试复跑/双基线对拍，不采信执行
