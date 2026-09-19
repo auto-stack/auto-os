@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done          # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-man/src/{automan.rs,rust_ui.rs}            # vm 装载链分岔 + rust 轨注入
   - auto-lang/docs/design/autoui/{desktop-protocol-v1.md,virtual-desktop.md} # 协议增量 + 形态入册
   - auto-os/docs/plans/autos-desktop-program.md                      # 台账行
-current_step: 6
+current_step: 8
 total_steps: 8
 ---
 
@@ -618,8 +618,7 @@ auto-os`。
   原子注册（T-02 已落 lock_pipe_second_claim_fails——serve 级
   AlreadyRunning 断言）。
   → AC-03/05。
-- **T-07 [lang+os] e2e 与度量** [ ]（复审第二轮 P031-R5 重开——e2e 脏文件卫生；R1..R4 证据保留）
-  [前次证据 2026-09-19 含修复轮]
+- **T-07 [lang+os] e2e 与度量** [x] [✅ 已完成 2026-09-19（含 R1..R4 与 R5 修复轮）]
   文件：lang `stage3.rs`（p031_rqhost_arm）+ 截图 assets/031/；os
   smoke 脚本。
   动作：AC-01..06 逐条留痕 + 度量行。
@@ -648,8 +647,7 @@ auto-os`。
   23.56s（七腿）；desktop_protocol 183 绿+在册红×2（基线同红）；rqhost
   13/13；rust_ui 复跑 23/23。
   → AC-01..06。
-- **T-08 [lang+os] 文档与台账收口** [ ]（复审第二轮 P031-R6 重开——delta 新鲜度；SD-01..04 落点保留）
-  [前次证据 2026-09-19]
+- **T-08 [lang+os] 文档与台账收口** [x] [✅ 已完成 2026-09-19（含 R6 新鲜度修复轮）]
   文件：lang `desktop-protocol-v1.md`（§1.11）、`virtual-desktop.md`
   （Design 23 §4 增行 + 裁定记录）；os 台账行 + 互链。
   动作：SD-01..04 落笔。
@@ -663,6 +661,14 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:work 修复轮（R5/R6）：`stage: work | PLAN-031 |
+  rev 1 | pass | code: lang af3bd9fd2 + os 台账七腿提交 | task_ids:
+  T-07/T-08 | evidence: e2e 复跑 PASS 37.87s——rust 腿带"零残留"清洁
+  断言通过 + rust-workspace git 状态 0 脏实证（断言首跑自证抓出
+  Drop 时序盲区后显式 restore.run() 修正）；rqhost 13/13 复跑绿；
+  §1.11/overview/台账 3d 计数与裁定同步 | blockers: 无 | next: review
+  第三轮（可按重复复审条款复用第二轮未变证据——本轮仅动 e2e 卫生
+  断言与文档，R1..R4 相关实现与测试零变更）。
 - 2026-09-19 /auto-plan:review 第二轮（R1..R4 闭环）：`stage: review |
   PLAN-031 | rev 1 | needs_fix | reviewed_commit: lang 34bb52532 |
   base: 08526fda8 | deps: auto-down dep-031@a615d69 | spec_inputs: §1.11
