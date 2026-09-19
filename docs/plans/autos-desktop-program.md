@@ -99,14 +99,27 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 
 | 波次 | 内容 | 承接债 | 出口判据 |
 |---|---|---|---|
-| **M7-a 覆盖 ramp v3 + 缺省翻转** | judged 六缺项补齐：012 映射兜底（native_style_token）/ tabs 整 kind（投影臂 + a2r tab 断裂）/ hidden（display:none 跳过）/ 样式 grid（GridCols→Grid walker）/ 定位族（absolute+offset 真渲 + fixed/sticky 口径定案）→ auto 缺省复评 | P026-D3 | 复测 judged ≥95% 过门 → `resolve_native_frame_mode` Covered 臂翻转（+防漏断言反转 + 裁定行）；不达标显式不翻（dual-exit，禁无数据翻转） |
+| **M7-a 覆盖 ramp v3 + 缺省翻转** ✅ **已交付（PLAN-032，2026-09-19）——裁定：翻转** | judged 六缺项补齐：012 映射兜底（native_style_token）/ tabs 整 kind（投影臂 + a2r tab 断裂）/ hidden（display:none 跳过）/ 样式 grid（GridCols→Grid walker）/ 定位族（absolute+offset 真渲 + fixed/sticky 口径定案）→ auto 缺省复评；实交付含 D5 族运行时面补臂（SelfCenter/Inset/LineClamp/FlexWrap——T-07 运行时口径发现） | P026-D3 ✅ 核销 | **复测 judged 22/22 = 100% ≥ 95% 过门 → 已翻转**：`resolve_native_frame_mode` Covered 臂 = Commands（auto 缺省 queue，观测行 flipped@ramp3）+ 仪器 judged 口径升级 + 防漏断言反转（跌破门即红）+ 六例 e2e（四进程腿 + 018/041 拒收留痕——truncate/codeeditor 真 not-yet 家族 P032-D3 登记）+ 台账裁定行（本行） |
 | **M7-b shell a2r 编译面 + overlay outproc 化** | shell-lib 组件库生成模式替解释面 outproc child（NativeProjector 替换点已就位）；switcher/通知/dashboard/launcher 四面 outproc（z 带/活渲染材料/iced 聚焦链三阻塞点逐解） | P030-D1 / P030-D3 | 编译 shell exe 全链（孵化/帧/输入/看门兵）+ 四面 outproc + 解释壳 parity 对拍 |
 | **M7-c app 组合批量 a2r** | 三梯队：①面内近邻 = klondike（icon/card）/ minesweeper（grid）/ kanban（input/textarea）/ launcher（icon/mouse-area/input/grid）/ tetris（dialog 折叠形态核对）；②tabs 户 = jade-garden（tab×27）/ auto-musk（tab×16 + alert-dialog×7 + table×1，17821 行拆批）——**依赖 M7-a tabs**；③table 族 = sys-monitor（table 全家 + svg + alert-dialog×16，table kind 捆绑立项）；特殊线 auto-term（terminal kind） | —（逐 app codegen 缺口即发现即修，缺口按 app 记账） | 各 app `auto build -r rust` + `desktop_exe:` 声明 + 三轨回归绿；超面 kind 缺口逐个入册或立项 |
 | **M7-d 全 a2r 桌面收口** | 整桌面度量（对照 508 inproc 0.86 / 020 queue 2.42 MiB/App 基线）+ 全链 smoke + 终态入册（Design 23 里程碑收笔） | — | 度量报告 + 终态验收留痕 |
 
 **顺序**：M7-a → {M7-b, M7-c①} 可并行（文件面错开：投影器/覆盖表 ‖ 生成器/宿主装配 ‖ app 仓）→ M7-c②③（②依赖 M7-a 的 tabs）→ M7-d 压轴。
 
+<<<<<<< HEAD
 **副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1，统一时更名 RqProjector——2026-09-19 用户意向）；**pixels 臂退役门**（2026-09-19 用户裁定两次细化，澄清版）：**`-q` VM 轨保留并改接 native 臂**——解释态组件 view() 的物化 View 直喂 NativeProjector（030 shell outproc v1 先例：解释装载 + View 全展开），VM 版 `-q` 同获省内存（免每 app iced/wgpu 后端）+ native 保真；**AppProjector 降级投影臂随之退役**（P020-D1 双投影器统一 = 主线载体：归一 RqProjector，VM 经 View 入投影，非清理债）；解释态 pixels 臂（run_independent_child + process_model=outproc 选项）即废（隔离渲染初心=渲染器外移，自渲再发帧违背初衷）；native pixels 半臂维持四条件（auto 翻转[032] / 覆盖收口[M7-c] / 位图过线 / 像素原生族裁定；Linux 无强制场景：iced+wgpu 自渲 app 经 swapbuffers 呈递 OS compositor 属系统协议）；**量化验收门：单 app `-q` 渲染正确 + app ≤10MB[031 实测 7-9MB ✅] + rqhost ≤100MB[debug 实测 314MB ❌，release 复测+归因优化为前置]**；达标后执行退役（P-RQ-PIX 在册）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
+=======
+**M7-a 裁定行（PLAN-032 收口，2026-09-19）**：native `Auto` 缺省 =
+**queue**（ramp v3 数据门达标：judged 22/22 = 100%，仪器复现命令与
+对差表见 lang `docs/plans/reports/p032-native-flip-row.md`；协议增量
+§1.13 v1.13——五族口径 + 保真边界随注，零 wire 变体）。**M7-c②
+解锁注记**：tabs kind 全链已交付（VM 轨投影臂 + a2r 断裂映射修复 +
+046 真源编译过）——jade-garden（tab×27）/auto-musk（tab×16）可开工；
+运行时口径缺口（P032-D3：truncate/codeeditor）M7-c 撞面时逐 app 记
+账立项。
+
+**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
+>>>>>>> 12775b8 (ledger: 032 T-08 SD-02——台账 M7-a 行交付裁定(翻转：judged 22/22=100% 过门，auto 缺省 queue，观测行 flipped@ramp3)+P026-D3 核销注记+M7-c② tabs 解锁注记(jade-garden/auto-musk 可开工)+运行时口径缺口随记(P032-D3))
 
 ## 裁定登记簿
 
