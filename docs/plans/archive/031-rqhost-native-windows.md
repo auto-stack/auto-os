@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: reviewed                 # drafting → executing → execution_done → reviewed → archived
+status: archived                 # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -660,6 +660,15 @@ auto-os`。
   → AC-07/08。
 
 ## 9. 复审记录
+
+**PLAN-031:r1 合并收据**（五 checkpoint，2026-09-19）：
+- prepared ✅：reviewed 基线 lang af3bd9fd2 / os e0cd1ce（第三轮 pass）；canonical delta 四落点；master 调和（master+70 / main+21）——§1.11 节号撞（030 先落）→ 031 增量重编号 **§1.12/v1.12**（顶表双行序=落地序；virtual-desktop/overview/台账 3d 交叉引用同步；两节内容零删改）；调和代码补面 = rqhost apply_actions 补 DesktopBus 臂（030 增臂，普通 app 上行不执行留观测行）+ 测试 Hello 构造补 surfaces 空尾段（030 v1.11 尾段）；台账行 3c3（030 已落）/3d 共存。
+- landed ✅：lang master merge 0c6b03fd3（ancestry 27e833bc9 实证；canonical §1.11/§1.12/Design23§4 内容核验在场）+ os main merge（ancestry 68a7464 实证；smoke 脚本+台账 3d+ledger 落地）。合并树刷新验证：desktop_protocol scoped 190 绿+基线红×2、e2e 七腿 PASS 76.68s、tf 3639/3643（4 红=master 谱系在册转交）；master 冒烟 = 非测试构建 0 错 + auto rqhost 子命令在役（master 测试构建破坏=022 合并引入的先在破坏，见转交）。
+- ledger_refreshed ✅：os .autoos/specs.json P031-1×4（reports/architecture/designs/tests）+ P031-r3（reviews）；读回 5 条实证（029 五件同型）。
+- archived ✅：docs/plans/archive/031-rqhost-native-windows.md（本文件 git mv）；completion_kind: delivered。
+- cleaned：待清场后回填。
+- **转交（merge 期发现）**：① master 测试构建破坏——022 合并（5f5f1b6a6，widget.rs d865571e9）引入无 cfg 门 `iced_test` 导入，`cargo t` 缺省档全碎；iced-layout-tests 组合另有 View 字面构造缺 axes/controller/scrollbar_policy 三错（同谱系）——建议 022 属主或独立 fix worktree。② tf 四红维持（ui_gen×2/kitchen_sink/ffi_dual_019）。③ 015-notes 生成物漂移（656 线）。
+
 
 - 2026-09-19 /auto-plan:review 第三轮（R5/R6 闭环，终审）：`stage:
   review | PLAN-031 | rev 1 | pass | reviewed_commit: lang af3bd9fd2 /
