@@ -210,7 +210,7 @@
         {
           "id": "P030-1",
           "title": "PLAN-030 变更摘要 — shell-outproc-client（B 程序主体，前置序列终件）",
-          "content": "B 程序主体交付（v1.11，PROTOCOL_VERSION 仍 1）：①投影下行推（ShellProjectionPush/ClockTick/CursorMove tag 12-14——027 typed 载体 wire 激活 + per-face 宿主侧指纹门 + respawn 强制失效全量重推）②DesktopBus 端点拆臂执行（endpoint 假透传丢弃实锤清偿 → parse_records 52 动词单点 + registry_id 归因 + 泵后同拍 execute；acceptance Bus 同臂改道）③表面 z 平面（Hello/Welcome 尾段多表面协商 + 端点 wid→surface 路由；壳双表面 = Stack 层槽[background/chrome] + 双伪窗 WM 命中[垫底/置顶带矩形])④壳客户端 --autodesk-shell（rev2 裁定：v1 = 解释面 outproc child——NativeProjector View 全展开 + ensure_covered 过门 + __desktop_cmd 读走 child 化 + 内联帧免 shm；a2r 编译面轨另立[P030-D1]）⑤boot 孵化序（shell.apps.shell_model 缺省 inproc[I1 双轨零回归] + broker 后 spawn 倒挂清偿 + 失败回退 in-proc）⑥看门兵（退避 1s/2s/5s/预算 3 次 60s 窗分拍 respawn + 耗尽降级）⑦pointer 生产接线（D3 缺口清偿）。D6 边界：常驻双面 outproc，overlay 三面+launcher 维持 in-proc（P030-D3）。",
+          "content": "B 程序主体交付（v1.11，PROTOCOL_VERSION 仍 1）：①投影下行推（ShellProjectionPush/ClockTick/CursorMove tag 12-14——027 typed 载体 wire 激活 + per-face 宿主侧指纹门 + respawn 强制失效全量重推）②DesktopBus 端点拆臂执行（endpoint 假透传丢弃实锤清偿 → parse_records 52 动词单点 + registry_id 归因 + 泵后同拍 execute；acceptance Bus 同臂改道）③表面 z 平面（Hello/Welcome 尾段多表面协商 + 端点 wid→surface 路由；壳双表面 = Stack 层槽[background/chrome] + 双伪窗 WM 命中[垫底/置顶带矩形])④壳客户端 --autodesk-shell（rev2 裁定：v1 = 解释面 outproc child——RqProjector View 全展开 + ensure_covered 过门 + __desktop_cmd 读走 child 化 + 内联帧免 shm；a2r 编译面轨另立[P030-D1]）⑤boot 孵化序（shell.apps.shell_model 缺省 inproc[I1 双轨零回归] + broker 后 spawn 倒挂清偿 + 失败回退 in-proc）⑥看门兵（退避 1s/2s/5s/预算 3 次 60s 窗分拍 respawn + 耗尽降级）⑦pointer 生产接线（D3 缺口清偿）。D6 边界：常驻双面 outproc，overlay 三面+launcher 维持 in-proc（P030-D3）。",
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
           "related": [
             "PLAN-030"
@@ -549,7 +549,7 @@
         {
           "id": "P030-1",
           "title": "SD-01 协议 v1.11 增量 — B 程序主体协议面（投影下行推/命令上行执行/表面 z 平面/看门兵语义）",
-          "content": "§1.11：投影下行推三变体（face 寻址对齐 SHELL_MANIFEST；指纹门宿主侧缓存；cursor 消费门 = 命中 background 伪窗/拖拽）；DesktopBus 拆臂（HostAction::DesktopBus → inbox 泵后同拍执行——drain 排空点先于泵的次序规避）；Hello/Welcome 尾段（空不写尾段 = 既有消息字节级不变；surface_role window/background/chrome）；壳双表面层位 = 宿主 Stack 层槽 + 双伪窗（hit_test 无透明直通 → chrome 带矩形非全屏）；--autodesk-shell 客户端（NativeProjector 定轨——AppProjector 队列臂 ForLoop/Conditional no-op[P030-D5]）；看门兵（分拍 respawn 非内联——launch 阻塞 ~25s 实锤）；shell_model 双轨（env AUTO_SHELL_MODEL > storage）。",
+          "content": "§1.11：投影下行推三变体（face 寻址对齐 SHELL_MANIFEST；指纹门宿主侧缓存；cursor 消费门 = 命中 background 伪窗/拖拽）；DesktopBus 拆臂（HostAction::DesktopBus → inbox 泵后同拍执行——drain 排空点先于泵的次序规避）；Hello/Welcome 尾段（空不写尾段 = 既有消息字节级不变；surface_role window/background/chrome）；壳双表面层位 = 宿主 Stack 层槽 + 双伪窗（hit_test 无透明直通 → chrome 带矩形非全屏）；--autodesk-shell 客户端（RqProjector 定轨——AppProjector 队列臂 ForLoop/Conditional no-op[P030-D5]）；看门兵（分拍 respawn 非内联——launch 阻塞 ~25s 实锤）；shell_model 双轨（env AUTO_SHELL_MODEL > storage）。",
           "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
           "related": [
             "PLAN-030"
