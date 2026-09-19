@@ -587,7 +587,10 @@ auto-os`。
   先例——031/032 同型）| archived: docs/plans/archive/033-rq-
   projector-unify.md（本文件，delivered）| cleaned: 见下补记。
   主检出落地验证：lang check 零错 + vm_queue_arm/vm_typing 绿 +
-  crates/ 净；os 台账/ledger 内容在位。
+  crates/ 净；os 台账/ledger 内容在位。cleaned: wt-guard ×3 clean →
+  lang-033/auto-lang + os-033/auto-os + lang-033/auto-down（零改动
+  随组收）三 worktree 移除 + 双 plan-033-dev 分支删除（was
+  43e32c0a6/f82045f，均 = 各默认分支 tip 实证）+ 双组目录移除实证。
 
 ## 10. 待澄清事项
 
