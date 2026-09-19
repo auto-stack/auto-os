@@ -242,6 +242,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P033-1",
+          "title": "PLAN-033 变更摘要 — rq-projector-unify（单投影器统一 + AppProjector 退役 + 更名）",
+          "content": "RQ 渲染体系完整化第一件：-q VM 轨改接 RqProjector（run_dynamic_client Commands 臂 = ensure_covered 启动门 + run_client_session 泛型泵——物化 View 入投影器，a2r/解释同律，调用面零改动）+ VM 轨三补（on() input_state_map 绑定字段类型保值回写[D1=A 单写点，a2r 生成物同构；003 零参闭包双向换算闭环]/多 timer 泵侧驱动[Component::fire_due_timers 钩子，timesources 逐条到期+when 门+首拍对齐]/__desktop_cmd 读走上行[DesktopBus 泛化，ClientPump 双读走点]）+ AppProjector 全退役（解释 re-exec 臂/pixels 臂/process_model=outproc 配置位拔除——解释态两合法形态 = inproc 直挂 / -q 经 native 臂；净删约千行）+ 更名 NativeProjector→RqProjector（131 处 + canonical 同步）+ L3 快照面经 Component::apply_state_snapshot 平移 + remote 孪生迁 native 重录（D4=A）。内存收益实证：003 直挂 225088KB vs -q 8016KB（省 217072KB≈212MB，≤10MB 门过；027 -q 20400KB 数据行）。协议 §1.14 v1.14；P020-D1 销账；P033-D1..D4 新债。",
+          "file": "auto-os/docs/plans/archive/033-rq-projector-unify.md",
+          "related": [
+            "PLAN-033"
+          ],
+          "status": "published",
+          "created": "2026-09-19",
+          "last_modified": "2026-09-19"
         }
       ]
     },
@@ -581,6 +593,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P033-1",
+          "title": "SD-01 — 协议 §1.14 v1.14 增量（单投影器统一）",
+          "content": "desktop-protocol-v1.md §1.14：-q VM 轨改接 RqProjector（View 全展开投影 + 启动覆盖门）+ VM 轨三补入册（input_state_map 回写单写点/多 timer 泵侧驱动/__desktop_cmd DesktopBus 上行）+ AppProjector 退役（re-exec/pixels/process_model 拔除——解释态两合法形态裁定）+ 更名 canonical + L3 快照钩子 + 验收口径（内存对照行与回归门）。PROTOCOL_VERSION 仍 1（客户端臂内部演进零 wire 变体）。版本表 v1.14 行。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "related": [
+            "PLAN-033"
+          ],
+          "status": "published",
+          "created": "2026-09-19",
+          "last_modified": "2026-09-19"
         }
       ]
     },
@@ -788,6 +812,18 @@
           "file": "auto-os/docs/plans/autos-desktop-program.md",
           "related": [
             "PLAN-032"
+          ],
+          "status": "published",
+          "created": "2026-09-19",
+          "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P033-1",
+          "title": "SD-02/03 — 台账 M7 副线裁定交付行 + KNOWN-DEBT 处置",
+          "content": "autos-desktop-program.md M7 副线裁定交付行（PLAN-033 收口）：双投影器统一 + -q 改接 + pixels 退役门已交付；P020-D1 销账指针；量化门（003 -q 8016KB 过/027 20400KB 数据行 P033-D3/rqhost 100MB=PLAN-034 前置）+ L3 StateSnapshot native 注入出债 + M7-b/c 波次注记。KNOWN-DEBT：P020-D1 ✅ 销账（统一兑现+更名落定）+ P033-D1 测试重基线残留/P033-D2 remote 孪生重录形态/P033-D3 -q 内存门载体口径/P033-D4 imagesurface 在册红归因（PLAN-656 尾巴）。计划全文归档路径 docs/plans/archive/033-rq-projector-unify.md。",
+          "file": "auto-os/docs/plans/autos-desktop-program.md",
+          "related": [
+            "PLAN-033"
           ],
           "status": "published",
           "created": "2026-09-19",
@@ -1053,6 +1089,18 @@
           "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/coverage.rs",
           "related": [
             "PLAN-032"
+          ],
+          "status": "published",
+          "created": "2026-09-19",
+          "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P033-1",
+          "title": "PLAN-033 测试语料 — 三补单测/覆盖冒烟/迁移重基线/e2e/内存对照",
+          "content": "三补单测（p033_vm_input_writeback_zero_param[003 真源零参回写·双向换算]/p033_vm_input_writeback_single_param/p033_vm_timer_poll_tick[首拍对齐+到期派发]/p033_desktop_cmd_drain）+ 覆盖冒烟 vm_queue_arm_assembly_covered（001/003 Covered+非空帧；027 归 e2e 门承载）+ 迁移重基线（counter/click/full_cycle_over_pipe/stage3_child/t3 queue 档/P508/vm_typing/g2+t3 孪生迁 RqProjector 形；删 climb/parity/t3-t6 族 ~32 件+t3_independent e2e——D5 分层归因）+ e2e p033_rq_unify_arm（AUTO_DESKTOP_E2E=1：027 真渲[开窗+首帧+门零拒]+003 真链+内存对照行[直挂 225088KB vs -q 8016KB 省 212MB，≤10MB 门]+exit-on-EOF）+ rqhost vm_typing_loop_over_pipe（改接后天然断言：键入 100→帧 212）。回归门：desktop_protocol 173/174 + rqhost 13/13 + session 73/73 + dual_mode + auto-man rust_ui 25/25 + nextest 全量差集空（branch 74 ⊆ base 76——零新增失败）。",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
+          "related": [
+            "PLAN-033"
           ],
           "status": "published",
           "created": "2026-09-19",
@@ -1335,6 +1383,18 @@
           "file": "auto-os/docs/plans/archive/032-native-queue-ramp3-flip.md",
           "related": [
             "PLAN-032"
+          ],
+          "status": "published",
+          "created": "2026-09-19",
+          "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P033-r2",
+          "title": "PLAN-033 rq-projector-unify rev1 复审与合并收据",
+          "content": "实施会话内复核（独立性受限声明 + 工件重建口径）：work 八任务全闭环 execution_done（四 scoped 套件 + p033 e2e + smoke-031）→ review 终审 pass（AC-01..06 全过）：四门证据 = ①nextest ui-iced 全量对照 branch 74 ⊆ base 76（comm 差集空 = 零新增失败；base 857235623 临时 detached worktree 实证后 wt-guard 移除）②基线单测复跑归因（mouse_area/autodown codegen 红基线同败；vue/p656 全量并行类 = 在册 master cargo t 破坏状态）③os 桌面 smoke-031 六腿 OK④p032_ramp3 e2e rust-track OK。F-033-R1（merge 前置：主检出 renderer.rs 两行 [TRACE] 他方 WIP——补丁保全 D:/autostack/wt-patches/f033-r1-trace-residue.patch 后清出）+ F-033-R2（基线在册红谱系归因）。reviewed@lang 9c5596d95/os 045f0b3。",
+          "file": "auto-os/docs/plans/archive/033-rq-projector-unify.md",
+          "related": [
+            "PLAN-033"
           ],
           "status": "published",
           "created": "2026-09-19",
