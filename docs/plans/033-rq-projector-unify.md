@@ -531,7 +531,12 @@ auto-os`。
   arm 真机 e2e（AC-01/03 留痕 assets/033）| blockers: 无 | next: review
   （复审门：全量 cargo t -p auto-lang --features ui-iced --lib + 桌面
   smoke I2 面）。悬置 §10 ⑤（主检出 renderer.rs [TRACE] 残留）merge
-  时核。
+  时核。**补充发现（回归门执行期）**：auto-man rust_ui 首轮 25/25×3
+  绿为残留态口径——净树上 `test_gen_015_notes_rust` 红（rust-workspace/
+  015-notes 提交物 stale 于 master 生成器：lucide icon 形 + 空支清理
+  漂移；测试再生后自洽绿但留脏树）。master 既有状况非本计划引入
+  （本计划零改 codegen/auto-man）；生成物漂移归 PLAN-660/656 线处置，
+  本计划不代提交（属他线工作面）。
 - 2026-09-19 /auto-plan:new 起草交接：`stage: new`，PLAN-033 rev 1。
   `outcome: pass`（合同完整：改接 seam/三模板/输入三轨对照与回写缺口/
   timer 与 desktop_cmd 缺口/AppProjector 消费面含 remote 孪生/更名
