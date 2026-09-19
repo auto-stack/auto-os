@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-032
-status: execution_done               # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: native-queue-ramp3-flip
 author: [agent]
 created_at: 2026-09-19
@@ -540,6 +540,27 @@ crate 串行，非硬前置）。
   12775b8）。回归门补录：session:: 86/86 绿。
 
 ## 9. 复审记录
+
+- 2026-09-19 /auto-plan:review R2（增量复审；实施会话内——独立性受限
+  声明同 R1，裁定从工件重建）：`stage: review`，PLAN-032 rev 1。
+  `outcome: pass`。`reviewed_commit`: lang plan-032-dev **06243bdb3**
+  （base 0c6b03fd3；R1→R2 唯一提交 = ui_gen/rust.rs 13 行孪生收窄，
+  desktop_protocol 等其余文件与 R1 复审版字节恒等——`git diff --stat`
+  实证）；os plan-032-dev 12775b8；计划簿记 os main 7efd26d。
+  `acceptance_results`：AC-01/02/04/05/06 **pass（R1 证据复用——理由：
+  对应代码在 R1→R2 间零字节变更，R2 另抽六测串跑复核绿：仪器/六例
+  门/翻转态钉/防漏钉矩阵/shell 五件）**；AC-03 **pass**（F-2 闭合复现：
+  tabs 发射测试无 ui 档 + ui-iced 档双绿；046 真源 a2r cargo build
+  复跑过 4.2s 暖档）。`findings`: 无新发现；R1 F-2 已闭合，F-1 已定稿。
+  `evidence`: R2 全量门串行重跑——tf 3646 跑 **1 红 = mouse_area**
+  （master 基线在册红；ffi_dual_019 本轮绿——批内非确定性 R1 已随注）；
+  tt 4015 跑 **5 红 = a2r×4 + mouse_area = master 基线 6 红真子集**
+  （display_family 经 F-2 修复治愈）；**分支引入红 = 0**。规范增量终
+  态：SD-01/02/03 与已验证实现一致（R1 定稿），frontmatter
+  supersedes=[]、new=desktop-protocol-v1.md §1.13、touched_goals=[]
+  （影响面 = 协议文档增量 + 台账/债账，无 goals 文件触碰——书面说明
+  在 §5 规范增量节尾注）。`next: merge`（worktree lang-032[含 auto-down
+  依赖] + os-032 留守 merge；master 期间前移 b69c7344c 需调和）。
 
 - 2026-09-19 /auto-plan:work R1-F2 修复收口：`stage: work`，PLAN-032
   rev 1（needs_fix 重入）。`outcome: pass`——F-2 单点修复：
