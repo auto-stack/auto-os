@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: reviewed                 # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -661,6 +661,23 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:review 第三轮（R5/R6 闭环，终审）：`stage:
+  review | PLAN-031 | rev 1 | pass | reviewed_commit: lang af3bd9fd2 /
+  os e0cd1ce | base: lang 08526fda8 / os 3cd6b12 | deps: auto-down
+  dep-031@a615d69 | spec_inputs: desktop-protocol-v1.md@§1.11（含输入
+  闭环承载裁定段）+ virtual-desktop.md@Design23§4 + specs/auto-lang/ui/
+  overview.md + autos-desktop-program.md@3d（七腿）| acceptance:
+  AC-01..08 全 pass | findings: 无新发现（R5/R6 修复验证通过）|
+  evidence: **本轮增量**——e2e 复审员复跑 PASS 20.00s（rust 腿"零残留"
+  断言在场[代码 ×2 处]且腿后 rust-workspace git 0 脏实证）+ §1.11/
+  overview/台账 3d 计数与裁定段落核验新鲜 + scoped desktop_protocol
+  183 绿+基线红×2（同前）；**复用（重复复审条款，理由：自 34bb52532
+  以来 diff = stage3.rs[纯 e2e 门控测试码]+两文档，R1..R4 实现与
+  gate 外测试面字节不变）**——rqhost 13/13@af3bd9fd2、tf 全量门
+  3639/3643（4 红=master 谱系在册转交：ui_gen::rust×2/kitchen_sink/
+  ffi_dual_019，022 旧树全绿+diff 零重叠归因链在第二轮记录）、
+  session 71/rust_ui 23、smoke 全链 | next: merge。
+  **独立性声明：实施会话内三轮复审，结论均自工件重构。**
 - 2026-09-19 /auto-plan:work 修复轮（R5/R6）：`stage: work | PLAN-031 |
   rev 1 | pass | code: lang af3bd9fd2 + os 台账七腿提交 | task_ids:
   T-07/T-08 | evidence: e2e 复跑 PASS 37.87s——rust 腿带"零残留"清洁
