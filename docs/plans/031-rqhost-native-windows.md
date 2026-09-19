@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-man/src/{automan.rs,rust_ui.rs}            # vm 装载链分岔 + rust 轨注入
   - auto-lang/docs/design/autoui/{desktop-protocol-v1.md,virtual-desktop.md} # 协议增量 + 形态入册
   - auto-os/docs/plans/autos-desktop-program.md                      # 台账行
-current_step: 8
+current_step: 6
 total_steps: 8
 ---
 
@@ -618,7 +618,8 @@ auto-os`。
   原子注册（T-02 已落 lock_pipe_second_claim_fails——serve 级
   AlreadyRunning 断言）。
   → AC-03/05。
-- **T-07 [lang+os] e2e 与度量** [x] [✅ 已完成 2026-09-19（含 R1..R4 修复轮）]
+- **T-07 [lang+os] e2e 与度量** [ ]（复审第二轮 P031-R5 重开——e2e 脏文件卫生；R1..R4 证据保留）
+  [前次证据 2026-09-19 含修复轮]
   文件：lang `stage3.rs`（p031_rqhost_arm）+ 截图 assets/031/；os
   smoke 脚本。
   动作：AC-01..06 逐条留痕 + 度量行。
@@ -647,7 +648,8 @@ auto-os`。
   23.56s（七腿）；desktop_protocol 183 绿+在册红×2（基线同红）；rqhost
   13/13；rust_ui 复跑 23/23。
   → AC-01..06。
-- **T-08 [lang+os] 文档与台账收口** [x] [✅ 已完成 2026-09-19]
+- **T-08 [lang+os] 文档与台账收口** [ ]（复审第二轮 P031-R6 重开——delta 新鲜度；SD-01..04 落点保留）
+  [前次证据 2026-09-19]
   文件：lang `desktop-protocol-v1.md`（§1.11）、`virtual-desktop.md`
   （Design 23 §4 增行 + 裁定记录）；os 台账行 + 互链。
   动作：SD-01..04 落笔。
@@ -661,6 +663,31 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:review 第二轮（R1..R4 闭环）：`stage: review |
+  PLAN-031 | rev 1 | needs_fix | reviewed_commit: lang 34bb52532 |
+  base: 08526fda8 | deps: auto-down dep-031@a615d69 | spec_inputs: §1.11
+  + Design23§4 + ui overview + 台账 3d | acceptance: AC-01..06 pass；
+  AC-07 pass（回归门：rqhost 13/13 复跑绿 + desktop_protocol 183 绿 +
+  session/rust_ui 沿用 + **cargo tf 全量门 3639/3643**——4 红全数转交
+  在册：ui_gen::rust ×2 / docs_gen kitchen_sink / ffi_dual_019，归因链 =
+  lang-022 旧 worktree 四测全绿 + 本计划 diff 零重叠（ui_gen/schema/
+  ffi_dual/kitchen-sink 皆未触碰）+ 失败夹具内聚 → master 谱系回归
+  （012-clock/scroll-schema 世代合并线，属主 session 处理））；
+  AC-08 partial（R6）| findings: P031-R5/R6（下）| evidence: e2e 七腿
+  复跑 PASS 28.37s（关窗 X/末窗自退/自动孵化/rust 腿四新腿全过）+
+  rqhost 13/13 + vm_typing 212 联动 + tf --no-fail-fast 清单
+  /tmp 同步计划 | next: work 修复 R5/R6（轻量）。
+  **独立性声明：实施会话内复审，结论自工件重构（复跑+归因链）。**
+
+  **P031-R5**（needs_fix→work；T-07）：e2e rust 腿生成污染 workspace
+  根 Cargo.toml（members 增 "002-counter"）——RestoreFiles 只护 counter
+  成员两件，漏护工作区清单；**实证击穿本复审的 tf 首跑**（脏文件在场
+  →2 红烟幕+1864 测未跑）。修正：restore 列表加
+  examples/rust-workspace/Cargo.toml + 腿末 git status 清洁断言。
+  **P031-R6**（needs_fix→work；T-08）：spec delta 新鲜度——§1.11 验证面
+  计数陈旧（"11 项"→13 项、"六腿"→七腿）+ 修复轮持久裁定未记（键入
+  闭环集成承载 + ToDesk 合成输入环境裁定；stderr 排水根修入证据注）；
+  台账 3d 行"六腿"同步。
 - 2026-09-19 /auto-plan:work 修复轮（R1..R4）：`stage: work | PLAN-031 |
   rev 1 | pass | code: lang 34bb52532（+观测行/排水根修含其中）|
   task_ids: T-07 | evidence: e2e p031_rqhost_arm 七腿全绿 23.56s（新增
