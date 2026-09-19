@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-031
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-native-windows
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-man/src/{automan.rs,rust_ui.rs}            # vm 装载链分岔 + rust 轨注入
   - auto-lang/docs/design/autoui/{desktop-protocol-v1.md,virtual-desktop.md} # 协议增量 + 形态入册
   - auto-os/docs/plans/autos-desktop-program.md                      # 台账行
-current_step: 8
+current_step: 7
 total_steps: 8
 ---
 
@@ -618,7 +618,8 @@ auto-os`。
   原子注册（T-02 已落 lock_pipe_second_claim_fails——serve 级
   AlreadyRunning 断言）。
   → AC-03/05。
-- **T-07 [lang+os] e2e 与度量** [x] [✅ 已完成 2026-09-19]
+- **T-07 [lang+os] e2e 与度量** [ ]（复审 P031-R1..R4 重开——e2e 四腿缺口；已落证据保留）
+  [前次证据 2026-09-19]
   文件：lang `stage3.rs`（p031_rqhost_arm）+ 截图 assets/031/；os
   smoke 脚本。
   动作：AC-01..06 逐条留痕 + 度量行。
@@ -647,6 +648,42 @@ auto-os`。
 
 ## 9. 复审记录
 
+- 2026-09-19 /auto-plan:review 第一轮：`stage: review | PLAN-031 | rev 1 |
+  needs_fix | reviewed_commit: lang 5a64bd474 / os d096fb5 | base: lang
+  08526fda8 / os 3cd6b12 | deps: auto-down dep-031@a615d69（零内容改动）|
+  spec_inputs: desktop-protocol-v1.md@§1.11 + virtual-desktop.md@Design23§4
+  + specs auto-lang/ui/overview.md + autos-desktop-program.md@3d 行 |
+  acceptance: AC-01 partial / AC-02 partial / AC-03 partial / AC-04 partial /
+  AC-05 fail / AC-06 pass / AC-07 pass / AC-08 pass |
+  findings: P031-R1..R4（下）| evidence: 复审员重跑 rqhost 11/11 绿 +
+  session 71/71 绿 + cmd_autodesk 2/2 绿 + e2e p031_rqhost_arm 复跑 PASS
+  3.10s（AUTO_DESKTOP_E2E=1，真机）；diff 范围与 affects 清单逐一对应
+  （17 文件，无越界）；spec delta 四落点锚定核验；在册红×2 基线对照
+  沿用工作期同提交同配置记录（复审期不再 stash——栈跨 worktree 共享
+  已实证交叉风险）；cargo tf 全量门推迟至 pass 轮（needs_fix 代码将
+  变更，重跑浪费）| next: work 修复 R1..R4（全在 T-07 范围）。
+  **独立性声明：本轮在实施会话内复审——结论自工件重构（测试重跑 +
+  测试体重读枚举腿位），未采信执行摘要。**
+
+  **P031-R1**（fail；AC-05/T-07）：rust 轨 e2e 腿缺席——`-r rust -q`
+  全链运行时零执行（生成 gate `--autodesk-rqhost` 解析臂、cargo `--`
+  透传、a2r 产物上下文的 Rqhost 采纳仅编译级/内容断言）。修正：T-07
+  补 rust 腿（counter 级重生成 → -q → 原生窗首帧 → 关窗退出；首跑
+  cargo build 分钟级，加预算）。
+  **P031-R2**（partial；AC-01/AC-02/T-07）：e2e 缺"003 键入→换算
+  联动帧变"与"双窗输入互不串扰"腿——输入闭环现仅单测（真管道
+  dispatch）+vm_fork 协议级；AC-01/02 明文 e2e 口径。修正：SendInput
+  腿（029 sendinput.rs 组装层 + 前台化）或协议级注入腿入 e2e 文；
+  帧变观测 = PrintWindow 前后像素差或 daemon 帧计数观测行。
+  **P031-R3**（partial；AC-01/AC-04/T-07）：用户关窗（X）→app 退出码
+  0 路径无 e2e；**AC-04"末窗关闭→rqhost 退出"门（无窗∧无待定∧曾有
+  窗→iced::exit）零测试（单测亦无）**。修正：PostMessage WM_CLOSE 关
+  converter 窗→app 码 0；再关末窗→daemon 进程退出（wait_pid）；
+  末窗门补 rq_update 级单测（条件判定提取可测或 serve stop 旗标副作用）。
+  **P031-R4**（partial；AC-03/T-07）：真实自动孵化 e2e 缺席——e2e/
+  smoke 均预起 daemon；ensure spawn 真 `auto rqhost` 仅替身孵化器单测。
+  修正：冷启动腿（不预起 daemon → 直接 spawn -q 子进程 → 窗/首帧 →
+  daemon 由子进程孵化断言）。
 - 2026-09-19 /auto-plan:work 执行收口：`stage: work | PLAN-031 | rev 1 |
   pass | code: lang plan-031-dev 08526fda8..5a64bd474（T-07 2feca90da/T-08 5a64bd474；T-02 c33cebe38/
   T-03 801ed51fb/T-04 3c8363e68/T-05 8b1602838/T-06 149d299c7/T-07 e2e/
