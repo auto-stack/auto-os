@@ -666,7 +666,7 @@ auto-os`。
 - landed ✅：lang master merge 0c6b03fd3（ancestry 27e833bc9 实证；canonical §1.11/§1.12/Design23§4 内容核验在场）+ os main merge（ancestry 68a7464 实证；smoke 脚本+台账 3d+ledger 落地）。合并树刷新验证：desktop_protocol scoped 190 绿+基线红×2、e2e 七腿 PASS 76.68s、tf 3639/3643（4 红=master 谱系在册转交）；master 冒烟 = 非测试构建 0 错 + auto rqhost 子命令在役（master 测试构建破坏=022 合并引入的先在破坏，见转交）。
 - ledger_refreshed ✅：os .autoos/specs.json P031-1×4（reports/architecture/designs/tests）+ P031-r3（reviews）；读回 5 条实证（029 五件同型）。
 - archived ✅：docs/plans/archive/031-rqhost-native-windows.md（本文件 git mv）；completion_kind: delivered。
-- cleaned：待清场后回填。
+- cleaned ✅：wt-guard 三 clean（lang-031/auto-lang、os-031/auto-os、lang-031/auto-down——reparse point 扫描零命中）→ worktree remove ×3 + 分支删除（plan-031-dev@27e833bc9 / plan-031-dev@68a7464 / dep-031@a615d69[依赖组零内容改动直接撤]）+ 组目录 .wt/lang-031、.wt/os-031 移除实证。
 - **转交（merge 期发现）**：① master 测试构建破坏——022 合并（5f5f1b6a6，widget.rs d865571e9）引入无 cfg 门 `iced_test` 导入，`cargo t` 缺省档全碎；iced-layout-tests 组合另有 View 字面构造缺 axes/controller/scrollbar_policy 三错（同谱系）——建议 022 属主或独立 fix worktree。② tf 四红维持（ui_gen×2/kitchen_sink/ffi_dual_019）。③ 015-notes 生成物漂移（656 线）。
 
 
