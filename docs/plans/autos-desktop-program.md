@@ -106,7 +106,7 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 
 **顺序**：M7-a → {M7-b, M7-c①} 可并行（文件面错开：投影器/覆盖表 ‖ 生成器/宿主装配 ‖ app 仓）→ M7-c②③（②依赖 M7-a 的 tabs）→ M7-d 压轴。
 
-**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1，统一时更名 RqProjector——2026-09-19 用户意向）；**pixels 臂退役门**（四条件：native auto 翻转[032] / 覆盖收口[M7-c] / 位图过线通道 / 像素原生族裁定——queue 完善后删除截图管线族，P-RQ-PIX 在册）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
+**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1，统一时更名 RqProjector——2026-09-19 用户意向）；**pixels 臂退役门**（四条件：native auto 翻转[032] / 覆盖收口[M7-c] / 位图过线通道 / 像素原生族裁定——queue 完善后删除截图管线族，P-RQ-PIX 在册；**量化验收门（2026-09-19 用户定标）：单 app `-q`（RQProjector→rqhost）渲染正确 + app 进程 ≤10MB + rqhost ≤100MB——031 实测 app 7-9MB ✅ / daemon debug 314MB ❌ 超标 3×，release 复测+归因优化（wgpu 设备内存/每窗表面/图像缓存）为前置工作项**；达标后再执行退役）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
 
 ## 裁定登记簿
 
