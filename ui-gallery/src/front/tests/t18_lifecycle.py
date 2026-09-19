@@ -4,8 +4,14 @@
 import re
 import sys
 import time
+from pathlib import Path
 
-sys.path.insert(0, r"D:/autostack/.wt/lang-642/auto-lang/.agents/skills/autoui-verifier/scripts")
+for _cand in (Path(__file__).resolve().parents[4] / "auto-lang",
+              Path("D:/autostack/auto-lang")):
+    _scripts = _cand / ".agents" / "skills" / "autoui-verifier" / "scripts"
+    if (_scripts / "test_vm_mcp.py").exists():
+        sys.path.insert(0, str(_scripts))
+        break
 from test_vm_mcp import AutoUiMcpClient  # noqa: E402
 
 TOAST_TEXTS = ("无法打开", "不是目录", "无法定位")

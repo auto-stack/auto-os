@@ -1,0 +1,17 @@
+* P659 cdb 崩溃现场捕获脚本（由 sxe -c "$$><本文件" 触发）
+* 覆盖死法：0xC00000FD 栈溢出 / 0xC0000409 fastfail / 0xC0000005 AV / 0xC0000374 堆损坏
+* 全部输出经 -logo 落档；q 终止会话（进程已死，无保活动机）
+.echo ===P659 CRASH CAUGHT===
+.lastevent
+.exr -1
+.echo ===FAULTING THREAD regs+stack===
+r
+kv 80
+.echo ===EVENT THREAD deep stack===
+~#k 250
+.echo ===ALL THREADS===
+~*k 40
+.echo ===MODULES auto===
+lmvm auto
+.echo ===P659 CAPTURE DONE===
+q

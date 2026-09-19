@@ -187,6 +187,21 @@ def parse_crash(log_file: Path):
 def kill_tree(pid: int):
     subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)],
                    capture_output=True)
+    # 兜底清扫：cdb 树杀偶发漏掉调试体（taskkill 与调试器分离竞态，实测
+    # round-05 泄漏僵尸——半活实例窗口尺寸零、占端口）。按可执行路径
+    # 匹配本 worktree 二进制逐个补杀。
+    try:
+        out = subprocess.run(
+            ["powershell", "-NoProfile", "-Command",
+             "Get-CimInstance Win32_Process -Filter \"Name='auto.exe'\" | "
+             "Where-Object { $_.ExecutablePath -match 'lang-659' } | "
+             "Select-Object -ExpandProperty ProcessId"],
+            capture_output=True, text=True, timeout=20).stdout.split()
+        for stray in out:
+            subprocess.run(["taskkill", "/F", "/PID", stray],
+                           capture_output=True)
+    except Exception:
+        pass
 
 
 def main():
@@ -265,6 +280,9 @@ def main():
         audit_new = audit_new_lines(audit_before)
         rec = {
             "round": rnd, "outcome": outcome, "crash": crash,
+            # cdb 退出码 = debuggee 退出码（101=panic-unwind / 1=main Err /
+            # 127 族=fastfail·栈溢出·截断；判读流程输入之一）。
+            "cdb_rc": proc.returncode,
             "err": err_detail, "audit_new": audit_new,
             "minutes": round((time.time() - t0) / 60, 1),
         }
