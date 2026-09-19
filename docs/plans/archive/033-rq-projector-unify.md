@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-033
-status: reviewed                 # drafting → executing → execution_done → reviewed → archived
+status: archived                 # drafting → executing → execution_done → reviewed → archived
+completion_kind: delivered
 feature_name: rq-projector-unify
 author: [agent]
 created_at: 2026-09-19
@@ -570,6 +571,23 @@ auto-os`。
   注释零 AppProjector + 归档双侧零改动 | next: merge（前置=§10⑤
   [TRACE] 属主处置；worktree 组三件：lang-033/auto-lang +
   os-033/auto-os + lang-033/auto-down[零改动可随组收]）。
+
+- 2026-09-19 /auto-plan:merge 收口（PLAN-033:r1 五 checkpoint）：
+  `stage: merge | PLAN-033 | rev 1 | pass | prepared: reviewed 基线
+  9c5596d95(lang)/045f0b3(os) + 台账五件预备提交（worktree 内）+
+  F-033-R1 处置（主检出 renderer.rs [TRACE]×2 他方 WIP → 补丁保全
+  D:/autostack/wt-patches/f033-r1-trace-residue.patch 后清出）|
+  landed: lang 43e32c0a6（rebase master 72ab08941→ff-only，range-diff
+  代码提交 2-6 全等 =、T-08 文档提交 ! = KNOWN-DEBT 尾部并集冲突解
+  [660-D4..D6 行与 P033 段共存，P020-D1 销账存活核]；映射 9c5596d95→
+  43e32c0a6）+ os f82045f（rebase main 27b373f→ff-only，182206c→
+  b06839d/045f0b3→a45d35d 等价）| ledger_refreshed: os
+  .autoos/specs.json 五件（P033-1×4[reports/architecture/designs/
+  tests]+P033-r2[reviews]，25/32/21/25/28 读回核验；lang 侧单册
+  先例——031/032 同型）| archived: docs/plans/archive/033-rq-
+  projector-unify.md（本文件，delivered）| cleaned: 见下补记。
+  主检出落地验证：lang check 零错 + vm_queue_arm/vm_typing 绿 +
+  crates/ 净；os 台账/ledger 内容在位。
 
 ## 10. 待澄清事项
 
