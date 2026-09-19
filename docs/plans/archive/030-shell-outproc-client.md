@@ -802,7 +802,10 @@ workspace.patch` 同名踪迹在案）——非本计划路径，不纳入。
   （FF，ancestry OK）| ledger_refreshed: .autoos/specs.json P030-1×4
   [reports/architecture/designs/tests] + P030-r1（JSON 校验过，5 条目）
   | archived: docs/plans/archive/030-shell-outproc-client.md |
-  completion_kind: delivered | cleaned: 见下一行回填`
+  completion_kind: delivered | cleaned: wt-guard 三树 clean（lang-030/auto-lang + auto-down +
+  os-030/auto-os）→ 三 worktree 移除 + 双 plan-030-dev 分支删除
+  （lang 480bddf94 / os 9a84265 落地 ancestry 在案）+ 组目录移除实证
+  （.wt 下 030 组零残留）`
 
 ## 10. 待澄清事项
 
