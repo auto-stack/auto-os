@@ -106,9 +106,6 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 
 **顺序**：M7-a → {M7-b, M7-c①} 可并行（文件面错开：投影器/覆盖表 ‖ 生成器/宿主装配 ‖ app 仓）→ M7-c②③（②依赖 M7-a 的 tabs）→ M7-d 压轴。
 
-<<<<<<< HEAD
-**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1，统一时更名 RqProjector——2026-09-19 用户意向）；**pixels 臂退役门**（2026-09-19 用户裁定两次细化，澄清版）：**`-q` VM 轨保留并改接 native 臂**——解释态组件 view() 的物化 View 直喂 NativeProjector（030 shell outproc v1 先例：解释装载 + View 全展开），VM 版 `-q` 同获省内存（免每 app iced/wgpu 后端）+ native 保真；**AppProjector 降级投影臂随之退役**（P020-D1 双投影器统一 = 主线载体：归一 RqProjector，VM 经 View 入投影，非清理债）；解释态 pixels 臂（run_independent_child + process_model=outproc 选项）即废（隔离渲染初心=渲染器外移，自渲再发帧违背初衷）；native pixels 半臂维持四条件（auto 翻转[032] / 覆盖收口[M7-c] / 位图过线 / 像素原生族裁定；Linux 无强制场景：iced+wgpu 自渲 app 经 swapbuffers 呈递 OS compositor 属系统协议）；**量化验收门：单 app `-q` 渲染正确 + app ≤10MB[031 实测 7-9MB ✅] + rqhost ≤100MB[debug 实测 314MB ❌，release 复测+归因优化为前置]**；达标后执行退役（P-RQ-PIX 在册）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
-=======
 **M7-a 裁定行（PLAN-032 收口，2026-09-19）**：native `Auto` 缺省 =
 **queue**（ramp v3 数据门达标：judged 22/22 = 100%，仪器复现命令与
 对差表见 lang `docs/plans/reports/p032-native-flip-row.md`；协议增量
@@ -118,8 +115,7 @@ App 一次编写处处原生。里程碑 M0-M6 详见 Design 23 §6。
 运行时口径缺口（P032-D3：truncate/codeeditor）M7-c 撞面时逐 app 记
 账立项。
 
-**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
->>>>>>> 12775b8 (ledger: 032 T-08 SD-02——台账 M7-a 行交付裁定(翻转：judged 22/22=100% 过门，auto 缺省 queue，观测行 flipped@ramp3)+P026-D3 核销注记+M7-c② tabs 解锁注记(jade-garden/auto-musk 可开工)+运行时口径缺口随记(P032-D3))
+**副线债**（不阻塞终态，按需排期）：双投影器统一（P020-D1，统一时更名 RqProjector——2026-09-19 用户意向）；**pixels 臂退役门**（2026-09-19 用户裁定两次细化，澄清版）：**`-q` VM 轨保留并改接 native 臂**——解释态组件 view() 的物化 View 直喂 NativeProjector（030 shell outproc v1 先例：解释装载 + View 全展开），VM 版 `-q` 同获省内存（免每 app iced/wgpu 后端）+ native 保真；**AppProjector 降级投影臂随之退役**（P020-D1 双投影器统一 = 主线载体：归一 RqProjector，VM 经 View 入投影，非清理债）；解释态 pixels 臂（run_independent_child + process_model=outproc 选项）即废（隔离渲染初心=渲染器外移，自渲再发帧违背初衷）；native pixels 半臂维持四条件（auto 翻转[032] / 覆盖收口[M7-c] / 位图过线 / 像素原生族裁定；Linux 无强制场景：iced+wgpu 自渲 app 经 swapbuffers 呈递 OS compositor 属系统协议）；**量化验收门：单 app `-q` 渲染正确 + app ≤10MB[031 实测 7-9MB ✅] + rqhost ≤100MB[debug 实测 314MB ❌，release 复测+归因优化为前置]**；达标后执行退役（P-RQ-PIX 在册）；位图过线通道（app 动态位图 + web 真位图）；518 色彩上下文；GUI 级 OS 自动化（P020-D4 点击面）；Stage B 搬迁（桌面壳代码 auto-lang→auto-os）；L3 StateSnapshot native 注入；imagesurface 交互族 / svgdoc 词汇；rqhost 生态（`--rq-host=desktop` attach 等）。
 
 ## 裁定登记簿
 
