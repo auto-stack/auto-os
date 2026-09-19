@@ -1,0 +1,33 @@
+use d022kanban_d022kanban_board_page: board
+// app.at — App shell. Single-page board; routes just render the board page.
+// store import at the top (cf. 018 app.at `use book_store: BooksStore`).
+use d022kanban_board_store: BoardStore
+
+widget Demo022Kanban {
+
+    msg { Init }
+
+    view {
+        col {
+            style: "min-h-screen bg-background text-foreground"
+            // Header
+            row {
+                style: "w-full items-center justify-between p-4 border-b border-border bg-card"
+                row {
+                    style: "items-center gap-2"
+                    text "Project Board" { style: "text-xl font-bold text-foreground" }
+                    text "Kanban" { style: "text-sm text-muted-foreground" }
+                }
+            }
+            // Route outlet
+            col {
+                style: "flex-1"
+                board {}
+            }
+        }
+    }
+
+    on {
+        .Init -> { BoardStore.Init() }
+    }
+}
