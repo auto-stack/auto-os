@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-033
-status: executing              # drafting → executing → execution_done → reviewed → archived
+status: execution_done          # drafting → executing → execution_done → reviewed → archived
 feature_name: rq-projector-unify
 author: [agent]
 created_at: 2026-09-19
@@ -24,7 +24,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/{rqhost,shell_client,stage3,mod}.rs # 更名/测试迁移
   - auto-lang/docs/design/autoui/desktop-protocol-v1.md                  # §1.14 + 更名 canonical 同步（~11 行）
   - auto-os/docs/plans/autos-desktop-program.md                          # M7 行 + 副线债裁定落定
-current_step: 3
+current_step: 8
 total_steps: 8
 ---
 
@@ -478,20 +478,35 @@ auto-os`。
   （button:ToggleOk）/Wid·surface 相对化（进程级计数序依赖）/删
   climb+parity+t3-t6 族 ~32 件 + t3_independent e2e（D5 删清单）。
   → AC-04/06。
-- **T-06 [lang] 更名 RqProjector**
+- **T-06 [x] 更名 RqProjector** `[✅ 2026-09-19]`
   文件：代码 123 处 + canonical 文档 + 两侧 specs.json。
   动作：§5.4 T-06；归档零改动断言。
-  验证：grep 清单（RqProjector 全替换/归档区零新增）。
+  验证：grep 清单 ✅（代码 11 文件 131 处 + canonical 4 文档 13 行 +
+  两侧 worktree specs.json[lang 1/os 2] 全替换；归档区两侧 git diff
+  零改动断言过；033 计划文件自身不动[工作记录]）；编译零错 +
+  native_projector 43/vm_typing/client_entry 复跑绿。commit
+  b44c06f57(lang)+182206c(os)。
   → AC-05。
-- **T-07 [lang+os] e2e 与度量**
+- **T-07 [x] [lang+os] e2e 与度量** `[✅ 2026-09-19]`
   文件：lang `stage3.rs`（p033_rq_unify_arm）+ assets/033/；os smoke
   如需。
   动作：AC-01..03 逐条留痕 + 内存对照行。
+  验证 ✅（AUTO_DESKTOP_E2E=1 真机）：027-file-manager -q 经 RqProjector
+  真渲（开窗+首帧+覆盖门零拒[child stderr 无拒绝行]）+ 003 -q 真链 +
+  **内存对照行：003 直挂 225088KB vs -q 8016KB（省 217072KB ≈
+  212MB，≤10MB 门过；027 -q 20400KB 数据行 P033-D3）** + 直挂腿按
+  pid 枚举窗（标题歧义修正）+ exit-on-EOF 收尾；assets/033 三件留痕
+  （memory-comparison/daemon-stderr/fm-child-stderr）。commit f58fb775c。
   → AC-01/02/03。
-- **T-08 [lang+os] 文档与台账收口**
+- **T-08 [x] [lang+os] 文档与台账收口** `[✅ 2026-09-19]`
   文件：lang `desktop-protocol-v1.md`（§1.14 + 更名同步）+ KNOWN-DEBT
   （P020-D1 销账 + 新债）；os 台账落定 + 互链。
   动作：SD-01..03 落笔。
+  验证 ✅：SD-01 §1.14 + 版本表行 v1.14（9c5596d95）；SD-03 P020-D1
+  销账注记 + P033-D1..D4 新债段；SD-02 os 台账 M7 副线裁定交付行
+  （P020-D1 销账指针 + PLAN-034 前置注记 + M7-b/c 波次注记）+ L3
+  StateSnapshot 出债。回归门余项：dual_mode 2/2 + auto-man rust_ui
+  25/25（3× 复跑，首跑 1 败为瞬时态）。
   → AC-05。
 
 ## 9. 复审记录
@@ -505,6 +520,18 @@ auto-os`。
   auto-lang master 工作树有 `crates/.../iced/renderer.rs` 两行
   `[TRACE]` eprintln 调试残留（他方会话 MCP/menubar 调试遗留）——不
   并入本计划，留主检出由属主处置（见 §10 ⑤）。
+- 2026-09-19 /auto-plan:work 完工交接：`stage: work | PLAN-033 | rev 1 |
+  pass | lang plan-033-dev bacb9a6ce..9c5596d95（T-02..T-08 七提交）+
+  os plan-033-dev 182206c..台账 | T-01..T-08 | 全部 scoped 验证在案：
+  desktop_protocol 173/174（唯一红 = covered_elements_within_target_set
+  在册红[PLAN-656 imagesurface 表同步尾巴，stash 对照 base 同败——
+  AC-06 在册红排除条款]）+ rqhost 13/13 + session 73/73 + dynamic 54 +
+  native_projector 43+4 + client_entry + demo 2 + dual_mode 2 + auto-man
+  rust_ui 25/25×3 + t3_examples 七例 e2e + p508 生产链 + p033_rq_unify_
+  arm 真机 e2e（AC-01/03 留痕 assets/033）| blockers: 无 | next: review
+  （复审门：全量 cargo t -p auto-lang --features ui-iced --lib + 桌面
+  smoke I2 面）。悬置 §10 ⑤（主检出 renderer.rs [TRACE] 残留）merge
+  时核。
 - 2026-09-19 /auto-plan:new 起草交接：`stage: new`，PLAN-033 rev 1。
   `outcome: pass`（合同完整：改接 seam/三模板/输入三轨对照与回写缺口/
   timer 与 desktop_cmd 缺口/AppProjector 消费面含 remote 孪生/更名
