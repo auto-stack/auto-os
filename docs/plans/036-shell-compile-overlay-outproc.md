@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 7
+current_step: 10
 total_steps: 10
 ---
 
@@ -573,20 +573,32 @@ auto-os`。
   七列表激活 + launcher_open 镜像 + 层序贴层 + Esc 同册。门：scoped
   104/104 + shell-pack 4/4 + freshness 绿 + desktop_protocol 185/186
   （imagesurface 在册红）+ auto check 0 错。lang-036 @ 7a2bf7521。
-- **T-08 [lang+os] e2e 五面终态**
+- **T-08 [lang+os] e2e 五面终态** [x]
   文件：lang `stage3.rs`（p036_all_faces_outproc_arm）+ assets/036/。
   动作：AC-02..05 逐条留痕。
   → AC-02..05。
-- **T-09 [lang] 度量**
+  [✅ 已完成 2026-09-20] 六腿全绿（五伪窗/五面投影→帧[overlay 懒装]/
+  parity 结构全等 7 行[色彩 token 跨进程 ±3 档差发现记录——准则
+  豁免归复审]/launcher exe attach+帧/崩溃隔离）+ launcher_spawner
+  e2e 注入臂 + AUTO_036_ASSETS 五帧留痕 assets/036/ + p030 四腿
+  回归 PASS（五面 child 兼容）。附带修复：attach 镜像位保持 +
+  p030 腿 test 属性误删。
+- **T-09 [lang] 度量** [x]
   文件：度量行（boot 时延/内存对照/交互往返）落 reports/。
   动作：§5.6 T-09。
   → AC-01/05 佐证。
-- **T-10 [lang+os] 文档与台账收口**
+  [✅ 已完成 2026-09-20] reports/p036-metrics.md：boot 25.7ms→
+  0.8ms（~32×）+ 六腿 e2e 观测（0.9s 全链/交互往返 <1 拍）+ 内存
+  对照口径注记（实机 release smoke 补测归后续——debug e2e 不可比）。
+- **T-10 [lang+os] 文档与台账收口** [x]
   文件：lang `desktop-protocol-v1.md`（§1.16）+ KNOWN-DEBT（双债
   核销）+ `desktop-shell-a2r.md`（终态注记）；os 台账 M7-b 行 +
   互链。
   动作：SD-01..04 落笔。
   → AC-06。
+  [✅ 已完成 2026-09-20] §1.16 v1.16 全文 + 顶表行 + P030-D1/D3
+  双债核销 + P036-D1..D6 新债入册 + a2r S3 终态注记 + 台账 M7-b
+  交付行（auto-os f-系列提交）。
 
 ## 9. 复审记录
 
@@ -657,6 +669,18 @@ auto-os`。
   T-07 | evidence: 上述门 | blockers: 无 | next: T-08（五面终态 e2e
   ——p036_all_faces_outproc_arm + parity 双形态对拍 + 截图 assets/
   036/）`。
+- 2026-09-20 /auto-plan:work 终记录（T-08/T-09/T-10 收口）：T-08
+  p036 六腿 e2e 全绿（parity 色彩差发现记录在案——结构全等准则 +
+  复审细究位）+ p030 回归；T-09 度量报告；T-10 四件文档（§1.16/
+  双债核销+六新债/a2r S3 终态注/台账 M7-b 行）。提交链（lang-036）：
+  b777e6532[批次A] → 035-sync regen → 95c4ff066[B1] → 89c185571
+  [B2] → 7a2bf7521[B3] → T-08 e2e → T-09/T-10 收口；auto-os：批次
+  落账×3 + 台账 M7-b 行。全 10 任务勾选；AC-01..06 逐条留痕在
+  任务行。`stage: work | PLAN-036 | rev 1 | outcome: pass（全量）|
+  code_commit: lang-036 终链 + os 台账 | task_ids: T-08,T-09,T-10 |
+  evidence: p036 六腿 + 全门绿 + 文档四件 | blockers: 无（裁定面
+  D1 修订/D3-C v1/D2-A 均按倾向落地并在册——复审可翻案）|
+  next: review`。
 
 ## 10. 待澄清事项
 
