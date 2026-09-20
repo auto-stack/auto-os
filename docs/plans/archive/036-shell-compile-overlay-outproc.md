@@ -778,6 +778,13 @@ auto-os`。
   `stage: merge | PLAN-036 | rev 1 | outcome: pass | delivery:
   auto-lang 50e3b8bb4 | ledger: .autoos/specs.json P036×5 | archive:
   docs/plans/archive/036-shell-compile-overlay-outproc.md | next: -`。
+- 2026-09-20 merge 收据补记 cleaned：wt-guard 三净（lang-036/
+  auto-lang + lang-036/auto-down + os-036/auto-os 零 reparse point）
+  + 三 worktree 移除（lang-036 首删 cwd 自锁 Permission denied——
+  prune+目录清除完成收口）+ 双 plan-036-dev 分支删除（lang=50e3b8bb4
+  已并入实证 / os=24aa01f 无独有提交）+ 组目录双移除 + 三仓 prune
+  零残留。auto-lang 主检出并行脏改动（DEBTS.md/00-intro——668 域）
+  原样保全。五 checkpoint 全闭环。
 
 ## 10. 待澄清事项
 
