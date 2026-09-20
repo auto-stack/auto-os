@@ -13,7 +13,7 @@ new_spec_components: [auto-lang/vm/back-proxy.md「运行期增删与生命周�
 touched_goals: []
 
 affects: [auto-lang/vm, auto-lang/ui, auto-os/desktop-ledger]
-current_step: 0
+current_step: 5
 total_steps: 7
 ---
 
@@ -184,10 +184,24 @@ ensure_backend(spec) -> ProvisionDecision:
   auto-man 双消费；迁移 vs 复制去重方式待澄清④，默认迁移）。
 - 桌面接线：`launch_app` inproc 臂，`build_dynamic_component` 前对
   `spec.code` 变换：仅当该 app 有 proxy 供给（②或③命中）且 code 含
-  改写面时，`root = proxy.base_url_for(app_key)` 行级改写。**不落盘、
-  不改语料**；热重载重新编译同律（重编译路径同样过此变换）。
+  改写面时，`root = proxy` origin（`http://127.0.0.1:{port}`）行级改写。
+  **不落盘、不改语料**；热重载重新编译同律（重编译路径同样过此变换）。
 - 改写面边界沿 658 实证注记：多行调用形态（字面量与 `Http.` 不同行）
   不在改写面，语料出现时回补。
+- **执行期修正（T-05 冒烟实证，d88d377f0）**：
+  ① 前缀 root 为 **origin-only**——prefix 函数自拼 `/apps/{id}/api/`
+  段，传 `base_url_for`（含完整子前缀）产生双重前缀 404（658 画廊
+  `set_gallery_proxy_root` 同语义印证）；
+  ② **改写面扩至模块文件**——Http 调用点多在 store 模块（020
+  player_store.at:92）而非入口源，UI 合并编译管线 11 个读点重读同文件
+  （collect_module_imports/子模块读/孙组件/visited 扫×3/adapter/
+  qualifier/dir-walk）——新增 un-gated `back_prefix.rs`（进程级 launch
+  作用域 overlay：PrefixSpec{front_dir,root,app_key} + RAII guard，
+  build 返回即清）包全部读点，`apply` 按 front_dir 谓词过滤（back
+  目录零改写 + 行级 `Http.` 规则双保险）。async HTTP 的 base 解析在
+  **独立线程**做（`resolve_http_base_url` 进程 env 架构）——请求期
+  per-app base 架构性不可行，源级变换为唯一同时满足 per-app 隔离与
+  async 线程的机制（§2 拒绝面之外的架构实证）。
 
 ### 5.4 生命周期与关窗钩子（T-04）
 
@@ -196,10 +210,15 @@ ensure_backend(spec) -> ProvisionDecision:
   `app_back: HashMap<AppId, String>`（AppId→app_key 归属）。
 - launch：ensure_backend 命中 ②③ → 懒启 proxy（首个命中时）→
   add_* → `back_refs[key] += 1`；`app_back[app_id] = key`。
-- 关窗：inproc CloseApp 臂（T-00 定位）与 3633/4155 两站点统一挂
-  `release_backend(app_id)`：`back_refs[key] -= 1`，归零 →
-  `remove_app(key)` + 清归属。outproc/daemon app 不参与（无记录，
-  release 为 no-op）。
+- 关窗：**三站点统一挂 `release_backend(app_id)`**：① inproc CloseApp
+  命令臂——renderer.rs `execute_desktop_commands` 的 `DC::CloseWindow`
+  分支（os-config close→hide 拦截之后的回收段，`state.apps.remove(&app)`
+  于 renderer.rs:11478-11479）；② broker 断连站点 session.rs:3633-3635；
+  ③ `HostAction::ReclaimWindow` 站点 session.rs:4153-4155。
+  `release_backend`：`back_refs[key] -= 1`，归零 → `remove_app(key)` +
+  清归属。outproc/daemon app 不参与（无记录，release 为 no-op）。
+  **不可挂在 `wm_remove_win` 本体**——`detach_surface_to_os_window`
+  表面翻转臂（renderer.rs:4217）同样调它但 App 存续，挂彼处会误卸。
 - 双窗同 app：第二次 launch 命中已存在 → 计数 +1，不重复装载
   （一份后端共享，2026-09-20 会话默认裁定，待澄清②）。
 
@@ -267,26 +286,118 @@ os 侧计划/台账在主检出。）
   ② 桌面 inproc 臂 merged CALL 现状（`use back.api:` front 是否已通，
   013 载体一试）；③ 020 桌面现状取证（"本地曲库为空" log/截图）。
   验证：回填本节 + 关窗站点行号入 5.4。
+  [✅ 已完成] 2026-09-20 worktree（基 92355a5a3）：①三站点定位——
+  inproc CloseApp 臂在 renderer.rs `execute_desktop_commands`
+  DC::CloseWindow（`state.apps.remove` @ renderer.rs:11478-11479）+
+  broker 断连 session.rs:3633-3635 + ReclaimWindow session.rs:4153-4155，
+  已回填 §5.4（含 wm_remove_win 不可挂注记——detach 表面翻转臂共用）；
+  ②merged CALL **已通**：`use back.api:` 经 lib.rs 模块映射
+  （`back.api` → `src/back/api.at`，lib.rs:2880-2970）在
+  build_dynamic_component 合并编译内解析，既有测试
+  launch_three_real_apps_via_registry_resolver（app_registry.rs:1340，
+  实跑 013-todo——front todo_store.at:4 即 `use back.api:` 形）master 绿
+  ——证实 §5.1 裁定：普通 #[api] CRUD back 不建 session、CALL 面
+  进程内已通，不扩范围；③020 前端兜底链行号核实（player_store.at:93
+  `Http.get_json("/api/media/scan")` 单行且同行含 `Http.`——在 658
+  前缀化改写面内；:99/:112/:118 三段兜底文案），诊断轮实证已在 §4.1。
 - **T-01 back_proxy 运行期增删 API**：
   crates/auto-lang/src/back_proxy.rs（ProxyShared Mutex 化；RunningProxy
   四方法；JoinHandle 保留）+ back_proxy_tests.rs 扩展。
   验证：`cargo test -p auto-lang back_proxy`（lang worktree）绿。
   AC-02/05。
+  [✅ 已完成] 2026-09-20 commit 63c41ccb6（plan-037-dev）：ProxyShared
+  sessions/native_media → Mutex（SessionHandle{tx,join} 形）；四方法
+  add_session（同 id AlreadyExists 幂等拒绝）/add_native_media
+  （resolve_root+覆盖重插）/remove_app（双表摘除，返 JoinHandle 供测试
+  join；drop sender 退出语义实证）/base_url_for（`http://127.0.0.1:
+  {port}/apps/{id}`）；route_request 锁内克隆 sender 即放（reply 等待
+  不持锁）。测试 +2：`http_e2e_back_proxy_runtime_add_remove_and_join_
+  exit`（懒启门基态/200→404/join 干净退出/复 add 重建/重复 add 拒绝/
+  base_url_for 格式）+ `http_e2e_back_proxy_runtime_native_media_add_
+  remove`（未注册 404→注册 scan/stream 字节保真→摘除 404）。验证跑
+  `cargo nextest run -p auto-lang --lib --features ui-iced,test-http-e2e
+  back_proxy`：13/13 绿（含 658 既有 11 件零回归）。
 - **T-02 注册表与谓词扩展**：
   ui/app_registry.rs（pac `media_root:`、back 入口探测进
   AppRegistryEntry）+ session.rs LaunchSpec 透传 + 谓词 fn 迁 auto-lang
   （vue.rs:6525 改引用）。验证：`cargo test -p auto-lang app_registry`
   + `cargo test -p auto-man vue` 绿。
+  [✅ 已完成] 2026-09-20 commit e213d2148（plan-037-dev）：
+  AppRegistryEntry/LaunchSpec 增 `media_root`（pac 原值透传，与画廊
+  pac_media_root 同语义——引号剥、不反转义）+ `back_entry`
+  （`src/back/api.at` is_file 探测）；boot resolver（renderer.rs）真接线
+  两字段；41 处既有字面量机械补 None（括号深度扫描脚本）。新模块
+  `ui/back_provision.rs`（cfg ui-iced）：`back_needs_session`（~Stream/
+  ~Promise/行首 use auto. 谓词，658 迁移零语义变化）+
+  `prefix_api_url_literals`（行级 Http.+`"/api/` 改写，658 迁移）+ 谓词
+  矩阵/改写面单测 ×2。auto-man vue.rs 删本地实现改 `use auto_lang::ui::
+  back_provision::`（待澄清④按默认裁定：迁移而非复制）。验证：
+  app_registry+back_provision 27/27 绿；auto-man vue 79/79 绿。
 - **T-03 桌面供给层**：
   ui/back_provision.rs（ensure_backend 四臂 + 懒启）+ DesktopState 三
   字段。验证：供给决策单测（四臂各一例）。AC-03。
+  [✅ 已完成] 2026-09-20 commit 9cc15a451（plan-037-dev）：BackendPlan
+  （②native_media/③session 双 Option，①daemon 不进计划④=空）+
+  `plan_backend(spec, app_key)` 纯决策（app_key=launch 名，与 658 子
+  URL 段同形自洽；back_entry 读失败容错为空计划）；DesktopSession 三
+  方法 `ensure_backend`（懒启 `BackProxyConfig::default()` port 0、
+  首装才装载、计数 +1、启动失败降级返回 None 不阻断 launch）/
+  `bind_app_backend`（allocate_app 后归属绑定——ensure 在编译前、
+  app_id 在编译后才存在，两段式）+ `release_backend`（计数归零
+  remove_app，JoinHandle drop=分离线程；listener 常驻不拆）。DesktopState
+  增 `back_proxy: Option<RunningProxy>`/`back_refs: HashMap<String,
+  usize>`/`app_back: HashMap<AppId, String>` 三字段（构造初始化齐）。
+  验证：`plan_backend_four_arms` 单测绿（①daemon 零计划/②capability/
+  ③session/④空 + CRUD 不建 session + ②③叠加 + 幽灵入口容错）。
 - **T-04 launch/关窗接线**：
   session.rs launch_app inproc 臂（ensure_backend → 前缀化 →
   build_dynamic_component；前缀化函数迁移 + auto-man 复用）+ 三站点
   release_backend 挂钩。验证：集成测试（AC-01/02/06 段）。
+  [✅ 已完成] 2026-09-20 commit 4076f4d09（plan-037-dev）：launch_app
+  inproc 臂序 ensure_backend → prefix_api_url_literals（内存态，不落盘）
+  → build（**编译失败 release_app_key 回滚计数**——app 未诞生无窗可
+  release，防泄漏）→ allocate → bind_app_backend。关窗释放挂**四站点**
+  （T-00 锚三 + 实勘补第四：renderer.rs `WmCommand::Close` 标题栏 × 的
+  WM 主关闭路径——漏挂则主关闭路径计数泄漏）：DC::CloseWindow 命令臂 /
+  WmCommand::Close / broker 断连 / ReclaimWindow；`release_backend` 与
+  `release_app_key` 共享卸载核。桌面无独立重编译路径（独立模式 500ms
+  泵不属桌面域；重开窗即 relaunch 再过前缀化变换——§5.3 热重载注记
+  以此兑现）。集成测试 `launch_provision_lifecycle_via_resolver` 绿：
+  懒启门（boot 零 proxy）→ launch 后 scan 200 + entries + 绝对 url →
+  双窗计数 2 同一 proxy → 关一窗计数 1 路由仍 200 → 全关 404 →
+  复 launch 重建 200（listener 常驻复用）。回归：session 111/111 +
+  desktop_protocol 36/37（coverage `imagesurface` 红为在册既红——
+  stash 干净基线同红实证，非本计划引入）。
 - **T-05 e2e + 回归门**：
   scripts/smoke-037-desktop-back.sh + 画廊/独立形态手动回归 +
   auto-lang `cargo t` 全量。验证：smoke 输出 + 回归留痕。AC-01..06。
+  [✅ 已完成] 2026-09-20：smoke 脚本（os 侧 commit 3092bd0）实跑 PASS
+  ——boot 懒启门（零 back-proxy 行）→ MCP bus launch 020 真消费臂 →
+  日志抓 lazy-start 端口 → scan 200 **真实曲库 393 条目** + 条目 url
+  proxy 绝对地址 → 流端 206 + Content-Type: audio/mpeg → 截图留痕
+  （侧栏徽标 393——数据入 store）。**冒烟实证两修**（lang commit
+  d88d377f0）：① 前缀 root 必须为 **origin-only**（base_url_for 含
+  /apps/{id} 会双重前缀——[p037-http] 实证 /apps/x/apps/x/api/ 404）；
+  ② Http 调用点在 **store 模块**非入口（player_store.at:92）——UI 合并
+  编译管线 11 个读点重读同文件，新增 un-gated `back_prefix.rs`（launch
+  作用域 overlay + RAII guard）包全部读点；async HTTP base 解析在独立
+  线程（进程 env 架构）——请求期 per-app base 架构性不可行，源级变换
+  为终选（§2 拒绝面之外的架构实证）。回归门：cargo t 全量 **零新增红**
+  （我 72 红 ⊆ master 74 红——对拍法：checkout master -- crates/ 同
+  worktree 跑，master 多出 external_config_poll flaky ×2；36 摘要红为
+  master 谱系既红：musk ×3/layout 族/ui_gen ×2/coverage 等，09-19 在册
+  清单外的新红代——**未归本计划**）；back_proxy 13/13
+  （ui-iced,test-http-e2e）；auto-man vue 79/79；**画廊 VM 臂**照旧
+  （proxy 33 apps/2 sessions——迁移谓词选出与 658 相同的 017+031 会话
+  集；020 scan 真数据 + 017 chat 种子数据 + player/status 404 = 658
+  语义原样）；**独立形态** 020 `auto run -r vm` 照旧（split 模式 + 自有
+  8320 后端链零触及；rust-workspace Cargo.toml 成员裁剪漂移已还原——
+  在册怪癖）。观察注记：020 "本地曲库为空" 系统通知 = app.at Init 与
+  async 扫描时序竞态（**语料既有行为**，画廊/独立形态同律，非本计划
+  回归——候选后续语料修缮）。环境事故两笔记档：①aliyun sparse 镜像
+  redox_users 0.5.3 失同步——门期用 worktree 本地 .cargo/config.toml
+  ustc 覆盖（已还原未提交）；②裸 stash 对误弹他会话 "026-final" 栈
+  （032 期同款在册事故重演）——已按在册法恢复（对方栈完好）。
 - **T-06 真机验收 + 规范收尾**：
   用户真机验收 020 曲库/播放；SD-01（back-proxy.md 增补节）+ SD-02
   （台账行）落地。验证：用户确认 + 文档 diff。
