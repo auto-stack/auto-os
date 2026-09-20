@@ -5,7 +5,7 @@ feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-20
-plan_revision: 1
+plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -23,8 +23,8 @@ affects:                      # 受影响 specs/实现路径
   - auto-os/docs/specs/shell/showdesk-wallpaper.md            # SD-04 sliver/picker 沉淀
   - auto-os/docs/specs/shell/showdesk-icons.md                # SD-05 任务栏布局合同
   - auto-lang/crates/auto-lang/assets/                        # pin 快照 sync（shell-pack-sync）
-current_step: 0
-total_steps: 9
+current_step: 9
+total_steps: 13
 ---
 
 # [PLAN-035] desktop-ux-rev3
@@ -282,6 +282,8 @@ review 定稿回填。
   内联显示「本地曲库为空」。验证：实机截图（E:\Music\ 空目录现场）。
 - **AC-09** 空曲库时通知中心出现一条 info「本地曲库为空: E:\Music\」且
   来源归因 music；重复扫描不刷屏。验证：实机通知面板截图。
+- **AC-11** 桌面空白右键菜单含「桌面小组件」项 + 开合 checkbox，点击即切换面板可见性。验证：实机截图。
+- **AC-12** 小组件 face 升格开窗后关闭 app 窗，face 保留并回到孵化/运行态显示（不随窗消失）。验证：实机操作截图。
 - **AC-10** auto-lang cargo t 全绿；shell-pack-sync 后 assets pin 零
   diff；specs 沉淀五条 SD 落库。验证：门输出 + diff。
 
@@ -297,7 +299,12 @@ review 定稿回填。
 | T-05 | clock mini 居中（012-clock app.at） [✅ 已完成] 2×2 收紧（svg 40/text-xl），列交叉轴居中 | T-04 | AC-06 截图 | AC-06 |
 | T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） [✅ 已完成] Recompute 归一七臂 + preview 三标量 + 双列 3×2；孵化失败根因=`text ("· "+…)` 非 parse 形态→f-string | T-04 | AC-07 截图 | AC-07 |
 | T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + push_notification 尾条去重。验证口径偏差：drain 单测以实机行为证据替代（badge=1 + 通知面板条目截图，内容/归因/一次性三点齐全） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
-| T-08 | 收口：cargo t 全量 + 实机五题总走查 + spec 沉淀（SD-01..05）+ shell-pack-sync + 状态头/台账/program tracker 更新 | T-01..T-07 | AC-10；execution_done 状态头 | AC-10 |
+| T-09 | 用户走查回环②：iconfile 位图资产根解析回退（icon_root 只有双 env 臂，裸 exec 缺 AUTO_OS_ROOT 全部位图空白；补 CWD/assets/icons → P-3 OS 根解析序家族回退） | — | 实机无 env 启动位图齐全 | AC-01 |
+| T-10 | 用户走查回环②：sliver 高亮/命中区扩到分隔线右侧全高（anchor col h-full） | T-03 | AC-03 hover 截图复核 | AC-03 |
+| T-11 | 用户走查回环②：桌面空白右键菜单增「桌面小组件」checkbox 开关项（desktop.at + 宿主 __wm_dashboard 投影注入 desktop 面：apply 臂 + inject boot 臂） | — | 实机菜单开关面板截图 | 新增 AC-11 |
+| T-12 | 用户走查回环②：关窗后小组件面保留——投影 apply 臂（fp 变化即窗开合）挂 refresh_dashboard_panel（重孵化/降级，状态面即时回正） | — | 实机：face 开窗→关窗→face 复在 | 新增 AC-12 |
+| T-13 | 回环收口：重建 + 无 env 实机复核四项 + 门（定向 + 全量对拍基线） + 双仓提交 + 状态头回 execution_done | T-09..T-12 | 门绿 + 证据 | AC-01..12 |
+| T-08 | 收口：cargo t 全量 + 实机五题总走查 + spec 沉淀（SD-01..05）+ shell-pack-sync + 状态头/台账/program tracker 更新 [✅ 已完成] 门归因定案：cargo t --no-fail-fast 5275 跑/5235 绿/40 红**全数在册或基线归因**（39 唯一名中 38 在干净 master 逐名复现同红 + musk 6 件=P645-D2 在册 + kitchen_sink=分支落点偏斜+主检出 widgets-gallery WIP）；本轮唯一真回归 a2vue 金样已重生成转绿；定向门 dashboard_layout 4/4 + p035 探针 1/1；pin 快照五件 hash-lock 相等；实机五题证据 evidence/p035/ | T-01..T-07 | AC-10；execution_done 状态头 | AC-10 |
 
 （每步完成后在任务行追加 [✅ 已完成] 一行证据。）
 
@@ -325,6 +332,12 @@ review 定稿回填。
   修缮全交付，实机五题证据齐；`stage: work | outcome: pass |
   code_commit: auto-os 325f1ff + auto-lang ce7a64014+08efc9cbe |
   task_ids: T-00..T-08 | next: review`。
+- 2026-09-20 走查回环（用户实机复核第二轮，plan rev2）：①右组位置 ✓
+  但 iconfile 位图全空（本轮裸启动无 AUTO_OS_ROOT，icon_root 双 env
+  臂外无回退）→ T-09；②sliver 高亮应覆盖分隔线右侧全高 → T-10；
+  ③小组件 × 关闭后无入口 → 桌面右键菜单 checkbox 开关项 → T-11；
+  ④face 开窗后关窗连带消失（面板 refresh 只挂召唤事件）→ T-12。
+  status 回 executing，revision 2。
 
 ## 10. 待澄清事项
 
