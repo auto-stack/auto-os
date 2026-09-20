@@ -299,11 +299,13 @@ review 定稿回填。
 | T-05 | clock mini 居中（012-clock app.at） [✅ 已完成] 2×2 收紧（svg 40/text-xl），列交叉轴居中 | T-04 | AC-06 截图 | AC-06 |
 | T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） [✅ 已完成] Recompute 归一七臂 + preview 三标量 + 双列 3×2；孵化失败根因=`text ("· "+…)` 非 parse 形态→f-string | T-04 | AC-07 截图 | AC-07 |
 | T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + push_notification 尾条去重。验证口径偏差：drain 单测以实机行为证据替代（badge=1 + 通知面板条目截图，内容/归因/一次性三点齐全） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
-| T-09 | 用户走查回环②：iconfile 位图资产根解析回退（icon_root 只有双 env 臂，裸 exec 缺 AUTO_OS_ROOT 全部位图空白；补 CWD/assets/icons → P-3 OS 根解析序家族回退） | — | 实机无 env 启动位图齐全 | AC-01 |
-| T-10 | 用户走查回环②：sliver 高亮/命中区扩到分隔线右侧全高（anchor col h-full） | T-03 | AC-03 hover 截图复核 | AC-03 |
-| T-11 | 用户走查回环②：桌面空白右键菜单增「桌面小组件」checkbox 开关项（desktop.at + 宿主 __wm_dashboard 投影注入 desktop 面：apply 臂 + inject boot 臂） | — | 实机菜单开关面板截图 | 新增 AC-11 |
-| T-12 | 用户走查回环②：关窗后小组件面保留——投影 apply 臂（fp 变化即窗开合）挂 refresh_dashboard_panel（重孵化/降级，状态面即时回正） | — | 实机：face 开窗→关窗→face 复在 | 新增 AC-12 |
-| T-13 | 回环收口：重建 + 无 env 实机复核四项 + 门（定向 + 全量对拍基线） + 双仓提交 + 状态头回 execution_done | T-09..T-12 | 门绿 + 证据 | AC-01..12 |
+| T-14 | 走查回环③（用户复核第三轮）：面板四围 padding + 时钟 3×2——dashboard_layout 外框 = 8×3 网格块外扩 PAD 12px（720×256，格位原点内移 PAD），dashboard.at chrome 加 p-3 对齐；012-clock mini 声明 span 3 + 表盘/字号放大（用户截图：2×2 内表盘+数字钟过挤；3+3+2 恰满 8 格） | — | 实机：四围 padding、时钟 3×2 表盘加大、三卡恰满一行 | AC-04/05 |
+| T-15 | 回环③收口：金样对拍 + 门 + 双仓提交 + 状态头 execution_done | T-14 | 门绿 + 证据 | AC-04/05 |
+| T-09 | 用户走查回环②：iconfile 位图资产根解析回退（icon_root 只有双 env 臂，裸 exec 缺 AUTO_OS_ROOT 全部位图空白；补 CWD/assets/icons → P-3 OS 根解析序家族回退） [✅ 已完成] 无 env 实机位图齐全 | — | 实机无 env 启动位图齐全 | AC-01 |
+| T-10 | 用户走查回环②：sliver 高亮/命中区扩到分隔线右侧全高（anchor col h-full） [✅ 已完成] r5 角落截图 | T-03 | AC-03 hover 截图复核 | AC-03 |
+| T-11 | 用户走查回环②：桌面空白右键菜单增「桌面小组件」checkbox 开关项（desktop.at + 宿主 __wm_dashboard 投影注入 desktop 面：apply 臂 + inject boot 臂） [✅ 已完成] 勾选/切换/面板回正三态实机过；连带 a2r 词汇门补臂（checked 任意表达式走 ast_expr_to_rust + 门表 checked/onclick 扩容） | — | 实机菜单开关面板截图 | 新增 AC-11 |
+| T-12 | 用户走查回环②：关窗后小组件面保留——投影 apply 臂（fp 变化即窗开合）挂 refresh_dashboard_panel（重孵化/降级，状态面即时回正） [✅ 已完成] 日志三拍 hatched→running→hatched，face 常驻 | — | 实机：face 开窗→关窗→face 复在 | 新增 AC-12 |
+| T-13 | 回环收口：重建 + 无 env 实机复核四项 + 门（定向 + 全量对拍基线） + 双仓提交 + 状态头回 execution_done [✅ 已完成] cargo t --no-fail-fast 39 红与 rev1 同集零新增；定向 7/7 绿 | T-09..T-12 | 门绿 + 证据 | AC-01..12 |
 | T-08 | 收口：cargo t 全量 + 实机五题总走查 + spec 沉淀（SD-01..05）+ shell-pack-sync + 状态头/台账/program tracker 更新 [✅ 已完成] 门归因定案：cargo t --no-fail-fast 5275 跑/5235 绿/40 红**全数在册或基线归因**（39 唯一名中 38 在干净 master 逐名复现同红 + musk 6 件=P645-D2 在册 + kitchen_sink=分支落点偏斜+主检出 widgets-gallery WIP）；本轮唯一真回归 a2vue 金样已重生成转绿；定向门 dashboard_layout 4/4 + p035 探针 1/1；pin 快照五件 hash-lock 相等；实机五题证据 evidence/p035/ | T-01..T-07 | AC-10；execution_done 状态头 | AC-10 |
 
 （每步完成后在任务行追加 [✅ 已完成] 一行证据。）
