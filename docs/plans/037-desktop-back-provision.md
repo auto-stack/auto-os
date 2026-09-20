@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-037
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: executing               # drafting → executing → execution_done → reviewed → archived（R1 blocked 回位——AC-01 真机段待用户确认）
 feature_name: desktop-back-provision
 author: [agent]
 created_at: 2026-09-20
@@ -437,6 +437,41 @@ os 侧计划/台账在主检出。）
   集成测试双窗计数实证）；④=迁移（auto-man 改引用，vue 79/79 零抖动）；
   ③=真机归用户（随 review）。blockers：无阻塞项；AC-01 真机段=
   用户确认跟进（复审未确认则翻回）。next: `review`。
+
+- 2026-09-20 R1 review（/auto-plan:review，实施会话内复审——独立性
+  限制在案，结论自工件重建：提交链/测试复跑/规范 diff，不采信执行期
+  自述）。stage `review`，PLAN-037 revision 1。
+  **baseline**：reviewed_commit = lang plan-037-dev 5f88992a2（基
+  92355a5a3，六提交 63c41ccb6→5f88992a2，工作树净）；os 997c97d；
+  依赖 auto-down fba6563ed（组内 detached）；spec 输入 =
+  docs/specs/auto-lang/vm/back-proxy.md@5f88992a2（SD-01 冻结于该
+  提交）。
+  **acceptance_results**：AC-02 ✅（lifecycle 集成 + T-01 join 退出，
+  复跑绿）；AC-03 ✅（组合证：四臂①零计划单测 + boot 懒启门断言 +
+  launch_three_real_apps 真实纯 app launch 绿——013 带 CRUD back_entry
+  即③负例实证）；AC-04 ✅（复审复跑画廊 VM 臂：33 apps/2 sessions +
+  020 真数据 + 017 种子数据；独立形态执行期留痕）；AC-05 ✅（按待澄清
+  ①落定载体：T-01 合成根 proxy 级集成 add/serve/remove/join 退出绿 +
+  谓词/四臂单测；组合注记见 F-R1）；AC-06 ✅（懒启门 = back_proxy
+  None 状态断言 + smoke boot 零行——技术手段等价：start() 为 listener
+  唯一 spawn 点）；**AC-01 partial**——smoke 段 ✅✓（执行期+复审双复
+  现：scan 200 真曲库 393/流 206 audio/mpeg/绝对 url），**真机段待
+  用户确认（§10.3 归属；问询无应答——在册怪癖，按预登记"未确认则
+  翻回"执行）**。
+  **findings**：F-R1（P3 非阻塞改进）：ensure_backend ③臂 add_session
+  组合路径无桌面 launch 级集成测试（决策单测+proxy 级集成已覆盖，缺
+  组合腿）——后续计划可补；F-R2（P3 观察注记）：020"本地曲库为空"
+  通知=Init/async 时序竞态（语料既有，候选语料修缮）。零阻塞 find。
+  **gates**：cargo tf 全量对拍零新增红（我 2 唯一红 ui_gen::rust ×2 =
+  master 既红；master 侧多 ffi_dual_019 在册 flaky）；cargo tv
+  3815/3817 同两既红（master 基线复证）；定向 42/42+79/79；smoke-037
+  复跑 PASS。aliyun 镜像 redox_users 失同步持续——门期本地 ustc 覆盖
+  已还原（怪癖清单在案）。
+  **outcome `blocked`**：命名前置 = 用户真机确认 AC-01（VM 桌面 020
+  曲库+播放）。plan 回 `executing`（任务勾全保留——阻塞非任务返工）；
+  确认后重入 review（代码/依赖/测试配置未变，本记录证据可复用，仅补
+  AC-01 真机段）；若真机发现问题 → needs_fix/needs_replan 按面重开。
+  next: 用户确认 → review 补录 → merge。
 
 ## 10. 待澄清事项
 
