@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-037
-status: executing               # drafting → executing → execution_done → reviewed → archived（R1 blocked 回位——AC-01 真机段待用户确认）
+status: reviewed                 # drafting → executing → execution_done → reviewed → archived（R2 pass 2026-09-21）
 feature_name: desktop-back-provision
 author: [agent]
 created_at: 2026-09-20
@@ -368,6 +368,11 @@ os 侧计划/台账在主检出。）
   复 launch 重建 200（listener 常驻复用）。回归：session 111/111 +
   desktop_protocol 36/37（coverage `imagesurface` 红为在册既红——
   stash 干净基线同红实证，非本计划引入）。
+  **R1 返工（F-R3，2026-09-21）**：真机复审发现 hatch_mini_app 绕过
+  供给决策树（dashboard 音乐卡曲库 0）——门槛扩至 plan_backend 全域
+  （非空即占位卡），lang commit 76a65cd92 + 新测试
+  hatch_gate_excludes_backend_provisioned_apps，日常档 36 红同基线
+  零新增。
 - **T-05 e2e + 回归门**：
   scripts/smoke-037-desktop-back.sh + 画廊/独立形态手动回归 +
   auto-lang `cargo t` 全量。验证：smoke 输出 + 回归留痕。AC-01..06。
@@ -472,6 +477,38 @@ os 侧计划/台账在主检出。）
   确认后重入 review（代码/依赖/测试配置未变，本记录证据可复用，仅补
   AC-01 真机段）；若真机发现问题 → needs_fix/needs_replan 按面重开。
   next: 用户确认 → review 补录 → merge。
+
+- 2026-09-21 R1 续（真机反馈 → needs_fix → 修复落账）：用户真机验收
+  （VM 桌面，lang-037 组 ui_desktop）**确认 AC-01 曲库段 ✅（393 首真实
+  曲库入 UI）**，另报两发现——**F-R3**（in-scope，needs_fix）：dashboard
+  音乐卡（小组件）启动曲库 0——`hatch_mini_app`（session.rs:5016）直接
+  build_dynamic_component **绕过供给决策树**，且 D4 无后端门槛仅查
+  daemon/back_root/exe 旧字段（020 media_root 声明漏拦）→ G-2 单一
+  裁决点缺口。修复 = 门槛扩至 `plan_backend` 全域（非空即占位卡——D4
+  既有语义；mini 走供给的档位留后续裁定，复审可翻案）：lang 76a65cd92
+  （含 hatch_gate_excludes_backend_provisioned_apps 测试；无后端同形
+  app 照常孵化），日常档 36 红同基线零新增。**F-R4**（out-of-scope 债）：
+  点播放后时间/进度不动——020 播放依赖隐藏 `video` 元素（viewport.at，
+  0×0 opacity-0）经 libmpv 引擎驱动（PLAN-617：`mpv-native` 特性门 +
+  运行期 `libmpv-2.dll`，AUTO_MPV_LIB 解析序首位）；当前 ui_desktop
+  构建未开特性 + 本机无 DLL → 引擎缺席无 ontimeupdate。VM 轨 020 播放
+  在本机从未可用（037 前曲库恒空未暴露）——**非 037 回归**。处置（问询
+  无应答按推荐先行，复审可翻案）：AC-01 按其文本收口（"流 URL 经
+  proxy 可取字节 curl 200 + Content-Type"✅ 双复现 + 曲库段真机确认）；
+  G-1"可播"段记**媒体引擎面债**（mpv-native 构建 + libmpv-2.dll 环境
+  件；用户装 mpv 后 AUTO_MPV_LIB 指向 + 重建复验即可闭环）。**F-R5**
+  （out-of-scope 语料债）：浅色主题歌曲列表黑框——020 语料硬编码
+  边框色，候选语料修缮。
+- 2026-09-21 R2 review（同会话复审，独立性限制同 R1；变更面 = F-R3
+  门槛修复单提交 76a65cd92，其余代码/依赖/测试配置未变——R1 门证据
+  复用有据：tf/tv 对拍与定向套件零新增红仍有效）。acceptance_results：
+  AC-01 ✅（曲库段真机确认 + 字节段双复现；可播段 F-R4 债注记可翻案）；
+  AC-02..06 同 R1（✅）；F-R3 ✅ 已修证（门槛测试 + 日常档同基线）。
+  findings：F-R1/F-R2/F-R4/F-R5 非阻塞在册（F-R4 媒体引擎面 /
+  F-R5 语料面——后续计划或语料修缮载体）。gates：hatch+back_provision
+  6/6 绿；日常档 5327 测 36 红 = master 基线全等。**outcome `pass`**
+  → `reviewed`。next: merge（lang 侧 plan-037-dev 7 提交 63c41ccb6→
+  76a65cd92 + os 侧计划/smoke/台账链）。
 
 ## 10. 待澄清事项
 
