@@ -24,7 +24,7 @@ affects:                      # 受影响 specs/实现路径
   - auto-os/docs/specs/shell/showdesk-icons.md                # SD-05 任务栏布局合同
   - auto-lang/crates/auto-lang/assets/                        # pin 快照 sync（shell-pack-sync）
 current_step: 15
-total_steps: 15
+total_steps: 16
 ---
 
 # [PLAN-035] desktop-ux-rev3
@@ -300,7 +300,8 @@ review 定稿回填。
 | T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） [✅ 已完成] Recompute 归一七臂 + preview 三标量 + 双列 3×2；孵化失败根因=`text ("· "+…)` 非 parse 形态→f-string | T-04 | AC-07 截图 | AC-07 |
 | T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + push_notification 尾条去重。验证口径偏差：drain 单测以实机行为证据替代（badge=1 + 通知面板条目截图，内容/归因/一次性三点齐全） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
 | T-14 | 走查回环③（用户复核第三轮）：面板四围 padding + 时钟 3×2——dashboard_layout 外框 = 8×3 网格块外扩 PAD 12px（720×256，格位原点内移 PAD），dashboard.at chrome 加 p-3 对齐；012-clock mini 声明 span 3 + 表盘/字号放大（用户截图：2×2 内表盘+数字钟过挤；3+3+2 恰满 8 格） | — | 实机：四围 padding、时钟 3×2 表盘加大、三卡恰满一行 | AC-04/05 |
-| T-15 | 回环③收口：金样对拍 + 门 + 双仓提交 + 状态头 execution_done | T-14 | 门绿 + 证据 | AC-04/05 |
+| T-15 | 回环③收口：金样对拍 + 门 + 双仓提交 + 状态头 execution_done [✅ 已完成] 定向 17/17+4/4+1/1 绿；全量 39 红=基线同集 | T-14 | 门绿 + 证据 | AC-04/05 |
+| T-16 | 走查回环④（用户复核第四轮）：sliver 高亮区须贴窗口右缘——高亮右侧残留任务栏 pr-2 奶白条；任务栏行 px-2 改 pl-2，细条贴缘、高亮占满分隔线右侧 | — | 实机 hover 截图：高亮右缘贴窗口边缘 | AC-03 |
 | T-09 | 用户走查回环②：iconfile 位图资产根解析回退（icon_root 只有双 env 臂，裸 exec 缺 AUTO_OS_ROOT 全部位图空白；补 CWD/assets/icons → P-3 OS 根解析序家族回退） [✅ 已完成] 无 env 实机位图齐全 | — | 实机无 env 启动位图齐全 | AC-01 |
 | T-10 | 用户走查回环②：sliver 高亮/命中区扩到分隔线右侧全高（anchor col h-full） [✅ 已完成] r5 角落截图 | T-03 | AC-03 hover 截图复核 | AC-03 |
 | T-11 | 用户走查回环②：桌面空白右键菜单增「桌面小组件」checkbox 开关项（desktop.at + 宿主 __wm_dashboard 投影注入 desktop 面：apply 臂 + inject boot 臂） [✅ 已完成] 勾选/切换/面板回正三态实机过；连带 a2r 词汇门补臂（checked 任意表达式走 ast_expr_to_rust + 门表 checked/onclick 扩容） | — | 实机菜单开关面板截图 | 新增 AC-11 |
