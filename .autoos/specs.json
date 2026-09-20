@@ -912,6 +912,42 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "related": [
+            "PLAN-038"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20",
+          "id": "P038-1",
+          "file": "auto-os/docs/specs/apps/kanban.md",
+          "title": "SD-07 — kanban UI token 纪律（Phase A 核心白名单缺省 + Phase B 平台扩展色）",
+          "content": "普通看板/计划板样式单源 src/front/{app,pages/board}.at（Vue codegen/VM Iced 同 class 串）。三层纪律：①app 缺省=核心语义 token 白名单（background/foreground/card/muted/border/input/primary/secondary/destructive/accent 族+透明度 utility；视觉约定：进行中=primary、完成列=muted 降噪、P0=destructive、P1=primary/10、P2=muted）②平台能力（PLAN-038 Phase B 起）：auto-lang registry+auto-man 脚手架已为 scaffold/cli-vue/tauri 生成 success/warning/info/error CSS 变量与 tailwind 映射（与 VM stella 同值），.at 可安全使用扩展 class；本 app 缺省仍核心 token，直至产品显式恢复③始终禁 palette 硬编码（bg-blue-500 等）与手改 gen 产物；gen 非长期源，根 index.html 仅手机模拟器镜像（同 token 集）。PLAN-021 SD-05 文案契约不变。"
+        },
+        {
+          "related": [
+            "PLAN-038"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20",
+          "id": "P038-2",
+          "file": "auto-lang/docs/specs/auto-lang/ui/overview.md",
+          "title": "design_tokens registry — EXTENDED_ORDER 入 render_core，scaffold/cli-vue/tauri 与 VM 双端同值",
+          "content": "扩展功能色四键（Success/Warning/Info/Error，Rgb 与 stella VM 同值：34,197,94 / 234,179,8 / 59,130,246 / 239,68,68）经 EXTENDED_ORDER 追加进 ComposedTheme::render_core（CSS 渲染面）；SCAFFOLD/CLI_VUE/TAURI 双 mode 主题持扩展色，Vue CSS 与 VM resolve_semantic_rgb 同源。CORE_ORDER 仍为「全主题必持」契约（zinc 可缺席）。依据：scaffold_extended_tokens_dual_face + dual_face_consistency 单测；plan593 zero_drift 7 绿（ui-iced 档）。"
+        },
+        {
+          "related": [
+            "PLAN-038"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20",
+          "id": "P038-3",
+          "file": "auto-lang/docs/specs/auto-man/project.md",
+          "title": "auto-man vue 脚手架 — tailwind 扩展色映射 + P657-D2 类型 stub 全 build 路径",
+          "content": "generate_tailwind_config 补 success/warning/info/error → hsl(var(--*))（scaffold/cli-vue/tauri 三处；regenerate_source_files 与 scaffold 同源重写——修磁盘残留旧模板漏映射）。P657-D2 核销：codegen 全路径（scaffold/write_project_files/regenerate/prepare_vue_sources=auto build）写 src/vite-env.d.ts + src/auto-select/overlay.ts + src/auto-sources.ts（缺失时写空 map，消除 overlay TS2307 phase-ordering），auto build vue-tsc 不再依赖手工 stub。依据：auto-kanban 干净 build 产物对账（index.css light/dark 四扩展色=registry Rgb→HSL）。"
         }
       ]
     },
@@ -1543,6 +1579,18 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "related": [
+            "PLAN-038"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20",
+          "id": "P038-r1",
+          "file": "auto-os/docs/plans/archive/038-kanban-ux-token-parity.md",
+          "title": "PLAN-038 auto-kanban token 单源收敛 复审与合并收据",
+          "content": "三阶段复审：r3 needs_fix（F-01 Phase A 未 commit/F-02 脚手架表述过时/F-03 tf 两红甄别/F-04 spec 路径未落）→ work repair（auto-kanban main 90f0df8 落 Phase A+B 纪律；SD-07/README 改写；P038-2/3 拟稿 5bd57bda2）→ r3.1 pass（AC-01..05 全 pass；F-03 两红=master 同名预存，隔离重跑同红非回归；F-05 可选项不阻塞）。合并：首会话沙箱拦 rebase/merge blocked（prepared only）→ 续会话自为解除：master 前移 14 提交（036×10+668/669×4）零重叠，rebase 零冲突 range-diff 3/3 全等（5bd57bda2→28c94a5d4）+ ff-only 落地 auto-lang master=28c94a5d4（他会话脏文件 DEBTS.md/docs/design/* 保全）；复验 design_tokens 23/dual_face 2/plan593 7（ui-iced 档）/check auto-man+auto 绿；主检出 check -p auto-man 绿（真 auto-down 兄弟解析）。计划归档路径 docs/plans/archive/038-kanban-ux-token-parity.md。"
         }
       ]
     }
