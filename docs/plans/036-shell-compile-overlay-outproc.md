@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-036
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed                # drafting → executing → execution_done → reviewed → archived
 feature_name: shell-compile-overlay-outproc
 author: [agent]
 created_at: 2026-09-20
@@ -736,6 +736,26 @@ auto-os`。
   T-08 | evidence: p036 九腿全绿[1.15s] + p030 回归 + desktop_
   protocol 186/187[imagesurface 在册红] + shell-pack 4/4 + freshness
   绿 | blockers: 无 | next: review r2`。
+- 2026-09-20 /auto-plan:review r2（needs_fix 修复复验——执行会同席，
+  工件重建）。基线：lang-036 @ a4f6bdbe8（r1-fix 提交，2 文件
+  +199/-31；工作区净）。**findings 闭环**：F-036-R1 ✅ 腿3.7 在案并
+  PASS（Enter 键路由端到端：伪窗聚焦→broker_key_event→child
+  dispatch_key→Pick→Launch→DesktopBus 上行→desktop_bus_inbox
+  LaunchApp[p036-fake-app] + launcher-face 归因断言）；F-036-R2 ✅
+  腿3.6 六面 parity 循环在案并 PASS（超出计划五面口径——launcher
+  独立管线面亦入拍）。**验证矩阵（修复基线）**：p036 九腿 1.23s
+  PASS（终基线复跑）+ p030 回归 PASS + desktop_protocol 186/187
+  （imagesurface = P033-D4 在册）+ shell-pack 4/4 + freshness 绿
+  （码同 fix 提交复用——其后仅删未跟踪临时文件，零代码 delta）；
+  r1 矩阵（tf/t/tt 全红归因在册）不因测试件增量失效。AC 终判：
+  AC-01..06 全 pass（R1/R2 修复后 AC-03/04 partial 转正）。
+  F-036-R3..R6 维持非阻塞/提请裁定/过程注记档（R5 裁定面确认随
+  merge 入口）。`stage: review | PLAN-036 | rev 1 | outcome: pass |
+  reviewed_commit: a4f6bdbe8 | base: 899db807f | deps: auto-down
+  b422385 | spec_inputs: §1.16/KNOWN-DEBT/a2r/台账/metrics | 
+  acceptance: AC-01..06 全 pass | findings: R1/R2 闭环；R3-R6 档存
+  | evidence: p036 九腿 + 全门 + r1 矩阵 | next: merge（裁定面三项
+  随 merge 前用户过目——D1 修订/D3-C v1/D2-A）`。
 
 ## 10. 待澄清事项
 
