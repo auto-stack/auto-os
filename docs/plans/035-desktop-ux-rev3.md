@@ -23,8 +23,8 @@ affects:                      # 受影响 specs/实现路径
   - auto-os/docs/specs/shell/showdesk-wallpaper.md            # SD-04 sliver/picker 沉淀
   - auto-os/docs/specs/shell/showdesk-icons.md                # SD-05 任务栏布局合同
   - auto-lang/crates/auto-lang/assets/                        # pin 快照 sync（shell-pack-sync）
-current_step: 19
-total_steps: 19
+current_step: 21
+total_steps: 21
 ---
 
 # [PLAN-035] desktop-ux-rev3
