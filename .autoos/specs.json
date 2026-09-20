@@ -254,6 +254,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P034-1",
+          "title": "PLAN-034 变更摘要 — rqhost-maturity（位图过线通道 + 内存量化门 + 像素原生族裁定）",
+          "content": "RQ 完整化第二件（消费端+协议词汇面）三件事：①位图过线通道（P028-D1 核销）：FrameMsg tag 10 BitmapReady/tag 11 BitmapAck（元数据过管道、RGBA 在专用第二段 -bm 槽，镜像 FrameReadyShared 槽纪律）+ BufferAlloc.bm 消息级尾追（None 零字节=旧 golden 零漂移）+ bitmap://{pid}-{局部} 词汇（resolve 前缀臂，miss 不落负缓存——位图可后到）+ drain_bitmap_uploads 上传缝（033 drain_desktop_commands 同型）+ TS decode 桩与双侧 golden；②canvas=位图快照过线（首个像素原生 kind 过线）：tiny_skia 栅格化孪生 + coverage 入册 + 同签名零重传，043-canvas-paint -q 真进程闭环；③五 kind 裁定（用户确认修正版——imagesurface 零消费者证伪）：video=独立窗专属/terminal=M7-c 撞面/canvas=快照过线/code_editor=维持/imagesurface=not-yet+M7-c。内存量化门：13 格归因矩阵（wgpu 驻留≈223MB 大头/每窗 42MB vs tiny-skia 3.3MB）→ T-03 数据驱动 daemon 缺省切 tiny-skia（合法性=D4 video 裁定；显式 env 胜出）→ release×default 11260KB≤100MB 达标（余量 10×）+ rq_update 自观测行。协议 §1.15 v1.15（PROTOCOL_VERSION 仍 1 全追加式）；P034-D1..D3 新债。",
+          "file": "auto-os/docs/plans/archive/034-rqhost-maturity.md",
+          "related": [
+            "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -605,6 +617,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P034-1",
+          "title": "SD-01 — 协议 §1.15 v1.15 增量（位图通道 + 五 kind 裁定 + 内存门）",
+          "content": "desktop-protocol-v1.md §1.15：位图通道全语义（tag 10/11 线格式 + bm 尾追三元组 + 槽档表面×4B 余量/超档弃置边界 + 同 id 覆盖无版本号时序由 Ack 钉死 + bitmap:// 词汇与负缓存差异点 + 泵排水位产帧前 + 高频流背压 not-yet）+ canvas 位图快照过线（栅格化孪生/pen·labels not-yet 边界）+ 五 kind 裁定表 + 内存量化门结论行（归因矩阵指针 + daemon 缺省软光栅裁定 + 自观测面）。版本表 v1.15 行。canonical 指针：协议 §1.15/顶表。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "related": [
+            "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -828,6 +852,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P034-1",
+          "title": "SD-02/03 — 台账 M7 副线交付行（034）+ KNOWN-DEBT 处置",
+          "content": "autos-desktop-program.md M7 副线裁定交付行（PLAN-034，2026-09-20）：位图过线通道 ✅（P028-D1 核销）+ 五 kind 裁定入册 ✅ + rqhost 内存量化门（矩阵数据行 assets/034/memory-matrix.txt）——副线债行更新：pixels 退役门剩余条件 = 覆盖收口[M7-c] + 退役执行件。KNOWN-DEBT：P028-D1 核销 ✅ / P028-D3 边界更新（通道在、web 端仍 not-yet）/ P-RQ-PIX 条件③④ ✅ 注记 / P034-D1 canvas pen·labels not-yet / P034-D2 位图槽档超界弃置 / P034-D3 ring 族声明放行。计划归档路径 docs/plans/archive/034-rqhost-maturity.md。",
+          "file": "auto-os/docs/plans/autos-desktop-program.md",
+          "related": [
+            "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -1105,6 +1141,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P034-1",
+          "title": "PLAN-034 测试语料 — wire/通道/canvas/矩阵/e2e/TS",
+          "content": "p034 套件：message 双件（wire round-trip + bm 尾追向后兼容——bm=None 与旧线字节恒等 + tag 12 未知拒收）+ remote ts_fixtures p034_ts_bitmap_tag10_crosscheck（Rust↔TS golden 双侧 BITMAP_READY_HEX）+ broker_surface p034_bitmap_prefix_arm（入缓存真渲/miss 不落负缓存/同 id 翻新/宽 stride 重排/evict/失配守卫）+ rqhost p034_bitmap_channel_inproc_roundtrip（真管道进程内装配端到端：上传→缓存→resolve→重传翻新）+ native_projector p034_canvas_snapshot_arm（覆盖门放行+Image op+上传+零重传）+ coverage p034_ring 放行 + 钉死矩阵 canvas 夹具 + stage3 双腿（p034_memory_matrix_leg 13 格 AUTO_DESKTOP_E2E 门 + p034_rqhost_maturity_arm canvas 样板腿）+ e2e_exe AUTO_E2E_PROFILE。TS vitest 29/29（decode tag10/11 桩 + 未知 tag 拒收维持）。os scripts/smoke-034-rqhost.sh 六腿。回归门：scoped 红集差空（detached master 对照 44=44）+ cargo t 红=P028-D4 族 + tf 红=mouse_area/autodown 在册 + rust_ui 25/25。",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/",
+          "related": [
+            "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -1399,6 +1447,18 @@
           "status": "published",
           "created": "2026-09-19",
           "last_modified": "2026-09-19"
+        },
+        {
+          "id": "P034-r2",
+          "title": "PLAN-034 rqhost-maturity rev1 复审与合并收据",
+          "content": "实施会话内复核（独立性受限声明 + 工件重建口径）：work T-01..T-08 全闭环 execution_done → review r1 pass @ b43d6ca53（AC-01..06 全过：门达标 11260KB/13 格矩阵/位图全链 11 件+TS 29 29/裁定入册/回归门红集差空+在册红归因）；findings F-034-R1..R4 均非阻塞（段释放断言债/AUTO_E2E_PROFILE 无测/位图后重绘观察/缺省后端切换注记）。冻结哈希：协议文档 120bcdfa/KNOWN-DEBT 00132f91。合并：lang plan-034-dev rebase onto master（4aadc1f57 并发推进）+ os 台账五件入册 + ff-only 落地 + 归档 cleaned 五 checkpoint。F-034-R1 补测债随 M7-c 批。",
+          "file": "auto-os/docs/plans/archive/034-rqhost-maturity.md",
+          "related": [
+            "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     }
