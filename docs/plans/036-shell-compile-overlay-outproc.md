@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 4
+current_step: 6
 total_steps: 10
 ---
 
@@ -527,17 +527,29 @@ auto-os`。
   随注：分区预览自隐计时 outproc 失效（载体无 switcher_open 键）；
   字节级金样对拍归 T-08。lang-036 @ 95c4ff066（rebase 后批次 A =
   b777e6532 + 035-sync regen 提交）。
-- **T-05 [lang] B2 z 档与槽位**
+- **T-05 [lang] B2 z 档与槽位** [x]
   文件：`message.rs`（role 扩）、R（Stack 插层/命中带化）、S（伪窗）。
   动作：§5.4 T-05；D2 落地。
   验证：role golden + 插层序单测。
   → AC-03。
-- **T-06 [lang] B2 face 材料**
+  [✅ 已完成 2026-09-20] D2-A 落地：DASHBOARD=4 追加档 +
+  WM add_win_above_bottom 插层伪窗（z_order[1]）+ attach 第五面 +
+  DashboardSnapshot 写集/指纹 + 召唤/关闭/活刷新/Esc 四处分叉 +
+  层序 chrome 二轨 + 命中带动态更新（696×232 右上——035 固定外框）。
+  lang-036 @ 89c185571。
+- **T-06 [lang] B2 face 材料** [x]
   文件：R（mini 栅格化/face 解析依 D1）、`broker_surface.rs`
   （face:// 前缀臂依 D1-C+）、SC（face 点击/命令上行）。
   动作：§5.4 T-06；D1 落地。
   验证：face 渲染/focus 闭环单测 + e2e 腿。
   → AC-03。
+  [✅ 已完成 2026-09-20（D1 修订·宿主叠层混合——用户未即时应答，
+  按裁定面记录：面板 chrome/清单/grid = child 表面帧 + face 卡 =
+  宿主 iced 叠层两轨共用（视觉零差零协议）；卡交互 outproc 直入
+  desktop_bus_inbox；__dashboard_cmd 经 DesktopBus 既有归因。
+  **D1-C+ face:// 全下放**：宿主无 DrawList→位图栅格化器（文本字形
+  缺位）——face:// 虚拟引用词汇记 P036 新债（T-10 随注），复审可
+  翻案升级）。lang-036 @ 89c185571。
 - **T-07 [lang] B3 launcher**
   文件：S/R（装载形态依 D3）、SC（聚焦 child 化依 D5）、热键边界。
   动作：§5.5。
@@ -603,6 +615,19 @@ auto-os`。
   evidence: 上述门 | blockers: D1 face 材料用户确认（T-06 前置）+
   D3 拓扑用户确认（T-07 前置）——D2 可按倾向 A 先行 | next: T-05
   （D2 落地）→ T-06（D1 裁定后）`。
+- 2026-09-20 /auto-plan:work T-05+T-06 执行记录（B2）：D1/D2/D3 三
+  裁定面经 AskUserQuestion 问询未获即时应答——按计划内录倾向先行
+  （D2=A/D3=C 混合[B1 已按其落地]/D1=C+→实施修订为宿主叠层混合，
+  C+ face:// 记债）——复审可翻案。提交 89c185571（7 文件 +549/-58）。
+  B1+B2 后 child 五面全装配（Hello 五 decl/Welcome 显式路由/懒装+
+  预装/五投影臂/命令排水）；宿主 overlay 全分叉（in-proc 零变化 I2）。
+  门：scoped 105/105 + shell-pack 4/4 + freshness 绿 +
+  desktop_protocol 184/185（imagesurface 在册红）+ auto check 0 错。
+  `stage: work | PLAN-036 | rev 1 | outcome: pass（B2）| code_commit:
+  lang-036 89c185571 | task_ids: T-05,T-06 | evidence: 上述门 |
+  blockers: D3 落地细节（launcher 一面一 exe 形态） | next: T-07（B3
+  launcher——D5 聚焦链 child 化 + LauncherSnapshot 推送 + 热键宿主
+  保留）`。
 
 ## 10. 待澄清事项
 
