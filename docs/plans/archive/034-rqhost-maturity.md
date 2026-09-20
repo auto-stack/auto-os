@@ -1,11 +1,12 @@
 ---
 plan_id: PLAN-034
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived（终态）
 feature_name: rqhost-maturity
 author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-20
 plan_revision: 1
+completion_kind: delivered
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -462,6 +463,28 @@ M7-b/M7-c① 并行——文件面错开）。
   private=17584KB）；⑤auto-man rust_ui（收据见下）。
 
 ## 9. 复审记录
+
+- 2026-09-20 /auto-plan:merge `PLAN-034:r1` 五 checkpoint（prepared →
+  landed → ledger_refreshed → archived → cleaned）：
+  - **prepared**：复审基线 b43d6ca53（r1 pass + 冻结哈希 120bcdfa/
+    00132f91）；canonical Spec（协议 §1.15/顶表 + KNOWN-DEBT）随实现
+    提交已在 lang 分支；台账投影五件（P034-1×4 + P034-r2）于 os
+    worktree 备妥（c78e4fc，rebase 后 0fd56d0）。
+  - **landed**：lang rebase onto master 4aadc1f57（并发 077/662 推进）
+    零冲突，range-diff 四对全等（727007e9c→c4facc584 / 15619a910→
+    e87bbd487 / ceb2d6d01→79950df42 / **b43d6ca53→4c3a440e6=交付提交**）
+    ——ff-only 落地 master tip=4c3a440e6；组合态刷新验证 10/10 + 成熟
+    腿 e2e 1/1（同 SHA）。os rebase onto main 4ec4f88（963d492→fe8131f
+    等价 + 台账后裔 0fd56d0=projection-only 交付件）——ff-only 落地
+    main tip=0fd56d0。
+  - **ledger_refreshed**：.autoos/specs.json 读回实证——P034 条目
+    五件（reports/architecture/designs/tests P034-1 + reviews P034-r2），
+    总数 131→136。
+  - **archived**：本文件 docs/plans/archive/034-rqhost-maturity.md +
+    status: archived + `completion_kind: delivered`。
+  - **cleaned**：见后续收据行（合并收据补记）。
+  主检出注记：lang 主检出 .next-id 脏（并行会话取号簿记，未触碰）；
+  os 主检出 ui-gallery/widgets-gallery 他方 WIP 与本分支零叠。
 
 - 2026-09-20 /auto-plan:review r1：`stage: review | PLAN-034 | rev 1 | pass |
   b43d6ca53 | 4cbc810eb | auto-down@84c9897（只读）| 协议文档@tip
