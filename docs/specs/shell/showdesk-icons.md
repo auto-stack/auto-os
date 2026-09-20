@@ -37,6 +37,12 @@
   = `AUTO_OS_ROOT/assets/icons/{light,dark}/<stem>.png`，主题跟随
   `dark_mode()`。pinned/窗口条目图标经 app registry mapping 链解析
   （`mapping.json` 别名 → stem）。
+- **布局合同（PLAN-035 SD-05）**：任务栏行主轴 Fill 元素**恰一**（右组
+  前 spacer）——右组右缘贴时钟左邻；无 width 类的列不得在行内持
+  `justify-center`（适配层给该形态的包装容器 width=Fill，与 spacer
+  平分主轴 = 右组被夹屏幕中央，PLAN-035 T-01 根因；headless 回归
+  探针 `layout_tests::p035_taskbar_right_group_right_aligned` 守护）。
+  空容器（托盘挂载点等）保持 Shrink 语义。
 - **变体**：`variant: "ghost"`（去 PLAN-571 预设发丝描边——位图外圆角框
   来源）；满幅 tile 语义同 SD-01，lucide 字标才保留品牌色 chip。
 - **几何**：`text-4xl`（36px 图标）+ `h-11 w-11`（hover/激活底 44px）；

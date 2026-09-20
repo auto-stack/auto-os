@@ -24,9 +24,13 @@
   4. `send_to` 目标为保留分区拒绝；
   5. 负一屏上 `activate` = 先 return 再启动/聚焦（新窗落 origin，
      防穿帮）。
-- 入口：任务栏最右缘 sliver（`w-3` 细条 + 左缘分隔线 + hover 高亮），
-  toggle 判据 = `__wm_showdesk` 投影等式（`"1"` → return，`""` →
-  show_desktop）。
+- 入口：任务栏最右缘 sliver（PLAN-035 SD-04：`w-2` 细条 + 左缘分隔线
+  + hover 高亮满覆盖——视觉类落内容 col，hit 带 = 可视条带（8×40，
+  PLAN-021 线 B 合同；原 mouse-area 样式臂被视觉包装撑满任务栏全高 =
+  「高亮盖不满/条带越界」根因）+ hover popover 提示「显示桌面/恢复
+  桌面」（随 `__wm_showdesk` 动态；DSL 无 tooltip 原语，锚定 popover
+  自建——P548-D2 债不动）），toggle 判据 = `__wm_showdesk` 投影等式
+  （`"1"` → return，`""` → show_desktop）。
 - `__wm_showdesk`（协议 §2）："1"/""，随分区指纹段差分同步（进出必翻
   current 位），无独立指纹段。
 
@@ -61,6 +65,13 @@
   切片）/`__wp_x`/`__wp_y`（底部锚点）。候选供源 = `scan_wallpapers_dir`
   （jpg/jpeg/png 文件名升序）。直写 + view_dirty（不走 shell 指纹门控
   ——桌面面字段直写先例）。
+
+- **在屏合同（PLAN-035 SD-04）**：锚点坐标由宿主注入臂对
+  `usable_rect`（viewport - dock 预留边）钳制（720 面板右下界内收、
+  底部居中贴任务栏留 8px）——任意开启时刻面板完整在屏、×/Esc/外点
+  关闭可达。桌面层坐标锚 popover 内容一律以 open 态条件包守卫（内容
+  不物化即无可泄漏绘制/命中面——关闭态合成层内容泄漏 = 任务栏幽灵块
+  根因，PLAN-035 T-02；深层绘制路径债登记 DEBTS）。
 
 ## SD-03 更换壁纸组合与返回归属（用户裁定）
 
