@@ -52,9 +52,11 @@
 - **格位（PLAN-035 SD-02 修订）**：`dashboard_layout` 行主序单卡行
   next-fit（**span 2|3 缺省 2**，卡高恒 2 行格 = 152px；余量不足裁剪）；
   span 三级消费序 = 存储覆写 `shell.dashboard.span.<app>` → **app 源
-  声明标记**（`view mini` 邻域 240 字符内 `span: N` 文本探测，注释形态
-  `// dashboard span: 3`——parser view-tag 无 props 通道，文本契约与
-  `view mini` 探测同族）→ 缺省 2；旧存储 "1" 迁移读作 2。face 卡 px
+  声明标记**（源内唯一标记 `dashboard span: N`，N∈{2,3}；注释形态
+  `// dashboard span: 3`，全文扫描、不锚定 `view mini` 位置——头注
+  提前含该字样会误锚，012-clock 实测在案；parser view-tag 无 props
+  通道，文本契约与 `view mini` grep 探测同族）→ 缺省 2；旧存储 "1"
+  迁移读作 2。face 卡 px
   spacer 链定位（真实 Stack 子层 padding/align 不可依赖——notification
   O1 家法）。
 - **卡体双击 → 三态打开**：已有窗 → activate 聚焦（跨分区）；孵化会话
