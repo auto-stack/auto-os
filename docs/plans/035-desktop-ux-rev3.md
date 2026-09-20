@@ -357,9 +357,31 @@ review 定稿回填。
   占满一整行网格且空旷），分页触发改外框右上角紧凑 pill（main↔system
   互换），face 卡满高 3 行格（232）；lazy 语义不变。MCP 验收 handler
   app 枚举增 dashboard 槽。门：39 红同集零新增；定向 23/23 绿。
-  `stage: work | outcome: pass | code_commit: auto-os <rev4> +
-  auto-lang <rev4> | task_ids: T-18..T-19 | next: review`。
+  `stage: work | outcome: pass | code_commit: auto-os c1e54cc +
+  auto-lang 388b99e2f | task_ids: T-18..T-19 | next: review`。
   **execution_done**。
+- 2026-09-20 会话改动总账（本计划全部落库提交指针，review 验收基线）：
+  - **auto-os worktree** `.wt/os-035/auto-os` @ `plan-035-dev`（基线
+    4ec4f88）：`325f1ff`（T-00..T-04+T-08 shell 侧五组修缮+spec
+    SD-01..05+证据）→ `1f3e735`（rev2 T-10 sliver 全高+T-11 右键菜单
+    checkbox）→ `5122410`（rev3 T-14 chrome p-3）→ `a57332f`（T-16
+    px-2→pl-2）→ `b7993bc`（rev4 T-18 dashboard.at 无头行+spec 同步）
+    → `c1e54cc`（T-20 sliver 坐标锚 tooltip）。
+  - **auto-lang worktree** `.wt/os-035/auto-lang` @ `auto-os-035-dev`
+    （基线 4aadc1f57）：`ce7a64014`（T-04 layout v2+三 app mini+孵化
+    drain+探针）→ `08efc9cbe`（a2vue 金样重生成①）→ `798364dff`
+    （rev2 T-09 icon_root 回退+T-11 checkbox 词汇门/投影注入+T-12 关窗
+    face 回正钩）→ `855f5da8b`（rev3 T-14 外框 PAD+declared_span 全文
+    标记+clock 3×2）→ `b98c1ff1d`（T-16 pin 同步）→ `157b3be3d`
+    （T-17 fit 重试 150）→ `5c4f8c24a`（rev4 满高格位+MCP dashboard
+    槽+pin 同步）→ `388b99e2f`（T-20 sliver 坐标锚 tooltip）。
+  - **依赖组**：auto-down @ `auto-os-035-dev`（d1a83b6）。assets pin
+    快照五件 hash-lock 相等（shell-pack-sync 契约）。
+  - **门**：cargo t --no-fail-fast 39 红与干净 master 基线同集零新增
+    （在册 P645-D2 / 分支偏斜环境红）；定向 dashboard_layout 4/4、
+    p035 探针 1/1、a2vue 17/17、词汇门 1/1。
+  - **证据**：docs/plans/evidence/p035/（归因工件+七张关键截图）+
+    tmp/p035/（全程验证截图与日志）。
 - 2026-09-20 走查回环④（T-16/T-17）：T-16 sliver 贴缘高亮占满右侧
   （px-2→pl-2）；T-17 012-clock 开窗自适应加固（fit 测量重试上限
   10→150 次=60s——慢首帧耗尽重试后窗口停留默认尺寸的根因；冷启动
