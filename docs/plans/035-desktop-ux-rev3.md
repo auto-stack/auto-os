@@ -5,7 +5,7 @@ feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-20
-plan_revision: 2
+plan_revision: 4
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -23,8 +23,8 @@ affects:                      # 受影响 specs/实现路径
   - auto-os/docs/specs/shell/showdesk-wallpaper.md            # SD-04 sliver/picker 沉淀
   - auto-os/docs/specs/shell/showdesk-icons.md                # SD-05 任务栏布局合同
   - auto-lang/crates/auto-lang/assets/                        # pin 快照 sync（shell-pack-sync）
-current_step: 16
-total_steps: 16
+current_step: 19
+total_steps: 19
 ---
 
 # [PLAN-035] desktop-ux-rev3
@@ -301,8 +301,10 @@ review 定稿回填。
 | T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + push_notification 尾条去重。验证口径偏差：drain 单测以实机行为证据替代（badge=1 + 通知面板条目截图，内容/归因/一次性三点齐全） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
 | T-14 | 走查回环③（用户复核第三轮）：面板四围 padding + 时钟 3×2——dashboard_layout 外框 = 8×3 网格块外扩 PAD 12px（720×256，格位原点内移 PAD），dashboard.at chrome 加 p-3 对齐；012-clock mini 声明 span 3 + 表盘/字号放大（用户截图：2×2 内表盘+数字钟过挤；3+3+2 恰满 8 格） [✅ 已完成] t14b 实机截图：四围 padding+时钟 3×2 大表盘+三卡满排 | — | 实机：四围 padding、时钟 3×2 表盘加大、三卡恰满一行 | AC-04/05 |
 | T-15 | 回环③收口：金样对拍 + 门 + 双仓提交 + 状态头 execution_done [✅ 已完成] 定向 17/17+4/4+1/1 绿；全量 39 红=基线同集 | T-14 | 门绿 + 证据 | AC-04/05 |
+| T-18 | 走查回环⑤（用户复核第五轮）：小组件 tab 头行退役——72px 头行占满一整行网格且空旷；分页触发改外框右上角紧凑 pill（main↔system 互换，SelectTab 既有消息面），lazy 语义不变（非活动页 face 不渲染 + Tick 停订）；face 卡改满高 3 行格（232）。MCP 验收 handler app 枚举增 dashboard 槽 [✅ 已完成] 实机三截图：主页面满高三卡/系统页 sys-monitor 实时卡/往返切换；词汇门/金样绿 | — | 实机三截图 + 词汇门/金样绿 | AC-04/05 |
+| T-19 | 回环⑤收口：spec 同步 + 门 + 双仓提交 + 状态头 execution_done [✅ 已完成] cargo t 39 红基线同集零新增；定向 23/23 绿 | T-18 | 门绿 + 证据 | AC-04/05 |
 | T-16 | 走查回环④（用户复核第四轮）：sliver 高亮区须贴窗口右缘——高亮右侧残留任务栏 pr-2 奶白条；任务栏行 px-2 改 pl-2，细条贴缘、高亮占满分隔线右侧 [✅ 已完成] 实机 hover 截图 t16_sliver；词汇门/a2vue 复验绿 | — |
-| T-17 | 走查回环④：012-clock 开窗自适应加固——pac 本已 window:"fit"，但 fit 测量重试上限 10 次（4s）在调试构建/高负载冷启动下耗尽放弃，窗口停留默认宽短尺寸（用户截图1）；FIT_MEASURE_MAX_RETRIES 10→150（60s），命中即止 [✅ 已完成] 冷启动即刻激活实机验证贴合（c1_clock_late） | — | 新增 AC-13 | 实机 hover 截图：高亮右缘贴窗口边缘 | AC-03 |
+| T-17 | 走查回环④：012-clock 开窗自适应加固——pac 本已 window:"fit"，但 fit 测量重试上限 10 次（4s）在调试构建/高负载冷启动下耗尽放弃，窗口停留默认宽短尺寸（用户截图1）；FIT_MEASURE_MAX_RETRIES 10→150（60s），命中即止 [✅ 已完成] 冷启动即刻激活实机验证贴合（c1_clock_late） | — | 新增 AC-13 |
 | T-09 | 用户走查回环②：iconfile 位图资产根解析回退（icon_root 只有双 env 臂，裸 exec 缺 AUTO_OS_ROOT 全部位图空白；补 CWD/assets/icons → P-3 OS 根解析序家族回退） [✅ 已完成] 无 env 实机位图齐全 | — | 实机无 env 启动位图齐全 | AC-01 |
 | T-10 | 用户走查回环②：sliver 高亮/命中区扩到分隔线右侧全高（anchor col h-full） [✅ 已完成] r5 角落截图 | T-03 | AC-03 hover 截图复核 | AC-03 |
 | T-11 | 用户走查回环②：桌面空白右键菜单增「桌面小组件」checkbox 开关项（desktop.at + 宿主 __wm_dashboard 投影注入 desktop 面：apply 臂 + inject boot 臂） [✅ 已完成] 勾选/切换/面板回正三态实机过；连带 a2r 词汇门补臂（checked 任意表达式走 ast_expr_to_rust + 门表 checked/onclick 扩容） | — | 实机菜单开关面板截图 | 新增 AC-11 |
@@ -350,6 +352,13 @@ review 定稿回填。
   --no-fail-fast 39 红与 rev1/rev2 同集零新增；a2vue 17/17；词汇门绿。
   `stage: work | outcome: pass | code_commit: auto-os 5122410 +
   auto-lang 855f5da8b | task_ids: T-09..T-15 | next: review`。
+  **execution_done**。
+- 2026-09-20 走查回环⑤（plan rev4，T-18/T-19）：tab 头行退役（72px
+  占满一整行网格且空旷），分页触发改外框右上角紧凑 pill（main↔system
+  互换），face 卡满高 3 行格（232）；lazy 语义不变。MCP 验收 handler
+  app 枚举增 dashboard 槽。门：39 红同集零新增；定向 23/23 绿。
+  `stage: work | outcome: pass | code_commit: auto-os <rev4> +
+  auto-lang <rev4> | task_ids: T-18..T-19 | next: review`。
   **execution_done**。
 - 2026-09-20 走查回环④（T-16/T-17）：T-16 sliver 贴缘高亮占满右侧
   （px-2→pl-2）；T-17 012-clock 开窗自适应加固（fit 测量重试上限
