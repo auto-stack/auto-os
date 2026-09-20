@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 3
+current_step: 4
 total_steps: 10
 ---
 
@@ -510,11 +510,23 @@ auto-os`。
   命令 drain 幂等/渲染非空）；boot 时延度量行：**interpreted 25.7ms
   vs compiled 0.8ms（约 32×）**。字节级 parity 对拍入 T-08 验收。
   lang-036 @ 243bc5bd。
-- **T-04 [lang] B1 switcher + 通知**
+- **T-04 [lang] B1 switcher + 通知** [x]
   文件：R（推送泵/注入点）、SC（两面装配）、S（伪窗/召唤联动）。
   动作：§5.3；D6 键盘语义。
   验证：两面闭环单测 + e2e 腿 + parity。
   → AC-02。
+  [✅ 已完成 2026-09-20] D6 定案落地（宿主键盘截获 → ShellEvent 扩档
+  tag6-9 随快照 events 下行 → child dispatch 派发同名 Msg；指纹门
+  放行 = fp 变化 || events 非空）；两载体 interpreted_writes + 键序
+  单测；child 四面装配（OVERLAY role 追加档 + 声明序映射 + faces-map
+  懒装/预装 + 投影臂命令排水）；宿主七处分叉（in-proc 零变化 I2）+
+  可见性镜像位 + 层序全屏贴层 + attach overlay 伪窗（registry_id
+  归因 + 投影/渲染过滤）；thumbnail:// 零新 wire（既有臂直用）。
+  门：97/97 + 14/14 + shell-pack 4/4 + auto-man 312/312 +
+  desktop_protocol 183/184（imagesurface 在册红）+ auto check 0 错。
+  随注：分区预览自隐计时 outproc 失效（载体无 switcher_open 键）；
+  字节级金样对拍归 T-08。lang-036 @ 95c4ff066（rebase 后批次 A =
+  b777e6532 + 035-sync regen 提交）。
 - **T-05 [lang] B2 z 档与槽位**
   文件：`message.rs`（role 扩）、R（Stack 插层/命中带化）、S（伪窗）。
   动作：§5.4 T-05；D2 落地。
@@ -579,6 +591,18 @@ auto-os`。
   再生成保留[反映本提交生成器修复]）；②smoke-030/p030 e2e 腿后续
   重跑将默认吃到编译轨 child（行为预期变化，T-08 对拍面）；③专用
   shell exe（彻底摆脱 re-exec）维持 D4 注记另立。
+- 2026-09-20 /auto-plan:work T-04 执行记录（B1；035 merge 解锁后）：
+  前置同步 = lang-036 rebase master 899db807f（批次 A 落位 b777e6532）
+  + shell-pack regen（035 pack 变化 +21/-3 流入）+ os-036 ff 24aa01f
+  + 组内 auto-down 依赖 worktree 重建（并行清理误删——detached b422385）。
+  交付 = B1 全链（D6 事件位方案 + 两载体写集 + child 四面 + 宿主七处
+  分叉 + 伪窗 + 层序 + thumbnail 既有臂）。提交 95c4ff066（10 文件
+  +800/-81）。门见 T-04 行。p030 e2e 腿0 断言已放宽（2/4 伪窗——
+  smoke 重跑时生效）。`stage: work | PLAN-036 | rev 1 | outcome:
+  pass（B1）| code_commit: lang-036 95c4ff066 | task_ids: T-04 |
+  evidence: 上述门 | blockers: D1 face 材料用户确认（T-06 前置）+
+  D3 拓扑用户确认（T-07 前置）——D2 可按倾向 A 先行 | next: T-05
+  （D2 落地）→ T-06（D1 裁定后）`。
 
 ## 10. 待澄清事项
 
