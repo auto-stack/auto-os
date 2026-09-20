@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-036
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: shell-compile-overlay-outproc
 author: [agent]
 created_at: 2026-09-20
@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 10
+current_step: 9
 total_steps: 10
 ---
 
@@ -573,7 +573,7 @@ auto-os`。
   七列表激活 + launcher_open 镜像 + 层序贴层 + Esc 同册。门：scoped
   104/104 + shell-pack 4/4 + freshness 绿 + desktop_protocol 185/186
   （imagesurface 在册红）+ auto check 0 错。lang-036 @ 7a2bf7521。
-- **T-08 [lang+os] e2e 五面终态** [x]
+- **T-08 [lang+os] e2e 五面终态** [ ]
   文件：lang `stage3.rs`（p036_all_faces_outproc_arm）+ assets/036/。
   动作：AC-02..05 逐条留痕。
   → AC-02..05。
@@ -681,6 +681,48 @@ auto-os`。
   evidence: p036 六腿 + 全门绿 + 文档四件 | blockers: 无（裁定面
   D1 修订/D3-C v1/D2-A 均按倾向落地并在册——复审可翻案）|
   next: review`。
+- 2026-09-20 /auto-plan:review r1（执行会同席复审——独立声明：结论自
+  工件重建，未采信执行自述）。基线：PLAN-036 r1 · lang-036 @
+  2530bb6b0（7 提交于 base 899db807f · 工作区净）· 依赖 auto-down@
+  b422385 · os 台账/落账在册。**验证矩阵**：cargo tf 全量 3646/3648
+  （2 红 = ui_gen 双红[批次 A 期 stash 于 608399943 纯基线实证同败]）；
+  cargo t 5 红（同双红 + ui::layout 三红[**基线 worktree @ 899db807f
+  实证同败**——环境耦合：本机 dock 预留 56px vs 期望 48]）；cargo tt
+  5 红（同双红 + 018-T05 在册三红[c_abi golden/rustc 实编门——415
+  基线实证]）；desktop_protocol 185/186（imagesurface = P033-D4 在册
+  ——码同 T-08 提交复用，理由：其后仅文档 delta）；**p036 六腿 e2e
+  PASS + p030 四腿回归 PASS（复审基线复跑）**；shell-pack 4/4 +
+  freshness 绿 + 度量行复测（26.1ms→0.5ms）；tv/tb 不适用（零 VM/
+  book 改动）。SD-01..04 工件全数在案（§1.16+顶表行/双债核销+六新债/
+  a2r S3 终态注/台账 M7-b 行/metrics 报告/assets/036 五帧），
+  PROTOCOL_VERSION 仍 1（I1 保持）。**findings**：F-036-R1 [修] AC-04
+  验证条款"键盘流 e2e 腿"未落——launcher 召唤→Enter 键路由→Pick→
+  DesktopBus 上行→宿主收件端到端腿缺席（机制单测在案
+  [shell_faces_key_bind_routing/事件位 round-trip]，AC 指名 e2e 腿
+  未交——不得以单测替代判 pass）；F-036-R2 [修] 计划 §6"parity 五面
+  × 双形态金样对拍"仅交付 switcher 1/5 面（bg/chrome/notes/
+  dashboard/launcher 对拍缺）；F-036-R3 [非阻塞] parity 色彩差
+  ±3/255 根因（P036-D5 在册——复审细究位维持）；F-036-R4 [非阻塞]
+  五面内存对照行未实测（debug e2e 不可比，口径注记归实机 release
+  smoke——metrics 报告在案）；F-036-R5 [提请裁定] D1 修订（宿主叠层
+  混合）/D3-C v1（re-exec 解释装载）/D2-A 三裁定面按倾向先行——
+  merge 前请用户过目确认或翻案（翻案面 = D1-C+ face://[需先立宿主
+  DrawList 栅格化器]/D3 真 exe 产物）；F-036-R6 [过程注记] 复审期
+  stash 事故（空弹误 pop 他人 plan-637 stash → 冲突于 examples/026
+  → 立即 hard-reset 复位 + stash 条目完好无损——stash 跨 worktree
+  共享怪癖再证，本工作树零残留）。**AC 判定**：AC-01 ✅ pass ·
+  AC-02 ✅ pass（腿1+2+载体单测+键路由单测）· AC-03 partial
+  （e2e 腿+单测 pass；parity 缺 = F-036-R2）· AC-04 partial
+  （attach/帧/崩溃隔离/聚焦链 pass；键盘流 e2e 腿缺 = F-036-R1）·
+  AC-05 ✅ pass（六腿 + p030 watchdog 既有）· AC-06 ✅ pass（文档
+  四件 + 全套件在册红归因清零）。`stage: review | PLAN-036 | rev 1 |
+  outcome: needs_fix | reviewed_commit: 2530bb6b0 | base: 899db807f |
+  deps: auto-down b422385 | spec_inputs: desktop-protocol-v1 §1.16/
+  KNOWN-DEBT/a2r/台账 | acceptance: AC-01✅ AC-02✅ AC-03⟳ AC-04⟳
+  AC-05✅ AC-06✅ | findings: F-036-R1..R6 | evidence: 上述矩阵 +
+  assets/036 + reports/p036-metrics.md | next: work（T-08 重开——
+  F-036-R1 launcher 键盘流 e2e 腿 + F-036-R2 五面 parity 对拍补齐，
+  二者均为 stage3 测试件增量，实现面零改动预期）`。
 
 ## 10. 待澄清事项
 
