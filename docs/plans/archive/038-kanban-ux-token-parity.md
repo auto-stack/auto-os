@@ -3,7 +3,7 @@ plan_id: PLAN-038
 status: archived           # drafting → executing → execution_done → reviewed → archived
 completion_kind: delivered
 # review rev3.1 pass；merge 五 checkpoint delivered——auto-lang master 28c94a5d4
-# 见 §9 merge 收据（cleaned 见补记）
+# 见 §9 merge 收据（五 checkpoint 全闭环 delivered）
 
 feature_name: auto-kanban 普通看板 UX 重设计 —— VM/Vue 语义 token 单源收敛
 author: [zhaopuming, ZCode]
@@ -239,6 +239,7 @@ success/warning 定义以免误用，但模板 class **不再引用**）。
 **基线**：plan_revision=3；reviewed_commit=`5bd57bda20bc01618bff032a55d2bdf68831a714`（plan-038-dev tip 含 specs 拟稿）；impl=`42f621159`+`1ec133c7f`；auto-kanban Phase A=`90f0df87eb84346af701486cc216ec8cc2f8242a`；base_commit=`92355a5a3`；**master tip 会话内漂移** `5d5090e14` → `0226dc9ca`（PLAN-668）；divergence master+14 / plan-038-dev+3；auto-lang main 另有他会话脏文件（DEBTS.md、docs/design/*）。  
 **独立性限制**：同一实现会话复审；结论从制品复现。
 
+- `stage: merge | PLAN-038 | rev 3.1 | outcome=pass（五 checkpoint 全闭环 delivered） | cleaned=wt-guard 双查净（auto-lang worktree + auto-down 拷贝，均零 reparse point）→ worktree remove 成功 + branch plan-038-dev 删除（was 28c94a5d4=master tip）+ auto-down 纯拷贝移除（无 .git 非 worktree）+ 组目录 .wt/os-038 移除；worktree list/prune/branch 回执/磁盘四查零残留；他会话 worktree（lang-668/669/musk-080 等）未触碰`
 - `stage: merge | PLAN-038 | rev 3.1 | outcome=pass | delivery_commit=28c94a5d4 | checkpoints=prepared✓+landed✓+ledger_refreshed✓+archived✓（cleaned 随补记） | ledger_refreshed=auto-os .autoos/specs.json 外科插入 P038-1/2/3（designs 24→27）+ P038-r1（reviews 31→32，总 143→147），读回验证全 pass；commit af8bbae | archived=docs/plans/archive/038-kanban-ux-token-parity.md（git mv；status archived + completion_kind delivered；provenance=auto-lang 28c94a5d4 + auto-kanban 90f0df8 + auto-os 82ad55d/af8bbae）`
 - `stage: merge | PLAN-038 | rev 3.1 | outcome=pass(进行中) | reviewed_commit=5bd57bda2 | delivery_commit=28c94a5d4 | checkpoints=prepared✓+landed✓（ledger/archived/cleaned 随后补） | mapping=rebase onto 0226dc9ca：42f621159→75cf73bde / 1ec133c7f→10ee96a5d / 5bd57bda2→28c94a5d4；range-diff 3/3 全等（安全重写证明） | landed=auto-lang master 0226dc9ca→28c94a5d4 ff-only 零 merge commit（他会话脏文件 DEBTS.md/docs/design/* 保全）；auto-kanban main=90f0df8 既有 | 验证=worktree 复验 design_tokens 23 绿 + dual_face 2 绿（含 scaffold_extended_tokens_dual_face）+ plan593 7 绿（ui-iced 档）+ check auto-man/auto 绿；主检出 check -p auto-man 绿（真 auto-down 兄弟解析）；F-03 两红=master 基线预存（review 隔离复现在案，非本计划回归）`
 - `stage: merge | PLAN-038 | rev 3 | outcome=blocked | reviewed_commit=5bd57bda2 | delivery_commit=n/a（未 landed） | checkpoints=prepared only（规范增量冻结于计划+worktree 5bd57bda2；auto-kanban 90f0df8 已在 main） | evidence=会话沙箱拦截 `git rebase`/`git merge`（session bound auto-kanban；跨分支整合归 orchestrator） | blockers=需用户在 auto-lang 主检出执行 rebase+ff-only merge；auto-os specs/plan 落地同待人工 | next=用户执行 §10 unblock 命令后 resume merge`
@@ -270,7 +271,7 @@ success/warning 定义以免误用，但模板 class **不再引用**）。
 2. **完成列视觉**：Phase A 中性（muted）保留为 app 缺省；Phase B 后平台可安全用扩展色。可选 `.at` 恢复 `text-success`——非阻塞（F-05）。
 3. ~~Spec 发布~~ —— **已落地（merge）**：P038-1 随 auto-os merge commit 发布 `docs/specs/apps/kanban.md` SD-07；P038-2/3 随 auto-lang `28c94a5d4` 发布 `docs/specs/auto-lang/ui/overview.md` + `docs/specs/auto-man/project.md`。
 4. ~~[阻塞] git worktree add~~ —— **rev3 已解除**。
-5. **auto-down 组内依赖形态**：普通目录拷贝；merge 清理前可选替换正式 worktree。
+5. ~~auto-down 组内依赖形态~~ —— **已随组清理收口**：纯拷贝（无 .git，非 worktree；wt-guard 净）随 `.wt/os-038` 组目录一并移除；主检出兄弟 `D:/autostack/auto-down` 一直为真身，主检出构建从未依赖拷贝。
 6. ~~[F-01] Phase A 未 commit~~ —— **已修复**：auto-kanban main `90f0df8`（用户授权 repair）。
 7. ~~[F-02] 文档过时~~ —— **已修复**：README/board.at/SD-07 按 Phase B 事实改写。
 8. **[F-03 记录]** `cargo tf` 两红=`ui_gen::rust::tests::mouse_area_emits_events_and_logical_extent` + `test_autodown_panel_heading_codegen`；**master 与 worktree 隔离重跑同红** → 基线预存，非 PLAN-038 回归。design_tokens/plan593 专项绿。
