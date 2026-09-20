@@ -5,6 +5,11 @@ flood-fill of empty regions), right-click to flag mines, three difficulty
 levels (beginner 9×9 / intermediate 16×16 / expert 30×16), and a live timer
 with a remaining-mines counter.
 
+> **Demo track snapshot**: the teaching copy of this app lives in
+> `auto-lang/examples/ui/038-minesweeper/` (repatriated by PLAN-666,
+> 2026-09-20). The two tracks diverge from that snapshot — this repo is the
+> real-app track.
+
 **This is the first AutoUI example that runs on TWO backends from the same
 source** — `auto run` (vue) and `auto run --render vm`. All game logic is
 written in pure AutoLang, so it compiles to a Vue store composable (vue

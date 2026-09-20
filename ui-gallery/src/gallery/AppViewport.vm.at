@@ -19,20 +19,19 @@ use.web component Demo013Todo from "src/gallery/demos/013-todo.at"
 use.web component Demo014Weather from "src/gallery/demos/014-weather.at"
 use.web component Demo015Notes from "src/gallery/demos/015-notes.at"
 use.web component Demo016Calendar from "src/gallery/demos/016-calendar.at"
-use.web component Demo017Chat from "src/gallery/demos/017-chat.at"
 use.web component Demo018BookReader from "src/gallery/demos/018-book-reader.at"
 use.web component Demo019VideoApp from "src/gallery/demos/019-video-app.at"
 use.web component Demo020MusicPlayer from "src/gallery/demos/020-music-player.at"
 use.web component Demo021BlogViewer from "src/gallery/demos/021-blog-viewer.at"
 use.web component Demo022Kanban from "src/gallery/demos/022-kanban.at"
 use.web component Demo024Charts from "src/gallery/demos/024-charts.at"
+use.web component Demo025SysMonitor from "src/gallery/demos/025-sys-monitor.at"
 use.web component Demo026Database from "src/gallery/demos/026-database.at"
 use.web component Demo027FileManager from "src/gallery/demos/027-file-manager.at"
+use.web component Demo028Launcher from "src/gallery/demos/028-launcher.at"
 use.web component Demo029PhotoGallery from "src/gallery/demos/029-photo-gallery.at"
-use.web component Demo031ImageViewer from "src/gallery/demos/031-image-viewer.at"
 use.web component Demo031Paint from "src/gallery/demos/031-paint.at"
-use.web component Demo045StyleImport from "src/gallery/demos/045-style-import.at"
-use.web component Demo046TabsVariants from "src/gallery/demos/046-tabs-variants.at"
+use.web component Demo038Minesweeper from "src/gallery/demos/038-minesweeper.at"
 use.web component Demo047BpAdmin from "src/gallery/demos/047-bp-admin.at"
 
 widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
@@ -75,8 +74,6 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
                 Demo015Notes {}
             } else if .app == "016-calendar" {
                 Demo016Calendar {}
-            } else if .app == "017-chat" {
-                Demo017Chat {}
             } else if .app == "018-book-reader" {
                 Demo018BookReader {}
             } else if .app == "019-video-app" {
@@ -89,20 +86,20 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
                 Demo022Kanban {}
             } else if .app == "024-charts" {
                 Demo024Charts {}
+            } else if .app == "025-sys-monitor" {
+                Demo025SysMonitor {}
             } else if .app == "026-database" {
                 Demo026Database {}
             } else if .app == "027-file-manager" {
                 Demo027FileManager {}
+            } else if .app == "028-launcher" {
+                Demo028Launcher {}
             } else if .app == "029-photo-gallery" {
                 Demo029PhotoGallery {}
-            } else if .app == "031-image-viewer" {
-                Demo031ImageViewer {}
             } else if .app == "031-paint" {
                 Demo031Paint {}
-            } else if .app == "045-style-import" {
-                Demo045StyleImport {}
-            } else if .app == "046-tabs-variants" {
-                Demo046TabsVariants {}
+            } else if .app == "038-minesweeper" {
+                Demo038Minesweeper {}
             } else if .app == "047-bp-admin" {
                 Demo047BpAdmin {}
             } else {
