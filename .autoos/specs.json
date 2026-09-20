@@ -266,6 +266,18 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P036-1",
+          "title": "PLAN-036 变更摘要 — shell-compile-overlay-outproc（B 形态彻底化收官）",
+          "content": "M7-b 波次三批：①批次 A shell-lib 编译面轨（P030-D1 核销）——a2r 无窗组件库生成目标 generate_shell_pack_lib（五件→crates/shell-pack 入库 lib crate + SHELL_MANIFEST + mount_face 工厂 + ShellStateAccess 生成实现 + freshness 字节对拍门 + 真编译门清偿 a2r 七族缺口[button icon PUA/裸点条件下划线/.Variant 自消息派发/Eq-Neq 跨型降串三臂/单支 if-expr else/String += 分型/WorkspacePreview 键降串/contains Pattern] + truncate 真渲⑫[018 债清偿翻 Covered]）+ child 编译轨缺省（boot 面装载 25.7ms→0.8ms ≈32×；显式 AUTO_SHELL_PACK=解释双轨[027 D5 承袭；spawn 注入收窄仅显式]）；②批次 B1/B2/B3 overlay 四面 outproc（P030-D3 核销）——switcher/通知/dashboard 并壳 exe 五表面（surface_role::OVERLAY=3 置顶/DASHBOARD=4 中间 z 档[bg 上/窗下，命中带随几何动态更新]追加式）+ launcher 一面一 exe（--autodesk-launcher 独立进程 + AUTO_LAUNCHER_ENTRY 注册表源 env——D3-C 混合拓扑，崩溃不连坐）+ 快照载体全激活（Switcher/Notes/Dashboard/Launcher interpreted_writes + per-face 指纹门[放行=fp 变化||events 非空]）+ 键盘动词事件位（ShellEvent tag6-9 Advance/Back/Pick/Escape）+ D5 聚焦链 child 化（focus_first_input + 伪窗可聚焦 + VK→bind 路由臂[shell_key] + 修饰组合宿主域）；③五面终态 e2e p036_all_faces_outproc_arm 九腿全绿（五伪窗/五面帧/六面 parity 结构全等/launcher 键盘流 Enter→Pick→DesktopBus 上行/崩溃隔离）+ p030 回归。face 材料 D1 修订=宿主叠层混合（face:// 全下放记 P036-D1 债）。度量报告 docs/plans/reports/p036-metrics.md；资产 assets/036/ 六帧。",
+          "file": "auto-os/docs/plans/archive/036-shell-compile-overlay-outproc.md",
+          "related": [
+            "PLAN-036"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -629,6 +641,18 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P036-1",
+          "title": "SD-01/04 — 协议 §1.16 v1.16 增量（编译面轨 + overlay 四面 outproc）+ a2r S3 终态注",
+          "content": "desktop-protocol-v1.md §1.16（PROTOCOL_VERSION 仍 1 全追加式）：shell-lib 编译面轨（shell-pack lib crate + mount_face + 双轨开关语义）+ overlay 四面 outproc 语义（D3-C 混合拓扑：壳 exe 五表面[OVERLAY/DASHBOARD role 追加档] + launcher 独立 exe[shell_face::LAUNCHER=6]）+ 快照载体全激活 + 键盘动词事件位（tag6-9 + 指纹门放行规则）+ D5 聚焦链（focus_first_input/伪窗可聚焦/bind 路由臂/热键宿主域）+ truncate 真渲⑫。顶表 v1.16 行。desktop-shell-a2r.md S3 终态注记（027 被裁件以 B 形态兑现——生成目标落地收官）。canonical 指针：协议 §1.16/顶表 + a2r §6-S3。",
+          "file": "auto-lang/docs/design/autoui/desktop-protocol-v1.md",
+          "related": [
+            "PLAN-036"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -872,6 +896,18 @@
           "file": "auto-os/docs/specs/shell/dashboard.md",
           "related": [
             "PLAN-035"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P036-1",
+          "title": "SD-02/03 — 台账 M7-b 交付行 + KNOWN-DEBT 处置",
+          "content": "autos-desktop-program.md M7-b 交付行（PLAN-036，2026-09-20）：shell-lib 生成模式落地 + child 编译轨缺省（25.7→0.8ms）+ overlay 四面全 outproc（P030-D1/D3 双债核销 ✅）+ p036 九腿 e2e 验收行。KNOWN-DEBT：P030-D1 ✅ 核销 / P030-D3 ✅ 核销 / P036-D1..D6 新债入册（face:// 全下放[宿主 DrawList 栅格化器前置]/编译轨 launcher exe/launcher 看门兵/key_message 编译臂/跨进程色彩解析差[parity 发现]/launcher 自隐镜像同步）。计划归档路径 docs/plans/archive/036-shell-compile-overlay-outproc.md。",
+          "file": "auto-os/docs/plans/autos-desktop-program.md",
+          "related": [
+            "PLAN-036"
           ],
           "status": "published",
           "created": "2026-09-20",
@@ -1161,6 +1197,18 @@
           "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/",
           "related": [
             "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P036-1",
+          "title": "PLAN-036 测试语料 — 载体/路由/懒装/p036 e2e/parity/shell-pack",
+          "content": "p036 套件：shell_projection 四载体键序单测（overlay_snapshots_writes_fingerprint_and_event_tags/dashboard_snapshot_writes_and_fingerprint/launcher_snapshot_writes_and_fingerprint——键集与召唤动词内联写集逐一对应）+ shell_client 懒装/键路由单测（shell_faces_overlay_lazy_mount_apply/dashboard_lazy_mount_apply/shell_faces_key_bind_routing[VK→bind 派发+修饰域不消费]）+ stage3 p036_all_faces_outproc_arm 九腿（AUTO_DESKTOP_E2E 门：五伪窗/五面帧[overlay 懒装]/leg2+leg3.6 七面 parity[本地装配同款快照重建 vs child 帧结构全等——色彩 token 豁免 P036-D5]/launcher exe attach/leg3.7 键盘流[Enter→Pick→DesktopBus 上行→inbox LaunchApp+launcher-face 归因]/崩溃隔离）+ p030 四腿回归（2/4/5 伪窗断言放宽兼容）+ shell-pack 4/4 + freshness 字节对拍 + boot 时延度量行。资产 assets/036/ 六帧 + reports/p036-metrics.md。",
+          "file": "auto-lang/crates/auto-lang/src/ui/desktop_protocol/stage3.rs",
+          "related": [
+            "PLAN-036"
           ],
           "status": "published",
           "created": "2026-09-20",
@@ -1479,6 +1527,18 @@
           "file": "auto-os/docs/plans/archive/035-desktop-ux-rev3.md",
           "related": [
             "PLAN-035"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P036-r1",
+          "title": "PLAN-036 shell-compile-overlay-outproc 复审与合并收据",
+          "content": "执行会同席复审（独立声明+工件重建）：r1 needs_fix（AC-03/04 partial——F-036-R1 键盘流 e2e 腿缺/R2 parity 1/5 面；矩阵 tf 3646/3648+t 5 红+t t 5 红全数在册/基线实证零回归@2530bb6b0）→ work r1-fix（腿3.6 六面 parity + 腿3.7 键盘流，测试件增量 a4f6bdbe8）→ r2 pass（AC-01..06 全 pass；九腿+全门复验）。合并：master 双前移（667/668 落地）两轮 rebase 全等（range-diff = 8/8，链 a4f6bdbe8→fec7198b5→50e3b8bb4）+ ff-only 落地 auto-lang master=50e3b8bb4；主检出集成门 e2e PASS + cargo t 37 红与 merge 前基线 f9681dcf4 全等（零新增——668 会话在册归因中）；裁定面三项（D1 修订/D3-C v1/D2-A）经 merge 入口用户确认。os 侧台账/落账随主检出提交。",
+          "file": "auto-os/docs/plans/archive/036-shell-compile-overlay-outproc.md",
+          "related": [
+            "PLAN-036"
           ],
           "status": "published",
           "created": "2026-09-20",
