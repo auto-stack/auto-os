@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-034
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-maturity
 author: [agent]
 created_at: 2026-09-20
@@ -24,7 +24,7 @@ affects:
   - auto-lang/docs/design/autoui/desktop-protocol-v1.md                  # §1.15 + 顶表 v1.15
   - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md                         # P028-D1/D3、P-RQ-PIX 处置
   - auto-os/docs/plans/autos-desktop-program.md                          # M7 副线债行更新
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -261,6 +261,33 @@ auto-os（台账）。无预算/自动续跑约束声明。
 
 定案记录追加 `### 5.1 定案记录`，作为 T-02..T-06 依据。
 
+### 5.1 定案记录（T-01 产物，2026-09-20；lang worktree = .wt/lang-034/auto-lang@plan-034-dev，base master 4cbc810eb）
+
+**核验法**：本人精读协议核心六文件（shm/endpoint/client_runtime/broker_surface/rqhost/message/mod）+ 三个只读探索代理（内存仪器/五 kind 消费面/债账锚点）。下列 file:line 均为 worktree 实证。
+
+- **D1 release 复测口径（定案）**：
+  - 产出：worktree 内 `cargo build --release -p auto --bin auto`（`crates/auto` default 特性已含 ui-iced——Cargo.toml:26，无需 --features；仓内先例 aavm_native_gen_check.sh:32 / examples/ui/031 perf_release.ps1:80）。不新增脚本文件，命令行留痕于本记录与 reports。
+  - e2e 定位器规避：`e2e_exe::locate_with_stale_guard`（mod.rs:136-167，`#[cfg(all(test, ui-iced))]` 测试门控模块）探测序 `["debug","release"]`（:152）且无任何 release env（现存仅 AUTO_FRESH_EXE=重建 debug）。**定案：加 env `AUTO_E2E_PROFILE`**（值 release/debug，缺省不变维持 debug 优先——零行为差，四个调用方 stage3.rs:2811/4857/5328、remote.rs:606 零改动）；desktop.ps1:45-53 release 优先先例同型。
+  - 采样：`sample_process_memory`（stage3.rs:202，K32 双字段 working_set/private）直接复用；落盘沿 `AUTO_034_ASSETS=1` → `docs/plans/reports/assets/034/` 门（p031 :5001-5014 / p033 :5488-5504 同型）。
+- **D2 归因矩阵（定案）**：12 格 = {debug,release} × {wgpu,tiny-skia} × {1,2,5 窗}；数据行格式沿 inventory.txt 同型 `{build} {backend} windows={n}: rqhost pid=… working_set=…KB private=…KB`。观测法：build 对隔离嫌疑①（debug 构建本身）；backend 对隔离②（wgpu 设备/表面驻留）——**daemon spawn Command 加 `.env("ICED_BACKEND","tiny-skia")` 即可，零代码**（fallback.rs:276-278 env 原生；tiny-skia 认 "tiny-skia"/"tiny_skia"；rqhost 走 iced::daemon 标准链 rqhost.rs:999-1002 无手动 renderer 构造，实证可切）；窗边际斜率隔离②'（每窗 surface）；残余归③fontdb/④缓存（不够分离时加 handle_cache 清零对照腿）。判定序：release×wgpu×1 窗先行单测 → 达标即结论 + D5 优化转可选；不达标 → 全矩阵 + D5 执行。注意：tiny-skia 腿 wgpu-only primitive 降级为 warn 不渲（fallback.rs:437-459；mpv widget.rs:236 硬 wgpu）——矩阵载体选 003/001 无 mpv 面，零撞。
+- **D3 位图通道（定案，核心）**：
+  - **段策略 = 候选 A 专用第二段**：段名 `autodesk-shm-{pid}-{surface}-bm`，宿主侧 `SharedFrameBuffer::create`（与主段同向建段，rqhost.rs:386-387 同则）；**槽数 2、slot_size = ceil(w)×ceil(h)×16 + 4**（**执行期修正**（043 冒烟实测超档：canvas coords 560×360 in 表面 480×320 → 806400 > 614404 拒收）：表面档 ×4 字节余量 = 2× 线性——DPI 缩放与适度超面画布；commit-on-touch 使未写页不计驻留，三宿主 rqhost/session/host 同则；超档上传 = 观测弃置，v1 显式边界维持）。
+  - **协商面 = BufferAlloc 消息级尾追**（先例 = shm 字段本体 message.rs:546 + Welcome frame_mode :512-517）：新尾追字段 `bm: Option<BitmapBuffer{shm,slots,slot_size}>`——**None 不写字节**（既有 golden 零漂移）；decode 侧 `remaining()>0` 条件读（信封 decode 强制 finish，message.rs:1309——尾追必须在变体 decode 内消化，Welcome 同律）。
+  - **wire 变体**：计划简称"tag 10（BitmapReady/Ack）"实占两 tag——**BitmapReady = tag 10**（app→host：`{wid, id: String, w, h, stride, slot, len}`；wid 路由与 tag 4/7/8 同律——endpoint surface_for(wid) endpoint.rs:478-484，宿主自解 surface；len 显式镜像 FrameReadyShared）+ **BitmapAck = tag 11**（host→app：`{wid, slot}`——Ack 归还槽，FrameAck :651-656 同纪律）。下一可用 tag 此后 = 12。
+  - **槽纪律镜像 FrameReadyShared**：app 单写者（选非前台槽 → write_slot `[u32 len][RGBA]` → BitmapReady → 宿主 read_slot → Handle::from_rgba → handle_cache 翻新 → BitmapAck 归还）；app 复用槽必在 Ack 后 = 宿主已读完旧载荷，**同 id 覆盖的无版本号时序由 Ack 纪律钉死**。
+  - **id 空间**：id 为 app 侧字符串；`bitmap://{id}` 直拼 src。跨 app 撞名由 **app 侧唯一化**消化——上传 API 与组件共用助手 `bitmap_src(局部 id)` 生成 `bitmap://{pid}-{局部 id}`（进程内单源）；宿主在 ReclaimWindow/断连清该 client 的 bitmap 键（防 pid 复用串扰 + 段随 shm.remove 同步释放）。
+  - **上传 API（接口最小化）**：`FrameSource::drain_bitmap_uploads(&mut self) -> Vec<BitmapUpload{id,w,h,stride,rgba}>`（缺省空——**033 drain_desktop_commands 同型缝** endpoint.rs:97-103）+ `Component::drain_bitmap_uploads`（缺省空，canvas 组件实现）；泵排水点 = 输入派发后 + 周期拍后（drain_desktop_bus 同点位 client_runtime.rs:555-572）；泵持位图段 + 槽位簿记，超槽数在途 = 丢本次 + 观测行（**高频流背压 v1 not-yet 随注**——消费面 canvas 快照级低频）。
+  - **宿主消费**：endpoint `(Active, BitmapReady)` → `HostAction::BitmapReady{…}`（endpoint.rs:487 on_message 加臂）；消费面四处（rqhost apply_actions / session.rs broker_apply_actions :4069 同段 / host.rs :191 / stage3 测试臂）共用助手：读槽 → `Handle::from_rgba(w,h,rgba)` → `handle_cache.insert("bitmap://{id}", Some)` → 回 BitmapAck。
+  - **resolve 前缀臂**（broker_surface.rs:104-155 分派序）：thumbnail/workspace/lucide 同级加 `bitmap://` 臂——命中 handle_cache 直出；**miss 不落负缓存**（位图可能后于首帧到达，负缓存会 pin 死后到位图——与本地族语义的差异点）+ 观测去重行 + None 占位。paint 臂（:444-462）零改动。
+- **D4 像素原生族裁定（修正版草案，提请用户确认）**——T-01 核验修正两处计划草案事实：①**imagesurface"零消费者"不成立**（031-image-viewer[P-RQ-PIX 量化门载体]+027-file-manager 真实在用，`image_surface` 拼写；a2r 臂 ui_gen/rust.rs:3191 + inproc 渲染 renderer.rs:5981/image_surface.rs 齐全；queue 侧显式 not-yet coverage.rs:171/192-193 + P033-D4 element 表脱钩在册红）→ "裁缩"前提失效；②canvas 消费者 = 043+049 两例（049-canvas-graph PLAN-661 图元三表族样板，草案遗漏）；另 video `.at` 消费实为 019/020/030 三例（vue 主轨，native 样板唯一 = 030）、P032-D3 锚实为 KNOWN-DEBT:2284、terminal 撞面叙事挂 P-RQ-PIX ④（非 P032-D3——其名单只有 018 truncate/041 codeeditor）。**修正版五 kind 处置**：
+  - video = inproc/独立窗专属（mpv wgpu-only widget.rs:236/403 + §4.1 SW 裁定 030 文档:98-112 + 24fps shm 流量级不经济）；
+  - terminal = M7-c 撞面立项（a2r 直构臂 ui_gen/rust.rs:2669-2823 / inproc 完整 renderer.rs:4419 / queue 无臂——撞面结构；位图快照 + 命中坐标回传路径预留）；
+  - canvas = 位图快照过线（CanvasPainter::draw renderer.rs:7661-7709 现成注入点，scene 结构化纯数据双表契约 043 app.at:7-10；样板验证载体 = 043，049 随注同律）；
+  - code_editor = not-yet 家族维持（041 唯一消费；P032-D3 :2284 在册）；
+  - **imagesurface = queue 臂 not-yet 家族维持 + M7-c 撞面裁定**（替代原"裁缩"：显示面归一到 image src 引用形态的迁移与交互回调采集面归 M7-c 撞面批裁定；P033-D4 element 表脱钩归 PLAN-656 线收口——显式边界非静默）。
+- **D5 优化项取舍（定案）**：序 = release 复测先行（可能零优化达标）；不达标执行清单按嫌疑分摊序：④handle_cache LRU（**bitmap 键豁免淘汰**——app 不重传则淘汰即永久占位；容量定标依矩阵数据）→ ⑤canvas Cache 局部化（15ms tick 全量几何重建 broker_surface.rs:330-355 + :10-11 在册遗留）→ ②每窗 surface 归因处置；自观测（rq_update 周期采样——**轻量观测行形态**，不接 mem_guard 全套冻结语义：daemon 是共享宿主，冻结语义不适用）无论如何落一行（达标 = 观测面 only）。
+- **D6 TS 面（定案）**：messages.ts Frame 通道现仅 decode tag 4/9（:199-224），BufferAlloc 不经 TS decode（host→app 方向不过远程端）——**义务收窄为 tag 10 decode 分支**（返回 typed 桩对象，消费面忽略；防 unknown-tag throw 破坏 WS 会话）+ 占位渲染维持（render.ts image 臂零改动）+ golden 新帧（tag 10 编码样张双侧对拍）。tag 11（BitmapAck）同批加分支（host→app 方向同理防线下）。
+
 ### 5.2 内存臂（T-02/T-03）
 
 - **T-02 release 复测 + 归因矩阵**：release 产出 + p034 内存度量腿
@@ -343,7 +370,7 @@ T-07 → T-08。lang worktree `D:/autostack/.wt/lang-034/auto-lang`；os
 `D:/autostack/.wt/os-034/auto-os`。**无硬前置**（033 已归档；可与
 M7-b/M7-c① 并行——文件面错开）。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** [✅ 已完成 2026-09-20]
   文件：`rqhost.rs`、`broker_surface.rs`、`message.rs`、`shm.rs`/
   `endpoint.rs`、`stage3.rs`（仪器）、iced fallback/`ICED_BACKEND`
   语义、043/030-video-player/auto-term 消费面（读）+ §5.1（写面）。
@@ -352,46 +379,108 @@ M7-b/M7-c① 并行——文件面错开）。
   确认。
   验证：定案完备；D4 获用户确认。
   → 全 AC 前置。新路径：定案产物。
-- **T-02 [lang] release 复测 + 归因矩阵**
+  证据：定案记录落 §5.1（本人精读六核心文件 + 三探索代理全量核验）；
+  两处草案事实修正（imagesurface 零消费者不成立→031/027 在用、
+  canvas 消费 = 043+049）；D4 修正版经用户确认采纳（2026-09-20
+  会话 AskUserQuestion 实录"采纳修正版（推荐）"）。
+- **T-02 [lang] release 复测 + 归因矩阵** [✅ 已完成 2026-09-20]
   文件：release 产出脚本/文档行 + e2e 定位器规避 + `stage3.rs`
   （p034 度量腿）+ reports/ 数据文件。
   动作：§5.2 T-02；达标判定（dual-exit）。
   验证：矩阵数据行 + 结论句落盘。
   → AC-01/02。
-- **T-03 [lang] 优化项（门后按需）**
+  证据：13 格矩阵（default+12）落 assets/034/memory-matrix.txt——
+  wgpu 驻留 ≈223MB 大头（234580 vs 11236KB）；每窗 wgpu ≈42MB vs
+  tiny-skia ≈3.3MB；AUTO_E2E_PROFILE 定位器规避落地（mod.rs）；
+  release 产出 = worktree cargo build --release（命令行留痕）。
+- **T-03 [lang] 优化项（门后按需）** [✅ 已完成 2026-09-20——数据驱动裁定]
   文件：`broker_surface.rs`（LRU/Cache）、`rqhost.rs`（自观测）。
   动作：§5.2 T-03；依 T-02 数据取舍。
   验证：复测闭环数据行。
   → AC-01。
-- **T-04 [lang] 位图通道 wire 与段**
+  证据：矩阵数据指认 wgpu 驻留为绝对大头（缓存/fontdb 微小——LRU/Cache
+  零收益）→ 执行项 = **daemon 缺省切 tiny-skia**（run_daemon 缺省
+  ICED_BACKEND，显式 env 胜出；合法性 = D4 video 独立窗专属裁定）+ 
+  自观测面（rq_update 300 拍节流内存行）；复测 release×default×1窗
+  **11260KB ≤ 102400KB 达标**（余量 10×）。LRU/Cache 转可选留痕
+  （数据不支持执行）。
+- **T-04 [lang] 位图通道 wire 与段** [✅ 已完成 2026-09-20]
   文件：`message.rs`（tag 10 + 依 D3 的段声明面）、`shm.rs`/
   `endpoint.rs`（槽生命周期）、TS `messages.ts`/`fixtures` + Rust
   ts_fixtures。
   动作：§5.3 T-04。
   验证：round-trip/golden/段生命周期单测绿。
   → AC-03。
-- **T-05 [lang] 两端 API 与消费**
+  证据：tag 10/11 + BufferAlloc.bm 尾追（message.rs）+ 尾追向后兼容
+  测试（bm=None 与旧线字节恒等）+ TS decode 桩 + BITMAP_READY_HEX
+  双侧对拍（remote.rs ts_fixtures ↔ codec.test.ts）+ TS 29/29 绿 +
+  Rust p034 全绿；段生命周期随 T-05 三宿主落地（commit 727007e9c）。
+- **T-05 [lang] 两端 API 与消费**（核心已落 2026-09-20，样板腿随 T-07）
   文件：`native_projector.rs`（上传 API）、`broker_surface.rs`
   （前缀臂 + 缓存键）、合成生产者测试组件。
   动作：§5.3 T-05；canvas 快照样板（依 D4）。
   验证：全链单测 + 进程内装配端到端。
   → AC-03/04。
-- **T-06 [lang] 裁定入册**
+  证据：上传 API（FrameSource/Component drain_bitmap_uploads +
+  produce_bitmap）+ 三宿主 BitmapReady 臂（rqhost/session/host）+
+  resolve bitmap:// 前缀臂 + 进程内端到端（p034_bitmap_channel_
+  inproc_roundtrip：上传→缓存→resolve→重传翻新）+ canvas 臂
+  （tiny_skia 栅格化孪生 + coverage 入册 + p034_canvas_snapshot_arm
+  单测）全绿（commit 727007e9c，17 文件 +1471）；043 真进程 -q 冒烟
+  归 T-07 e2e 腿。
+- **T-06 [lang] 裁定入册** [✅ 已完成 2026-09-20]
   文件：协议 §1.15 草案、台账/债账条目。
   动作：§5.4 T-06（D4 用户确认后）。
   验证：文档交叉引用。
   → AC-04/05。
+  证据：§1.15 v1.15 全文（位图通道语义 + 五 kind 裁定表 + 门判定回填
+  11260KB 达标）+ 顶表 v1.15 行；KNOWN-DEBT：P028-D1 核销 / P028-D3
+  边界更新 / P-RQ-PIX ③④✅ / P034-D1..D3 新债；os 台账 PLAN-034 交付
+  行 + 副线债行更新（三 pending → 两✅+门判定指针）。
 - **T-07 [lang+os] e2e**
   文件：lang `stage3.rs`（p034_rqhost_maturity_arm）+ assets/034/。
   动作：AC-01..04 逐条留痕。
   → AC-01/02/03/04。
-- **T-08 [lang+os] 文档与台账收口**
+  证据：p034_rqhost_maturity_arm canvas 样板腿绿（043 -q：覆盖门放行
+  + 开窗 + 首帧 + bitmap 观测行 + 零弃置）；p034_memory_matrix_leg
+  矩阵腿绿（门达标行）；assets/034/ 四件（memory-matrix.txt /
+  canvas-arm.txt / canvas-child-stderr.log / daemon-stderr.log）；
+  截图腿沿 P031-R2 改道先例（ToDesk 覆盖层环境事实——观测行 + stderr
+  即环境无关留痕）。
+- **T-08 [lang+os] 文档与台账收口** [✅ 已完成 2026-09-20]
   文件：lang `desktop-protocol-v1.md`（§1.15 + 顶表）+ KNOWN-DEBT
   处置；os 台账行 + 互链。
   动作：SD-01..03 落笔。
   → AC-05。
+  证据：SD-01/03 见 T-06；SD-02 os 台账（main 提交）；回归门：
+  ①scoped（desktop_protocol/session/stage3）= 分支 44 红 ⊆ master
+  基线 44 红（**红集差空**——detached 4cbc810eb 全量对照实证；红族 =
+  VmBridge 018 并行族 + covered_elements_within_target_set 在册）；
+  ②cargo t 全量日常档 = 红仅 P028-D4 在册族（p053 worktree 特有，
+  债账 :2341 明文）；③TS vitest 29/29；④os smoke-034 六腿全过
+  （生产 well-known daemon + 043 样板 + 自观测行——debug 双窗
+  private=17584KB）；⑤auto-man rust_ui（收据见下）。
 
 ## 9. 复审记录
+
+- 2026-09-20 /auto-plan:work 全量收口：`stage: work`，PLAN-034 rev 1，
+  T-01..T-08 全闭环。`outcome: pass`（AC-01 内存门达标 11260KB≤
+  102400KB[缺省软光栅档，dual-exit 走"优化执行至达标"支]；AC-02 13 格
+  矩阵 + 四嫌疑分摊结论[wgpu≈223MB 大头]；AC-03 位图全链[codec/golden/
+  TS/进程内端到端/043 真进程]；AC-04 五 kind 裁定入册[用户确认修正版]
+  + canvas 样板；AC-05 §1.15+顶表+P028-D1 核销+台账；AC-06 回归门
+  [红集差空对照 + 在册红归因]）。`code_commit`: lang plan-034-dev
+  727007e9c/15619a910/夹具修复/os plan-034-dev smoke 件；`task_ids`:
+  T-01..T-08；`evidence`: §5.1 定案记录 + assets/034/ 四件 + 各任务
+  证据行；`blockers`: 无。`next`: review（/auto-plan:review）。
+  环境注记：worktree 组 lang-034（+auto-down 只读依赖）+ os-034；
+  os 主检出他方 WIP（ui-gallery demo 文件）未触碰。
+
+- 2026-09-20 /auto-plan:work T-01：`stage: work`，PLAN-034 rev 1。
+  `outcome: pass`（D1–D6 全定案于 §5.1 定案记录，file:line 证据在案；
+  两处草案事实修正防错误裁定——imagesurface 消费现实、canvas 双消费）。
+  `next: T-02`（release 复测 + 归因矩阵）。D4 已获用户确认（采纳修正版）。
+  blockers: 无。
 
 - 2026-09-20 /auto-plan:new 起草交接：`stage: new`，PLAN-034 rev 1。
   `outcome: pass`（合同完整：314MB 口径与采样基建、debug 优先序规避
@@ -402,6 +491,12 @@ M7-b/M7-c① 并行——文件面错开）。
   为核心。
 
 ## 10. 待澄清事项
+
+（T-01 全部定案闭环：①D3 段策略 = 专用第二段 + BufferAlloc 尾追
+[§5.1 定案记录，执行期槽档修正一处]；②D4 五 kind 裁定 = 用户确认
+修正版；③D1 = env 覆盖（AUTO_E2E_PROFILE）+ 命令行留痕；④D5 =
+release 先行 → 数据驱动裁 daemon 缺省 tiny-skia。原悬置四项原文
+如下存档。）
 
 - **①（T-01 D3）** 位图段策略：专用第二段（推荐——与 16KiB
   Commands 档解耦）vs BufferAlloc 尾追 `bm_shm`；失效/覆盖语义
