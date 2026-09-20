@@ -401,8 +401,13 @@ review 定稿回填。
   pin 五件 hash-lock 相等。**ledger_refreshed**：.autoos/specs.json
   外科插入 designs P035-1 + reviews P035-r1（回读校验过）。**archived**：
   本件 git mv docs/plans/archive/035-desktop-ux-rev3.md + status
-  archived + completion_kind: delivered。**cleaned**：wt-guard 三检 +
-  三 worktree/三分支移除（见归档后补记）。completion_kind: delivered。
+  archived + completion_kind: delivered。**cleaned** ✅：wt-guard 三检全净（auto-os/auto-lang/auto-down 无
+  reparse point）+ 三 worktree 移除 + 三分支删除（plan-035-dev
+  84ae47f / auto-os-035-dev 015661be8×2 仓）+ 组目录 .wt/os-035 双移除
+  + prune 零残留。old→new 重放映射（range-diff 全 "=" 等价）：
+  1f3e735→40489d5 / 5122410→218ff52 / a57332f→d5c6570 / b7993bc→
+  b2dd581 / c1e54cc→5f6085d / SD-02→84ae47f；base 325f1ff 内容随
+  ff-only 树等同主检出。completion_kind: delivered。
 - 2026-09-20 review：/auto-plan:review 复审 pass（同会话复审声明：结论
   从工件重建——重跑门禁/逐 AC 对取证/基线对拍，不依赖执行摘要）。
   `stage: review | plan_id: PLAN-035 | plan_revision: 4 |
