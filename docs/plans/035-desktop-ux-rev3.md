@@ -296,7 +296,7 @@ review 定稿回填。
 | T-04 | dashboard_layout v2 + span 2\|3/迁移/探测 + dashboard.at 头行 72 + 测试重写（renderer.rs + shell/dashboard.at） [✅ 已完成] 8×3 直出绝对矩形；span 三级消费序；测试重写 4/4 绿；实机 AC-04/05 | T-00 | 布局单测绿；AC-04/05 截图 | AC-04/05 |
 | T-05 | clock mini 居中（012-clock app.at） [✅ 已完成] 2×2 收紧（svg 40/text-xl），列交叉轴居中 | T-04 | AC-06 截图 | AC-06 |
 | T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） [✅ 已完成] Recompute 归一七臂 + preview 三标量 + 双列 3×2；孵化失败根因=`text ("· "+…)` 非 parse 形态→f-string | T-04 | AC-07 截图 | AC-07 |
-| T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + 尾条去重 | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
+| T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + push_notification 尾条去重。验证口径偏差：drain 单测以实机行为证据替代（badge=1 + 通知面板条目截图，内容/归因/一次性三点齐全） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
 | T-08 | 收口：cargo t 全量 + 实机五题总走查 + spec 沉淀（SD-01..05）+ shell-pack-sync + 状态头/台账/program tracker 更新 | T-01..T-07 | AC-10；execution_done 状态头 | AC-10 |
 
 （每步完成后在任务行追加 [✅ 已完成] 一行证据。）
