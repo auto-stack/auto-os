@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-035
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（rev4 回环收口 2026-09-20）
+status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-20 review pass）
 feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
@@ -392,6 +392,22 @@ review 定稿回填。
 - 2026-09-20 走查回环⑤续（T-20）：sliver tooltip 改坐标锚 popover——
   锚定形态「锚上点击 dismiss+捕获」吞点击 = 点两下根因；坐标锚外点
   dismiss 且放行基础树，单击直达。AC-14（单击切换）实机验证。
+- 2026-09-20 review：/auto-plan:review 复审 pass（同会话复审声明：结论
+  从工件重建——重跑门禁/逐 AC 对取证/基线对拍，不依赖执行摘要）。
+  `stage: review | plan_id: PLAN-035 | plan_revision: 4 |
+  outcome: pass | reviewed_commit: auto-os c1e54cc (plan-035-dev) +
+  auto-lang 3070c460e (auto-os-035-dev，含金样复审补提交) |
+  base_commit: auto-os 4ec4f88 + auto-lang 4aadc1f57 |
+  dependency_revisions: auto-down auto-os-035-dev (d1a83b6) |
+  spec_inputs: dashboard.md / showdesk-wallpaper.md /
+  showdesk-icons.md（SD-01..05，复审期修正 SD-02 探测措辞对齐实现） |
+  acceptance_results: AC-01..AC-14 全 pass（AC-10=门 39 红全数基线/
+  在册归因零新增 + 定向 7/7；AC-14=机制与渲染验证，物理单击留用户
+  终验）| findings: 零阻断；非阻断注记 ①MCP schema 文案未列
+  dashboard（功能已通）②native dock MinSize 拒收 toast 为既有机制 |
+  evidence: docs/plans/evidence/p035/ + tmp/p035/（u/t20/t14b 系列
+  截图）+ review gate 5275 跑 38 红=基线同集 | next: merge`。计划
+  状态 → **reviewed**。
 
 ## 10. 待澄清事项
 
