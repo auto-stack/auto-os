@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-034
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: rqhost-maturity
 author: [agent]
 created_at: 2026-09-20
@@ -462,6 +462,38 @@ M7-b/M7-c① 并行——文件面错开）。
   private=17584KB）；⑤auto-man rust_ui（收据见下）。
 
 ## 9. 复审记录
+
+- 2026-09-20 /auto-plan:review r1：`stage: review | PLAN-034 | rev 1 | pass |
+  b43d6ca53 | 4cbc810eb | auto-down@84c9897（只读）| 协议文档@tip
+  120bcdfa03、KNOWN-DEBT@tip 00132f91（冻结哈希）| AC-01..06 全 pass
+  | findings F-034-R1..R4（均非阻塞）| 证据见下 | next: merge`。
+  **独立性声明**：实施会话内复审——结论自工件重建（diff/测试重跑/
+  文档锚点），不采信执行期叙述。
+  - **AC 复验**（全部于 tip b43d6ca53 重跑）：①AC-01 门达标
+  assets/034/memory-matrix.txt（release×default 11260KB≤102400KB——
+  T-03 缺省软光栅，dual-exit"优化执行至达标"支 + D4 video 裁定授权，
+  留痕链 定案/§1.15/commit 完整；app 6460KB）②AC-02 13 格 + 分摊
+  结论句（wgpu≈223MB 大头/每窗 42MB vs 3.3MB）③AC-03 p034 套件
+  11/11 绿（wire/尾追兼容 golden 零漂移/TS 对拍/前缀臂/进程内端到端/
+  canvas 臂/矩阵腿/成熟腿）+ TS vitest 29/29 + PROTOCOL_VERSION=1
+  实核 ④AC-04 §1.15 五 kind 表 + D4 用户确认记录 + canvas 样板腿 +
+  smoke ⑤AC-05 §1.15/顶表/P028-D1 核销/P028-D3 边界/P-RQ-PIX ③④/
+  台账行锚点全中 ⑥AC-06 回归门：scoped 红集差空（分支 44=detached
+  master 基线 44，VmBridge 018 并行族+covered_elements 在册）；cargo t
+  红=P028-D4 族；cargo tf 红=mouse_area/autodown 在册族（2551/2553）；
+  rust_ui 25/25；smoke-034 六腿。
+  - **findings**：F-034-R1（low 债）§6"段释放/键逐出"无专断言（行为
+  已实现三宿主在案；建议补测或随 M7-c 批）；F-034-R2（low）
+  AUTO_E2E_PROFILE 无单测（4 行门控助手，矩阵/成熟腿间接覆盖）；
+  F-034-R3（观察）位图入缓存后重绘依赖 15ms Tick 周期重绘（最坏一帧
+  占位延迟，非正确性）；F-034-R4（注记）daemon 缺省后端切换为产品级
+  行为变化——授权链完整（dual-exit 文本 + D4 + 数据），env 可回切。
+  - **规范增量核验**：SD-01/02/03 目标在位、before/after 与实现一致；
+  frontmatter new_spec_components 已定型；touched_goals=[] 说明——
+  specs.json goals 节为空（库内惯例，进度由台账承载）。shm.rs 零改动
+  （affects 预测 vs 实际——段机制全复用，非缺口）。
+  - **脏树清点**：复审前 lang worktree 有 015-notes 生成物两件（cargo t
+  已知红族再生副产物，非实现改动）——已复位；两 worktree 现净。
 
 - 2026-09-20 /auto-plan:work 全量收口：`stage: work`，PLAN-034 rev 1，
   T-01..T-08 全闭环。`outcome: pass`（AC-01 内存门达标 11260KB≤
