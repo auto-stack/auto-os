@@ -316,6 +316,15 @@ review 定稿回填。
   全量门结果见 T-08 行。`stage: work | plan_id: PLAN-035 | revision: 1 |
   outcome: pass | code_commit: 325f1ff+ce7a64014 | next: review`（全量门
   绿后置 execution_done）。
+- 2026-09-20 work 收口：全量门归因定案——cargo t --no-fail-fast
+  5275 跑 40 红（39 唯一），38 名在干净 master（主检出 1d6dc1f86）
+  同滤串逐名复现同红，musk 6 件另在册 P645-D2，kitchen_sink=worktree
+  分支落点（4aadc1f57，落后 master 5 提交）+ 主检出 widgets-gallery
+  WIP 的环境红；本轮唯一真回归 = desktop.at a2vue 金样（AUTO_LANG_
+  UPDATE_GOLDEN 重生成转绿，08efc9cbe）。**execution_done**：五组
+  修缮全交付，实机五题证据齐；`stage: work | outcome: pass |
+  code_commit: auto-os 325f1ff + auto-lang ce7a64014+08efc9cbe |
+  task_ids: T-00..T-08 | next: review`。
 
 ## 10. 待澄清事项
 
