@@ -864,6 +864,18 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P035-1",
+          "title": "SD-01..05 — 桌面 Shell UX 三批修缮（任务栏右对齐/sliver/picker/小组件 8×3 满高卡/孵化通知）",
+          "content": "五组走查修缮交付：①任务栏右组右对齐（根因=适配层对无 width 类 justify-center 列给包装容器 Fill 宽；SD-05 布局合同：主轴 Fill 元素恰一，headless 探针守护）②壁纸 picker 游离块根治（坐标锚 popover 内容 open 态守卫；深层合成层泄漏债 DEBTS-035-01）③sliver w-2 满高贴缘+坐标锚 tooltip 单击切换 ④dashboard 8×3 网格（外框四围 PAD 12px=720×256，无头行——分页触发改右上角紧凑 pill，卡满高 3 行格 232，span 2|3 缺省 2 旧 1 迁移，源声明唯一标记 dashboard span: N）⑤三 mini（clock 3×2 表盘 56/text-3xl、todo Recompute 归一+preview 未完成前三+span3、music 紧凑 2×2 控件全可见+空曲库 notify 化+孵化 drain 扩容+通知尾条去重）。iconfile 资产根回退（CWD→P-3 解析序）与 clock fit 重试加固（10→150 次）随入。spec 沉淀：dashboard/showdesk-wallpaper/showdesk-icons 三文件。",
+          "file": "auto-os/docs/specs/shell/dashboard.md",
+          "related": [
+            "PLAN-035"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
         }
       ]
     },
@@ -1455,6 +1467,18 @@
           "file": "auto-os/docs/plans/archive/034-rqhost-maturity.md",
           "related": [
             "PLAN-034"
+          ],
+          "status": "published",
+          "created": "2026-09-20",
+          "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P035-r1",
+          "title": "PLAN-035 desktop-ux-rev3 rev4 复审与合并收据",
+          "content": "实施会话内复核（独立性受限声明 + 工件重建口径）：rev1..rev4 三轮走查回环，T-00..T-20 全闭环 execution_done → review r1 pass @ auto-os c1e54cc + auto-lang 3070c460e（AC-01..14 全 pass：AC-10=门 39 红全数基线/在册归因零新增+定向 7/7；AC-14 物理单击留用户终验）；findings 零阻断（MCP schema 文案/native dock 拒收 toast 既有机制）；深层债 DEBTS-035-01 登记。合并：双仓 rebase（os 并发 PLAN-036 起草共存）+ ff-only 落地（os 84ae47f / lang 015661be8）+ 主检出 smoke（cargo check + pin 五件相等）。",
+          "file": "auto-os/docs/plans/archive/035-desktop-ux-rev3.md",
+          "related": [
+            "PLAN-035"
           ],
           "status": "published",
           "created": "2026-09-20",
