@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-037
-status: executing               # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-back-provision
 author: [agent]
 created_at: 2026-09-20
@@ -13,7 +13,7 @@ new_spec_components: [auto-lang/vm/back-proxy.md「运行期增删与生命周�
 touched_goals: []
 
 affects: [auto-lang/vm, auto-lang/ui, auto-os/desktop-ledger]
-current_step: 5
+current_step: 7
 total_steps: 7
 ---
 
@@ -401,6 +401,15 @@ os 侧计划/台账在主检出。）
 - **T-06 真机验收 + 规范收尾**：
   用户真机验收 020 曲库/播放；SD-01（back-proxy.md 增补节）+ SD-02
   （台账行）落地。验证：用户确认 + 文档 diff。
+  [✅ 已完成·规范面] 2026-09-20：SD-01 = lang commit 5f88992a2
+  （back-proxy.md「运行期增删与生命周期」节——四方法 API/Mutex 并发/
+  桌面供给生命周期/前缀化 origin-only 与模块粒度 overlay 架构实证；
+  Status 行与落地节同步）；SD-02 = autos-desktop-program.md M7 副线
+  裁定交付行（PLAN-037 段，033/034 行同型）。**真机验收归用户**
+  （§10.3 默认裁定 + ToDesk 合成输入不可用约束）：管道面已由
+  smoke-037 承载（真曲库 393 入 store + 流 206 audio/mpeg + 截图
+  留痕）；用户真机播放确认随 review 入口跟进，AC-01 真机段不视为
+  已闭环——复审时若用户未确认则翻回。
 
 依赖链：T-00 → T-01 → T-02 → T-03 → T-04 → T-05 → T-06
 （T-01/T-02 可并行）。
@@ -411,6 +420,23 @@ os 侧计划/台账在主检出。）
   revision 1。outcome `pass`——授权（§4.1）覆盖全部任务；待澄清①-④
   均有默认裁定不阻塞开工（T-05 前可定①，T-04 前可定②④）。
   next: `work`。
+- 2026-09-20 work handoff（/auto-plan:work）：stage `work`，PLAN-037
+  revision 1。outcome `pass`——7/7 任务勾（T-00..T-06；T-06 真机段
+  归用户随 review 跟进）。code_commit：lang plan-037-dev
+  63c41ccb6→e213d2148→9cc15a451→4076f4d09→d88d377f0→5f88992a2
+  （基 92355a5a3；组 .wt/lang-037/{auto-lang, auto-down}）+ os 侧
+  8aee904/3092bd0/1f014cd（计划/smoke/台账）。
+  evidence：smoke-037 真管道 PASS（boot 懒启门/scan 200 真曲库 393/
+  流 206 audio/mpeg/截图徽标 393）；cargo t 全量零新增红（master
+  对拍 72⊆74）；back_proxy 13/13 + back_provision 族 + auto-man vue
+  79/79；画廊 VM 臂（proxy 33 apps/2 sessions 同 658 会话选择 + 020/
+  017 数据面）与独立形态 020 照旧。执行期两设计修正入 §5.3（origin-
+  only root；模块粒度 overlay——async 线程架构实证）。待澄清落定：
+  ①=合成根集成测试承载（未注册 017；AC-05 段由 back_proxy 真语料
+  017/031 测试面承载）；②=app_key 单例+引用计数（默认裁定落地，
+  集成测试双窗计数实证）；④=迁移（auto-man 改引用，vue 79/79 零抖动）；
+  ③=真机归用户（随 review）。blockers：无阻塞项；AC-01 真机段=
+  用户确认跟进（复审未确认则翻回）。next: `review`。
 
 ## 10. 待澄清事项
 
