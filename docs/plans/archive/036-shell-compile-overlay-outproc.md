@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-036
-status: reviewed                # drafting → executing → execution_done → reviewed → archived
+status: archived                # drafting → executing → execution_done → reviewed → archived
 feature_name: shell-compile-overlay-outproc
 author: [agent]
 created_at: 2026-09-20
@@ -8,10 +8,14 @@ updated_at: 2026-09-20
 plan_revision: 1
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
+supersedes_spec_components:
+  - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.16 增量承继 v1.15 全文（追加式）
+  - auto-os/docs/plans/autos-desktop-program.md           # M7-b 行改交付行
+  - auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md          # P030-D1/D3 核销 + P036-D1..D6 入册
+  - auto-lang/docs/design/autoui/desktop-shell-a2r.md     # S3 终态注
 new_spec_components:
   - auto-lang/docs/design/autoui/desktop-protocol-v1.md   # §1.16 v1.16 增量（review 定稿）
-touched_goals: []
+touched_goals: []             # 无 GOAL-NNN 体系引用——影响面由台账 M7-b 交付行承载（书面说明）
 
 affects:
   - auto-lang/crates/auto-man/src/rust_ui.rs                            # 无窗组件库生成目标（shell-lib crate + mount_face 工厂）
@@ -756,6 +760,24 @@ auto-os`。
   acceptance: AC-01..06 全 pass | findings: R1/R2 闭环；R3-R6 档存
   | evidence: p036 九腿 + 全门 + r1 矩阵 | next: merge（裁定面三项
   随 merge 前用户过目——D1 修订/D3-C v1/D2-A）`。
+- 2026-09-20 /auto-plan:merge 收据（PLAN-036:r1，五 checkpoint）：
+  **prepared** = 复审基线 a4f6bdbe8 + 冻结增量 SD-01..04（工作树内
+  已落 T-10 提交）+ 台账投影目标 .autoos/specs.json；**landed** =
+  auto-lang master 双前移（667/668 并行落地）两轮 rebase range-diff
+  全等 8/8（链 a4f6bdbe8→fec7198b5→50e3b8bb4）+ ff-only 落地
+  master=50e3b8bb4（双 ref 同点实证）+ 主检出集成门（p036 e2e PASS
+  + cargo t 37 红与 merge 前基线 f9681dcf4 **全等零新增**——668
+  会话 baseline.md 在册归因中）；**ledger_refreshed** = .autoos/
+  specs.json P036×5 外科插入（P036-1×4[reports/architecture/designs/
+  tests] + P036-r1[reviews]——034/035 同型；读回 138→143）；
+  **archived** = 本件 docs/plans/archive/036-shell-compile-overlay-
+  outproc.md（status: archived + frontmatter 收口 + completion_kind:
+  delivered）；**cleaned** = 见补记。裁定面三项（D1 修订/D3-C v1/
+  D2-A）经 merge 入口用户发起确认。os 侧非计划脏改动（037 起草/
+  kanban spec/widgets cache——并行会话在册）原样保全未纳入本提交。
+  `stage: merge | PLAN-036 | rev 1 | outcome: pass | delivery:
+  auto-lang 50e3b8bb4 | ledger: .autoos/specs.json P036×5 | archive:
+  docs/plans/archive/036-shell-compile-overlay-outproc.md | next: -`。
 
 ## 10. 待澄清事项
 
