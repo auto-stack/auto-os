@@ -23,8 +23,8 @@ affects:                      # 受影响 specs/实现路径
   - auto-os/docs/specs/shell/showdesk-wallpaper.md            # SD-04 sliver/picker 沉淀
   - auto-os/docs/specs/shell/showdesk-icons.md                # SD-05 任务栏布局合同
   - auto-lang/crates/auto-lang/assets/                        # pin 快照 sync（shell-pack-sync）
-current_step: 9
-total_steps: 13
+current_step: 15
+total_steps: 15
 ---
 
 # [PLAN-035] desktop-ux-rev3
@@ -340,6 +340,15 @@ review 定稿回填。
   ③小组件 × 关闭后无入口 → 桌面右键菜单 checkbox 开关项 → T-11；
   ④face 开窗后关窗连带消失（面板 refresh 只挂召唤事件）→ T-12。
   status 回 executing，revision 2。
+- 2026-09-20 rev2/rev3 收口：T-09..T-13 全落（icon_root 回退 / sliver
+  全高 / 右键菜单 checkbox 开关 + a2r 词汇门补臂 / 关窗 face 回正钩）；
+  T-14/T-15 全落（外框四围 PAD 12px=720×256、格位原点内移、clock 3×2
+  表盘 text-3xl/56px、declared_span 探测改全文唯一标记 dashboard
+  span: N——012-clock 头注含 view mini 误锚实证修正）。门：cargo t
+  --no-fail-fast 39 红与 rev1/rev2 同集零新增；a2vue 17/17；词汇门绿。
+  `stage: work | outcome: pass | code_commit: auto-os 5122410 +
+  auto-lang 855f5da8b | task_ids: T-09..T-15 | next: review`。
+  **execution_done**。
 
 ## 10. 待澄清事项
 
