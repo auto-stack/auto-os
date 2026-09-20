@@ -1,8 +1,9 @@
 ---
 plan_id: PLAN-038
-status: reviewed           # drafting → executing → execution_done → reviewed → archived
-# review rev3.1 pass；merge 落地——auto-lang master 28c94a5d4（rebase 全等+ff-only）
-# 见 §9 merge 收据（prepared+landed；ledger/archived/cleaned 随后）
+status: archived           # drafting → executing → execution_done → reviewed → archived
+completion_kind: delivered
+# review rev3.1 pass；merge 五 checkpoint delivered——auto-lang master 28c94a5d4
+# 见 §9 merge 收据（cleaned 见补记）
 
 feature_name: auto-kanban 普通看板 UX 重设计 —— VM/Vue 语义 token 单源收敛
 author: [zhaopuming, ZCode]
@@ -238,6 +239,7 @@ success/warning 定义以免误用，但模板 class **不再引用**）。
 **基线**：plan_revision=3；reviewed_commit=`5bd57bda20bc01618bff032a55d2bdf68831a714`（plan-038-dev tip 含 specs 拟稿）；impl=`42f621159`+`1ec133c7f`；auto-kanban Phase A=`90f0df87eb84346af701486cc216ec8cc2f8242a`；base_commit=`92355a5a3`；**master tip 会话内漂移** `5d5090e14` → `0226dc9ca`（PLAN-668）；divergence master+14 / plan-038-dev+3；auto-lang main 另有他会话脏文件（DEBTS.md、docs/design/*）。  
 **独立性限制**：同一实现会话复审；结论从制品复现。
 
+- `stage: merge | PLAN-038 | rev 3.1 | outcome=pass | delivery_commit=28c94a5d4 | checkpoints=prepared✓+landed✓+ledger_refreshed✓+archived✓（cleaned 随补记） | ledger_refreshed=auto-os .autoos/specs.json 外科插入 P038-1/2/3（designs 24→27）+ P038-r1（reviews 31→32，总 143→147），读回验证全 pass；commit af8bbae | archived=docs/plans/archive/038-kanban-ux-token-parity.md（git mv；status archived + completion_kind delivered；provenance=auto-lang 28c94a5d4 + auto-kanban 90f0df8 + auto-os 82ad55d/af8bbae）`
 - `stage: merge | PLAN-038 | rev 3.1 | outcome=pass(进行中) | reviewed_commit=5bd57bda2 | delivery_commit=28c94a5d4 | checkpoints=prepared✓+landed✓（ledger/archived/cleaned 随后补） | mapping=rebase onto 0226dc9ca：42f621159→75cf73bde / 1ec133c7f→10ee96a5d / 5bd57bda2→28c94a5d4；range-diff 3/3 全等（安全重写证明） | landed=auto-lang master 0226dc9ca→28c94a5d4 ff-only 零 merge commit（他会话脏文件 DEBTS.md/docs/design/* 保全）；auto-kanban main=90f0df8 既有 | 验证=worktree 复验 design_tokens 23 绿 + dual_face 2 绿（含 scaffold_extended_tokens_dual_face）+ plan593 7 绿（ui-iced 档）+ check auto-man/auto 绿；主检出 check -p auto-man 绿（真 auto-down 兄弟解析）；F-03 两红=master 基线预存（review 隔离复现在案，非本计划回归）`
 - `stage: merge | PLAN-038 | rev 3 | outcome=blocked | reviewed_commit=5bd57bda2 | delivery_commit=n/a（未 landed） | checkpoints=prepared only（规范增量冻结于计划+worktree 5bd57bda2；auto-kanban 90f0df8 已在 main） | evidence=会话沙箱拦截 `git rebase`/`git merge`（session bound auto-kanban；跨分支整合归 orchestrator） | blockers=需用户在 auto-lang 主检出执行 rebase+ff-only merge；auto-os specs/plan 落地同待人工 | next=用户执行 §10 unblock 命令后 resume merge`
 - **merge prepared**：规范增量 P038-1（auto-os kanban.md SD-07 已在 main 草稿态）/P038-2/3（worktree `5bd57bda2`）；实现 commits `42f621159`+`1ec133c7f`；auto-kanban `90f0df8`。canonical 发布与 worktree 清理未完成。
