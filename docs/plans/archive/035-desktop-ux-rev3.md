@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-035
-status: reviewed              # drafting → executing → execution_done → reviewed → archived（2026-09-20 review pass）
+status: archived              # drafting → executing → execution_done → reviewed → archived（2026-09-20 merge delivered）
 feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
@@ -392,6 +392,17 @@ review 定稿回填。
 - 2026-09-20 走查回环⑤续（T-20）：sliver tooltip 改坐标锚 popover——
   锚定形态「锚上点击 dismiss+捕获」吞点击 = 点两下根因；坐标锚外点
   dismiss 且放行基础树，单击直达。AC-14（单击切换）实机验证。
+- 2026-09-20 merge 收据（PLAN-035:r4，五 checkpoint）**prepared**：
+  复审基线 auto-os 4ec4f88..c1e54cc / auto-lang 4aadc1f57..3070c460e /
+  依赖 auto-down d1a83b6；spec delta 冻结 SD-01..05 三文件；投影目标
+  designs/reviews。**landed**：双仓 rebase（os 7 提交/lang 9 提交重放，
+  os 侧与并发 PLAN-036 起草共存无冲突）+ ff-only 落地——auto-os main
+  84ae47f / auto-lang master 015661be8；主检出 smoke：cargo check 绿 +
+  pin 五件 hash-lock 相等。**ledger_refreshed**：.autoos/specs.json
+  外科插入 designs P035-1 + reviews P035-r1（回读校验过）。**archived**：
+  本件 git mv docs/plans/archive/035-desktop-ux-rev3.md + status
+  archived + completion_kind: delivered。**cleaned**：wt-guard 三检 +
+  三 worktree/三分支移除（见归档后补记）。completion_kind: delivered。
 - 2026-09-20 review：/auto-plan:review 复审 pass（同会话复审声明：结论
   从工件重建——重跑门禁/逐 AC 对取证/基线对拍，不依赖执行摘要）。
   `stage: review | plan_id: PLAN-035 | plan_revision: 4 |
