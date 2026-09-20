@@ -367,6 +367,10 @@ review 定稿回填。
   outcome: pass | code_commit: auto-lang <T-17 提交> | task_ids:
   T-16..T-17 | next: review`。**execution_done 维持**。
 
+- 2026-09-20 走查回环⑤续（T-20）：sliver tooltip 改坐标锚 popover——
+  锚定形态「锚上点击 dismiss+捕获」吞点击 = 点两下根因；坐标锚外点
+  dismiss 且放行基础树，单击直达。AC-14（单击切换）实机验证。
+
 ## 10. 待澄清事项
 
 | # | 事项 | 影响 | owner/next |
