@@ -41,6 +41,8 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
             style: "w-full flex flex-col items-center"
             col {
                 style: if .viewportMode == "desktop" { "w-[1024px] max-w-full h-[720px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" } else if .viewportMode == "tablet" { "w-[768px] max-w-full h-[1024px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" } else { "w-full h-[720px] rounded-xl border border-border shadow-md overflow-hidden bg-background flex flex-col items-center justify-center" }
+                col {
+                    style: "w-full h-full overflow-y-auto"
             if .app == "001-helloworld" {
                 Demo001Helloworld {}
             } else if .app == "002-counter" {
@@ -110,6 +112,7 @@ widget AppViewport(app: str, reloadKey: int, viewportMode: str) {
                     text f"独立运行：cd examples/ui/${.app}" { style: "text-xs text-muted-foreground/80 font-mono" }
                     text "然后执行 auto run（Vue 臂）或 auto run -r vm（VM 臂）" { style: "text-xs text-muted-foreground/60 font-mono" }
                 }
+            }
             }
             }
         }

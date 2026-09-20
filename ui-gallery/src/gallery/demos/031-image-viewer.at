@@ -209,7 +209,7 @@ widget Demo031ImageViewer {
             if .session_id != "" {
                 let _closed = d031imageviewer_api_client.close_session(.session_id)
             }
-            let session = d031imageviewer_api_client.open_file("D:/autostack/.wt/lang-658/auto-lang/examples/ui/031-image-viewer/tests/fixtures/scenic-320x240.png")
+            let session = d031imageviewer_api_client.open_file("D:/autostack/.wt/lang-662/auto-lang/examples/ui/031-image-viewer/tests/fixtures/scenic-320x240.png")
             .session_id = session
             .media_src = d031imageviewer_api_client.current_uri(session)
             .media_alt = "Selected image"
@@ -226,7 +226,7 @@ widget Demo031ImageViewer {
             if .session_id != "" {
                 let _closed = d031imageviewer_api_client.close_session(.session_id)
             }
-            let session = d031imageviewer_api_client.open_directory("D:/autostack/.wt/lang-658/auto-lang/examples/ui/031-image-viewer/tests/fixtures")
+            let session = d031imageviewer_api_client.open_directory("D:/autostack/.wt/lang-662/auto-lang/examples/ui/031-image-viewer/tests/fixtures")
             .session_id = session
             .media_src = d031imageviewer_api_client.current_uri(session)
             .media_alt = "Selected image"
