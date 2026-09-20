@@ -278,6 +278,20 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P037-1",
+          "title": "PLAN-037 变更摘要 — desktop-back-provision（桌面 launch 后端供给）",
+          "content": "VM 桌面（inproc 直挂）launch 后端零供给面闭合（020 打开即空曲库根因）：658 back proxy 承载层原样引进桌面，生命周期自画廊 boot 期全量静态注册翻转为 launch 按需装载/窗关卸载。交付：back_proxy 运行期增删 API（add_session 幂等拒绝/add_native_media/remove_app drop-sender 优雅退出/base_url_for；ProxyShared Mutex 化）+ ui/back_provision 供给层（plan_backend 四臂决策树[①daemon 真进程不进 proxy/②media_root capability/③back 特形 session/④空]，ensure_backend 懒启+首装+计数，release 四站点）+ 注册表 media_root/back_entry 双字段 + 谓词/前缀化迁 auto-lang（auto-man 改引用）+ back_prefix launch 作用域模块源 overlay（11 读点）。执行期两修正：前缀 root=origin-only（base_url_for 传 prefix 双重前缀实证）；Http 调用点在 store 模块→模块粒度 overlay（async HTTP base 解析独立线程=进程 env 架构，请求期 per-app base 架构性不可行）。R1 真机返工：hatch_mini_app 绕决策树（dashboard 音乐卡曲库 0）→门槛扩 plan_backend 全域=占位卡。验收：smoke 真曲库 393/流 206 audio/mpeg；tf/tv/日常档零新增红（master 对拍）；画廊 VM 臂（33apps/2sessions 同 658 会话选择）与独立形态照旧。F-R4 播放=媒体引擎面债（mpv-native+libmpv-2.dll）；F-R5 浅色列表黑框=020 语料债。lang 侧 chain 63c41ccb6→66d3aee7d（rebase 两跳：036/668/669/670 并行推进消化，冲突消解=T-05 读点与 668 stylekit 预注册同点叠加合并序；range-diff 前四提交全等）。",
+          "file": "auto-os/docs/plans/archive/037-desktop-back-provision.md",
+          "related": [
+            "PLAN-037",
+            "PLAN-658",
+            "PLAN-024"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -653,6 +667,19 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P037-1",
+          "title": "SD-01 — back-proxy 运行期增删与生命周期（桌面供给契约）",
+          "content": "lang docs/specs/auto-lang/vm/back-proxy.md 增补节（@66d3aee7d）：RunningProxy 运行期 API 四方法契约（add_session 同 id AlreadyExists 幂等拒绝——装载面单例，多窗共享由调用侧引用计数保证；remove_app drop sender→session 线程 for req in rx 自然退出，JoinHandle 供测试 join）；ProxyShared Mutex 化（listener 连接线程与宿主线程双写）；桌面供给生命周期=懒启门（boot 零常驻）+决策树四臂单一裁决点+app_key 引用计数四关窗站点+前缀化 origin-only root 与模块粒度 launch 作用域 overlay（front_dir 谓词+行级 Http. 规则双保险，back #[api] 属性行零污染）；async HTTP base 解析在独立线程（进程 env 架构）——请求期 per-app base 架构性不可行，源级变换为唯一终选（架构实证入册）。",
+          "file": "auto-lang/docs/specs/auto-lang/vm/back-proxy.md",
+          "related": [
+            "PLAN-037",
+            "PLAN-658"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -948,6 +975,18 @@
           "file": "auto-lang/docs/specs/auto-man/project.md",
           "title": "auto-man vue 脚手架 — tailwind 扩展色映射 + P657-D2 类型 stub 全 build 路径",
           "content": "generate_tailwind_config 补 success/warning/info/error → hsl(var(--*))（scaffold/cli-vue/tauri 三处；regenerate_source_files 与 scaffold 同源重写——修磁盘残留旧模板漏映射）。P657-D2 核销：codegen 全路径（scaffold/write_project_files/regenerate/prepare_vue_sources=auto build）写 src/vite-env.d.ts + src/auto-select/overlay.ts + src/auto-sources.ts（缺失时写空 map，消除 overlay TS2307 phase-ordering），auto build vue-tsc 不再依赖手工 stub。依据：auto-kanban 干净 build 产物对账（index.css light/dark 四扩展色=registry Rgb→HSL）。"
+        },
+        {
+          "id": "P037-1",
+          "title": "SD-02 — 台账 M7 副线裁定交付行（desktop back provision）",
+          "content": "auto-os docs/plans/autos-desktop-program.md 增 M7 副线裁定交付行（PLAN-037，2026-09-20；033/034 行同型）：desktop back provision 机制交付——决策树四臂/懒启门/引用计数窗生命周期/内存态前缀化；真机验收 393 条目入 store；cargo t 零新增红；画廊/独立形态照旧；真机播放验收归用户（ToDesk 约束）随 review 跟进（R2 已按 AC-01 文本收口，可播段 F-R4 债注记可翻案）。",
+          "file": "auto-os/docs/plans/autos-desktop-program.md",
+          "related": [
+            "PLAN-037"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -1249,6 +1288,19 @@
           "status": "published",
           "created": "2026-09-20",
           "last_modified": "2026-09-20"
+        },
+        {
+          "id": "P037-1",
+          "title": "PLAN-037 测试语料 — proxy 增删/供给决策/生命周期/前缀化/hatch 门槛",
+          "content": "lang 侧测试面（@66d3aee7d）：back_proxy_tests.rs 15 例（658 既有 13+037 增运行期 session 增删 join 退出断言/运行期 media 增删字节保真）；ui/back_provision tests 6 例（back_needs_session 谓词矩阵/prefix 改写面/plan_backend 四臂[含 CRUD 不建 session+②③叠加+幽灵入口容错]/launch_provision_lifecycle_via_resolver 集成[懒启门/scan200 绝对url/双窗计数/关一窗在/全关404/复launch重建]/back_prefix guard 作用域+目录谓词）；session hatch_gate_excludes_backend_provisioned_apps（R1 F-R3 门槛）；os 侧 scripts/smoke-037-desktop-back.sh 真管道冒烟（boot 懒启门断言+MCP bus launch 真消费臂+scan/流/截图）。",
+          "file": "auto-lang/crates/auto-lang/src/ui/back_provision.rs",
+          "related": [
+            "PLAN-037",
+            "PLAN-658"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -1591,6 +1643,18 @@
           "file": "auto-os/docs/plans/archive/038-kanban-ux-token-parity.md",
           "title": "PLAN-038 auto-kanban token 单源收敛 复审与合并收据",
           "content": "三阶段复审：r3 needs_fix（F-01 Phase A 未 commit/F-02 脚手架表述过时/F-03 tf 两红甄别/F-04 spec 路径未落）→ work repair（auto-kanban main 90f0df8 落 Phase A+B 纪律；SD-07/README 改写；P038-2/3 拟稿 5bd57bda2）→ r3.1 pass（AC-01..05 全 pass；F-03 两红=master 同名预存，隔离重跑同红非回归；F-05 可选项不阻塞）。合并：首会话沙箱拦 rebase/merge blocked（prepared only）→ 续会话自为解除：master 前移 14 提交（036×10+668/669×4）零重叠，rebase 零冲突 range-diff 3/3 全等（5bd57bda2→28c94a5d4）+ ff-only 落地 auto-lang master=28c94a5d4（他会话脏文件 DEBTS.md/docs/design/* 保全）；复验 design_tokens 23/dual_face 2/plan593 7（ui-iced 档）/check auto-man+auto 绿；主检出 check -p auto-man 绿（真 auto-down 兄弟解析）。计划归档路径 docs/plans/archive/038-kanban-ux-token-parity.md。"
+        },
+        {
+          "id": "P037-r1",
+          "title": "PLAN-037 desktop-back-provision 复审与合并收据",
+          "content": "执行会同席复审（独立声明+工件重建）：R1 blocked（AC-01 真机段待用户）→真机反馈两发现——F-R3 hatch 绕决策树（needs_fix→修复 76a65cd92 占位卡方案，mini 供给档可翻案）/F-R4 播放不动=mpv 引擎债（非 037 回归，mpv-native+libmpv-2.dll 环境件）/F-R5 浅色黑框=语料债→R2 pass（AC-01 曲库段用户真机确认 393+字节段双复现；AC-02..06 ✅；tf/tv/日常档对拍零新增红）→reviewed。merge（2026-09-21）：两跳 rebase（master 并行推进 036/668/669/670——第一跳零冲突+stage3 语义缺口 fixup；第二跳 T-05 读点与 668 stylekit 同点冲突消解成文），landed 66d3aee7d ff-only（master=delivery tip；定向 46/46+日常档 20=20 同代 master 全等+主检出 back_provision 4/4）；归档 archive/037-desktop-back-provision.md；清理 lang-037 组。",
+          "file": "auto-os/docs/plans/archive/037-desktop-back-provision.md",
+          "related": [
+            "PLAN-037"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     }
