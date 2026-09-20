@@ -97,3 +97,29 @@ commit `5f3b4ff2a9e6854e6c226f0048aeaec948c598b2`）；创建计划 PLAN-0579
   press / state 计数链）；双端一致性以按钮通道为断言面。
 - 门档纪律：不改 auto-lang `crates/`（严禁 auto-lang `cargo t`/`docs_gen`，
   Category A）。
+
+## 7. UI token 纪律（SD-07 · PLAN-038 Phase A+B）
+
+普通看板/计划板视图样式 **单源** `src/front/{app,pages/board}.at`，两端
+（Vue codegen / VM Iced）消费同一 class 串。
+
+- **核心 token 白名单（app 缺省）**：`bg-background` `text-foreground`
+  `bg-card` `bg-muted` `text-muted-foreground` `border-border` `border-input`
+  `bg-primary` `text-primary` `text-primary-foreground`
+  `bg-secondary` `text-secondary-foreground` `bg-destructive` `text-destructive`
+  `bg-accent` `text-accent-foreground` 及透明度/布局 utility。
+- **禁用（始终）**：palette 硬编码（`bg-blue-500` 等）；**手改** gen 下
+  SFC/CSS/tailwind 作为 app 纪律。
+- **扩展色（Phase B 后平台能力）**：auto-lang registry + auto-man 脚手架已
+  为 scaffold/cli-vue/tauri 生成 `success/warning/info/error` CSS 变量与
+  tailwind 映射（与 VM stella 同值）；`auto build` 全路径写
+  `vite-env.d.ts`/`auto-select/overlay.ts`/`auto-sources.ts`。`.at` **可以**
+  安全使用 `text-success` 等扩展 class。**本 app 缺省**仍只使用核心 token
+  （完成列 muted / P1 primary/10），直至产品侧显式恢复扩展色。
+- **视觉约定（Phase A 缺省）**：进行中列标题/计数用 `primary`；完成列用
+  `muted-foreground` 降噪；优先级 P0=`destructive`、P1=`primary/10`、
+  P2=`muted`。
+- **gen 产物非长期源**：`gen/front/vue` 由 codegen 重生。根 `index.html`
+  仅作手机模拟器镜像，class 对齐同一核心 token 集。
+- **交互文案不变**：PLAN-021 SD-05 测试可定位文案（列名/占位符/◀▶▲▼×/
+  确认/保存等）与 CRUD 契约不在 token 收敛中变更。
