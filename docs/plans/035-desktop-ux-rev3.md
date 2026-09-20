@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-035
-status: execution_done        # drafting → executing → execution_done → reviewed → archived（rev3 回环收口 2026-09-20）
+status: execution_done        # drafting → executing → execution_done → reviewed → archived（rev4 回环收口 2026-09-20）
 feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
