@@ -1,10 +1,10 @@
 ---
 plan_id: PLAN-037
-status: reviewed                 # drafting → executing → execution_done → reviewed → archived（R2 pass 2026-09-21）
+status: archived                 # drafting → executing → execution_done → reviewed → archived（R2 pass 2026-09-21；merge 2026-09-21）
 feature_name: desktop-back-provision
 author: [agent]
 created_at: 2026-09-20
-updated_at: 2026-09-20
+updated_at: 2026-09-21
 plan_revision: 1
 
 # /auto-plan:review 结束时填写：
@@ -522,3 +522,27 @@ os 侧计划/台账在主检出。）
 4. **函数迁移 vs 复制**（5.3/T-04）：`prefix_api_url_literals` 与
    session 臂谓词默认迁 auto-lang（auto-man 改引用，依赖方向成立）；
    若迁移致 auto-man 面抖动超预期，回退为复制 + 注记去重债。
+
+- 2026-09-21 merge（/auto-plan:merge，PLAN-037:r1 收据）：
+  **prepared** = reviewed 链 63c41ccb6→76a65cd92（7 提交，基 92355a5a3）+ 冻结增量
+  SD-01（worktree f6364e81f 世代）/SD-02（os 997c97d）。**landed** = 66d3aee7d
+  ff-only（lang master tip = delivery commit，无合并提交）——两跳 rebase：
+  第一跳（→510a15826）零冲突 + stage3 p036-fake-app 语义缺口 fixup
+  （137371a76，036 并行期新增字面量缺 T-02 新字段 E0063）；第二跳
+  （→91270f47a，036/668/669/670 四件并行推进消化）T-05 读点与 668 A-02
+  stylekit 预注册同点冲突→消解成文 66d3aee7d（合并序=先 prefix 后
+  stylekit 扫，前缀化不触 stylekit 导入面等价）；range-diff 前四提交
+  全等，T-05 因消解单提交 `!`，验证面重刷承载（定向 46/46 + 日常档
+  20=20 同代 master 全等 + 主检出 back_provision 4/4）。哈希映射：
+  63c41ccb6→eed336482 / e213d2148→de70a445b / 9cc15a451→dfdc6743a /
+  4076f4d09→68eaf54c0 / d88d377f0→c3574041e(消解) / 5f88992a2→1049e59d4 /
+  76a65cd92→41efa11bb；追加 137371a76(fixup)+66d3aee7d(resolve)。
+  **ledger_refreshed** = os .autoos/specs.json 147→152（P037-1
+  reports/architecture/designs/tests + P037-r1 reviews，读回验证）；
+  lang 侧零 ledger（PLAN-036 同款——os 侧计划 lang 实施）。**archived**
+  = docs/plans/archive/037-desktop-back-provision.md（本文件，git mv）。
+  **cleaned** = lang-037 组三清落定（2026-09-21 补记）：双 worktree
+  （auto-lang + auto-down）wt-guard clean 后各移除、plan-037-dev 分支
+  删除（was 66d3aee7d 已合并）、组目录移除、双仓 prune、worktree list
+  零残留；用户桌面经主检出重建（landed master ui_desktop）重启接续。
+  outcome `pass`（五 checkpoint 全闭环 delivered）。
