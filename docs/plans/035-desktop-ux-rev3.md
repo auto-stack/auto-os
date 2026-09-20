@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-035
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-ux-rev3
 author: [agent]
 created_at: 2026-09-20
@@ -289,14 +289,14 @@ review 定稿回填。
 
 | id | 任务 | 依赖 | 产出/验证 | AC |
 |---|---|---|---|---|
-| T-00 | 环境口径与实机归因：master worktree 构建桌面（os-035 组内 auto-lang），复现五题，产出逐题载决工件（已修于 master/仍在+根因）；Q-B picker 卡开序复现留证 | — | scratch/p035 归因记录 + 截图；决定 T-01 形态 | — |
-| T-01 | 任务栏右组右对齐（按 T-00 载决：.at 结构防御 或 auto-lang Fill 默认修复） | T-00 | AC-01 截图；归因②则附单测 | AC-01 |
-| T-02 | picker 生命周期收口（坐标钳制 + 漏关臂补齐，renderer.rs） | T-00 | AC-02 走查；钳制单测（若抽函数） | AC-02 |
-| T-03 | sliver 修缮（shell.at：w-2/满覆盖/popover 提示/防溢出） | T-00 | AC-03 hover 截图 | AC-03 |
-| T-04 | dashboard_layout v2 + span 2\|3/迁移/探测 + dashboard.at 头行 72 + 测试重写（renderer.rs + shell/dashboard.at） | T-00 | 布局单测绿；AC-04/05 截图 | AC-04/05 |
-| T-05 | clock mini 居中（012-clock app.at） | T-04 | AC-06 截图 | AC-06 |
-| T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） | T-04 | AC-07 截图 | AC-07 |
-| T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
+| T-00 | 环境口径与实机归因：master worktree 构建桌面（os-035 组内 auto-lang），复现五题，产出逐题载决工件（已修于 master/仍在+根因）；Q-B picker 卡开序复现留证 [✅ 已完成] 五题 master 全部成立；Q-A 载决②（justify-center 列 Fill 包装）；Q-B 深层为合成层泄漏（DEBTS-035-01）；tmp/p035/attribution.md + docs/plans/evidence/p035/ | — | scratch/p035 归因记录 + 截图；决定 T-01 形态 | — |
+| T-01 | 任务栏右组右对齐（按 T-00 载决：.at 结构防御 或 auto-lang Fill 默认修复） [✅ 已完成] shell.at clock 列去 justify-center；实机 AC-01；headless 探针红→绿 | T-00 | AC-01 截图；归因②则附单测 | AC-01 |
+| T-02 | picker 生命周期收口（坐标钳制 + 漏关臂补齐，renderer.rs） [✅ 已完成] desktop.at 四处坐标锚 popover 内容守卫=根治幽灵；钳制核实 usable_rect 既有在场（等效实现在场记载）；深层债 DEBTS-035-01 | T-00 | AC-02 走查；钳制单测（若抽函数） | AC-02 |
+| T-03 | sliver 修缮（shell.at：w-2/满覆盖/popover 提示/防溢出） [✅ 已完成] 视觉类移内容 col（hit=可视）；w-2；动态提示「显示桌面/恢复桌面」 | T-00 | AC-03 hover 截图 | AC-03 |
+| T-04 | dashboard_layout v2 + span 2\|3/迁移/探测 + dashboard.at 头行 72 + 测试重写（renderer.rs + shell/dashboard.at） [✅ 已完成] 8×3 直出绝对矩形；span 三级消费序；测试重写 4/4 绿；实机 AC-04/05 | T-00 | 布局单测绿；AC-04/05 截图 | AC-04/05 |
+| T-05 | clock mini 居中（012-clock app.at） [✅ 已完成] 2×2 收紧（svg 40/text-xl），列交叉轴居中 | T-04 | AC-06 截图 | AC-06 |
+| T-06 | todo preview 派生 + 双列 mini + span3 声明（013-todo store/app.at） [✅ 已完成] Recompute 归一七臂 + preview 三标量 + 双列 3×2；孵化失败根因=`text ("· "+…)` 非 parse 形态→f-string | T-04 | AC-07 截图 | AC-07 |
+| T-07 | music 紧凑 mini + 空曲库通知化 + 孵化 drain 扩容（020-music-player + renderer.rs） [✅ 已完成] 控件定尺寸防溢出；Init 读 store 计数（calendar 先例）+ 一次性旗标；drain 孵化段 + 尾条去重 | T-04 | AC-08/09 截图 + drain 单测 | AC-08/09 |
 | T-08 | 收口：cargo t 全量 + 实机五题总走查 + spec 沉淀（SD-01..05）+ shell-pack-sync + 状态头/台账/program tracker 更新 | T-01..T-07 | AC-10；execution_done 状态头 | AC-10 |
 
 （每步完成后在任务行追加 [✅ 已完成] 一行证据。）
@@ -306,12 +306,22 @@ review 定稿回填。
 - 2026-09-20 drafting：/auto-plan:new 起草（rev1）。grounding：F1-F14
   证据锚实测在案；Q-A/Q-B 两疑点转 T-00 有界调查（decision artifact）。
   `stage: new`，`outcome: pass`（授权范围内可开工），`next: work`。
+- 2026-09-20 work：/auto-plan:work 执行（worktree auto-os `.wt/os-035/
+  auto-os`@plan-035-dev 325f1ff + auto-lang `.wt/os-035/auto-lang`
+  @auto-os-035-dev ce7a64014 + 依赖 auto-down@auto-os-035-dev；基线
+  auto-os 4ec4f88 / auto-lang 4aadc1f57）。T-00 载决：Q1=假设②（适配层
+  justify-center 列 Fill 宽包装，headless 探针红→绿）；Q2 幽灵块根因=
+  合成层内容泄漏（.at 内容守卫止血，深层 DEBTS-035-01）。T-01..T-07
+  全落；实机五题证据 + 定向门（dashboard_layout 4/4、p035 探针 1/1）绿；
+  全量门结果见 T-08 行。`stage: work | plan_id: PLAN-035 | revision: 1 |
+  outcome: pass | code_commit: 325f1ff+ce7a64014 | next: review`（全量门
+  绿后置 execution_done）。
 
 ## 10. 待澄清事项
 
 | # | 事项 | 影响 | owner/next |
 |---|---|---|---|
-| Q1 | 任务栏居中根因两假设未载决（陈旧二进制 vs 适配层 Fill 默认） | T-01 修复形态二选一 | T-00 实机归因 |
+| Q1 | ~~任务栏居中根因~~ **已载决（T-00）**：假设②成立——适配层对无 width 类 justify-center 列给包装容器 Fill 宽；与二进制新旧无关（master 亦复现） | T-01 已按此修 | 已闭环 |
 | Q2 | 8×3 框内 widget 超 4 张的溢出策略（v1 裁剪） | 未来组件增多后的 UX | v1 裁剪落地，滚动/增高挂 dashboard v2 债；复审可调 |
 | Q3 | sliver 提示文案是否随 __wm_showdesk 切换（「显示桌面/恢复桌面」） | 细节体验 | 实现取动态文案（零成本），复审定稿 |
 | Q4 | todo 前三排序（store 序 = API 返回序；无优先级字段） | 「前三个」语义 | 沿 store 序（创建序）；如需优先级另立计划 |
