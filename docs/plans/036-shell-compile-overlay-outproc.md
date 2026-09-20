@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-036
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing             # drafting → executing → execution_done → reviewed → archived
 feature_name: shell-compile-overlay-outproc
 author: [agent]
 created_at: 2026-09-20
@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 0
+current_step: 3
 total_steps: 10
 ---
 
@@ -276,8 +276,95 @@ Design 23 §4 矩阵 + desktop-shell-a2r.md S3 改道注。
 - **D6 B1 键盘语义清单**：switcher（Esc/Tab/Enter/方向键）与通知
   （Esc/清除）的 InputMsg 消费面 vs 宿主热键边界。
 
-定案记录追加 `### 5.1 定案记录`，作为 T-02..T-09 依据；D1-D3 为
-用户确认项（裁定面）。
+### 5.1 定案记录
+
+**T-01 调查基线**：lang-036 worktree @ master 608399943（含 034 merge
+c4facc584）；§4 事实锚逐点复核在案——SC=shell_client.rs（578 行，
+`ShellFaces` 双面 `RqProjector<DynamicComponent>` SC:70-79、解释装载
+`ShellFaces::load` SC:84-102、overlay 忽略留痕 SC:115-116、替换点注记
+SC:10-14）；SP=**`src/ui/shell_projection.rs`**（§4 路径缩写实指，非
+desktop_protocol/ 下）——`SHELL_MANIFEST` 五件 SP:1044-1072（crate
+"shell-pack"，027 D5 注释锚点零实现）；词汇门 ui_gen/rust.rs:8901+
+（认知表比对，:8899 自注"真实编译门 = T-07 shell-lib crate cargo
+build"）；RqProjector 泛型 `C: Component`（native_projector.rs:301，
+a2r typed 组件原生可用）；`Component` trait 已有 defaulted
+`drain_desktop_commands`（033 泛化，component.rs:96-100）与
+`apply_state_snapshot`（L3 注入位，:125-133——a2r 缺省 false）；a2r
+状态字段类型映射（ui_gen/rust.rs:466-482）：`var x = []` →
+`Vec<serde_json::Value>`、`str` → `String`——与 ShellWrite 载荷
+（auto_val::Value）经 `Value::deserialize::<T>()` 互转（auto-val
+de.rs:98）；入口归属 `crates/auto/src/cmd_autodesk.rs:70`
+（run_shell_outproc）；spawn 注入面 session.rs:3043-3067（**现状无条件
+注入 AUTO_SHELL_PACK**——兄弟发现也注入，D4 需改）；shell_model 分叉
+renderer.rs:14840-14866（env AUTO_SHELL_MODEL > storage
+shell.apps.shell_model，缺省 Inproc）；027 归档 §5.1 D5 原始设计
+（archive/027-desktop-shell-a2r.md:315-332：lib crate 入库
+crates/shell-pack + mount_face 工厂 + 双轨开关语义）。
+
+- **D1 face 卡材料（用户确认项，悬置 → T-06 前置）**：维持倾向 **C+**
+  （宿主栅格化 mini + `face://{appid}` 虚拟引用下行——028 thumbnail://
+  同型零 wire + SWR 翻新）；以 035 落地后 dashboard.at face 消费面
+  最终定案。不阻塞批次 A/B1。
+- **D2 dashboard z 档（悬置 → T-05 前置）**：维持倾向 **A**
+  （surface_role 追加 DASHBOARD=3 档——追加式协议显式 + 宿主 Stack
+  插层 + WM 命中带化推广）。
+- **D3 overlay exe 拓扑（用户确认项，悬置 → T-07 前置）**：维持倾向
+  **C 混合**（switcher/通知/dashboard 并壳 exe 多表面 + launcher 一面
+  一 exe 走注册表）；以 D1/D2 落地复杂度与崩溃粒度权衡终裁。
+- **D4 编译/解释双轨缺省（✅ 定案 2026-09-20）**：**outproc child 缺省
+  编译**（auto.exe 链入 shell-pack——省 boot 期 .at 解释装载）；显式
+  `AUTO_SHELL_PACK` env（存在且为目录）或宿主 override 注入 = 开发态
+  解释 child（027 D5 双轨开关语义原文承袭：兄弟检出发现 pack 但无
+  env/override ≠ 解释态）。配套改造：spawn_shell_outproc 注入面收窄
+  （仅显式 override/env 命中时注入 AUTO_SHELL_PACK——现状无条件注入
+  会使编译轨在开发检出永不生效）；in-proc 宿主（shell_model=inproc
+  缺省）解释装载零变化（I2）。构建集成 = shell-pack 入库 auto-lang
+  workspace 成员（每次 cargo build 即真编译门；宿主/auto.exe 构建免
+  生成时序依赖——027 D5 入库裁定原文）。发布态专用 shell exe（彻底
+  摆脱 re-exec）另立注记，不在本计划强制面。
+- **D7 shell-lib 生成目标形态（✅ 定案，批次 A 承接 D4）**：产物 =
+  `crates/shell-pack/`（lib crate，入库 workspace 成员，path 依赖
+  auto-lang[ui-iced]——DAG: shell-pack → auto-lang ← auto-man/auto，
+  无环）。内容 = 五组件（a2r 编译产物）+ `SHELL_MANIFEST` const
+  （shell_projection.rs 同形 ShellManifest）+ `mount_face(id, w, h)
+  -> Option<Box<dyn ShellSurface>>` 工厂 + 每组件 ShellStateAccess
+  生成实现（string-key 写态 lowering[auto_val→serde_json 字段赋值]/
+  召唤事件 dispatch[event 名 → Msg variant on()]/命令读走）。生成入口
+  auto-man rust_ui.rs `generate_shell_pack_lib`（pack 解析与词汇门
+  同序 resolve_os_top_dir）；真编译门 = workspace 成员编译（每次
+  build）+ **freshness 字节对拍测试**（重生成 vs 入库物，solo 检出
+  跳过——词汇门保留为快速诊断，非升级替代而是三件套）。
+- **D8 child 替换点形态（✅ 定案，批次 A 承接）**：`ShellFaces` 字段
+  换 `Box<dyn ShellSurface>`（装配 trait 定于 shell_client.rs 同册：
+  apply_writes/dispatch_event/write_scalar/read_state_str/clear_state/
+  on_input/render_frame/revision/hit_rects——SC:70-247 消费面的 trait
+  化）。解释臂 = 现行 `RqProjector<DynamicComponent>` 适配器
+  （write_state/call_handler/read_state 桥——行为逐字节不变）；编译臂
+  = `RqProjector<编译组件>` 适配器（经 D7 ShellStateAccess 生成实现）。
+  auto-lang 不引 shell-pack（无环）——装配点 = crates/auto
+  cmd_autodesk（`run_shell_outproc_with(broker, faces_factory)` 工厂
+  注入；`--autodesk-shell` 分派按 D4 开关选臂）。字节级 parity 对拍
+  入 T-08 验收（B 批次后五面金样）；T-03 冒烟 = 结构性（装载/投影
+  apply/命令 drain/渲染非空/revision 前进）+ **boot 时延度量行**
+  （interpreted 解释装载 vs compiled mount_face 对拍，落 shell-pack
+  测试输出，T-09 汇总）。
+- **D5 launcher 聚焦 child 化（悬置 → T-07 前置）**：候选面复核在案
+  （iced focus Task R:10116-10137 / `__focus_input` 重试 R:10106-10109
+  / 宿主窗订阅独占 R:19943-19960）；B3 批次细化（投影下发 focus 请求
+  位 vs child 自主聚焦首 input + 伪窗可 focused WM 语义 + 热键宿主
+  保留边界三件套）。
+- **D6 B1 键盘语义清单（悬置 → T-04 前置）**：switcher
+  （Esc/Tab/Enter/方向键）与通知（Esc/清除）InputMsg 消费面（029
+  route_live_input S:3864-3888 + native_projector on_input
+  native_projector.rs:563-625 在役证据复核）；B1 批次落清单。
+
+**批次时序裁定（本会话开工面）**：035 merge 前置对 B2 硬阻塞维持；
+批次 A（T-02/T-03，rust_ui.rs/shell_client.rs/session.rs spawn 面
+与 035 affects[renderer.rs/dashboard.at/examples/pin] 文件错开）先行
+——唯一交叠 = pin 快照 hash-lock（A 批次不动 assets/ 五件内容，
+freshness 门以 auto-os/shell 权威源对拍，035 merge 后随其 T-08 pin
+sync 重跑一次 freshness 确认零漂移）。
+
 
 ### 5.2 批次 A：shell-lib 生成（T-02/T-03）
 
@@ -383,7 +470,7 @@ D3 装载形态 + D5 聚焦链 child 化 + LauncherSnapshot 推送（apps 七
 `D:/autostack/.wt/lang-036/auto-lang`；os `D:/autostack/.wt/os-036/
 auto-os`。
 
-- **T-01 [lang] 深水调查与定案**
+- **T-01 [lang] 深水调查与定案** [x]
   文件：SC/SP/R/S 四处（§4 事实锚）、message.rs（role/shell_face）、
   rust_ui.rs（wrap_example）、035 落地后 dashboard.at（读）+
   §5.1（写面）。
@@ -391,17 +478,38 @@ auto-os`。
   产物：`### 5.1 定案记录`（file:line 证据）。
   验证：定案完备；D1-D3 获用户确认。
   → 全 AC 前置。
-- **T-02 [lang] shell-lib 生成目标**
+  [✅ 已完成 2026-09-20] §5.1 定案记录落盘（lang-036 worktree 复核
+  §4 全锚点 + 新定案 D4/D7/D8 三件；D1/D2/D3 维持倾向悬置为 T-05/
+  T-06/T-07 批次前置——不阻塞批次 A；D5/D6 复核在案待 B1/B3 细化]。
+- **T-02 [lang] shell-lib 生成目标** [x]
   文件：`crates/auto-man/src/rust_ui.rs`（无窗组件库形态）+ 词汇门
   升级。
   动作：§5.2 T-02；构建集成依 D4。
   验证：crate cargo build 编译门绿。
   → AC-01。
-- **T-03 [lang] child 替换 + 双轨**
+  [✅ 已完成 2026-09-20] generate_shell_pack_lib 生成器 + 入库物
+  `crates/shell-pack/`（workspace 成员 = 每次 cargo build 即真编译门）
+  + freshness 字节对拍门（auto-man test_shell_pack_lib_freshness 绿；
+  生成器确定性实证：prop/event 迭代序确定化后两次生成逐字节同）+
+  #[ignore] regen_shell_pack 重生成入口。真编译门清偿 a2r 七族缺口
+  （button icon PUA/裸点条件下划线/.Variant 自消息派发/Eq-Neq 跨型
+  降串三臂/单支 if-expr else 补全/String += 分型/WorkspacePreview
+  数值键降串/contains Pattern）+ truncate 真渲⑫（018 债清偿）。
+  lang-036 @ 243bc5bd。
+- **T-03 [lang] child 替换 + 双轨** [x]
   文件：`shell_client.rs`（替换点）+ shell_model 配置面。
   动作：§5.2 T-03。
   验证：互换 parity 冒烟 + 度量行。
   → AC-01。
+  [✅ 已完成 2026-09-20] ShellFaces 接缝 trait 化（ShellSurface/
+  ShellStateAccess + FaceProjector 泛型适配体——解释臂行为逐字节
+  不变）；编译装配点 cmd_autodesk（缺省编译轨 + 显式 AUTO_SHELL_PACK
+  = 解释双轨[027 D5 承袭]）；spawn 注入收窄（仅显式命中注入——
+  session.rs resolve_shell_pack_explicit）。结构性 parity 冒烟绿
+  （shell-pack tests 4/4：五面 mount/写臂全覆盖/wire 投影 roundtrip/
+  命令 drain 幂等/渲染非空）；boot 时延度量行：**interpreted 25.7ms
+  vs compiled 0.8ms（约 32×）**。字节级 parity 对拍入 T-08 验收。
+  lang-036 @ 243bc5bd。
 - **T-04 [lang] B1 switcher + 通知**
   文件：R（推送泵/注入点）、SC（两面装配）、S（伪窗/召唤联动）。
   动作：§5.3；D6 键盘语义。
@@ -448,6 +556,29 @@ auto-os`。
   **前置 = 034 ✅ + 035 merge**（B2 硬前置；建议整体 035 后开工）。
   悬置决策 §10（①–④），D1 face 材料/D3 拓扑为用户确认项，不阻塞
   T-02/T-04 先行。
+- 2026-09-20 /auto-plan:work 批次 A 执行记录（中间执行——计划整体
+  保持 executing）：worktree lang-036 @ master 608399943 分叉、
+  提交 243bc5bd（16 文件 +2587/-170）；组内 auto-down 依赖 worktree
+  `.wt/lang-036/auto-down` @ detach d1a83b6（a2r-actor-tests manifest
+  解析所需，034 组同型）。T-01 定案（D4/D7/D8 定案 + D1/D2/D3 悬置
+  批次前置）→ T-02 生成目标（真编译门绿：词汇表超记实臂缺位清偿
+  a2r 七族 + truncate 真渲⑫[018 债清偿翻 Covered] + 生成器确定性
+  实证）→ T-03 替换+双轨（接缝 trait 化 + cmd_autodesk 编译轨缺省 +
+  spawn 注入收窄 + 度量行 25.7ms→0.8ms）。门：shell-pack 4/4 +
+  freshness 绿 + auto check 0 错 + ui_gen 812/814（2 在册红基线
+  stash 实证同红：mouse_area/autodown_panel）+ desktop_protocol
+  182/183（imagesurface 在册红基线同红）+ session/shell 93/93 +
+  auto-man 312/313（修前 freshness 过期红已转绿）。B1（T-04）起
+  挂 035 merge 前置（§8 依赖序维持；035 状态 executing——其 §9 已
+  记 work 完成待 review）。`stage: work | PLAN-036 | rev 1 |
+  outcome: pass（批次 A）| code_commit: lang-036 243bc5bd |
+  task_ids: T-01,T-02,T-03 | evidence: 上述门 | blockers: 035 merge
+  （B1-B3 前置）| next: 035 merge 后 T-04`。随注三件：①auto-man
+  测试运行有 examples 再生成副作用（worktree 内曾误裁 rust-workspace
+  成员——278f71f35 同型反模式，已 amend 回滚；015-notes main.rs
+  再生成保留[反映本提交生成器修复]）；②smoke-030/p030 e2e 腿后续
+  重跑将默认吃到编译轨 child（行为预期变化，T-08 对拍面）；③专用
+  shell exe（彻底摆脱 re-exec）维持 D4 注记另立。
 
 ## 10. 待澄清事项
 
