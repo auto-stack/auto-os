@@ -482,7 +482,16 @@ M7-b/M7-c① 并行——文件面错开）。
     总数 131→136。
   - **archived**：本文件 docs/plans/archive/034-rqhost-maturity.md +
     status: archived + `completion_kind: delivered`。
-  - **cleaned**：见后续收据行（合并收据补记）。
+  - **cleaned**：wt-guard 三 worktree——lang-034 首跑 BLOCKED（pnpm
+    node_modules junction 54 处，本会话 TS 测试 pnpm install 所置——
+    661 先例同型；按闸门指引 cmd rmdir 逐链接摘除[只删链接本身]后
+    过闸 exit 0）/os-034 clean/auto-down clean；移除：lang-034
+    （worktree 注销后残留目录 rm -rf——闸净后无穿透风险）+ 分支
+    plan-034-dev（lang，was 4c3a440e6=master；os，was 0fd56d0=main）；
+    auto-down worktree 移除但**分支保留**（auto-down 本地分支
+    2026-09-19 既存，非本计划所建——属主规则）；组目录 lang-034/
+    os-034 双移除实证；worktree prune 零残留。os-035/lang-653/
+    term-024 = 他方会话组未触碰。
   主检出注记：lang 主检出 .next-id 脏（并行会话取号簿记，未触碰）；
   os 主检出 ui-gallery/widgets-gallery 他方 WIP 与本分支零叠。
 
