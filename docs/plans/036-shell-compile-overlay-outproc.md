@@ -23,7 +23,7 @@ affects:
   - auto-lang/crates/auto-lang/src/ui/desktop_protocol/broker_surface.rs # face:// 虚拟引用（依 D1-C+）
   - auto-os/shell/                                                       # pack 源（035 修缮后基线；pin 快照 sync）
   - auto-os/docs/plans/autos-desktop-program.md                         # M7-b 行
-current_step: 6
+current_step: 7
 total_steps: 10
 ---
 
@@ -348,11 +348,18 @@ crates/shell-pack + mount_face 工厂 + 双轨开关语义）。
   apply/命令 drain/渲染非空/revision 前进）+ **boot 时延度量行**
   （interpreted 解释装载 vs compiled mount_face 对拍，落 shell-pack
   测试输出，T-09 汇总）。
-- **D5 launcher 聚焦 child 化（悬置 → T-07 前置）**：候选面复核在案
-  （iced focus Task R:10116-10137 / `__focus_input` 重试 R:10106-10109
-  / 宿主窗订阅独占 R:19943-19960）；B3 批次细化（投影下发 focus 请求
-  位 vs child 自主聚焦首 input + 伪窗可 focused WM 语义 + 热键宿主
-  保留边界三件套）。
+- **D5 launcher 聚焦 child 化（✅ 定案 2026-09-20，T-07 落地）**：
+  ①`__focus_input` 重试环等价 = **child 自主聚焦**——LauncherSnapshot
+  ApplyFilter 事件后 `focus_first_input()`（RqProjector 首输入槽直置
+  ——投影下发请求位方案弃：无回执闭环）；②伪窗可聚焦 WM 语义 =
+  召唤时 `wm_focus(launcher_wid)`（伪窗入焦点域承接 route_live_input
+  键盘/IME 路由——chrome 伪窗不抢焦点先例的刻意突破，launcher 专属性
+  面板需键盘）；③键盘 bind 路由 = ShellFaces.on_input KeyPressed 先
+  经 `dispatch_key`（VK→规范名→`ShellStateAccess::shell_key`——解释臂
+  key_bindings 表→call_handler；编译臂 key_message 直派[P036 债]），
+  未消费落投影器既有臂；④热键宿主保留边界 = Ctrl+Space/⊞（HA::
+  SummonLauncher 热键表）与一切修饰组合键（modifiers≠0）为**宿主域**
+  ——child 只消费裸键（方向/Enter/Tab/Esc/Space）。
 - **D6 B1 键盘语义清单（悬置 → T-04 前置）**：switcher
   （Esc/Tab/Enter/方向键）与通知（Esc/清除）InputMsg 消费面（029
   route_live_input S:3864-3888 + native_projector on_input
@@ -550,11 +557,22 @@ auto-os`。
   **D1-C+ face:// 全下放**：宿主无 DrawList→位图栅格化器（文本字形
   缺位）——face:// 虚拟引用词汇记 P036 新债（T-10 随注），复审可
   翻案升级）。lang-036 @ 89c185571。
-- **T-07 [lang] B3 launcher**
+- **T-07 [lang] B3 launcher** [x]
   文件：S/R（装载形态依 D3）、SC（聚焦 child 化依 D5）、热键边界。
   动作：§5.5。
   验证：键盘流 e2e 腿 + parity。
   → AC-04。
+  [✅ 已完成 2026-09-20] D3-C v1：一面一 exe = 独立进程 re-exec
+  （--autodesk-launcher + AUTO_LAUNCHER_ENTRY 注册表源 env）——v1
+  解释装载/无看门兵/编译轨 launcher exe 三件记 P036 债。D5 落地
+  （定案记录见 §5.1 D5 修订）：__focus_input 等价 = ApplyFilter 事件
+  后 child focus_first_input；伪窗可聚焦 = wm_focus 承接
+  route_live_input；键盘 bind 路由臂 = dispatch_key（VK→规范名→
+  shell_key：解释 key_bindings→call_handler/编译 key_message 记债）；
+  热键宿主保留 = Ctrl+Space/⊞ 与一切修饰组合宿主域。LauncherSnapshot
+  七列表激活 + launcher_open 镜像 + 层序贴层 + Esc 同册。门：scoped
+  104/104 + shell-pack 4/4 + freshness 绿 + desktop_protocol 185/186
+  （imagesurface 在册红）+ auto check 0 错。lang-036 @ 7a2bf7521。
 - **T-08 [lang+os] e2e 五面终态**
   文件：lang `stage3.rs`（p036_all_faces_outproc_arm）+ assets/036/。
   动作：AC-02..05 逐条留痕。
@@ -628,6 +646,17 @@ auto-os`。
   blockers: D3 落地细节（launcher 一面一 exe 形态） | next: T-07（B3
   launcher——D5 聚焦链 child 化 + LauncherSnapshot 推送 + 热键宿主
   保留）`。
+- 2026-09-20 /auto-plan:work T-07 执行记录（B3）：D3-C v1 = 独立进程
+  re-exec + 注册表源 env（编译轨 launcher exe/看门兵/编译 key_message
+  三件记 P036 债）；D5 定案成文（§5.1 修订——child 自主聚焦 + 伪窗
+  可聚焦 + bind 路由臂 + 热键宿主域边界）。提交 7a2bf7521（7 文件
+  +596/-46）。B1+B2+B3 齐后：**overlay 四面全 outproc 装配在案**
+  （switcher/通知/dashboard 并壳 exe + launcher 独立 exe——D3-C 混合
+  拓扑落地）。门见 T-07 行。`stage: work | PLAN-036 | rev 1 |
+  outcome: pass（B3）| code_commit: lang-036 7a2bf7521 | task_ids:
+  T-07 | evidence: 上述门 | blockers: 无 | next: T-08（五面终态 e2e
+  ——p036_all_faces_outproc_arm + parity 双形态对拍 + 截图 assets/
+  036/）`。
 
 ## 10. 待澄清事项
 
