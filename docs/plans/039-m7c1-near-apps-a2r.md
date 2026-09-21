@@ -6,7 +6,7 @@ author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
-current_step: 8
+current_step: 9
 total_steps: 14
 
 # /auto-plan:review 结束时填写：
@@ -512,16 +512,27 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   验证：折平/textarea/拒绝门单测绿。
   → AC-01。
 - **T-04 [os+lang] klondike 全轨**（§5.3；**rev 2 前置：T-14 批次 E 完成**）
-  [ ] **部分完成——生成门被 store 深水阻断（needs_replan 证据 §10①）**。
-  已落：发现臂三件（lang 079acfe74：collect_at_files 递归收集[components
-  子目录全漏=CardSuit 族缺失根因] + `key:` 认知同弃臂 + .at 字面量发射
-  再转义 rust_str_lit_body）；生成物实证：ondblclick MouseArea 包裹✓/
-  icon 动态 class✓（card_suit.at 载体）——但 front member 真编译门
-  ~180 错，主体为 store 动态语义译臂缺位（无类型局部变量格/Value 记录
-  字段与方法降链/.pop() 混型），非五臂面。三轨/desktop_exe/back 对照
-  未起。
-  验证：生成门红（归因在案）；plan039 单测 10/10。
-  → AC-02 未达；阻断面入 §10①。
+  [x] `[✅ 已完成]`（2026-09-21，lang 栈扩容提交 + os 037 提交）：批次 E
+  后生成门 190→0；pac `desktop_exe:` 声明（rust-workspace/target/debug/
+  klondike.exe）；三轨验收——①**Vue playwright 三套全绿**（rules_golden
+  100% + 全流程含胜利庆祝/皮肤切换[locator 三处对齐现行文案] +
+  moves 双击上基础/撤销）；②**VM 轨 desktop_mcp.py 新增 26/26 PASS**
+  （结构/初始态/ClickStock 24→23/DebugWinDeal 夹具[12 张 A..Q 同花
+  递增+四 K]/AutoSendAll 胜利 won+横幅/新对局/撤销回路；VM boot ~1min
+  首帧等待；**子进程 stdout 须文件重定向——PIPE 满阻塞渲染**坑注记）；
+  ③**Rust 轨 rust_golden.py 新增 11 PASS+1 诚实红**（编译 exe 状态机
+  标量面全验[Init 链 stock_count 24/seed 确定性 214 跨运行恒定] +
+  rules_golden 纯函数复刻）；**back regen 对照结论**：rust-workspace 单
+  front member，back 无 rust 再生面=P666-D1 无波及。**连带修**：生成
+  main iced 臂包 1GB 栈线程 + workspace .cargo/config MSVC /STACK 256MB
+  （深视图求值递归溢默认栈株；四 app 门回归全目标形态）。**P039 新债
+  在册（F-04a）**：编译 exe MCP 树快照对 klondike 深树仅投影根节点
+  （81 字节——RqProjector/snapshot 深树面；minesweeper 浅树正常、
+  VM/Vue 双轨全渲染；状态面 state_snapshot 全量存活）——D1 双击的
+  编译轨实机验证与树交互段（ClickStock/夹具/胜利的 exe 内复跑）待债
+  清偿，VM/Vue 双轨已实证。
+  验证：生成门 0 + desktop_exe + 三轨如上（Rust 轨 1 红=债在册非静默）。
+  → AC-02 达成（双击交互：Vue+VM 双轨实证；编译轨实机挂 F-04a 债注记）。
 - **T-05 [os+lang] minesweeper 全轨**（§5.3）
   [x] `[✅ 已完成]`（2026-09-21，lang 3b99ff6bf + os
   c9610ba）：生成门 0 错（含发现臂④动态标签 format! 包裹 + ⑤target-dir
@@ -611,6 +622,16 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:work rev 2 T-04 klondike 全轨收口：
+  `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
+  lang 深视图栈扩容提交（1GB 线程+/STACK 256MB）+ os 037 提交（pac+
+  tests×3+locator 对齐）| task_ids: T-04 ✅（批次 E 前置清偿后全轨）|
+  evidence: Vue playwright 三套全绿 / VM desktop_mcp 26/26 / Rust
+  rust_golden 11+1 诚实红（深树快照债）/ back 对照=无 rust 再生面 /
+  四 app 门回归全目标形态 | blockers: F-04a 新债在册（编译 exe MCP
+  树快照深树仅根节点——RqProjector 面；树交互段+D1 编译轨实机待偿，
+  VM/Vue 已实证）| next: T-07（launcher 编译轨）→ T-08（kanban）→
+  T-06（tetris 可并行）→ T-09/T-10`
 - 2026-09-21 /auto-plan:work rev 2 批次 E 收官记录（T-12/T-13/T-14）：
   `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
   lang plan-039-dev c4ed5a21b(T-12)→a33448dbb(T-13)→T-14a 参数序→
