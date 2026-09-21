@@ -999,9 +999,9 @@ store KlondikeStore {
                 var w_sel bool = (.sel_source == "waste")
                 // 步骤1：选中高亮——indigo 描边 + ring + 上移 2px（不改 CardFace 渲染）
                 var w_cclass str = if w_sel {
-                    "w-[76px] h-[106px] rounded-lg bg-white bg-[#ffffff] border-2 border-indigo-600 text-slate-900 justify-between shadow-2xl relative cursor-pointer select-none ring-4 ring-indigo-400/60 z-30 -mt-0.5"
+                    "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 text-slate-900 justify-between shadow-2xl relative cursor-pointer select-none ring-4 ring-indigo-400/60 z-30 -mt-0.5"
                 } else {
-                    "w-[76px] h-[106px] rounded-lg bg-white bg-[#ffffff] hover:bg-slate-50 border border-slate-200 text-slate-900 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300"
+                    "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 hover:bg-slate-50 border border-slate-200 text-slate-900 justify-between shadow-md relative cursor-pointer select-none hover:border-slate-300"
                 }
 
                 .waste_card = {
@@ -1070,9 +1070,9 @@ store KlondikeStore {
                     var f_sel bool = (.sel_source == "foundation" && .sel_col == fi)
                     // 步骤1：选中高亮
                     var f_class str = if f_sel {
-                        "w-[76px] h-[106px] rounded-lg bg-white bg-[#ffffff] border-2 border-indigo-600 text-slate-900 justify-between relative shadow-xl ring-4 ring-indigo-400/60 select-none cursor-pointer z-30 -mt-0.5"
+                        "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 text-slate-900 justify-between relative shadow-xl ring-4 ring-indigo-400/60 select-none cursor-pointer z-30 -mt-0.5"
                     } else {
-                        "w-[76px] h-[106px] rounded-lg bg-white bg-[#ffffff] hover:bg-slate-50 border border-slate-200 text-slate-900 justify-between relative shadow-md select-none cursor-pointer hover:border-slate-300"
+                        "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 hover:bg-slate-50 border border-slate-200 text-slate-900 justify-between relative shadow-md select-none cursor-pointer hover:border-slate-300"
                     }
 
                     new_slots.push({
@@ -1162,31 +1162,38 @@ store KlondikeStore {
                         wrap_str = "-mt-20 w-[76px] h-[106px] overflow-hidden shrink-0"
                     }
 
-                    // 步骤3：被盖住的牌只绘制 26px 露头（CardFace 由 overflow 裁切），
-                    // 不画被盖牌身 → 下层不会透出；顶牌完整 CardFace（白底/渐变均不透明）。
-                    // 布局：26px peek + 80px 空白 = 106，与 -mt-20 步进一致。
+                    // 恢复「基本 OK」版：完整 CardFace 视觉层 + peek 命中条。
+                    // 步骤1 仅加强选中态 class（ring + indigo 描边 + 上移 2px），不动牌面渲染。
                     var card_style str = ""
+                    var visual_class str = ""
                     var needs_visual bool = false
                     if is_top {
                         if is_down {
                             card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-transparent border-0 items-center justify-center relative select-none overflow-hidden cursor-pointer"
                         } else {
+                            // 顶牌白底不透明壳 + CardFace 自绘白底，双保险防下层穿透
                             if is_selected {
-                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-white bg-[#ffffff] border-2 border-indigo-600 items-center justify-center relative select-none overflow-hidden cursor-pointer ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
+                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 items-center justify-center relative select-none overflow-hidden cursor-pointer ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
                             } else {
-                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-white bg-[#ffffff] border border-slate-200 items-center justify-center relative select-none overflow-hidden cursor-pointer"
+                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border border-slate-200 items-center justify-center relative select-none overflow-hidden cursor-pointer"
                             }
                         }
                     } else {
-                        // peek 按钮同时承担命中 + 可视露头
+                        needs_visual = true
                         if is_down {
-                            card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-transparent border-0 items-start relative select-none overflow-hidden shrink-0 cursor-pointer"
+                            visual_class = "w-[76px] h-[106px] rounded-lg relative select-none shrink-0 overflow-hidden"
                         } else {
                             if is_selected {
-                                card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-white bg-[#ffffff] border-2 border-indigo-600 border-b-0 relative cursor-pointer select-none ring-2 ring-indigo-400/60 z-30 overflow-hidden shrink-0 items-start"
+                                visual_class = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 relative select-none shrink-0 overflow-hidden ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
                             } else {
-                                card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-white bg-[#ffffff] border border-slate-200 border-b-0 relative cursor-pointer select-none overflow-hidden shrink-0 items-start"
+                                visual_class = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 relative select-none shrink-0 overflow-hidden"
                             }
+                        }
+                        // 命中条叠在 visual 之后（OK 版位置）；选中时 peek 也带 ring
+                        if is_selected {
+                            card_style = "w-[76px] h-[26px] mt-[-106px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none ring-2 ring-indigo-400/60 z-30 hover:bg-white/25"
+                        } else {
+                            card_style = "w-[76px] h-[26px] mt-[-106px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none hover:bg-white/25"
                         }
                     }
 
@@ -1206,7 +1213,7 @@ store KlondikeStore {
                         needs_visual: needs_visual,
                         wrapper_class: wrap_str,
                         card_class: card_style,
-                        visual_class: "",
+                        visual_class: visual_class,
                         svg_src: "/assets/cards/classic/" + r_txt + "_" + s_txt + ".svg"
                     })
                     i = i + 1
