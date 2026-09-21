@@ -65,10 +65,10 @@ auto-os/
 | jade-garden | Jade Garden（类 Obsidian 知识库） | [../auto-down](../auto-down)`/jade-garden/front/auto` | repo | 17300 / 17301 | active (2026-09-11；daemon 链 PLAN-013) |
 | auto-term | AutoTerm（桌面终端） | [../auto-term](../auto-term)`/app` | repo | 17400 / 17401（端口占位：无 back，引擎进程内） | active (PLAN-013 T7) |
 | 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
-| 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁) |
-| 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁) |
-| tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005) |
-| 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006) |
+| 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁；a2r 化 PLAN-039) |
+| 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁；a2r 化 PLAN-039) |
+| tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005；a2r 化 PLAN-039) |
+| 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006；a2r 化 PLAN-039) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；
