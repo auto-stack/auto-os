@@ -1,6 +1,6 @@
 // Plan 435 P5b —— kitchen-sink demo 页(schema/aura.at 生成,**勿手改**)
 // 再生成:auto docs gen(测试内等价 KITCHEN_SINK_UPDATE=1 cargo test -p auto-lang --test docs_gen)
-// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 51 个)。
+// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 53 个)。
 
 widget KitchenSinkPage {
     msg { Go }
@@ -257,8 +257,18 @@ widget KitchenSinkPage {
             h2 "scroll"
             row (style: "gap-2 flex-wrap items-center") {
                 scroll {}
-                scroll (direction: "vertical") {}
-                scroll (direction: "horizontal") {}
+                scroll (axis: "y") {}
+                scroll (axis: "x") {}
+                scroll (scrollbar: "auto") {}
+                scroll (scrollbar: "always") {}
+            }
+
+            h2 "scroll_test_content"
+            row (style: "gap-2 flex-wrap items-center") {
+                scroll_test_content {}
+                scroll_test_content (key: "sample") {}
+                scroll_test_content (extent_w: 1) {}
+                scroll_test_content (extent_h: 1) {}
             }
 
             h2 "select"
@@ -311,6 +321,14 @@ widget KitchenSinkPage {
                 sidebar_menu_button (active: true) {}
             }
 
+            h2 "slider"
+            row (style: "gap-2 flex-wrap items-center") {
+                slider {}
+                slider (min: 1) {}
+                slider (max: 1) {}
+                slider (step: 1) {}
+            }
+
             h2 "slot"
             row (style: "gap-2 flex-wrap items-center") {
                 slot {}
@@ -330,7 +348,7 @@ widget KitchenSinkPage {
 
             h2 "text"
             row (style: "gap-2 flex-wrap items-center") {
-                text {}
+                text "sample" {}
                 text (selectable: true) {}
             }
 
