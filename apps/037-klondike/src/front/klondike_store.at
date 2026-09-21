@@ -1162,8 +1162,22 @@ store KlondikeStore {
                         wrap_str = "-mt-20 w-[76px] h-[106px] overflow-hidden shrink-0"
                     }
 
-                    // 恢复「基本 OK」版：完整 CardFace 视觉层 + peek 命中条。
-                    // 步骤1 仅加强选中态 class（ring + indigo 描边 + 上移 2px），不动牌面渲染。
+                    // 实验：按点数给不同底色，验证顶牌背景是否盖住下层背景/文字
+                    var face_bg str = "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300"
+                    if r_num == 1 { face_bg = "bg-gradient-to-br from-red-300 via-red-200 to-red-400" }
+                    if r_num == 2 { face_bg = "bg-gradient-to-br from-orange-300 via-orange-200 to-orange-400" }
+                    if r_num == 3 { face_bg = "bg-gradient-to-br from-amber-300 via-amber-200 to-amber-400" }
+                    if r_num == 4 { face_bg = "bg-gradient-to-br from-yellow-300 via-yellow-200 to-yellow-400" }
+                    if r_num == 5 { face_bg = "bg-gradient-to-br from-lime-300 via-lime-200 to-lime-400" }
+                    if r_num == 6 { face_bg = "bg-gradient-to-br from-green-300 via-green-200 to-green-400" }
+                    if r_num == 7 { face_bg = "bg-gradient-to-br from-emerald-300 via-emerald-200 to-emerald-400" }
+                    if r_num == 8 { face_bg = "bg-gradient-to-br from-teal-300 via-teal-200 to-teal-400" }
+                    if r_num == 9 { face_bg = "bg-gradient-to-br from-cyan-300 via-cyan-200 to-cyan-400" }
+                    if r_num == 10 { face_bg = "bg-gradient-to-br from-sky-300 via-sky-200 to-sky-400" }
+                    if r_num == 11 { face_bg = "bg-gradient-to-br from-blue-300 via-blue-200 to-blue-400" }
+                    if r_num == 12 { face_bg = "bg-gradient-to-br from-indigo-300 via-indigo-200 to-indigo-400" }
+                    if r_num == 13 { face_bg = "bg-gradient-to-br from-violet-300 via-violet-200 to-violet-400" }
+
                     var card_style str = ""
                     var visual_class str = ""
                     var needs_visual bool = false
@@ -1171,29 +1185,31 @@ store KlondikeStore {
                         if is_down {
                             card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-transparent border-0 items-center justify-center relative select-none overflow-hidden cursor-pointer"
                         } else {
-                            // 顶牌白底不透明壳 + CardFace 自绘白底，双保险防下层穿透
                             if is_selected {
-                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 items-center justify-center relative select-none overflow-hidden cursor-pointer ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
+                                card_style = face_bg + " w-[76px] h-[106px] p-0 rounded-lg border-2 border-indigo-700 items-center justify-center relative select-none overflow-hidden cursor-pointer ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
                             } else {
-                                card_style = "w-[76px] h-[106px] p-0 rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border border-slate-200 items-center justify-center relative select-none overflow-hidden cursor-pointer"
+                                card_style = face_bg + " w-[76px] h-[106px] p-0 rounded-lg border border-slate-300 items-center justify-center relative select-none overflow-hidden cursor-pointer"
                             }
                         }
                     } else {
                         needs_visual = true
                         if is_down {
-                            visual_class = "w-[76px] h-[106px] rounded-lg relative select-none shrink-0 overflow-hidden"
+                            visual_class = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/50 relative select-none shrink-0 overflow-hidden"
                         } else {
                             if is_selected {
-                                visual_class = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 border-2 border-indigo-600 relative select-none shrink-0 overflow-hidden ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
+                                visual_class = face_bg + " w-[76px] h-[106px] rounded-lg border-2 border-indigo-700 relative select-none shrink-0 overflow-hidden ring-4 ring-indigo-400/60 shadow-2xl z-30 -mt-0.5"
                             } else {
-                                visual_class = "w-[76px] h-[106px] rounded-lg bg-gradient-to-br from-white via-white to-slate-50 relative select-none shrink-0 overflow-hidden"
+                                visual_class = face_bg + " w-[76px] h-[106px] rounded-lg border border-slate-300 relative select-none shrink-0 overflow-hidden"
                             }
                         }
-                        // 命中条叠在 visual 之后（OK 版位置）；选中时 peek 也带 ring
-                        if is_selected {
-                            card_style = "w-[76px] h-[26px] mt-[-106px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none ring-2 ring-indigo-400/60 z-30 hover:bg-white/25"
+                        if is_down {
+                            card_style = "w-[76px] h-[26px] mt-[-106px] p-0 rounded-t-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/50 border-b-0 shrink-0 cursor-pointer select-none"
                         } else {
-                            card_style = "w-[76px] h-[26px] mt-[-106px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none hover:bg-white/25"
+                            if is_selected {
+                                card_style = face_bg + " w-[76px] h-[26px] mt-[-106px] p-0 px-1.5 rounded-t-lg border-2 border-indigo-700 border-b-0 shrink-0 cursor-pointer select-none ring-2 ring-indigo-400/60 z-30 items-center"
+                            } else {
+                                card_style = face_bg + " w-[76px] h-[26px] mt-[-106px] p-0 px-1.5 rounded-t-lg border border-slate-300 border-b-0 shrink-0 cursor-pointer select-none items-center"
+                            }
                         }
                     }
 
@@ -1214,6 +1230,7 @@ store KlondikeStore {
                         wrapper_class: wrap_str,
                         card_class: card_style,
                         visual_class: visual_class,
+                        bg_class: face_bg,
                         svg_src: "/assets/cards/classic/" + r_txt + "_" + s_txt + ".svg"
                     })
                     i = i + 1
