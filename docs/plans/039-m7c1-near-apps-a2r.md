@@ -6,7 +6,7 @@ author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
-current_step: 11
+current_step: 12
 total_steps: 14
 
 # /auto-plan:review 结束时填写：
@@ -545,8 +545,21 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   验证：生成门 + 三轨如上。
   → AC-03。
 - **T-06 [os+lang] tetris 收口**（§5.3）
-  验证：rules_golden + run_matrix。
-  → AC-04。
+  [x] `[✅ 已完成]`（2026-09-21，lang 发现臂⑥提交 + os 036 提交）：
+  生成门 0（**发现臂⑥**：aria-label/ARIA 族认知且双轨同弃臂——a11y
+  提示词，key/onmouseenter parity；**栈路线修正**：PE /STACK 唯一，
+  线程包裹弃[winit 主线程约束，tetris 实测 panic——klondike 树快照空
+  次生嫌疑同源，回退后双 exe 活 MCP 实证]）+ pac desktop_exe（纯行版：
+  **发现臂⑦** pac 注释 `# [` 起首撞 #[annotation] 解析=P037 债注记，
+  lang 侧修复属 037 域）+ **run_matrix rust 腿 unblock**（rust.backend/
+  rust.generated 双 supported；manifest.tetris supported）+ 
+  **vm_rules_golden 恢复 PASS**（AUTOUI_TEST_FIXTURES=1+AUTOUI_MCP_URL
+  活会话：opening/lock + 7 形态×4 旋转 + 1-4 消行）+ desktop_mcp
+  snapshot OK（**dialog 折叠形态回归锚**——modal_dialog 族臂渲染在案）
+  + back regen 对照（rust-workspace 单 front member——同 klondike 结论，
+  back 无 rust 再生面=P666-D1 无波及）。
+  验证：run_matrix + vm_rules_golden + desktop_mcp 如上。
+  → AC-04 达成。
 - **T-07 [lang+os] launcher 编译轨**（§5.4，依 D2；**rev 2 前置：T-14
   批次 E 完成——launcher 门 56 错先于编译轨消费**）
   [x] `[✅ 已完成]`（2026-09-21，lang 82b51e1aa + os 028 pac 提交）：
