@@ -1,11 +1,12 @@
 ---
 plan_id: PLAN-039
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived                # drafting → executing → execution_done → reviewed → archived
 feature_name: m7c1-near-apps-a2r
 author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
+completion_kind: delivered
 current_step: 14
 total_steps: 14
 
@@ -684,6 +685,38 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:merge 落地收据（PLAN-039:r2，五 checkpoint 闭环
+  delivered）：`stage: merge | PLAN-039 | rev 2 | outcome: pass`
+  - **prepared**：reviewed 基线 = R1 pass（0dbd3cf；reviewed_commit
+    lang 5622a9869 / os 91b6b3b / kanban 90f0df8 零改动）；SD-01/SD-02
+    已在 worktree 提交内（T-09）；P039-D5 债入册补提（F-R1 复审建议，
+    docs-only 后代 ef904b087→rebase 后 b5c961d7a）。
+  - **landed**：lang rebase master（前行 118 提交）**零冲突**——
+    range-diff 全等（旧 42c12cb1f..5622a9869 十一提交 `=` 映射 →
+    f68f7fd57..a7cae5b76 + 新 b5c961d7a）；os rebase main 零冲突——
+    range-diff 全等（c9610ba..91b6b3b → bea3abf..c632794）；双
+    `--ff-only` 落地：**lang master tip=b5c961d7a / os main tip=
+    c632794**（零 merge 提交，tip==dev 分支已验证）。rebase 后复验：
+    lang build 0 错+plan039 16/16+launcher 单测 ✓+五 app 生成门矩阵
+    0/ondrop×3/0/0/0（清缓存复跑）✓；os 主检出台账 M7-a/b/c 三行共存
+    ✓。os 落地阻挡一件：主检出未跟踪 desktop_mcp.py 与提交版逐字节同
+    （他会话拷贝，零信息损失删除放行；probe_qj/restart_vm/screenshots
+    等他会话实验物不在 039 面保留未动）。
+  - **ledger_refreshed**：`.autoos/specs.json` 152→**157（P039×5 读回
+    ✓）**——reports P039-1（变更摘要）/designs P039-1（SD-01 台账 M7-c①
+    行）+P039-2（SD-02 债册处置[lang KNOWN-DEBT]）/tests P039-1（五 app
+    门矩阵+三轨验收件）/reviews P039-r1（复审与合并收据）。
+  - **archived**：`git mv` → docs/plans/archive/039-m7c1-near-apps-a2r.md
+    + `status: archived` + `completion_kind: delivered`（本收据行）。
+  - **cleaned**：wt-guard 双查（os worktree 初扫 BLOCKED=klondike/kanban
+    gen vue node_modules pnpm junction ~400 个——python lstat
+    FILE_ATTRIBUTE_REPARSE_POINT 递归删链接本身[不穿透]后 clean；auto-down/
+    生成位 auto-lang clean）；worktree remove×4 + 组目录两清（.wt/os-039
+    残留 vite/esbuild 进程树 cwd 锁——CommandLine 匹配杀尽后 rm 净；
+    组内幻影 autostack/ 纯 target 壳 guard 后删）；分支三删
+    plan-039-dev@{lang b5c961d7a / os c632794 / kanban 90f0df8}；
+    worktree list/prune 三仓回执零残留。他会话 worktree/主检出 WIP
+    （PLAN-675 域 klondike .at+ui-gallery）未触碰。
 - 2026-09-21 /auto-plan:review R1（同会话复审——判定从工件重建：全部
   判据独立重跑，不采信执行记录总结）：`stage: review | PLAN-039 | rev 2
   | outcome: pass | reviewed_commit: os-worktree 91b6b3b（链 c9610ba→

@@ -292,6 +292,18 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P039-1",
+          "title": "PLAN-039 变更摘要 — m7c1-near-apps-a2r（M7-c① 近邻五 app 批量 a2r）",
+          "content": "五 app（klondike/minesweeper/kanban/launcher/tetris）a2r 化：生成门矩阵收敛（klondike 190→0 / launcher 56→0 / tetris 门 1→0 / minesweeper 0 零回归 / kanban 唯一红=ondrop×3 D3-A 显式拒绝）+ 批次 E store 动态语义译臂（内建方法表 __at_* shim/Value 降链家族/记录形状注册表三层/back pub type→struct 发射/无类型局部两遍联合格/组件传型七面）+ 发现臂⑦件（递归收集/key 同弃/字面量再转义/动态标签 format!/target 幻影废除/ARIA 族同弃/pac 注释 #[ 毒行[P037 域]）+ desktop_exe 四声明 + launcher 编译轨（spawn 编译产物优先=P036-D2 核销 + key_message 产物面=P036-D4）+ 深视图栈 PE /STACK 定案（线程弃：winit 主线程约束）+ 三轨验收（klondike Vue 三套/VM 26/26/Rust 11+1 诚实红[F-04a 深树快照债]；tetris vm_rules_golden 恢复+run_matrix rust 腿 unblock；minesweeper VM 25/25+rust_smoke）。",
+          "file": "auto-os/docs/plans/archive/039-m7c1-near-apps-a2r.md",
+          "related": [
+            "PLAN-039"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -987,6 +999,30 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P039-1",
+          "title": "SD-01 — 台账 M7-c① 交付行（近邻五 app 批量 a2r）",
+          "content": "auto-os docs/plans/autos-desktop-program.md 增 M7-c① 交付行（PLAN-039，2026-09-21）：近邻五 app a2r 化结论（矩阵数值+译臂谱系+发现臂+desktop_exe+launcher 双债核销面+三轨验收+F-04a 债注记+②③另立指针）；manifest 增补 038-minesweeper/028-launcher。",
+          "file": "auto-os/docs/plans/autos-desktop-program.md",
+          "related": [
+            "PLAN-039"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P039-2",
+          "title": "SD-02 — 债册处置（P036-D2/D4 核销 + P039-D1..D5 新债）",
+          "content": "auto-lang docs/plans/KNOWN-DEBT-AND-RISKS.md：P036-D2（编译轨 launcher exe）/P036-D4（key_message 编译臂）核销划线；P039-D1 kanban drag 家族 not-yet（显式拒绝门带债指针）/D2 编译 exe 深树 MCP 快照仅根节点（RqProjector 面）/D3 pac 注释 #[ 起首撞 annotation 解析（P037 域）/D4 api 桩通用 CRUD 假设性签名（P666-D1 关联）/D5 .auto/ui-cache 生成器版本失效机制缺位（复审 F-R1）。",
+          "file": "auto-lang/docs/plans/KNOWN-DEBT-AND-RISKS.md",
+          "related": [
+            "PLAN-039"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
         }
       ]
     },
@@ -1297,6 +1333,18 @@
           "related": [
             "PLAN-037",
             "PLAN-658"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P039-1",
+          "title": "PLAN-039 测试语料 — 五 app 生成门矩阵 + 三轨验收件",
+          "content": "生成门：五 app auto build -r rust（矩阵 0/ondrop×3/0/0/0）；klondike tests/{desktop_mcp.py[VM 26/26],rust_golden.py[Rust 11+1 诚实红=F-04a 债],test_klondike*.cjs[rules_golden 100%+全流程+moves 双击]}；tetris tests/{vm_rules_golden.py[恢复 PASS],run_matrix.py[rust 腿 unblock 双 supported],desktop_mcp.py}；minesweeper tests/{desktop_mcp.py[25/25],rust_smoke.py}；kanban 主检出 playwright 17/17；lang plan039 单测 16/16+launcher_compiled_exe_discovery；p036 e2e 六腿 PASS（复审补跑）。",
+          "file": "auto-os/docs/plans/archive/039-m7c1-near-apps-a2r.md",
+          "related": [
+            "PLAN-039"
           ],
           "status": "published",
           "created": "2026-09-21",
@@ -1651,6 +1699,18 @@
           "file": "auto-os/docs/plans/archive/037-desktop-back-provision.md",
           "related": [
             "PLAN-037"
+          ],
+          "status": "published",
+          "created": "2026-09-21",
+          "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P039-r1",
+          "title": "PLAN-039 m7c1-near-apps-a2r 复审与合并收据",
+          "content": "R1 pass（2026-09-21，同会话复审工件重建）：AC-01..08 全复现（含 p036 e2e 六腿补跑 PASS 修正执行期挂账）；findings F-R1 ui-cache 陈旧污染（非代码回归，P039-D5 入册）/F-R3 视觉对拍代理证据/F-R4 worktree 环境差异/F-R5 launcher 实路召唤待实机；merge：lang 118 提交 rebase 零冲突 range-diff 全等（旧 42c12cb1f..5622a9869 → 新 f68f7fd57..a7cae5b76+b5c961d7a[P039-D5]）+ os rebase 全等（c9610ba..91b6b3b → bea3abf..c632794）双 ff-only 落地。",
+          "file": "auto-os/docs/plans/archive/039-m7c1-near-apps-a2r.md",
+          "related": [
+            "PLAN-039"
           ],
           "status": "published",
           "created": "2026-09-21",
