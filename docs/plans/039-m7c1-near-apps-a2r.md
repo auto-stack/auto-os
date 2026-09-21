@@ -1,13 +1,13 @@
 ---
 plan_id: PLAN-039
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing             # drafting → executing → execution_done → reviewed → archived
 feature_name: m7c1-near-apps-a2r
 author: [agent]
 created_at: 2026-09-20
-updated_at: 2026-09-20
-plan_revision: 1
-current_step: 0
-total_steps: 10
+updated_at: 2026-09-21
+plan_revision: 2
+current_step: 8
+total_steps: 14
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -32,6 +32,14 @@ affects:
 # [PLAN-039] m7c1-near-apps-a2r
 
 ## 0. 变更摘要
+
+> **rev 2（2026-09-21）**：work 阶段真编译门揭示普查漏检面——**记录型
+> store 的动态语义译臂缺位**（klondike ~180 / kanban 37[3=ondrop 预期红] /
+> launcher 56；minesweeper 0 错全绿——标量型 store 不受波及）。用户裁定
+> **不新建计划，039 内追加批次 E**（store 动态语义译臂包，方向①补齐
+> 而非降档）。rev 1 的五臂 + 发现臂三件全部保值（lang plan-039-dev
+> 42c12cb1f→079acfe74，plan039 单测 10/10）；受影响任务 T-04/T-07/T-08
+> 追加批次 E 前置；T-05/T-06 不受波及可先行。证据全案 §10④。
 
 **M7-c① 近邻梯队批量 a2r**（台账 autos-desktop-program.md:105 梯队①；
 M7-b[036] 收官后解锁的并行带件）。五 app：klondike（icon/card）/
@@ -72,6 +80,12 @@ master 50e3b8bb4）证实**五缺一核**：
 - **G6 收口**：apps.manifest/README Apps 表增补 + 台账 M7-c① 交付行 +
   债册处置（P036-D2/D4 核销[若 G4 落地]/P039 新债随注[kanban drag 等]）+
   回归门全绿（在册红除外）。
+
+**G7 store 动态语义译臂（rev 2 追加）**：记录型 store 三 app（klondike/
+kanban/launcher）的 handler 译臂清偿——无类型局部变量类型格、Value 记录
+字段/方法降链家族化、.at 内建方法翻译表（str/lower/esc…）、store 类型
+声明生成、api 元数漂移归因（联 P666-D1）。验证 = 三 app 生成门矩阵收敛
+（kanban 唯一红 = drag 在册拒绝）。
 
 **非目标**（明确出界）：
 
@@ -150,7 +164,10 @@ playwright/desktop_mcp 双轨 + tetris run_matrix 先例 + p036 e2e 回归。
 
 **授权记录**：用户 2026-09-20 会话明确「M7-c app 批量化（klondike/
 minesweeper 近邻梯队起手）……起草」——按台账 M7 序（M7-a ✅032 →
-M7-b ✅036 → M7-c① 本件）。**本轮仅规划，未授权实施**。涉及仓：
+M7-b ✅036 → M7-c① 本件）。**rev 2 授权（2026-09-21）**：work 阶段
+needs_replan 呈报后用户裁定「**不新建计划，在 039 里添加新的 phase**」
+= 方向①补齐 store 动态语义译臂包（非降档）；D2=launcher 编译轨本波
+核销、D3=drag 显式拒绝两项同日 AskUserQuestion 确认。涉及仓：
 auto-lang（codegen/生成链）+ auto-os（四 app + manifest/台账）+
 auto-kanban（a2r 化 + 验收）。无预算/自动续跑约束声明。
 
@@ -251,6 +268,115 @@ KNOWN-DEBT P036-D2/D4/P666-D1/D2 在册。
 
 定案记录追加 `### 5.1 定案记录`（file:line 证据）；D2/D3 为用户确认项。
 
+### 5.1 定案记录
+
+**D1 = A（MouseArea 包裹降级）**〔实施期自裁，2026-09-21〕。证据：
+view.rs:1650-1657 `View::Button` 仅 onclick/on_right_click 两事件槽（无双击
+原语）；`MouseArea.on_double_click: Option<M>` 为既有原语（view.rs:1034-1045，
+Plan 496 M5「桌面图标双击启动」）——iced/RqProjector/queue 三消费端既有，
+零 View 层涟漪。生成形态：button build 产物外包
+`View::MouseArea { content: Box::new(<built>), on_double_click: Some(Msg::V(..)), 其余 None }`
+（rust.rs:2482-2492 mouse-area 臂同构）；ondblclick 从 button 事件流剥离
+（events_sorted 过滤，rust.rs:2116），非 button tag 的 ondblclick 维持
+拒绝门响亮拒（I1）。布局代价 = 一层嵌套盒。
+
+**D4 = 运行期求值臂（非静态近似）**〔实施期自裁〕。证据：`View::Grid.cols`
+为运行期 usize 字段（view.rs:1658-1661，builder `.cols(usize)` + build 时
+`.max(1)`）——IR 无编译期常量假设，grid 臂 rust.rs:2511-2519 只收字面量是
+codegen 提取面窄非 IR 限制。生成 `.cols((<expr>) as usize)`（`.store.cols`
+→ ast_expr_to_rust :7151 `.starts_with(".store.")` 臂 → `self.store.cols`）。
+诚实语义：难度切换整局重开时 cols 变化亦正确。
+
+**D5 = 单路由折平 + 多路由响亮拒**〔实施期自裁〕。证据：Outlet 静默
+View::empty（rust.rs:4595-4601）；`RouteDef{path,module,params}`
+（ast/route.rs:58-66）；`AuraWidget.routes`（ast/ui.rs:86）。折平边界 =
+`routes.len()==1 && path=="/" && params.is_empty()`（kanban app.at:24-26
+`"/" -> use board` 实证形态）。折平生成 = 持久子件直用形态（同自定义
+widget 臂 rust.rs:5495-5504）：store 同步 + `__c.view().map_msg(|m| Msg::board(m))`；
+module 注册入 child_components（msg 包装变体 :659-662 / 持久字段 :733-740 /
+on() 转发+store 回写 :1461-1490 / 构造后重建 :970-988 全链既有机制）。
+多路由/带参路由 = outlet 位 compile_error 带 P039 指针（静默升响亮）；
+无 routes 块的 outlet 维持 View::empty（防御形态）。
+
+**D2 = A（用户确认 2026-09-21）**：本波核销 P036-D2+D4——launcher front
+member 生成（project 形态首例）+ spawn_launcher_outproc（session.rs:3666-3701
+现固定 `auto run --autodesk-launcher` 解释 re-exec）编译轨优先 + 缺席回退
+解释装载（I3 双轨）+ shell_key 编译臂（Component key_bindings/key_message
+生成器既有 rust.rs:1055-1082；shell 侧 ShellStateAccess::shell_key 接缝
+= P036-D4 本体）→ p036 e2e launcher 腿断言兼容改造复跑。
+
+**D3 = A（用户确认 2026-09-21）**：ondragover 家族（ondragover(.prevent)/
+ondragstart/ondragend/ondrop/ondragenter/ondragleave）入拒绝门专属臂——
+compile_error 带 P039 债指针（区别于通用未知事件臂）；kanban 生成门预期
+唯一红 = 此臂（board.at:254/308/362 ×3）。完整 in-app DnD 语义另立（P039
+债在册）。
+
+### 5.7 批次 E：store 动态语义译臂（rev 2 追加，T-11..T-14）
+
+错误矩阵证据（§10④，2026-09-21 真编译门实测，基 079acfe74）：
+
+| 错族 | klondike | kanban | launcher | 归因 |
+|---|---|---|---|---|
+| 无类型局部变量 i32↔Value 往返 | 125 | — | ~15 | 声明型与集合元素型双轨无联合 |
+| Value 记录字段直访（.rank/.suit/.title…） | 8 | — | 9 | 记录形状未注册到降链 |
+| Value 上 `>=`/`%` 数值运算 | 12 | — | — | 数值运算臂只收标量 |
+| computed/方法以 String 发射后被调用 | — | — | 25 | 方法调用语法 vs 字段访问误判 |
+| .at 内建 .str()/.lower()/esc() 未译 | — | 13 | 1 | 内建翻译表缺位 |
+| store 类型声明 Card/Meta/BoardDef 未生成 | — | 4 | — | 类型声明发射缺臂 |
+| api 调用元数漂移 | — | 5 | — | P666 族关联（归因联属主） |
+| 组件构造参数作用域（slot/CardSuitMsg/moved） | ~8 | — | — | 持久子件构造参数跨作用域提取 |
+| Option 索引 | — | 7 | — | find/first 结果链缺 unwrap |
+
+设计取舍（T-11 勘定后定案，倾向呈报）：
+
+- **E-D1 降链形态**：使用点包裹（`.rank` → `["rank"].as_i64().unwrap_or(0)`
+  家族）vs 赋值点强制（读取即转标量局部）——倾向使用点包裹（不动 .at
+  语义、单点家族化、既有 value_field_access 机制延伸）。
+- **E-D2 记录形状源**：store 记录字面量默认值推断（`waste_card = {id: 0,
+  …, svg_src: ""}` → id:int/rank:int/…/svg_src:str）+ back api 返回 JSON
+  动态容差（未知字段走缺省访问器）。
+- **E-D3 无类型局部变量**：显式声明型（`var c int`）保持声明型 + 赋值点
+  强转（Value RHS → 访问器包装）；无声明局部按全用例联合（含 Value 用例
+  → Value 型，数值用点包裹）。
+- **E-D4 内建表**：str/lower/upper/trim/len → Rust 同义方法；esc → 生成
+  shim（JSON 字符串转义）。
+- **E-D5 类型声明与元数**：store 内 `type` 声明生成 Rust struct（或统一
+  Value 化——T-11 勘定）；api 元数漂移归因联 P666-D1（属主 666/037，
+  本波只归因 + 最小垫片过门）。
+
+**T-11 定案补记（2026-09-21，基 lang 3b99ff6bf 勘定）——双株分治**：
+
+- **株①类型化记录株（kanban）**：front store 消费 back api.at 的
+  `pub type` 声明（BoardDef/Card/Meta/CardsResult，api.at:6-45）+
+  类型化集合（`var cards []Card`，boards_store.at:23）+ 记录字面量
+  （`Meta {...}`）。生成物 store 字段已正确 `Vec<Card>`（kanban
+  main.rs:105-107）但**类型本体未发射**（4 错根因）。
+- **株②动态 Value 株（klondike/launcher）**：无类型集合（`var
+  stock_cards = []`）+ 记录字面量（`waste_card = {…}`）+ 内建调用局部
+  （`var r0 = storage.get(...)`，launcher app.at:372-380）。
+
+定案（实施期自裁落定）：
+
+- **E-D1 = 使用点包裹降链**（确认 §5.7 倾向）：Value 字段访问/数值
+  运算在 USE 位包访问器（既有 value_field_access rust.rs 机制延伸）；
+  不动 .at（I2）、单点家族化；赋值点强制引入隐式窄化弃。
+- **E-D2 = 记录形状注册表**：store 记录字面量默认值推断字段型 +
+  User 型（back api `pub type`）全字段表 → 字段访问按表发射（typed
+  株直达 `.field`；Value 株按表型选 `as_i64()/as_str()` 访问器）；
+  未知字段动态容差（`unwrap_or` 缺省族）。
+- **E-D3 = 双轨局部变量**：显式声明型赋值点强转（Value RHS → 访问器
+  包装）；无声明局部按全用例联合（任一 Value 用例 → Value 型 + 用点
+  包裹）。klondike i32↔Value 125 错族主战场。
+- **E-D4 = .at 内建翻译表**：`.str()`→`.to_string()`、`.lower()`→
+  `.to_lowercase()`、`.upper()`/`.trim()` 同义、`.slice(a,b)` 切片族、
+  `esc()`→生成 shim（JSON 字符串转义）、`storage.get/set` 核对既有
+  shim 面（rust.rs:11084 先例）。
+- **E-D5 = 类型化株优先发射 back 型（E-D5-A）**：back api.at `pub
+  type` → Rust struct + Default（不 Value 化——类型化发射后
+  `.cards[i].column` 直达字段，配合 E-D2 字段表切换访问发射）；
+  api 元数漂移 ×5 归因联 P666-D1（最小垫片对齐 front 调用面过门）；
+  Option 索引 ×7（find/first 结果链）补 `unwrap_or` 容差。
+
 ### 5.2 批次 A：codegen 五臂（T-02/T-03）
 
 - **T-02 klondike/minesweeper 臂**：ondblclick（依 D1）/icon 动态
@@ -345,15 +471,25 @@ Vue 轨回归不破。
 - **AC-07 收口与回归门**：apps.manifest/README 增补 + 台账交付行 +
   债册处置（P036-D2/D4 核销[依 D2]/P039 新债）+ §6 回归门全绿
   （在册红除外）。
+- **AC-08 store 动态语义译臂（rev 2）**：批次 E 译臂单测绿（降链家族/
+  内建表/类型格/类型声明）+ 三 app 生成门矩阵收敛（klondike/launcher
+  绿、kanban 唯一红 = drag 在册拒绝）+ 三 app 门余错归因表（api 元数
+  漂移联 P666-D1 注记）。验证：生成门命令矩阵 + 单测。
 
 ## 8. 执行步骤
 
-**前置**：M7-b ✅（036）；038 merge（kanban 视觉对拍面硬前置——T-08
-前到位即可；codegen 面无冲突可先行）。依赖序：T-01 → {T-02, T-03} →
-{T-04, T-05, T-06 并行} → T-07 → T-08 → T-09 → T-10。lang worktree
+**前置**：M7-b ✅（036）；038 merge ✅（28c94a5d4 ⊆ master——T-08 对拍
+面已清）。依赖序（rev 2）：T-01 → {T-02, T-03} ✅ → {T-05, T-06, T-11
+并行} → {T-12, T-13} → T-14 → {T-04, T-07, T-08} → T-09 → T-10。
+（T-05 minesweeper 门已绿 0 错、T-06 tetris 不受批次 E 波及——先行；
+T-04/T-07/T-08 生成门面挂批次 E 前置。）lang worktree
 `D:/autostack/.wt/lang-039/auto-lang`（组内 auto-down 依赖位同 036 型）；
 os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
-`.wt/os-039/auto-kanban`）。
+`.wt/os-039/auto-kanban`；生成依赖位 `.wt/os-039/auto-lang` detached
+@plan-039-dev 头）。生成命令形态：app 目录内
+`AUTO_LANG_ROOT=.wt/os-039/auto-lang <lang39>/target/debug/auto.exe build
+-r rust`；新生成 workspace 需 `cargo update -p find-msvc-tools --precise
+0.1.12`（0.1.13 与 cc 1.4.6 在 rustc 1.98 断裂——环境坑注记）。
 
 - **T-01 [lang] 深水定案**
   文件：R（五臂锚点 §4）/view.rs（D1-B 面）/session.rs（D2 面：spawn_
@@ -363,24 +499,49 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   验证：定案完备；D2/D3 获用户确认。
   → 全 AC 前置。
 - **T-02 [lang] klondike/minesweeper codegen 臂**（§5.2）
-  验证：五臂之三单测绿。
+  [x] `[✅ 已完成]` lang 42c12cb1f（plan-039-dev @ ecc5b658b）：D1-A
+  ondblclick 剥离+四出口 wrap / D4 cols 双臂 / ② icon 动态 class 运行期
+  拼串；单测 3 件绿（plan039_a2r_gap_codegen_tests）。
+  验证：五臂之三单测绿。ui_gen 811/813（两红=master 预存在，stash
+  实证归因）。
   → AC-01。
 - **T-03 [lang] kanban codegen 臂**（§5.2）
+  [x] `[✅ 已完成]` 同提交 42c12cb1f：D5 outlet 三态（折平/响亮拒/防御）
+  + ④ textarea Dot/点链（input 多级点链值面同步治理）+ D3-A drag 家族
+  专属拒绝臂；单测 5 件绿（含多路由拒/drag 指针/多级点链）。
   验证：折平/textarea/拒绝门单测绿。
   → AC-01。
-- **T-04 [os+lang] klondike 全轨**（§5.3）
-  验证：生成门 + 三轨 + back 对照。
-  → AC-02。
+- **T-04 [os+lang] klondike 全轨**（§5.3；**rev 2 前置：T-14 批次 E 完成**）
+  [ ] **部分完成——生成门被 store 深水阻断（needs_replan 证据 §10①）**。
+  已落：发现臂三件（lang 079acfe74：collect_at_files 递归收集[components
+  子目录全漏=CardSuit 族缺失根因] + `key:` 认知同弃臂 + .at 字面量发射
+  再转义 rust_str_lit_body）；生成物实证：ondblclick MouseArea 包裹✓/
+  icon 动态 class✓（card_suit.at 载体）——但 front member 真编译门
+  ~180 错，主体为 store 动态语义译臂缺位（无类型局部变量格/Value 记录
+  字段与方法降链/.pop() 混型），非五臂面。三轨/desktop_exe/back 对照
+  未起。
+  验证：生成门红（归因在案）；plan039 单测 10/10。
+  → AC-02 未达；阻断面入 §10①。
 - **T-05 [os+lang] minesweeper 全轨**（§5.3）
-  验证：生成门 + VM/Rust 轨。
+  [x] `[✅ 已完成]`（2026-09-21，lang 3b99ff6bf + os
+  c9610ba）：生成门 0 错（含发现臂④动态标签 format! 包裹 + ⑤target-dir
+  幻影废除后重生成，exe 落 rust-workspace/target/debug/minesweeper.exe）
+  + pac `desktop_exe:` 声明 + VM 轨 desktop_mcp.py **25/25 PASS** +
+  Rust 轨 tests/rust_smoke.py 全 PASS（编译 exe MCP 驱动：难度切换
+  **D4 动态 cols 编译轨实证** 9×9→16×16→30×16→9×9 板元数
+  81/256/480/81 + reset）+ exe 生命周期冒烟（Iced 后端/MCP 监听/192MB
+  常驻/净终止）+ Vue 轨 P666-D2 预存红注记不修（在册债）。
+  验证：生成门 + 三轨如上。
   → AC-03。
 - **T-06 [os+lang] tetris 收口**（§5.3）
   验证：rules_golden + run_matrix。
   → AC-04。
-- **T-07 [lang+os] launcher 编译轨**（§5.4，依 D2）
+- **T-07 [lang+os] launcher 编译轨**（§5.4，依 D2；**rev 2 前置：T-14
+  批次 E 完成——launcher 门 56 错先于编译轨消费**）
   验证：编译轨召唤链 + p036 e2e 回归。
   → AC-05。
-- **T-08 [kanban+lang] kanban a2r**（§5.5，依 D3 + 038 merge）
+- **T-08 [kanban+lang] kanban a2r**（§5.5，依 D3 + 038 时序；**rev 2
+  前置：T-13 批次 E 完成——余 34 错清偿**）
   验证：生成门矩阵（诚实红）+ 对拍。
   → AC-06。
 - **T-09 [os] 伞形与台账**（§5.6）
@@ -389,9 +550,128 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 - **T-10 [lang+os] 回归收口**（§5.6）
   验证：§6 回归门全绿矩阵。
   → AC-07。
+- **T-11 [lang] 批次 E 勘定与类型格设计**（§5.7，rev 2 新增）
+  [x] `[✅ 已完成]`（2026-09-21，基 lang 3b99ff6bf）：双株分治定案
+  （§5.7 T-11 定案补记——株①类型化记录株[kanban，back 型未发射]/
+  株②动态 Value 株[klondike/launcher]）+ E-D1..D5 全落定（使用点
+  包裹降链/记录形状注册表[字面量默认值+back 型字段表]/双轨局部变量/
+  内建翻译表/back 型优先发射+元数垫片联 P666-D1），file:line 证据在案。
+  验证：定案完备、与既有 value_locals/value_field_access 衔接面清。
+  → AC-08 前置。
+- **T-12 [lang] Value 降链家族化 + 内建表**（§5.7，依 T-11）
+  [x] `[✅ 已完成]`（2026-09-21，lang c4ed5a21b）：E-D4 内建表（len/
+  slice/str/lower/upper/trim/replace 按接收者五态分流[value/string/vec/
+  int/unknown]，__at_* shim 家族 wrap_example 组装级注入——launcher
+  E0618 ×25 根治）+ 数值使用点 __at_num 包裹（i32 域统一）+ store 多级
+  链降链（STORE_FIELD_TYPES 跨文件表——klondike waste_card E0609 株）
+  + E-D2 局部收格（Object→value_locals/Array→array_locals 分格）+
+  E-D3 第一轨赋值点强转（var ic1 str=.apps_icons[ai] 株 + untyped 门
+  防 minesweeper 回归）+ Vec<Value> 数组初始式 json! 化 + store 文件
+  级自由 fn rust 轨发射（kanban fn esc=vue module_fns parity）+
+  串接 Value 侧 __at_str 降串。
+  验证：minesweeper 0 零回归 + kanban 37→24（.str×9/esc×4 清）+
+  launcher 56→14 + klondike 190→177；plan039 单测 13/13（+3 新）。
+  → AC-08。
+- **T-13 [lang] store 类型声明 + api 元数归因**（§5.7，依 T-11）
+  [x] `[✅ 已完成]`（2026-09-21，lang a33448dbb）：E-D5-A back api.at
+  `pub type`→Rust struct 发射（serde derive+Default，merged/split 两臂
+  前——kanban E0425 ×4 清）+ merged 桩声明对齐臂（返回 user 型端点
+  签名/返回按 back 声明直译=path+body 全量参数——E0061 ×5+Option 索引
+  ×7 根治，P666-D1 关联归因）+ DELETE 桩签名同对齐 + E-D2 记录形状
+  注册表（STORE_RECORD_SHAPES+local_record_shapes+array_element_shapes
+  [push 实参推]→value_field_access_shaped 按表型选访问器）+ Expr::Node
+  用户型构造字面量发射（Meta{...} struct init+Default 兜底）+ scan 收
+  格收窄（Vec< 判定→Vec<serde_json::Value> 专属 + API_TYPED_FNS 返回
+  user 型的 api 调用不收 + view is_value_iter store typed 短路）+
+  moved 治理六面（参数 clone/闭包字段 clone/非 Copy 态 RHS clone/
+  typed 集合元素字段 clone/局部 Index clone/coll_stripped 任意 Dot）。
+  验证：kanban 24→**3=ondrop×3 D3-A 预期诚实红目标形态** ✅ +
+  minesweeper 0 + launcher 56→14 + klondike 190→170；单测 15/15（+2）。
+  → AC-08。
+- **T-14 [lang] 局部变量类型格 + 组件传型**（§5.7，依 T-12/T-13）
+  [x] `[✅ 已完成]`（2026-09-21，lang T-14a 参数序 + T-14 收官提交）：
+  T-14a WIDGET_PROP_ORDERS 消费面接通（四发射点按 props 声明序——注册
+  表此前只写不读=CardFace 参数错位根因）+ build 入口预扫；T-14 收官：
+  E-D3 第二轨无类型局部联合格（两遍 scan，显式声明排除——**scan 顶层/
+  递归分离**：子集 declared 不可见误收株 probe 实证）+ json! 化三面
+  （局部 let 初始/Asn 标量/Value 集合 push 实参）+ declared_locals 驱
+  动 Asn 强转 + Asn 访问器按目标型重写（int→as_i64/Value→clone/Vec→
+  as_array/数组字面量逐元素 json!/局部收 state Vec clone/索引写两侧
+  json!）+ 组件族（CHILD_MSG_TYPES[无 msg 且无子件→()，有子件→{}Msg
+  与 type Msg child gate 同口径]/循环子组件转发 Default/持久字段撞
+  props 不升持久/构造实参按 CHILD_PROP_TYPES 强转/组件 style 真 prop
+  不滤/闭包消息参数 Value 循环变量降链）+ E-D2 形状非字面量字段值按
+  declared/state 型推 + pop 内建臂（Value 集合→unwrap_or(Null)）。
+  验证：**门矩阵全收敛——klondike 190→0 ✅ / launcher 56→0 ✅ /
+  kanban 4=ondrop×3 预期红+汇总 ✅ / minesweeper 0 零回归 ✅（AC-08
+  目标形态）**；plan039 16/16（+1 declared 联合格回归）；ui_gen 2 红
+  =master 预存；shell-pack regen freshness 回绿；auto-man vue 3 红
+  =基线预存（stash 对照 5 红）。
+  → AC-08。
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:work rev 2 批次 E 收官记录（T-12/T-13/T-14）：
+  `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
+  lang plan-039-dev c4ed5a21b(T-12)→a33448dbb(T-13)→T-14a 参数序→
+  T-14 收官（shell-pack regen 随附） | task_ids: T-12 ✅ T-13 ✅ T-14 ✅
+  （前置全清：T-04/T-07/T-08 生成门面已 unblock）| evidence: 生成门矩阵
+  全收敛——klondike 190→0 / launcher 56→0 / kanban 4=ondrop×3 D3-A
+  预期诚实红+汇总 / minesweeper 0 零回归（AC-08 门矩阵目标形态达成）；
+  plan039 单测 16/16；ui_gen 2 红=master 预存；shell-pack freshness
+  regen 回绿；vue 3 红=基线预存（stash 对照 5 红）| blockers: 无 |
+  next: T-04（klondike 全轨：desktop_exe+三轨）→ T-07（launcher 编译
+  轨=D2-A 双债核销）→ T-08（kanban a2r 收口+038 对拍）→ T-06（tetris
+  可并行）→ T-09/T-10 收口`
+- 2026-09-21 /auto-plan:work rev 2 阶段记录（并行带 T-05+T-11）：
+  `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
+  lang plan-039-dev 079acfe74→3b99ff6bf + os 95042bf→c9610ba | task_ids:
+  T-05 ✅（全轨收口）T-11 ✅（双株定案）| evidence: minesweeper 生成门
+  0 错 + desktop_exe + VM 25/25 + Rust 探针全 PASS（D4 动态 cols 编译轨
+  实证 9/16/30 列切换板元数 81/256/480/81）；发现臂④（动态标签
+  format! 借用包裹）⑤（compute_target_rel_path 幻影 fallback 废除→
+  workspace 本地 target，单测在案）；T-11 双株分治（kanban 类型化记录
+  株 vs klondike/launcher 动态 Value 株）E-D1..D5 定案 §5.7 | blockers:
+  磁盘满事件（D 盘 100%→清理自产物 25G 缓解至 25G 余——他组 target
+  未动；环境面呈报用户）；find-msvc-tools 0.1.13/zlib-rs 0.6.8 镜像
+  撤档（新生成 workspace 需双降级 0.1.12/0.6.7）| next: T-12（Value
+  降链家族化+内建表）+ T-13（back 型发射+元数垫片）→ T-14 →
+  {T-04, T-07, T-08}；T-06（tetris 收口）可随时并行`
+- 2026-09-21 /auto-plan:new 有界修订（rev 2）：`stage: new | PLAN-039 |
+  rev 2 | outcome: pass | next: work`。授权 = 用户裁定「不新建计划，
+  039 内追加 phase（方向①补齐 store 译臂包，降档作废）」。变更面：
+  §0 摘要 rev2 块 / G7 / §5.7 批次 E 设计（错误矩阵 + E-D1..D5 取舍
+  倾向）/ AC-08 / T-11..T-14 新任务 / 依赖序重排（T-05/T-06 先行，
+  T-04/T-07/T-08 挂 E 前置）/ total_steps 10→14（current_step=3 保持，
+  T-01..T-03 已完成且证据保值）。E-D1..D5 实施期自裁呈报（T-11 勘定
+  落定）——非用户确认项。
+- 2026-09-21 /auto-plan:work 阶段记录：`stage: work | PLAN-039 | rev 1 |
+  outcome: needs_replan | code_commit: lang plan-039-dev 42c12cb1f→079acfe74
+  （基 ecc5b658b）| task_ids: T-01✅ T-02✅ T-03✅ T-04 部分（发现臂三件落，
+  生成门被 store 深水阻断）T-05 生成门已探绿（0 错）但三轨/desktop_exe
+  未起 T-06..T-10 未触 | evidence: 五臂全落地且生成物实证生效（kanban
+  折平/textarea store 绑定/ondragover·ondrop 拒绝/minesweeper grid 动态
+  cols/minesweeper 门 0 错全绿）；发现臂三件（递归收集/key 同弃/字面量
+  再转义）；plan039 单测 10/10 + ui_gen 813/815（两红=master 预存在
+  stash 实证）；门探矩阵 klondike ~180/kanban 37[3=ondrop 预期红]/
+  launcher 56/minesweeper 0 | blockers: §10④ store 动态语义译臂深水
+  （普查漏检结构面——三 app 同病根，超出五臂授权）| next: /auto-plan:new
+  有界修订（受影响任务 T-04/T-07/T-08 生成门面 + 衔接面重排；已完成五臂
+  与发现臂全部保值入册）`
+- 2026-09-21 /auto-plan:work 进入（用户召唤）：status drafting → executing。
+  **D2/D3 用户确认落档（AskUserQuestion 应答原文）**：D2 = **A 本波核销双债**
+  （生成 launcher exe + 召唤链编译轨优先 + shell_key 编译臂 → P036-D2/D4
+  核销 + p036 e2e 断言兼容改造）；D3 = **A 显式 not-yet 拒绝**
+  （ondragover 家族入拒绝门词表带 P039 债指针，生成门唯一诚实红）。
+  前置核验：038 merge 在 master 血统（28c94a5d4 ⊆ master）——T-08 对拍
+  硬前置已清；普查基线 50e3b8bb4 → master（ecc5b658b，含 668 落地）
+  ui_gen/ui/rust_ui.rs **零漂移**（锚全部有效）；PLAN-669 未合面
+  （vm/ffi/vue）与本计划文件面零重叠。worktree 组：`.wt/lang-039/`
+  {auto-lang plan-039-dev @ ecc5b658b + auto-down detached @ fba6563} +
+  `.wt/os-039/` {auto-os plan-039-dev @ 95042bf + auto-kanban
+  plan-039-dev @ 90f0df8}。主检出他会话 WIP 注记：auto-os ui-gallery
+  面（PLAN-666 域）/auto-lang 文档面（DEBTS.md+docs/design）——均与本
+  计划文件面零重叠，代码全落 worktree。
 - 2026-09-20 /auto-plan:new 起草交接：`stage: new`，PLAN-039 rev 1
   （.next-id 039——037/038 已被并行会话取用，取号无撞）。M7-c① 近邻
   梯队（台账 :105）。`outcome: pass`（合同完整：五 app 拓扑/生成链现状/
@@ -403,14 +683,36 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 10. 待澄清事项
 
-- **①（T-01 D2，用户确认项）launcher 编译轨深度**：A = 本波核销
-  P036-D2+D4（生成 exe + 召唤链消费 + shell_key 编译臂——分水岭收益，
-  推荐）vs B = 仅生成 + desktop_exe 声明（普通链可用，双债留册）。
-- **②（T-01 D3，用户确认项）kanban drag 语义**：A = ondragover 家族
-  显式 not-yet 拒绝 + P039 债在册（生成门唯一诚实红；推荐——drag
-  家族另立）vs B = 最小 no-op 臂（违 I1 静默红线，需升真语义才可行）
-  vs C = 改 board.at 移除 drag（触 038 收敛面）。
-- **③（T-01 D1/D4/D5，实施期自裁呈报）**：button 双击原语形态
-  （A=MouseArea 包裹降级 推荐 vs B=View 原语三端涟漪）；grid 动态
-  cols 运行期 vs 静态近似（minesweeper 实证恒定性定）；单路由折平
-  边界（多路由显式拒）。
+- **④（2026-09-21 work 阶段新增→rev 2 已裁定）store 动态语义译臂
+  深水**：探索普查（§4）为**词汇级**（tags/props/events 面），未探
+  handler/store 语义深水。真编译门实证三 app 同病根（与 tetris 标量型
+  store 对比定位——记录型 store 数据是 a2r handler 译臂缺位面）。
+  **裁定（2026-09-21 用户）：不新建计划，039 内追加批次 E 补齐
+  （方向①）——本条由 §5.7/T-11..T-14 承接，证据表如下留存**：
+  - **klondike ~180 错**：无类型局部变量双向往返（`var c int =
+    .stock_cards.pop()` → i32↔Value 错配 125）+ Value 记录字段直访
+    （`.rank/.suit` ×8）+ Value 上 `>=`/`%`（12）+ 组件 prop 传型
+    （CardSuitMsg/slot/badge ~8）。
+  - **kanban 37 错**（3×ondrop = D3-A 预期诚实红✓，余 34）：.at 内建
+    `.str()` ×9 / `esc()` 未定义 ×4（VM builtin 无 rust shim）/ api
+    调用元数漂移 ×5（P666 族关联）/ store 类型声明 Card/Meta/BoardDef
+    未生成 ×4 / Option 索引 ×7 / moved value ×2。
+  - **launcher 56 错**：computed/方法以 String 发射后被调用
+    （expected function found String ×25）+ Value↔String 错配 15+
+    `.lower()` 未译 + 字段直访。
+  - 修订建议面：①无类型局部变量的类型格推断（首赋值+全用例联合）；
+    ②Value 记录字段/方法降链统一发射（`["k"].as_str()…` 家族化）；
+    ③.at 内建方法翻译表（str/lower/esc…）；④store 类型声明生成；
+    ⑤api 元数/类型漂移归因（联 P666-D1 属主）；或降档裁定（记录型
+    store app 的 a2r 门延后，本波收 minesweeper+已落臂）。
+    **→ rev 2 采纳①..⑤为批次 E（§5.7）；降档选项作废。**
+- **①（T-01 D2，用户确认项·已确认 2026-09-21）launcher 编译轨深度**：
+  D2 = **A 本波核销**（AskUserQuestion 应答）——修订时注意 T-07 生成门
+  同受 §10④ 波及（launcher 56 错先于编译轨消费）。
+
+- **②（T-01 D3，用户确认项·已确认 2026-09-21）kanban drag 语义**：
+  D3 = **A 显式 not-yet 拒绝**（AskUserQuestion 应答；生成门实证
+  ondragover/ondrop 拒绝臂已发射，红因唯一在册）。
+- **③（T-01 D1/D4/D5，实施期自裁·已定案 2026-09-21）**：D1=A MouseArea
+  包裹降级 / D4=运行期求值 / D5=单路由折平+多路由响亮拒——全案见
+  §5.1 定案记录（file:line 证据）。
