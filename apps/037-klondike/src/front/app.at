@@ -244,6 +244,11 @@ widget App {
                                             ondblclick: .AutoSendCol(0)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -309,6 +314,11 @@ widget App {
                                             ondblclick: .AutoSendCol(1)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -374,6 +384,11 @@ widget App {
                                             ondblclick: .AutoSendCol(2)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -439,6 +454,11 @@ widget App {
                                             ondblclick: .AutoSendCol(3)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -504,6 +524,11 @@ widget App {
                                             ondblclick: .AutoSendCol(4)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -569,6 +594,11 @@ widget App {
                                             ondblclick: .AutoSendCol(5)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -634,6 +664,11 @@ widget App {
                                             ondblclick: .AutoSendCol(6)
                                             col {
                                                 class: card.body_class
+                                                if card.is_face_down {
+                                                    col {
+                                                        style: "w-[64px] h-[92px] rounded border border-indigo-300/30 bg-indigo-800/50"
+                                                    }
+                                                }
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
