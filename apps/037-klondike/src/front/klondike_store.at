@@ -404,13 +404,14 @@ store KlondikeStore {
                 return
             }
             if .sel_source == "waste" {
-                .ClearSelection()
-            } else {
-                .sel_source = "waste"
-                .sel_col = 0
-                .sel_idx = .waste_cards.len() - 1
-                .selected_card_id = .waste_cards[.waste_cards.len() - 1]
+                // 再点弃牌：尝试收进基础堆（代替 VM 未接线的 ondblclick）
+                .AutoSendCard("waste", 0)
+                return
             }
+            .sel_source = "waste"
+            .sel_col = 0
+            .sel_idx = .waste_cards.len() - 1
+            .selected_card_id = .waste_cards[.waste_cards.len() - 1]
             .RebuildCards()
         }
 
@@ -580,11 +581,47 @@ store KlondikeStore {
 
             // Case 1: 已经有选中牌
             if .sel_source != "" {
-                // 同一张牌重复事件（visual+peek 双通道）→ 幂等，不取消选中
+                // 再次点同一张已选中牌：若为列顶且可上基础 → 直接收进右上角
+                // （VM 的 button 未接线 ondblclick，用「再点一次」代替双击）
                 if .sel_source == "col" && .sel_col == col_idx && .sel_idx == card_idx {
+                    if card_idx == col_len - 1 {
+                        var c_suit int = 0
+                        if card_id >= 39 { c_suit = 3 } else { if card_id >= 26 { c_suit = 2 } else { if card_id >= 13 { c_suit = 1 } else { c_suit = 0 } } }
+                        var c_rank int = (card_id % 13) + 1
+                        var f_len int = 0
+                        if c_suit == 0 { f_len = .f0_cards.len() }
+                        if c_suit == 1 { f_len = .f1_cards.len() }
+                        if c_suit == 2 { f_len = .f2_cards.len() }
+                        if c_suit == 3 { f_len = .f3_cards.len() }
+                        var can_send bool = false
+                        if f_len == 0 && c_rank == 1 { can_send = true }
+                        if f_len > 0 && c_rank == f_len + 1 { can_send = true }
+                        if can_send {
+                            .PushUndoSnapshot()
+                            if col_idx == 0 { .col0_cards.pop(); if .col0_cards.len() == .col0_down && .col0_down > 0 { .col0_down = .col0_down - 1 } }
+                            if col_idx == 1 { .col1_cards.pop(); if .col1_cards.len() == .col1_down && .col1_down > 0 { .col1_down = .col1_down - 1 } }
+                            if col_idx == 2 { .col2_cards.pop(); if .col2_cards.len() == .col2_down && .col2_down > 0 { .col2_down = .col2_down - 1 } }
+                            if col_idx == 3 { .col3_cards.pop(); if .col3_cards.len() == .col3_down && .col3_down > 0 { .col3_down = .col3_down - 1 } }
+                            if col_idx == 4 { .col4_cards.pop(); if .col4_cards.len() == .col4_down && .col4_down > 0 { .col4_down = .col4_down - 1 } }
+                            if col_idx == 5 { .col5_cards.pop(); if .col5_cards.len() == .col5_down && .col5_down > 0 { .col5_down = .col5_down - 1 } }
+                            if col_idx == 6 { .col6_cards.pop(); if .col6_cards.len() == .col6_down && .col6_down > 0 { .col6_down = .col6_down - 1 } }
+                            if c_suit == 0 { .f0_cards.push(card_id) }
+                            if c_suit == 1 { .f1_cards.push(card_id) }
+                            if c_suit == 2 { .f2_cards.push(card_id) }
+                            if c_suit == 3 { .f3_cards.push(card_id) }
+                            .moves = .moves + 1
+                            .moves_label = .moves.to_string() + " 步"
+                            .ClearSelection()
+                            if .f0_cards.len() == 13 && .f1_cards.len() == 13 && .f2_cards.len() == 13 && .f3_cards.len() == 13 {
+                                .RecordWin()
+                            }
+                            .RebuildCards()
+                            return
+                        }
+                    }
                     return
                 }
-                // 点击同列其他明牌：换选（含被盖住的牌，只要点到其露头）
+                // 点击同列其他明牌：换选
                 if .sel_source == "col" && .sel_col == col_idx {
                     .sel_idx = card_idx
                     .selected_card_id = card_id
@@ -597,7 +634,7 @@ store KlondikeStore {
                 return
             }
 
-            // Case 2: 无选中牌，选中此卡片及上方整段
+            // Case 2: 无选中牌，选中此卡片（单击即选中）
             .sel_source = "col"
             .sel_col = col_idx
             .sel_idx = card_idx
