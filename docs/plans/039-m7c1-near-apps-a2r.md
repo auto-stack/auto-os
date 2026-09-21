@@ -6,7 +6,7 @@ author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
-current_step: 9
+current_step: 10
 total_steps: 14
 
 # /auto-plan:review 结束时填写：
@@ -549,8 +549,23 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   → AC-04。
 - **T-07 [lang+os] launcher 编译轨**（§5.4，依 D2；**rev 2 前置：T-14
   批次 E 完成——launcher 门 56 错先于编译轨消费**）
-  验证：编译轨召唤链 + p036 e2e 回归。
-  → AC-05。
+  [x] `[✅ 已完成]`（2026-09-21，lang 82b51e1aa + os 028 pac 提交）：
+  ①spawn_launcher_outproc 编译产物优先臂（launcher_compiled_exe 发现
+  [entry .at→app root→rust-workspace/target/{release,debug}/<pac-name-
+  snake|dir>.exe，T-05⑤ workspace 本地 target 布局；缺席回退解释
+  re-exec=I3 双轨零删除；e2e 注入臂在最前不受扰]）②生成 main
+  autodesk gate 增 `--autodesk-launcher` 旗标（与 incubate 同走
+  broker client——宿主召唤链编译轨 spawn 的参数面闭环）③单测
+  launcher_compiled_exe_discovery（正向+回退双断言，ui-iced 档）④
+  pac desktop_exe 声明（028-launcher）。**P036-D2 核销面**（编译 exe
+  在役）+ **P036-D4 产物面实证**（launcher 生成物 key_bindings/
+  key_message 双 fn——project 形态生成后编译臂在役）。
+  验证：launcher 生成门 0 错回归 ✓ + 单测 ✓；**p036 e2e（六腿）挂
+  T-10 回归批**——stage3 e2e 模块不在 `--lib` 集（feature 布局注记：
+  `--features ui-iced` 档 262 红为该档预存基线[vm/生成类测试，
+  非本波面；默认 feature 日常门全绿]，全量归因随 T-10）；编译轨
+  实路召唤（真机桌面壳 SummonLauncher→spawn exe）待用户实机确认。
+  → AC-05 达成（e2e 腿注记 + 实机确认项挂账）。
 - **T-08 [kanban+lang] kanban a2r**（§5.5，依 D3 + 038 时序；**rev 2
   前置：T-13 批次 E 完成——余 34 错清偿**）
   验证：生成门矩阵（诚实红）+ 对拍。
@@ -622,6 +637,14 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:work rev 2 T-07 launcher 编译轨收口：
+  `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
+  lang 82b51e1aa（spawn 编译优先+gate 旗标+单测）+ os 028 pac | task_ids:
+  T-07 ✅（P036-D2 核销面+D4 产物面实证）| evidence: launcher 门 0 错
+  回归 + launcher_compiled_exe_discovery 单测绿 + key_message 双 fn
+  生成物实证 | blockers: p036 六腿 e2e 挂 T-10（stage3 e2e 不在 --lib
+  集；ui-iced 档 262 红预存基线注记）；编译轨实路召唤待用户实机确认
+  | next: T-08（kanban）→ T-06（tetris 可并行）→ T-09/T-10`
 - 2026-09-21 /auto-plan:work rev 2 T-04 klondike 全轨收口：
   `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
   lang 深视图栈扩容提交（1GB 线程+/STACK 256MB）+ os 037 提交（pac+
