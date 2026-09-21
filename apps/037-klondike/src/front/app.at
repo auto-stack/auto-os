@@ -168,7 +168,8 @@ widget App {
                                         court_badge: .store.waste_card.court_badge,
                                         is_face_down: false,
                                         skin_mode: .store.skin_mode,
-                                        svg_src: .store.waste_card.svg_src
+                                        svg_src: .store.waste_card.svg_src,
+                                        is_selected: .store.waste_card.is_selected
                                     ) {}
                                 }
                             }
@@ -201,7 +202,8 @@ widget App {
                                             court_badge: slot.court_badge,
                                             is_face_down: false,
                                             skin_mode: .store.skin_mode,
-                                            svg_src: slot.svg_src
+                                            svg_src: slot.svg_src,
+                                            is_selected: slot.is_selected
                                         ) {}
                                     }
                                     if !slot.has_card {
@@ -247,7 +249,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -272,7 +275,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -307,7 +311,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -332,7 +337,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -367,7 +373,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -392,7 +399,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -427,7 +435,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -452,7 +461,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -487,7 +497,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -512,7 +523,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -547,7 +559,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -572,7 +585,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }
@@ -607,7 +621,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                         button {
@@ -632,7 +647,8 @@ widget App {
                                                 court_badge: card.court_badge,
                                                 is_face_down: card.is_face_down,
                                                 skin_mode: .store.skin_mode,
-                                                svg_src: card.svg_src
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected
                                             ) {}
                                         }
                                     }

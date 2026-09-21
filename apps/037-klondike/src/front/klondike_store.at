@@ -1086,6 +1086,7 @@ store KlondikeStore {
                         color_class: f_color,
                         is_court: (f_rank >= 11),
                         court_badge: f_badge,
+                        is_selected: f_sel,
                         slot_class: f_class,
                         svg_src: "/assets/cards/classic/" + f_rtext + "_" + s_suit + ".svg"
                     })
@@ -1100,6 +1101,7 @@ store KlondikeStore {
                         color_class: "",
                         is_court: false,
                         court_badge: "",
+                        is_selected: false,
                         slot_class: "w-[76px] h-[106px] rounded-lg border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 items-center justify-center relative p-1.5 cursor-pointer",
                         svg_src: ""
                     })
