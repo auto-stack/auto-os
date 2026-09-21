@@ -125,7 +125,7 @@ async function run() {
 
     // 5. Test Skin Switching in Full Board
     console.log('5. Testing Skin Toggle (SVG Skin Mode)...');
-    const svgSkinBtn = page.locator('button:has-text("SVG皮肤包")').first();
+    const svgSkinBtn = page.locator('button:text-is("SVG")').first();
     await svgSkinBtn.click();
     await page.waitForTimeout(500);
 
@@ -134,13 +134,13 @@ async function run() {
     console.log('Saved SVG skin screenshot to:', svgBoardScreenshot);
 
     console.log('Switching back to Vector skin mode...');
-    const vectorSkinBtn = page.locator('button:has-text("自绘矢量")').first();
+    const vectorSkinBtn = page.locator('button:text-is("矢量")').first();
     await vectorSkinBtn.click();
     await page.waitForTimeout(500);
 
     // 6. Test New Game button
     console.log('6. Testing New Game button...');
-    const newGameBtn = page.locator('button:has-text("新对局")').first();
+    const newGameBtn = page.locator('button:text-is("新对局")').first();
     await newGameBtn.click();
     await page.waitForTimeout(600);
 

@@ -11,4 +11,8 @@ front_port: 17600
 back_port: 17601
 window: "1280x800"
 desktop: "true"
+# PLAN-039 T-04：a2r 编译 exe 声明（`auto build -r rust` 产物，相对 App
+# 根——生成门绿 2026-09-21[批次 E 收官：klondike 190→0]；debug 档为
+# 开发环，release 升档随收口批）。
+desktop_exe: "rust-workspace/target/debug/klondike.exe"
 category: "game"
