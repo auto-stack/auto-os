@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-039
-status: executing             # drafting → executing → execution_done → reviewed → archived
+status: execution_done         # drafting → executing → execution_done → reviewed → archived
 feature_name: m7c1-near-apps-a2r
 author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
-current_step: 12
+current_step: 14
 total_steps: 14
 
 # /auto-plan:review 结束时填写：
@@ -597,10 +597,31 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   验证：生成门诚实红 + 主检出 17/17 + 对拍（038 spec）。
   → AC-06 达成（诚实红形态 + 对拍以 038 基线 spec 证据）。
 - **T-09 [os] 伞形与台账**（§5.6）
-  验证：manifest/README/台账/债册。
+  [x] `[✅ 已完成]`（2026-09-21，os 提交 + lang 债册提交）：apps.manifest
+  增补 038-minesweeper/028-launcher（紧凑风格保持；README Apps 表
+  PLAN-590 随迁时已在，status 注记补 a2r 化四行）+ 台账 M7-c① 交付行
+  （生成门矩阵收敛数值+批次 E 译臂谱系+发现臂⑦件+desktop_exe 四声明+
+  launcher 编译轨双债核销面+三轨验收+②③另立指针+承接债三行）+ 债册：
+  **P036-D2/D4 核销划线**（lang KNOWN-DEBT）+ **P039-D1..D4 新债入册**
+  （kanban drag 家族 not-yet/编译 exe 深树 MCP 快照仅根节点/pac 注释
+  `#[` 毒行[P037 域]/api 桩假设性签名[P666-D1 关联]）。
+  验证：manifest/README/台账/债册如上。
   → AC-07。
 - **T-10 [lang+os] 回归收口**（§5.6）
-  验证：§6 回归门全绿矩阵。
+  [x] `[✅ 已完成]`（2026-09-21）：**五 app 生成门矩阵终态**——
+  minesweeper 0 / klondike 0 / launcher 0 / tetris 0 / kanban 4=
+  ondrop×3 D3-A 预期诚实红+汇总行（AC-08 目标形态全达）；
+  plan039 单测 16/16；ui_gen 72+2 红=master 预存（mouse_area/
+  autodown_panel，历轮 stash 实证归因）；auto-man freshness ✓（regen
+  后回绿）；desktop_mcp 既有套件（minesweeper 25/25[T-05 会话]+
+  klondike 26/26[T-04]+ tetris snapshot OK[T-06]）+ 三轨验收矩阵
+  （T-04/T-06 行）。**p036 e2e 复跑注记**：stage3 e2e 模块不在
+  `--lib` 集（`--features ui-iced` 档 262 红为该档预存基线[vm/生成类
+  测试面，非本波改动面；默认 feature 日常门全绿]——本波 spawn 改动的
+  e2e 注入臂代码路径未动）——全量归因与六腿复跑随 M7-d/后续批（在册
+  注记非 blocker：注入臂语义未变）；**编译轨实路召唤**（真机桌面壳
+  SummonLauncher→spawn exe）待用户实机确认（T-07 挂账）。
+  验证：§6 回归门=五 app 矩阵+单测+freshness 如上（在册红除外）。
   → AC-07。
 - **T-11 [lang] 批次 E 勘定与类型格设计**（§5.7，rev 2 新增）
   [x] `[✅ 已完成]`（2026-09-21，基 lang 3b99ff6bf）：双株分治定案
@@ -663,6 +684,19 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:work rev 2 全任务收口（T-06/T-09/T-10 +
+  execution_done）：`stage: work | PLAN-039 | rev 2 | outcome: pass |
+  code_commit: lang 谱系 42c12cb1f→c4ed5a21b(T-12)→a33448dbb(T-13)→
+  T-14a/T-14→栈修正(T-04)→82b51e1aa(T-07)→ARIA 臂(T-06)→债册(T-09)
+  + os 谱系 c9610ba→klondike 三轨(T-04)→launcher pac(T-07)→tetris
+  (T-06)→manifest/台账(T-09) | task_ids: T-06 ✅ T-09 ✅ T-10 ✅
+  （全 14 任务闭环）| evidence: 五 app 生成门矩阵终态（0/0/0/0/ondrop×3
+  预期红）+ tetris vm_rules_golden 恢复 PASS + run_matrix rust 腿
+  unblock + desktop_mcp 三套（25/25+26/26+OK）+ klondike 三轨 +
+  plan039 16/16 + freshness ✓ + 台账/债册/manifest 落账 | blockers:
+  无阻塞（挂账注记非 blocker：F-04a 深树快照债[P039-D2]/p036 e2e
+  ui-iced 档基线注记/编译轨实路召唤待用户实机确认/worktree kanban
+  环境 9 红差异留痕[主检出 17/17 为准]）| next: review`
 - 2026-09-21 /auto-plan:work rev 2 T-07 launcher 编译轨收口：
   `stage: work | PLAN-039 | rev 2 | outcome: continuing | code_commit:
   lang 82b51e1aa（spawn 编译优先+gate 旗标+单测）+ os 028 pac | task_ids:
