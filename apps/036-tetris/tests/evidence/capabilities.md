@@ -7,14 +7,13 @@ A `blocked` row is an explicit missing capability or driver, never a pass.
 |---|---|---|
 | `backend.transpile` | `supported` | {"status":"success","result":"[trans] src/back/db.at -> src/back/db.a2r.rs (9 fragments tracked)"} |
 | `cli.help` | `supported` |       --apps <APPS><br>          Plan 465: apps directory for the desktop registry (default <workspace>/examples/ui)<br>      --merged<br>          Plan 547: explicitly select Rust merged in-process mode (already the default for --render=rust)<br>  -h, --help<br>          Print help (see a summary with '-h') |
-| `gallery.contract` | `blocked` | manifest.tetris: supported — apps.manifest registers tetris<br>pac.desktop-game: supported — pac.at declares category=game and desktop=true<br>gallery.tetris: blocked — tetris is outside gallery scan root (D:\autostack\auto-lang\examples\ui); product app is D:\autostack\auto-os\apps\036-tetris<br>gallery.05-games: blocked — no 05-games category in current gallery generator; it falls back to 04-systems |
+| `gallery.contract` | `blocked` | manifest.tetris: supported — apps.manifest registers tetris<br>pac.desktop-game: supported — pac.at declares category=game and desktop=true<br>gallery.tetris: blocked — tetris is outside gallery scan root (D:\autostack\.wt\os-039\auto-lang\examples\ui); product app is D:\autostack\.wt\os-039\auto-os\apps\036-tetris<br>gallery.05-games: blocked — no 05-games category in current gallery generator; it falls back to 04-systems |
 | `native.input-driver` | `supported` | tests/native_physical.py can send Windows key-down/key-up, long-press and blur events |
-| `rules.vm-golden` | `supported` | VM rules golden passed: opening/lock + 7x4 rotations + 1..4 line clears on MCP http://127.0.0.1:9292/mcp |
-| `rules.rust-golden` | `supported` | Cargo test: 3 passed (opening/lock, all 7x4 rotations, 1..4 line clears) with explicit writable CARGO_TARGET_DIR |
-| `rust.backend` | `supported` | .cargo-back-target2\debug\app-036-tetris-back.exe |
+| `rules.vm-golden` | `blocked` | AUTOUI_MCP_URL is not configured |
+| `rust.backend` | `supported` | rust-workspace\target\debug\tetris.exe |
 | `rust.generated` | `supported` | rust-workspace\036-tetris\src\main.rs |
 | `source.api` | `supported` | src/back/api.at and src/back/db.at present |
 | `source.app` | `supported` | src/front/app.at and src/front/tetris_store.at present |
 | `tests.playwright` | `supported` | Playwright package and smoke.spec.ts present |
-| `vm.mcp` | `supported` | MCP endpoint configured: http://127.0.0.1:9292/mcp |
-| `vue.generated` | `supported` | gen\front\vue\package.json |
+| `vm.mcp` | `blocked` | AUTOUI_MCP_URL is not configured |
+| `vue.generated` | `blocked` | run auto build --render vue --gen-only |

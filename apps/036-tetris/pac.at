@@ -11,4 +11,5 @@ front_port: 17500
 back_port: 17501
 window: "fit"
 desktop: "true"
+desktop_exe: "rust-workspace/target/debug/tetris.exe"
 category: "game"
