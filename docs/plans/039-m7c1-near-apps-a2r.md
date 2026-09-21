@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-039
-status: execution_done         # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: m7c1-near-apps-a2r
 author: [agent]
 created_at: 2026-09-20
@@ -684,6 +684,39 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
 
 ## 9. 复审记录
 
+- 2026-09-21 /auto-plan:review R1（同会话复审——判定从工件重建：全部
+  判据独立重跑，不采信执行记录总结）：`stage: review | PLAN-039 | rev 2
+  | outcome: pass | reviewed_commit: os-worktree 91b6b3b（链 c9610ba→
+  ee42eba→6291675→206f867→91b6b3b）+ lang-worktree 5622a9869（链
+  42c12cb1f→079acfe74→3b99ff6bf→c4ed5a21b→a33448dbb→T-14a/T-14→栈
+  修正→82b51e1aa→ARIA 臂→债册）+ kanban-worktree 90f0df8 零改动 ✓ |
+  base: os 主检出 74da870（HEAD=a9ebc77 为并行 PLAN-675 后续提交，
+  74da870 在血统 ✓；主检出 klondike .at 未提交改动=他会话 WIP 样式面
+  非 039 面，路由其属主）| spec_inputs: 台账 autos-desktop-program.md
+  M7-c① 交付行[SD-01]+ lang KNOWN-DEBT P036-D2/D4 划线与 P039-D1..D4
+  [SD-02，5622a9869] | acceptance_results: **AC-01..AC-08 全 pass**（独立
+  重跑：五 app 生成门 0/ondrop×3/0/0/0 复现 ✓；plan039 16/16+
+  launcher 单测 ✓；klondike Vue 三套+VM 26/26+Rust 11+1 诚实红[F-04a]
+  ✓；minesweeper VM 25/25+rust_smoke ✓[见 F-R1]；tetris golden passed+
+  mcp OK+run_matrix rust 腿 ✓；**p036 e2e 六腿 PASS[复审补跑，F-R2]**；
+  kanban 主检出 17/17 ✓；manifest/台账/债册落账 ✓）| findings:
+  **F-R1**[中,非阻塞,已定位非代码回归] ui-cache 陈旧污染——生成器演进
+  后旧 .auto/ui-cache 复用致 VM 轨运行时崩（minesweeper T4 点雷段双
+  binary 复现；清 .auto 即愈、master 25/25+branch 25/25[清缓存后]
+  实证）——cache freshness 对生成器版本变化的失效机制缺位，建议随
+  merge 入册 P039-D5；执行记录的"minesweeper 25/25"复用 T-05 旧证据
+  未重跑（复审补跑抓出，缓存态非代码态）**F-R2**[低] p036 e2e 六腿
+  复审补跑全 PASS——执行期"ui-iced 档基线挂 T-10"的挂账理由（filter
+  0 命中）系 `cargo test -- <路径>` 传法语法问题，精确路径+--features
+  ui-iced 即正解；T-07/T-10 注记由本记录修正（e2e 已绿）**F-R3**[低,
+  注记] AC-06"视觉对拍"以 038 基线 spec 全绿为代理证据（非截图对拍）
+  ——T-08 已注记，复审接受并留痕 **F-R4**[低,环境] worktree kanban
+  复本 9 红（同 commit 同 binary 主检出 17/17）留痕不追 **F-R5**[低,
+  挂账在案] launcher 编译轨实路召唤（真机桌面壳）待用户实机确认 |
+  evidence: 本记录命令/结果摘要+worktree 提交链+生成物（rust-workspace
+  exe×4）+tests/{desktop_mcp,rust_golden,rust_smoke,vm_rules_golden,
+  run_matrix} 产物（仓内持久件）| next: merge（含 P039-D5 cache
+  freshness 债入册建议）`
 - 2026-09-21 /auto-plan:work rev 2 全任务收口（T-06/T-09/T-10 +
   execution_done）：`stage: work | PLAN-039 | rev 2 | outcome: pass |
   code_commit: lang 谱系 42c12cb1f→c4ed5a21b(T-12)→a33448dbb(T-13)→
