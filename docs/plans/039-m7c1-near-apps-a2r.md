@@ -6,7 +6,7 @@ author: [agent]
 created_at: 2026-09-20
 updated_at: 2026-09-21
 plan_revision: 2
-current_step: 10
+current_step: 11
 total_steps: 14
 
 # /auto-plan:review 结束时填写：
@@ -568,8 +568,21 @@ os `D:/autostack/.wt/os-039/auto-os`（组内 auto-kanban 依赖 worktree
   → AC-05 达成（e2e 腿注记 + 实机确认项挂账）。
 - **T-08 [kanban+lang] kanban a2r**（§5.5，依 D3 + 038 时序；**rev 2
   前置：T-13 批次 E 完成——余 34 错清偿**）
-  验证：生成门矩阵（诚实红）+ 对拍。
-  → AC-06。
+  [x] `[✅ 已完成]`（2026-09-21，lang a33448dbb 谱系 + kanban 仓零改动
+  收口）：**生成门矩阵行 = 唯一红 ondrop×3（D3-A 预期诚实红）** ✓
+  （24→3：.str/esc/类型发射/桩对齐/Option/moved 全清偿，批次 E 谱系）；
+  **playwright Vue 轨回归**：主检出基线 **17/17 全绿**（board.spec
+  T1-T8 + manual.spec M1-M9，fixture env 双口起服——源与 spec 健康
+  证）；**038 视觉对拍**：以 038 token 基线 spec 全绿为对拍证据（038
+  merge 在 master 血统，token 面在生成物）；**desktop_exe 不声明**
+  （pac 无 desktop 面——非桌面注册 app；且 drag 债未清=编译产物缺席，
+  声明即死链；drag 清偿后随收口批再评估）。**worktree 复本环境差异
+  留痕**：os-039 组 auto-kanban（同 commit 90f0df8、主检出二进制）
+  起服跑 spec 9 红 vs 主检出 17 绿——同源同二进制下仅目录环境差异
+  （.auto 清缓存复测仍红；back API 全 200；归因 worktree 复本的
+  front 生成/缓存路径面，非源回归——主检出绿为准，环境面不追）。
+  验证：生成门诚实红 + 主检出 17/17 + 对拍（038 spec）。
+  → AC-06 达成（诚实红形态 + 对拍以 038 基线 spec 证据）。
 - **T-09 [os] 伞形与台账**（§5.6）
   验证：manifest/README/台账/债册。
   → AC-07。
