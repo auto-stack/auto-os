@@ -28,81 +28,71 @@ widget App {
 
     view {
         col {
-            style: "min-h-screen bg-slate-950 text-slate-100 p-5 gap-5 select-none"
+            style: "min-h-screen bg-slate-950 text-slate-100 p-3 gap-2 select-none"
 
-            // 顶栏：标题、用时/步数、控制按钮与皮肤切换（两行布局，兼容 VM/Iced 无 flex-wrap）
+            // 顶栏压缩为一行：标题/皮肤 + 状态 + 操作（与牌桌争高度时优先给牌桌）
             col {
-                style: "bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 shadow-sm gap-2"
+                style: "bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 shadow-sm gap-2"
 
-                // 第一行：logo + 皮肤切换
                 row {
-                    style: "items-center gap-3"
-                    icon (name: "layers", class: "w-7 h-7 text-indigo-400") {}
-                    col {
-                        text "AutoOS 纸牌接龙 (Klondike Solitaire)" { style: "text-lg font-bold text-slate-100" }
+                    style: "items-center justify-between gap-3"
+
+                    row {
+                        style: "items-center gap-2 shrink-0"
+                        icon (name: "layers", class: "w-6 h-6 text-indigo-400") {}
+                        text "纸牌接龙" { style: "text-base font-bold text-slate-100" }
                         row {
-                            style: "items-center gap-2"
-                            text "双通道交互 · 52张标准接龙" { style: "text-xs text-slate-400" }
-                            row {
-                                style: "items-center gap-1 bg-slate-950/80 p-0.5 rounded border border-slate-800"
-                                button "矢量" {
-                                    onclick: .SetSkinVector
-                                    class: .store.btn_vector_class
-                                }
-                                button "SVG" {
-                                    onclick: .SetSkinSvg
-                                    class: .store.btn_svg_class
-                                }
+                            style: "items-center gap-1 bg-slate-950/80 p-0.5 rounded border border-slate-800"
+                            button "矢量" {
+                                onclick: .SetSkinVector
+                                class: .store.btn_vector_class
+                            }
+                            button "SVG" {
+                                onclick: .SetSkinSvg
+                                class: .store.btn_svg_class
                             }
                         }
                     }
-                }
 
-                // 第二行：状态指标 + 操作按钮
-                row {
-                    style: "items-center justify-between gap-4"
-
-                    // 状态指标：用时 & 步数 & 最佳纪录
                     row {
-                        style: "items-center gap-4 bg-slate-950/60 border border-slate-800 rounded-lg px-4 py-1"
+                        style: "items-center gap-3"
                         row {
-                            style: "items-center gap-2"
-                            icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
-                            text "用时: " { style: "text-xs text-slate-400 font-medium" }
-                            text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
+                            style: "items-center gap-3 bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-1"
+                            row {
+                                style: "items-center gap-1.5"
+                                icon (name: "clock", class: "w-4 h-4 text-emerald-400") {}
+                                text .store.timer_label { style: "text-sm font-bold font-mono text-emerald-300" }
+                            }
+                            row {
+                                style: "items-center gap-1.5"
+                                icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
+                                text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
+                            }
+                            row {
+                                style: "items-center gap-1.5"
+                                icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
+                                text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
+                            }
                         }
-                        row {
-                            style: "items-center gap-2"
-                            icon (name: "activity", class: "w-4 h-4 text-indigo-400") {}
-                            text "步数: " { style: "text-xs text-slate-400 font-medium" }
-                            text .store.moves_label { style: "text-sm font-bold font-mono text-indigo-300" }
-                        }
-                        row {
-                            style: "items-center gap-2"
-                            icon (name: "trophy", class: "w-4 h-4 text-amber-400") {}
-                            text "最佳: " { style: "text-xs text-slate-400 font-medium" }
-                            text .store.best_record_label { style: "text-sm font-bold font-mono text-amber-300" }
-                        }
-                    }
 
-                    // 操作按钮组
-                    row {
-                        style: "items-center gap-2"
-                        button "撤销 (Undo)" {
-                            onclick: .Undo
-                            class: .store.undo_btn_class
-                        }
-                        button "自动收牌 (Auto)" {
-                            onclick: .AutoSendAll
-                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
-                        }
-                        button "新对局" {
-                            onclick: .NewGame
-                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
-                        }
-                        button "必胜测试" {
-                            onclick: .DebugWinDeal
-                            class: "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+                        row {
+                            style: "items-center gap-1.5"
+                            button "撤销" {
+                                onclick: .Undo
+                                class: .store.undo_btn_class
+                            }
+                            button "自动收牌" {
+                                onclick: .AutoSendAll
+                                class: "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-600 text-white shadow-sm cursor-pointer"
+                            }
+                            button "新对局" {
+                                onclick: .NewGame
+                                class: "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm cursor-pointer"
+                            }
+                            button "必胜测试" {
+                                onclick: .DebugWinDeal
+                                class: "px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer"
+                            }
                         }
                     }
                 }
@@ -111,20 +101,20 @@ widget App {
             // 胜利结算横幅 (仅在获胜时展示)
             if .store.game_state == "won" {
                 col {
-                    style: "bg-emerald-900/90 border-2 border-emerald-400 rounded-2xl p-6 items-center justify-center gap-3 shadow-2xl text-center"
-                    text "🏆 恭喜通关！所有 52 张纸牌已集齐归位！" { style: "text-2xl font-bold text-amber-300" }
-                    text "完赛耗时: " + .store.timer_label + "  |  总用步数: " + .store.moves_label { style: "text-sm text-emerald-100 font-mono" }
-                    text "历史最佳: " + .store.best_record_label + "  |  累计胜场: " + .store.games_won_label + " 局" { style: "text-xs text-amber-200 font-mono" }
+                    style: "bg-emerald-900/90 border-2 border-emerald-400 rounded-xl px-4 py-3 items-center justify-center gap-2 shadow-2xl text-center"
+                    text "🏆 恭喜通关！所有 52 张纸牌已集齐归位！" { style: "text-lg font-bold text-amber-300" }
+                    text "完赛耗时: " + .store.timer_label + "  |  总用步数: " + .store.moves_label { style: "text-xs text-emerald-100 font-mono" }
+                    text "历史最佳: " + .store.best_record_label + "  |  累计胜场: " + .store.games_won_label + " 局" { style: "text-[11px] text-amber-200 font-mono" }
                     button "开启新对局 (Play Again)" {
                         onclick: .NewGame
-                        class: "mt-2 px-6 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg cursor-pointer text-sm"
+                        class: "px-4 py-1.5 rounded-lg font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg cursor-pointer text-xs"
                     }
                 }
             }
 
-            // 主牌桌：祖母绿毛毡绿桌背景
+            // 主牌桌：flex-1 吃满剩余高度；Showcase 已移除
             col {
-                style: "bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-6 gap-6 shadow-2xl flex-1"
+                style: "bg-emerald-950/80 border border-emerald-800/80 rounded-xl p-3 gap-3 shadow-2xl flex-1"
 
                 // 顶排：发牌堆/弃牌堆 (左) + 4 基础堆 (右)
                 row {
@@ -229,11 +219,11 @@ widget App {
 
                 // 底排：7 列牌桌 (Tableau)
                 row {
-                    style: "gap-4 items-start justify-center pt-2 min-h-[380px]"
+                    style: "gap-3 items-start justify-center pt-1"
 
                     // 列 0
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col0.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(0)
@@ -245,22 +235,46 @@ widget App {
                             for card in .store.col0 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(0, card.idx)
-                                        ondblclick: .AutoSendCol(0)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(0, card.idx)
+                                            ondblclick: .AutoSendCol(0)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(0, card.idx)
+                                            ondblclick: .AutoSendCol(0)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -269,7 +283,7 @@ widget App {
 
                     // 列 1
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col1.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(1)
@@ -281,22 +295,46 @@ widget App {
                             for card in .store.col1 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(1, card.idx)
-                                        ondblclick: .AutoSendCol(1)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(1, card.idx)
+                                            ondblclick: .AutoSendCol(1)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(1, card.idx)
+                                            ondblclick: .AutoSendCol(1)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -305,7 +343,7 @@ widget App {
 
                     // 列 2
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col2.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(2)
@@ -317,22 +355,46 @@ widget App {
                             for card in .store.col2 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(2, card.idx)
-                                        ondblclick: .AutoSendCol(2)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(2, card.idx)
+                                            ondblclick: .AutoSendCol(2)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(2, card.idx)
+                                            ondblclick: .AutoSendCol(2)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -341,7 +403,7 @@ widget App {
 
                     // 列 3
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col3.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(3)
@@ -353,22 +415,46 @@ widget App {
                             for card in .store.col3 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(3, card.idx)
-                                        ondblclick: .AutoSendCol(3)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(3, card.idx)
+                                            ondblclick: .AutoSendCol(3)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(3, card.idx)
+                                            ondblclick: .AutoSendCol(3)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -377,7 +463,7 @@ widget App {
 
                     // 列 4
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col4.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(4)
@@ -389,22 +475,46 @@ widget App {
                             for card in .store.col4 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(4, card.idx)
-                                        ondblclick: .AutoSendCol(4)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(4, card.idx)
+                                            ondblclick: .AutoSendCol(4)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(4, card.idx)
+                                            ondblclick: .AutoSendCol(4)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -413,7 +523,7 @@ widget App {
 
                     // 列 5
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col5.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(5)
@@ -425,22 +535,46 @@ widget App {
                             for card in .store.col5 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(5, card.idx)
-                                        ondblclick: .AutoSendCol(5)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(5, card.idx)
+                                            ondblclick: .AutoSendCol(5)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(5, card.idx)
+                                            ondblclick: .AutoSendCol(5)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
@@ -449,7 +583,7 @@ widget App {
 
                     // 列 6
                     col {
-                        style: "w-[76px] min-h-[340px]"
+                        style: "w-[76px]"
                         if .store.col6.len() == 0 {
                             button {
                                 onclick: .ClickEmptyCol(6)
@@ -461,59 +595,49 @@ widget App {
                             for card in .store.col6 {
                                 col {
                                     class: card.wrapper_class
-                                    button {
-                                        key: card.id
-                                        onclick: .ClickColCard(6, card.idx)
-                                        ondblclick: .AutoSendCol(6)
-                                        class: card.card_class
-                                        CardFace (
-                                            rank: card.rank,
-                                            rank_text: card.rank_text,
-                                            suit: card.suit,
-                                            color_class: card.color_class,
-                                            is_court: card.is_court,
-                                            court_badge: card.court_badge,
-                                            is_face_down: card.is_face_down,
-                                            skin_mode: .store.skin_mode,
-                                            svg_src: card.svg_src
-                                        ) {}
+                                    if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(6, card.idx)
+                                            ondblclick: .AutoSendCol(6)
+                                            class: card.card_class
+                                        }
+                                    }
+                                    if card.is_top {
+                                        button {
+                                            key: card.id
+                                            onclick: .ClickColCard(6, card.idx)
+                                            ondblclick: .AutoSendCol(6)
+                                            class: card.card_class
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src
+                                            ) {}
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-            }
-
-            // 附带区域：典型牌面自绘与外部皮肤展台 (Gallery Showcase)
-            col {
-                style: "bg-slate-900/60 border border-slate-800 rounded-xl p-4 gap-3 shadow-sm"
-                row {
-                    style: "items-center justify-between"
-                    row {
-                        style: "items-center gap-2"
-                        icon (name: "sparkles", class: "w-4 h-4 text-amber-400") {}
-                        text "牌面设计与皮肤规范展台 (Showcase)" { style: "text-xs font-semibold text-slate-300" }
-                        text "（供卡牌视觉对齐与 SVG 素材包热插拔比对）" { style: "text-[10px] text-slate-400" }
-                    }
-                }
-
-                row {
-                    style: "gap-3 items-center flex-wrap pt-1"
-                    for scard in .store.showcase_cards {
-                        col {
-                            class: scard.card_class
-                            CardFace (
-                                rank: scard.rank,
-                                rank_text: scard.rank_text,
-                                suit: scard.suit,
-                                color_class: scard.color_class,
-                                is_court: scard.is_court,
-                                court_badge: scard.court_badge,
-                                is_face_down: scard.is_face_down,
-                                skin_mode: .store.skin_mode,
-                                svg_src: scard.svg_src
-                            ) {}
                         }
                     }
                 }
