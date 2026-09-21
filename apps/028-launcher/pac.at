@@ -20,3 +20,7 @@ title: "Launcher"
 title_zh: "启动器"
 category: "system"
 desktop: "true"
+# PLAN-039 T-07（D2-A）：a2r 编译 exe 声明——spawn_launcher_outproc
+# 编译轨优先臂消费（产物缺席回退解释装载 I3）；生成门 0（批次 E 收官
+# 2026-09-21）；debug 档开发环，release 升档随收口批。
+desktop_exe: "rust-workspace/target/debug/launcher.exe"
