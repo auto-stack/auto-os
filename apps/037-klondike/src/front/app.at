@@ -252,7 +252,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -294,7 +295,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -336,7 +338,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -378,7 +381,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -420,7 +424,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -462,7 +467,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
@@ -504,7 +510,8 @@ widget App {
                                             is_face_down: card.is_face_down,
                                             skin_mode: .store.skin_mode,
                                             svg_src: card.svg_src,
-                                            is_selected: card.is_selected
+                                            is_selected: card.is_selected,
+                                            peek_only: !card.is_top
                                         ) {}
                                     }
                                     if !card.is_top {
