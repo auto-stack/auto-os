@@ -1162,21 +1162,24 @@ store KlondikeStore {
                         wrap_str = "-mt-20 w-[76px] h-[106px] overflow-hidden shrink-0"
                     }
 
-                    // 实验：按点数给不同底色，验证顶牌背景是否盖住下层背景/文字
-                    var face_bg str = "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300"
-                    if r_num == 1 { face_bg = "bg-gradient-to-br from-red-300 via-red-200 to-red-400" }
-                    if r_num == 2 { face_bg = "bg-gradient-to-br from-orange-300 via-orange-200 to-orange-400" }
-                    if r_num == 3 { face_bg = "bg-gradient-to-br from-amber-300 via-amber-200 to-amber-400" }
-                    if r_num == 4 { face_bg = "bg-gradient-to-br from-yellow-300 via-yellow-200 to-yellow-400" }
-                    if r_num == 5 { face_bg = "bg-gradient-to-br from-lime-300 via-lime-200 to-lime-400" }
-                    if r_num == 6 { face_bg = "bg-gradient-to-br from-green-300 via-green-200 to-green-400" }
-                    if r_num == 7 { face_bg = "bg-gradient-to-br from-emerald-300 via-emerald-200 to-emerald-400" }
-                    if r_num == 8 { face_bg = "bg-gradient-to-br from-teal-300 via-teal-200 to-teal-400" }
-                    if r_num == 9 { face_bg = "bg-gradient-to-br from-cyan-300 via-cyan-200 to-cyan-400" }
-                    if r_num == 10 { face_bg = "bg-gradient-to-br from-sky-300 via-sky-200 to-sky-400" }
-                    if r_num == 11 { face_bg = "bg-gradient-to-br from-blue-300 via-blue-200 to-blue-400" }
-                    if r_num == 12 { face_bg = "bg-gradient-to-br from-indigo-300 via-indigo-200 to-indigo-400" }
-                    if r_num == 13 { face_bg = "bg-gradient-to-br from-violet-300 via-violet-200 to-violet-400" }
+                    // 盖牌牌身用紫色渐变；明牌按点数分色（实验/便于辨认）
+                    var face_bg str = "bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950"
+                    if !is_down {
+                        face_bg = "bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300"
+                        if r_num == 1 { face_bg = "bg-gradient-to-br from-red-300 via-red-200 to-red-400" }
+                        if r_num == 2 { face_bg = "bg-gradient-to-br from-orange-300 via-orange-200 to-orange-400" }
+                        if r_num == 3 { face_bg = "bg-gradient-to-br from-amber-300 via-amber-200 to-amber-400" }
+                        if r_num == 4 { face_bg = "bg-gradient-to-br from-yellow-300 via-yellow-200 to-yellow-400" }
+                        if r_num == 5 { face_bg = "bg-gradient-to-br from-lime-300 via-lime-200 to-lime-400" }
+                        if r_num == 6 { face_bg = "bg-gradient-to-br from-green-300 via-green-200 to-green-400" }
+                        if r_num == 7 { face_bg = "bg-gradient-to-br from-emerald-300 via-emerald-200 to-emerald-400" }
+                        if r_num == 8 { face_bg = "bg-gradient-to-br from-teal-300 via-teal-200 to-teal-400" }
+                        if r_num == 9 { face_bg = "bg-gradient-to-br from-cyan-300 via-cyan-200 to-cyan-400" }
+                        if r_num == 10 { face_bg = "bg-gradient-to-br from-sky-300 via-sky-200 to-sky-400" }
+                        if r_num == 11 { face_bg = "bg-gradient-to-br from-blue-300 via-blue-200 to-blue-400" }
+                        if r_num == 12 { face_bg = "bg-gradient-to-br from-indigo-300 via-indigo-200 to-indigo-400" }
+                        if r_num == 13 { face_bg = "bg-gradient-to-br from-violet-300 via-violet-200 to-violet-400" }
+                    }
 
                     var card_style str = ""
                     var visual_class str = ""
