@@ -238,25 +238,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(0, card.idx)
+                                            ondblclick: .AutoSendCol(0)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(0, card.idx)
                                             ondblclick: .AutoSendCol(0)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(0, card.idx)
-                                            ondblclick: .AutoSendCol(0)
                                         }
                                     }
                                     if card.is_top {
@@ -276,7 +281,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -300,25 +306,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(1, card.idx)
+                                            ondblclick: .AutoSendCol(1)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(1, card.idx)
                                             ondblclick: .AutoSendCol(1)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(1, card.idx)
-                                            ondblclick: .AutoSendCol(1)
                                         }
                                     }
                                     if card.is_top {
@@ -338,7 +349,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -362,25 +374,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(2, card.idx)
+                                            ondblclick: .AutoSendCol(2)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(2, card.idx)
                                             ondblclick: .AutoSendCol(2)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(2, card.idx)
-                                            ondblclick: .AutoSendCol(2)
                                         }
                                     }
                                     if card.is_top {
@@ -400,7 +417,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -424,25 +442,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(3, card.idx)
+                                            ondblclick: .AutoSendCol(3)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(3, card.idx)
                                             ondblclick: .AutoSendCol(3)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(3, card.idx)
-                                            ondblclick: .AutoSendCol(3)
                                         }
                                     }
                                     if card.is_top {
@@ -462,7 +485,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -486,25 +510,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(4, card.idx)
+                                            ondblclick: .AutoSendCol(4)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(4, card.idx)
                                             ondblclick: .AutoSendCol(4)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(4, card.idx)
-                                            ondblclick: .AutoSendCol(4)
                                         }
                                     }
                                     if card.is_top {
@@ -524,7 +553,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -548,25 +578,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(5, card.idx)
+                                            ondblclick: .AutoSendCol(5)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(5, card.idx)
                                             ondblclick: .AutoSendCol(5)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(5, card.idx)
-                                            ondblclick: .AutoSendCol(5)
                                         }
                                     }
                                     if card.is_top {
@@ -586,7 +621,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }
@@ -610,25 +646,30 @@ widget App {
                                 col {
                                     class: card.wrapper_class
                                     if card.needs_visual {
+                                        col {
+                                            class: card.visual_class
+                                            onclick: .ClickColCard(6, card.idx)
+                                            ondblclick: .AutoSendCol(6)
+                                            CardFace (
+                                                rank: card.rank,
+                                                rank_text: card.rank_text,
+                                                suit: card.suit,
+                                                color_class: card.color_class,
+                                                is_court: card.is_court,
+                                                court_badge: card.court_badge,
+                                                is_face_down: card.is_face_down,
+                                                skin_mode: .store.skin_mode,
+                                                svg_src: card.svg_src,
+                                                is_selected: card.is_selected,
+                                                bg_class: card.bg_class,
+                                                only_corners: true
+                                            ) {}
+                                        }
                                         button {
                                             key: card.id
                                             onclick: .ClickColCard(6, card.idx)
                                             ondblclick: .AutoSendCol(6)
                                             class: card.card_class
-                                            if !card.is_face_down {
-                                                row {
-                                                    style: "items-center gap-1 leading-none"
-                                                    text card.rank_text {
-                                                        style: "text-sm font-black font-bold " + card.color_class
-                                                    }
-                                                    CardSuit (suit: card.suit, style: "w-3.5 h-3.5 " + card.color_class) {}
-                                                }
-                                            }
-                                        }
-                                        col {
-                                            class: card.visual_class
-                                            onclick: .ClickColCard(6, card.idx)
-                                            ondblclick: .AutoSendCol(6)
                                         }
                                     }
                                     if card.is_top {
@@ -648,7 +689,8 @@ widget App {
                                                 skin_mode: .store.skin_mode,
                                                 svg_src: card.svg_src,
                                                 is_selected: card.is_selected,
-                                                bg_class: card.bg_class
+                                                bg_class: card.bg_class,
+                                                only_corners: false
                                             ) {}
                                         }
                                     }

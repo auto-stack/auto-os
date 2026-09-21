@@ -1193,20 +1193,14 @@ store KlondikeStore {
                         }
                     } else {
                         needs_visual = true
-                        // peek 条固定在 wrapper 顶（view 里 button 在前）：只画点数+花色
-                        // body 色块在 visual（mt-[-26px] 对齐牌顶），不画完整牌面文字
-                        if is_down {
-                            card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/50 border-b-0 shrink-0 cursor-pointer select-none"
-                            visual_class = "w-[76px] h-[106px] mt-[-26px] rounded-lg bg-gradient-to-br from-indigo-700 via-indigo-800 to-indigo-950 border-2 border-indigo-300/50 relative select-none shrink-0 overflow-hidden"
+                        // 牌身仍完整渲染（CardFace only_corners：chrome 全高 + 仅顶栏文字）
+                        // 命中条透明叠在顶上，不改牌身样式
+                        if is_selected {
+                            card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none ring-2 ring-indigo-400/60 z-30"
                         } else {
-                            if is_selected {
-                                card_style = face_bg + " w-[76px] h-[26px] p-0 px-2 rounded-t-lg border-2 border-indigo-700 border-b-0 shrink-0 cursor-pointer select-none ring-2 ring-indigo-400/60 z-30 items-center"
-                                visual_class = face_bg + " w-[76px] h-[106px] mt-[-26px] rounded-lg border-2 border-indigo-700 relative select-none shrink-0 overflow-hidden ring-4 ring-indigo-400/60 shadow-2xl z-30"
-                            } else {
-                                card_style = face_bg + " w-[76px] h-[26px] p-0 px-2 rounded-t-lg border border-slate-300 border-b-0 shrink-0 cursor-pointer select-none items-center"
-                                visual_class = face_bg + " w-[76px] h-[106px] mt-[-26px] rounded-lg border border-slate-300 relative select-none shrink-0 overflow-hidden"
-                            }
+                            card_style = "w-[76px] h-[26px] p-0 rounded-t-lg bg-transparent border-0 shrink-0 cursor-pointer select-none"
                         }
+                        visual_class = "w-[76px] h-[106px] mt-[-26px] relative select-none shrink-0 overflow-hidden"
                     }
 
                     built_col.push({
