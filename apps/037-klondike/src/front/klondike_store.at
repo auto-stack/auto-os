@@ -580,15 +580,14 @@ store KlondikeStore {
 
             // Case 1: 已经有选中牌
             if .sel_source != "" {
-                // 点击同列已选中的牌：取消选中
+                // 同一张牌重复事件（visual+peek 双通道）→ 幂等，不取消选中
+                if .sel_source == "col" && .sel_col == col_idx && .sel_idx == card_idx {
+                    return
+                }
+                // 点击同列其他明牌：换选（含被盖住的牌，只要点到其露头）
                 if .sel_source == "col" && .sel_col == col_idx {
-                    if .sel_idx == card_idx {
-                        .ClearSelection()
-                    } else {
-                        // 换选同列其他明牌
-                        .sel_idx = card_idx
-                        .selected_card_id = card_id
-                    }
+                    .sel_idx = card_idx
+                    .selected_card_id = card_id
                     .RebuildCards()
                     return
                 }

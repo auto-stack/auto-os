@@ -240,6 +240,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(0, card.idx)
+                                            ondblclick: .AutoSendCol(0)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -302,6 +304,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(1, card.idx)
+                                            ondblclick: .AutoSendCol(1)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -364,6 +368,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(2, card.idx)
+                                            ondblclick: .AutoSendCol(2)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -426,6 +432,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(3, card.idx)
+                                            ondblclick: .AutoSendCol(3)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -488,6 +496,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(4, card.idx)
+                                            ondblclick: .AutoSendCol(4)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -550,6 +560,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(5, card.idx)
+                                            ondblclick: .AutoSendCol(5)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
@@ -612,6 +624,8 @@ widget App {
                                     if card.needs_visual {
                                         col {
                                             class: card.visual_class
+                                            onclick: .ClickColCard(6, card.idx)
+                                            ondblclick: .AutoSendCol(6)
                                             CardFace (
                                                 rank: card.rank,
                                                 rank_text: card.rank_text,
