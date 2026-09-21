@@ -629,8 +629,66 @@ store KlondikeStore {
                     return
                 }
 
-                // 尝试放置到 col_idx
-                .ClickEmptyCol(col_idx)
+                // 已有选中时点另一列：能落则落，不能落则直接改选该牌
+                var try_root int = 999
+                if .sel_source == "waste" {
+                    if .waste_cards.len() > 0 { try_root = .waste_cards[.waste_cards.len() - 1] }
+                }
+                if .sel_source == "foundation" {
+                    var fl int = 0
+                    if .sel_col == 0 { fl = .f0_cards.len(); if fl > 0 { try_root = .f0_cards[fl - 1] } }
+                    if .sel_col == 1 { fl = .f1_cards.len(); if fl > 0 { try_root = .f1_cards[fl - 1] } }
+                    if .sel_col == 2 { fl = .f2_cards.len(); if fl > 0 { try_root = .f2_cards[fl - 1] } }
+                    if .sel_col == 3 { fl = .f3_cards.len(); if fl > 0 { try_root = .f3_cards[fl - 1] } }
+                }
+                if .sel_source == "col" {
+                    var sl int = 0
+                    if .sel_col == 0 { sl = .col0_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col0_cards[.sel_idx] } }
+                    if .sel_col == 1 { sl = .col1_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col1_cards[.sel_idx] } }
+                    if .sel_col == 2 { sl = .col2_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col2_cards[.sel_idx] } }
+                    if .sel_col == 3 { sl = .col3_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col3_cards[.sel_idx] } }
+                    if .sel_col == 4 { sl = .col4_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col4_cards[.sel_idx] } }
+                    if .sel_col == 5 { sl = .col5_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col5_cards[.sel_idx] } }
+                    if .sel_col == 6 { sl = .col6_cards.len(); if .sel_idx >= 0 && .sel_idx < sl { try_root = .col6_cards[.sel_idx] } }
+                }
+                var t_len int = col_len
+                var t_top int = 999
+                if t_len > 0 { t_top = card_id }
+                // 目标顶牌应是该列最后一张；card_idx 可能是 peek，用列顶更稳
+                if col_idx == 0 && .col0_cards.len() > 0 { t_len = .col0_cards.len(); t_top = .col0_cards[t_len - 1] }
+                if col_idx == 1 && .col1_cards.len() > 0 { t_len = .col1_cards.len(); t_top = .col1_cards[t_len - 1] }
+                if col_idx == 2 && .col2_cards.len() > 0 { t_len = .col2_cards.len(); t_top = .col2_cards[t_len - 1] }
+                if col_idx == 3 && .col3_cards.len() > 0 { t_len = .col3_cards.len(); t_top = .col3_cards[t_len - 1] }
+                if col_idx == 4 && .col4_cards.len() > 0 { t_len = .col4_cards.len(); t_top = .col4_cards[t_len - 1] }
+                if col_idx == 5 && .col5_cards.len() > 0 { t_len = .col5_cards.len(); t_top = .col5_cards[t_len - 1] }
+                if col_idx == 6 && .col6_cards.len() > 0 { t_len = .col6_cards.len(); t_top = .col6_cards[t_len - 1] }
+
+                var can_place bool = false
+                if try_root <= 51 {
+                    var ms int = 0
+                    if try_root >= 39 { ms = 3 } else { if try_root >= 26 { ms = 2 } else { if try_root >= 13 { ms = 1 } else { ms = 0 } } }
+                    var mr int = (try_root % 13) + 1
+                    var mred bool = (ms == 1 || ms == 2)
+                    if t_len == 0 {
+                        if mr == 13 { can_place = true }
+                    } else {
+                        var ts int = 0
+                        if t_top >= 39 { ts = 3 } else { if t_top >= 26 { ts = 2 } else { if t_top >= 13 { ts = 1 } else { ts = 0 } } }
+                        var tr int = (t_top % 13) + 1
+                        var tred bool = (ts == 1 || ts == 2)
+                        if mred != tred && mr == tr - 1 { can_place = true }
+                    }
+                }
+                if can_place {
+                    .ClickEmptyCol(col_idx)
+                    return
+                }
+                // 不能落：单击直接改选目标牌
+                .sel_source = "col"
+                .sel_col = col_idx
+                .sel_idx = card_idx
+                .selected_card_id = card_id
+                .RebuildCards()
                 return
             }
 
@@ -1230,6 +1288,18 @@ store KlondikeStore {
                         visual_class = "w-[76px] h-[106px] mt-[-26px] relative select-none shrink-0 overflow-hidden"
                     }
 
+                    var body_class str = face_bg + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                    if is_down {
+                        body_class = face_bg + " w-[76px] h-[106px] rounded-lg border-2 border-indigo-300/50 items-center justify-center overflow-hidden shrink-0"
+                        if is_selected {
+                            body_class = face_bg + " w-[76px] h-[106px] rounded-lg border-2 border-indigo-400 ring-4 ring-indigo-400/60 items-center justify-center overflow-hidden shrink-0 shadow-2xl"
+                        }
+                    } else {
+                        if is_selected {
+                            body_class = face_bg + " w-[76px] h-[106px] rounded-lg border-2 border-indigo-700 ring-4 ring-indigo-400/60 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-2xl z-30"
+                        }
+                    }
+
                     built_col.push({
                         id: cid,
                         col: c_idx,
@@ -1247,6 +1317,7 @@ store KlondikeStore {
                         wrapper_class: wrap_str,
                         card_class: card_style,
                         visual_class: visual_class,
+                        body_class: body_class,
                         bg_class: face_bg,
                         svg_src: "/assets/cards/classic/" + r_txt + "_" + s_txt + ".svg"
                     })

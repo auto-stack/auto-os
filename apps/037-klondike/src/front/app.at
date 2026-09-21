@@ -243,7 +243,7 @@ widget App {
                                             onclick: .ClickColCard(0, card.idx)
                                             ondblclick: .AutoSendCol(0)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -308,7 +308,7 @@ widget App {
                                             onclick: .ClickColCard(1, card.idx)
                                             ondblclick: .AutoSendCol(1)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -373,7 +373,7 @@ widget App {
                                             onclick: .ClickColCard(2, card.idx)
                                             ondblclick: .AutoSendCol(2)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -438,7 +438,7 @@ widget App {
                                             onclick: .ClickColCard(3, card.idx)
                                             ondblclick: .AutoSendCol(3)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -503,7 +503,7 @@ widget App {
                                             onclick: .ClickColCard(4, card.idx)
                                             ondblclick: .AutoSendCol(4)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -568,7 +568,7 @@ widget App {
                                             onclick: .ClickColCard(5, card.idx)
                                             ondblclick: .AutoSendCol(5)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
@@ -633,7 +633,7 @@ widget App {
                                             onclick: .ClickColCard(6, card.idx)
                                             ondblclick: .AutoSendCol(6)
                                             col {
-                                                style: card.bg_class + " w-[76px] h-[106px] rounded-lg border border-slate-300 text-slate-900 justify-start p-1.5 relative overflow-hidden shrink-0 shadow-md"
+                                                class: card.body_class
                                                 if !card.is_face_down {
                                                     row {
                                                         style: "items-center gap-1 leading-none self-start"
