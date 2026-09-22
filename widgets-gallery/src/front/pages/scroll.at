@@ -1,4 +1,6 @@
 // pages/scroll.at - Scrollable regions documentation (Plan 412 Layout gallery)
+// PLAN-692: demo 重设计——竖向容器 w-full（预览区 shrink-to-fit 不再塌条），
+// 横向/双轴 demo 保证真实溢出使滚动条出现；Properties 表补 size 行。
 
 widget ScrollPage {
     model { activeTab str = "preview" }
@@ -10,7 +12,7 @@ widget ScrollPage {
 
             h2 "Vertical Scroll (semantic scroll element)"
             preview-card (id: "scroll-vertical") {
-                scroll (style: "h-40 border rounded-md p-2") {
+                scroll (style: "w-full h-40 border rounded-md p-2") {
                     col (style: "gap-2") {
                         square (color: "blue", h: 10, w: "full", text: "1") {}
                         square (color: "blue", h: 10, w: "full", text: "2") {}
@@ -26,7 +28,7 @@ widget ScrollPage {
 
             h2 "Vertical Scroll (overflow-y-auto class)"
             preview-card (id: "scroll-overflow-class") {
-                div (style: "flex flex-col h-40 overflow-y-auto border rounded-md p-2 gap-2") {
+                div (style: "w-full flex flex-col h-40 overflow-y-auto border rounded-md p-2 gap-2") {
                     square (color: "emerald", h: 10, w: "full", text: "1") {}
                     square (color: "emerald", h: 10, w: "full", text: "2") {}
                     square (color: "emerald", h: 10, w: "full", text: "3") {}
@@ -45,13 +47,17 @@ widget ScrollPage {
                     square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 4") {}
                     square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 5") {}
                     square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 6") {}
+                    square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 7") {}
+                    square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 8") {}
+                    square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 9") {}
+                    square (color: "amber", h: "full", w: 32, class: "shrink-0", text: "card 10") {}
                 }
             }
 
             h2 "Both Axes (overflow-auto)"
             preview-card (id: "scroll-both") {
                 div (style: "overflow-auto h-32 border rounded-md p-2") {
-                    div (style: "grid grid-cols-4 gap-2 w-160") {
+                    div (style: "grid grid-cols-4 gap-2 w-240") {
                         square (color: "purple", h: 12, w: "full", text: "1") {}
                         square (color: "purple", h: 12, w: "full", text: "2") {}
                         square (color: "purple", h: 12, w: "full", text: "3") {}
@@ -60,6 +66,10 @@ widget ScrollPage {
                         square (color: "purple", h: 12, w: "full", text: "6") {}
                         square (color: "purple", h: 12, w: "full", text: "7") {}
                         square (color: "purple", h: 12, w: "full", text: "8") {}
+                        square (color: "purple", h: 12, w: "full", text: "9") {}
+                        square (color: "purple", h: 12, w: "full", text: "10") {}
+                        square (color: "purple", h: 12, w: "full", text: "11") {}
+                        square (color: "purple", h: 12, w: "full", text: "12") {}
                     }
                 }
             }
@@ -79,6 +89,7 @@ widget ScrollPage {
                     tr { td "overflow-x-auto" td "-" td "Horizontal scrollbar when content overflows" }
                     tr { td "overflow-auto" td "-" td "Both axes" }
                     tr { td "overflow-hidden" td "-" td "Clip overflowing content" }
+                    tr { td "size (scroll prop)" td "px, default 8" td "Scrollbar thumb width; hover widens +2px per side, press highlights primary (PLAN-692)" }
                 }
             }
         }
