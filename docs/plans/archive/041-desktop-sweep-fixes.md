@@ -408,4 +408,8 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
   （schema 同构、读回验证）；specs 增量 = dashboard.md 两处 +
   showdesk-ux-polish P041 四节（主检出 `d799eb7` 已载）。
 - `archived`：本文件 git mv → docs/plans/archive/，status=archived。
-- `cleaned`：见下复核行（worktree×4 + 分支×3）。
+- `cleaned`（2026-09-22 wt-guard 全部 clean 前置）：auto-os worktree 移除
+  （iso 证据 9 件先抢救入 reports/）+ plan-041-dev 删（was d799eb7）；lang
+  worktree 移除（range-diff 证明件先抢救）+ os-041-dev 删（was 61ccf23fc）；
+  os-config worktree 移除 + os-041-dev 删（was 93b2d7b）；auto-down detached
+  移除；组目录 .wt/os-041/ 已空删。用户桌面已切主检出构建（:9249）。
