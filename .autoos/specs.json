@@ -304,6 +304,11 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P040-1",
+          "title": "PLAN-040 变更摘要 — desktop-ux-fit-and-taskbar（桌面 UX 三连修）",
+          "content": "fit 双轴自然测量（fit_aware_root Both-scrollable+锚点 Shrink×Shrink，P679-D1 宽度 Fill 视口钳制退役，011-calculator 等 fit 窗不再停 60% viewport）；任务栏单击恢复（DC::ActivateApp 可见窗择优 + shell.at IconClick 外层 mouse-area 菜单感知——popover 锚点 overlay 捕获吞点击根修）+ hover 预览 dismissal 稳定化（mouseleave 即灭死区消除，多实例预览列全实例缩略可点）；快照冻结集（最小化/隐藏/被遮挡/跨分区窗不重抓不 TTL——预览恒画末帧，wm_minimize 即时冻结+回调裁决前现算判据双保险）；随带 012-stopwatch ghost 清理+图标映射改名三同步、壁纸负缓存 1s 重试。交付：auto-os 0309f8e（代码）+c032160/77bbd29（复审记录），auto-lang 5dd8bf8fd/1f8cc66b5（代码）；F-R0 字面鼠标交互复核经用户裁定 merge 后补（先 merge 事后验证——其他工程依赖，2026-09-22）。"
         }
       ]
     },
@@ -692,6 +697,11 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P040-1",
+          "title": "ADR-23 — 快照冻结集/图片负缓存重试/fit 双轴自然测量（lang 侧语义）",
+          "content": "auto-lang docs/specs/auto-lang/ui/architecture.md 增 ADR-23（@c77831511）：①窗口缩略快照末帧保留（frozen 集 request_capture no-op/cache_put 拒收/stale 恒 fresh + sync 每 tick 判据校正 + SnapshotShot 回调前现算——Plan 497 裁剪式快照对最小化/遮挡窗像素污染根修，DWM/backing store 同款惯例）②load_image_bytes 本地文件失败负缓存改 1s 重试（壁纸重启丢失根修，PLAN-035 T-17 姊妹语义）③fit 窗锚点双轴自然测量（fit_aware_root Both-scrollable+Shrink×Shrink，Plan 512 v1 语义修订；后代 bbox 方案因桌面复合场景同坐标系污染弃用）。代码面 @5dd8bf8fd/1f8cc66b5。"
         }
       ]
     },
@@ -1023,6 +1033,11 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P040-1",
+          "title": "SD-01/02 修订 + SD-05 新增 — dashboard.md 规范增量（8×2 定框/下缘 tab 条/快照冻结集）",
+          "content": "auto-os docs/specs/shell/dashboard.md：SD-01 几何吸附 8×3（696×232）→8×2（外框 720×176 @ 12px 四围 PAD，内网格 696×152、节距 88/80 不变，PLAN-035 T-14 表述并入）；右上 pill 分页退役→面板正下缘 28px 预留带 hover 显隐双页签直显（IconClick 外层承载恢复点击）；face 卡高 满高 3 行格（232）→满框 2 行格（152）；SD-02 卡高口径 152px 复核对齐（T-18 残留清零）；新增 SD-05 快照冻结集：最小化/隐藏/被遮挡/跨分区窗进入冻结集——不重抓、条目不过期、预览画末帧（Plan 497 待澄清③ 替代语义），实现锚 snapshot.rs frozen 集+renderer.rs sync_snapshot_frozen+wm_minimize 即时冻结。"
         }
       ]
     },
@@ -1349,6 +1364,11 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P040-1",
+          "title": "PLAN-040 测试语料 — fit/snapshot 单测族 + 全量基线对拍",
+          "content": "fit 族 20/20（Plan 512 滞回/用户锁定语义零回归）；snapshot 族 25/25 含 F3 冻结新测 frozen_window_skips_capture_and_serves_last_frame（首轮单次红=并行单测共享进程态串扰，复跑两轮稳定，F-R2 flake watch）；plan024_dashboard 布局 4/4；cargo tf --no-fail-fast 5443 跑 5435 绿，8 红经 HEAD~1 对拍全为基线预存（musk×6+projector_counter+ffi_dual flaky）零新增红；boot 截图 auto-os tmp/autoui-screenshot-179006{0877794,0975201,5816535}.png（fit 贴合+恢复前台+深色适配）。"
         }
       ]
     },
@@ -1715,6 +1735,11 @@
           "status": "published",
           "created": "2026-09-21",
           "last_modified": "2026-09-21"
+        },
+        {
+          "id": "P040-r1",
+          "title": "PLAN-040 desktop-ux-fit-and-taskbar 复审与合并收据",
+          "content": "R pass（2026-09-22，plan_revision 040-r2，同会话复审工件重建声明在案）：AC-1 pass（fit-trace+boot 截图窗口贴合）/AC-2 pass 命令级（bus 实测 win_min 全最小化→activate focused 位翻转+回前台；F2c IconClick 外移已装载）/AC-3 pass 内容已证（用户确认预览末帧正确；可达性复核延后）/AC-4 pass（8 红基线对拍零新增）。findings：F-R0 字面鼠标交互（最小化→单击恢复/预览移入可点）经用户裁定 merge 后补验（先 merge 事后验证——其他工程依赖，2026-09-22；不通过则按 needs_fix 重开 F2c）；F-R1 主题热切换 dashboard face 滞留待澄清（规避=重启）；F-R2 snapshot 单测 flake watch；F-R3 主检出直接实施偏差如实记录（处置=main 提交维持，后续计划回归 worktree 纪律）。merge：consolidation worktree .wt/os-040/auto-os（plan-040-dev）落盘规范增量（dashboard.md+specs.json）ff-only 合入 main；auto-lang 配对 ADR-23 @c77831511；归档 docs/plans/archive/040-desktop-ux-fit-and-taskbar.md。"
         }
       ]
     }

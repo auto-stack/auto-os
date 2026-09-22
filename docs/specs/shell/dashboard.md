@@ -12,6 +12,11 @@
 > toggle_dashboard / refresh_dashboard_panel / dynamic_view_impl face 分支 /
 > open 拦截臂）+ `ui/session.rs`（split_ref_dashboard/face / hatch_mini_app /
 > open_window_for_session）+ `ui/dynamic.rs`（view_named）。
+>
+> PLAN-040（desktop-ux-fit-and-taskbar，2026-09-22）增量：SD-01 几何
+> 8×3→8×2 + 右上 pill 分页退役（下缘 28px tab 条 hover 显隐）、face 卡
+> 高口径 152、新增 SD-05 快照冻结集（末帧保留；lang 侧语义归
+> architecture.md ADR-23）。
 
 ## SD-01 常驻小组件层（z 序与显隐）
 
@@ -24,15 +29,20 @@
   无 scrim、无外点关闭、无 Esc 关闭。可见性单一事实 = 面板 .at
   `visible` state（switcher/通知先例），投影 `__wm_dashboard`（"1"/""）
   供 dock 钮两态高亮。
-- **几何吸附（PLAN-035 SD-01 修订：8×3 定框 + 网格算术卡位）**：面板
-  外框 = 屏幕右上 **8 列 × 3 行** 图标网格块（696×232 @ 12px 边距；列距
-  88 = w-20 80+gap 8、行距 80 = h-[72px] 72+gap 8）——用户 2026-09-20
-  裁定（原 10 列框 + 内部三等分 sx/sy 缩放退役）。**无头行**
+- **几何吸附（PLAN-040 SD-01 修订：8×2 定框 + 下缘 tab 条 + 网格算术
+  卡位）**：面板外框 = 屏幕右上 **8 列 × 2 行** 图标网格块（720×176
+  @ 12px；含四围 PAD 12——PLAN-035 T-14 表述并入；内网格 696×152，
+  列距 88 = w-20 80+gap 8、行距 80 = h-[72px] 72+gap 8 节距不变）——
+  用户 2026-09-22 裁定（PLAN-035 的 8×3 定框退役；更早的 10 列框 +
+  内部三等分 sx/sy 缩放已随 035 退役）。**无头行**
   （PLAN-035 rev4 T-18：72px tab 头行占满一整行网格且空旷，退役——
-  分页触发改外框右上角紧凑 pill，main↔system 互换，SelectTab 既有
-  消息面；lazy 语义不变：非活动页 face 不渲染 + 孵化 Tick 停订）；
+  **分页 tab 条 = 面板正下缘 28px 预留带内 hover 显隐的双页签直显**
+  （PLAN-040 用户裁定：pill 右上悬浮退役——hover 预览可点中性，
+  IconClick 外层 mouse-area 承载恢复点击，popover 锚点捕获吞点击
+  绕开），main↔system 互换，SelectTab 既有消息面；lazy 语义不变：
+  非活动页 face 不渲染 + 孵化 Tick 停订）；
   face 卡 = 网格单元整数倍：宽 **2 格（168）缺省 / 3 格（256）声明或
-  存储**，高 = **满高 3 行格（232）**，卡框线落 88/80 节距网格线；
+  存储**，高 = **满框 2 行格（152）**，卡框线落 88/80 节距网格线；
   `dashboard_layout` 直出视口绝对矩形（外框 + 格位同一算式，chrome
   wrapper 与 face 卡永远同源）。8 列单卡行装不下者裁剪 + dev 日志
   （滚动/增高挂平板网格 v2，PLAN-024 §9.3）。
@@ -49,7 +59,8 @@
 - **face = app `view mini` 命名视图的宿主拆借渲染**（`view_named`，与
   主窗同 component/VM 桥——状态一致即视觉一致，非截图/缩放）；事件带
   face app 标签直达该会话（卡内交互零中转）。
-- **格位（PLAN-035 SD-02 修订）**：`dashboard_layout` 行主序单卡行
+- **格位（PLAN-035 SD-02 修订；PLAN-040 复核与 SD-01 满框 2 行格 152px
+  口径对齐，T-18 残留清零）**：`dashboard_layout` 行主序单卡行
   next-fit（**span 2|3 缺省 2**，卡高恒 2 行格 = 152px；余量不足裁剪）；
   span 三级消费序 = 存储覆写 `shell.dashboard.span.<app>` → **app 源
   声明标记**（源内唯一标记 `dashboard span: N`，N∈{2,3}；注释形态
@@ -97,3 +108,21 @@
   `__dashboard_faces`/`__wm_dashboard`/几何注入；出向
   `__dashboard_cmd`（toggle/close/pin/unpin/span/launch 六动词，面板
   上行）+ shell `__desktop_cmd` 的 `dashboard_toggle`（dock 钮）。
+
+## SD-05 快照冻结集（任务栏/pager 缩略末帧保留）
+
+- **冻结判据**：窗口快照对**最小化 / 隐藏 / 被更高 z 序可见窗矩形相交
+  （部分遮挡即污染裁剪，计入）/ 不在当前分区**的窗进入**冻结集**——
+  不重抓（截图裁剪跳过）、条目永不过期（TTL 清除跳过），预览画保留的
+  **最后一帧**（Windows DWM redirection surface / macOS NSWindow
+  backing store 同款 OS 惯例；Plan 497 待澄清③ 子树离线栅格化在本
+  iced 版本不可行的替代语义）。恢复可见即解冻重抓。
+- **时序双保险（PLAN-040 F3a）**：`wm_minimize` 即时冻结（不等 sync
+  周期）；截图回调裁决前现算冻结判据——入队到回调之间窗已最小化/
+  被遮挡时按最新可见性拒绝入库，封死"在途截图污染"窗口。
+- **实现锚**：auto-lang `ui/iced/snapshot.rs` frozen 集
+  （`request_capture` 冻结 no-op / `cache_put` 拒收 /
+  `snapshot_window_stale` 冻结恒 fresh）+ `renderer.rs`
+  `sync_snapshot_frozen`（sync 每 tick 全量校正）+
+  `service_snapshot_requests`/`SnapshotShot` 裁剪回调跳过；语义决策
+  记录归 auto-lang `architecture.md` ADR-23。
