@@ -1,0 +1,12 @@
+   --> crates\auto-lang\src\design_tokens\registry.rs:190:9
+   --> crates\auto-lang\src\ui_gen\bp\registry.rs:368:9
+   --> crates\auto-lang\src\ui_gen\bp\registry.rs:367:1
+4268 |                           let mut dashboard_wid: Option<Wid> = None;
+4273 |   ...                   /// 边距；push_dashboard_snapshot 随几何动态更新）。
+11572 | |         if state.desktop.dashboard_open {
+11573 | |             push_dashboard_snapshot(
+11589 |       let (faces, panel_w, panel_h, panel_top) = collect_dashboard_faces(state);
+11647 | |         if state.desktop.dashboard_open {
+11648 | |             state.desktop.dashboard_open = false;
+11649 | |             push_dashboard_snapshot(state, &[]);
+20540 | /                 /// 表面帧贴层（伪窗[4]，表面 = dashboard_layout 外框
