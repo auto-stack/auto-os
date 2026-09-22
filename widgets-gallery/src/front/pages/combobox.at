@@ -1,31 +1,71 @@
 // pages/combobox.at - Combobox component documentation page
+// PLAN-692 W-2: 升级为 shadcn-vue 官方 Combobox 形态——Popover+Command 组合，
+// 过滤/空态自动显隐/候选项 hover 与键盘选中/点击选择回填触发器标签。
 
 widget ComboboxPage {
-    model { activeTab str = "preview" }
+    model {
+        activeTab str = "preview"
+        selected str = "Select framework..."
+        picked str = "Pick a person..."
+    }
 
     view {
         col {
             h1 "Combobox"
-            text "Combobox combines a text input with a filterable dropdown list, letting users either type freely or pick from suggestions. Ideal for searchable selects, tag inputs, and autocomplete fields with large option sets. The list filters in real-time as the user types."
-
-            h2 "Installation"
-            codeblock (lang: "bash", code: "npx shadcn-vue@latest add combobox") {}
+            text "Combobox combines a text input with a filterable dropdown list, letting users either type freely or pick from suggestions. Built as a Popover + Command composition: typing filters the list live, the empty state appears only when nothing matches, and picking an item closes the loop back into the trigger label."
 
             h2 "Simple"
             preview-card (id: "combobox-basic") {
                 popover {
                     popover-trigger {
-                        button (text: "Select framework...", variant: "outline") {}
+                        button (text: .selected, variant: "outline", style: "w-52 justify-between") {}
                     }
-                    popover-content {
-                        command {
+                    popover-content (style: "w-64 p-0") {
+                        command (style: "w-full") {
                             command-input (placeholder: "Search framework...") {}
                             command-empty "No framework found."
                             command-list {
-                                command-group {
-                                    command-item "Vue"
-                                    command-item "React"
-                                    command-item "Svelte"
+                                command-group (heading: "Frameworks") {
+                                    command-item (value: "Vue", text: "Vue", onclick: .PickVue) {}
+                                    command-item (value: "React", text: "React", onclick: .PickReact) {}
+                                    command-item (value: "Svelte", text: "Svelte", onclick: .PickSvelte) {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            h2 "Complex Items (shortcut + children)"
+            preview-card (id: "combobox-rich") {
+                popover {
+                    popover-trigger {
+                        button (text: .picked, variant: "outline", style: "w-60 justify-between") {}
+                    }
+                    popover-content (style: "w-72 p-0") {
+                        command (style: "w-full") {
+                            command-input (placeholder: "Search people...") {}
+                            command-empty "No person found."
+                            command-list {
+                                command-group (heading: "Team") {
+                                    command-item (value: "ada", onclick: .PickAda) {
+                                        text "Ada Lovelace"
+                                        command-shortcut "AL"
+                                    }
+                                    command-item (value: "grace", onclick: .PickGrace) {
+                                        text "Grace Hopper"
+                                        command-shortcut "GH"
+                                    }
+                                    command-item (value: "alan", onclick: .PickAlan) {
+                                        text "Alan Turing"
+                                        command-shortcut "AT"
+                                    }
+                                }
+                                command-separator {}
+                                command-group (heading: "Actions") {
+                                    command-item (value: "new", onclick: .ClearPicked) {
+                                        text "Clear selection"
+                                    }
                                 }
                             }
                         }
@@ -62,5 +102,15 @@ widget ComboboxPage {
                 }
             }
         }
+    }
+
+    on {
+        .PickVue -> { .selected = "Vue" }
+        .PickReact -> { .selected = "React" }
+        .PickSvelte -> { .selected = "Svelte" }
+        .PickAda -> { .picked = "Ada Lovelace" }
+        .PickGrace -> { .picked = "Grace Hopper" }
+        .PickAlan -> { .picked = "Alan Turing" }
+        .ClearPicked -> { .picked = "Pick a person..." }
     }
 }
