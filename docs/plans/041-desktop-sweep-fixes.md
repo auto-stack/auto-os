@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [shell/dashboard, shell/showdesk-ux-polish]
-current_step: 11
+current_step: 12
 total_steps: 15
 ---
 
@@ -241,10 +241,12 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 >
 > **状态总表（2026-09-22 work 首腿，详见 §9 执行记录）**：
 > T-01 [x] T-02 [x] T-03 [x]（025 实测 ✓/017 围栏+债 D1/kanban·auto-term·
-> ui-gallery 切桌面复验）T-04 [x] T-05 [x] T-06 [ ]（浅色 face 时间缺席，债
-> P041-D2）T-07 [x] T-08 [x] T-09 [x] T-10 [x]（实施完毕，实机走查随合并）
+> ui-gallery 切桌面复验）T-04 [x] T-05 [x] T-06 [x]（补课腿闭合：缺席=T-14 修
+> 复前"主题翻转过渡帧被 present 饥冻"衍生症状，现构建暗→浅往返活值在屏，见
+> §9）T-07 [x] T-08 [x] T-09 [x] T-10 [x]（实施完毕，实机走查随合并）
 > T-11 [x] T-12 [x] T-13 [x] T-14 [x]（idle-present 根因修复；图标定性；计数
-> 差一切桌面核销）T-15 [x] —— 11/15，`executing` 继续。
+> 差一切桌面核销）T-15 [x] —— 12/15，`executing` 继续（尾项=T-03 三 app 复验
+> + T-10 走查，均随合并后桌面）。
 
 - **T-01**（A轨）VM 动态符号调查决策件。文件：lang `crates/auto-lang/src/ui/`
   （vm_bridge/装载序，探查定位）；产出 `docs/plans/reports/p041-vm-symbol-decision.md`。
@@ -320,6 +322,12 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
     boot 截图重建 11 图标集+单列位，用户原排列不可精确复原）+ 通知 +1 条
     （已摘除重排）。review 时请用户复核桌面图标布局。
   - blockers: 无（T-06 根因钉定入下一腿）。next: **review 前先补 T-06**。
+- 2026-09-22 **T-06 补课腿闭合**（stage: work | outcome: T-06 [x]）——现构建
+  （unconditional-rendering 后）浅 boot / 暗翻转 / 暗→浅往返三拍，face 时间
+  活值全程在屏（22:41/22:45:13/22:45:43 三证，`.auto/iso041/t06-*`）；缺席
+  现象不再复现 = T-14 present 修复的衍生消解（过渡帧无法滞留），P041-D2 闭。
+  current_step 11→12。残余尾项不变（T-03 三 app 复验 + T-10 走查，随合并后
+  桌面）。next: **review**（尾项随 review 实机走查一并核销）。
 
 ## 10. 待澄清事项
 
@@ -335,9 +343,11 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 6. **P041-D1（work 新立债）**：017-chat VM front 树/布局失配（iced container
    布局子节点 unwrap 崩桌面，三复现；back 补链后可达、master 期被链接失败掩
    蔽）——崩溃围栏（精确 id）在位，根修后摘围栏。
-7. **P041-D2（work 新立债）**：T-06 浅色主题 dashboard 时钟 face 时间文本整体
-   缺席（深色正常、日期活值正常、色板值源正确 ink #2a2723——非色值问题，渲染
-   元素缺席根因未钉）；隔离配方 `.auto/iso041/` 可复现。
+7. **P041-D2（已闭合 2026-09-22 补课腿）**：T-06 浅色 face 时间缺席——现构建
+   （含 unconditional-rendering）浅 boot/暗→浅往返均活值在屏，缺席 = T-14 修
+   复前"主题翻转过渡帧（palette 中间态）被 present 饥冻滞留"的衍生症状，非独
+   立渲染缺陷；遗留观察（不阻断）：face 时间在双主题下均渲染 stella 暖橙、
+   012-clock pac 无 theme 钉定，色源机理另考（纯观感项）。
 8. **storage 污染披露**（work 执行事故）：隔离实例 env 拼误读写用户真实
    storage——图标集已按 boot 截图重建（11 图标+单列位，原排列不可精确复原）、
    通知测试条已摘除。用户复核桌面图标布局即可闭此事项。
