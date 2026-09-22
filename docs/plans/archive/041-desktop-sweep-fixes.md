@@ -388,3 +388,23 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 8. **storage 污染披露**（work 执行事故）：隔离实例 env 拼误读写用户真实
    storage——图标集已按 boot 截图重建（11 图标+单列位，原排列不可精确复原）、
    通知测试条已摘除。用户复核桌面图标布局即可闭此事项。
+8. **storage 污染披露**（work 执行事故）：隔离实例 env 拼误读写用户真实
+   storage——图标集已按 boot 截图重建（11 图标+单列位，原排列不可精确复原）、
+   通知测试条已摘除。用户复核桌面图标布局即可闭此事项。
+
+## merge 收据（PLAN-041:r2 | completion_kind: delivered | 2026-09-22）
+
+- `prepared`：规范增量于组 worktree 落盘（dashboard.md 格位收缩+时钟活值两
+  处；showdesk-ux-polish.md 增 P041 四契约节），台账 P041-1（reports）/
+  P041-r1（reviews）双条备好，交付提交 `bb272967`（worktree）。
+- `landed`：lang rebase 80f96a95a→b28c5b18f（1 冲突 Cargo.toml iced 键
+  PLAN-691 断面合成；旧→新映射 35b55d48e→9ed0da75d、88d00369f→61ccf23fc，
+  range-diff 后者全等/前者冲突面已述明）ff 合入 master `61ccf23fc`；落地补
+  丁 `a8a6011b2`（iced 键重复合并残留去重——rebase 解决时误留双行，master
+  冒烟 build ✓ 后重引桌面 :9249 零崩溃行）。os-config ff `93b2d7b`；auto-os
+  rebase 后 ff `d799eb7`（e6ffa66→7bf679a 纯重放零冲突）。
+- `ledger_refreshed`：.autoos/specs.json reports=P041-1 / reviews=P041-r1
+  （schema 同构、读回验证）；specs 增量 = dashboard.md 两处 +
+  showdesk-ux-polish P041 四节（主检出 `d799eb7` 已载）。
+- `archived`：本文件 git mv → docs/plans/archive/，status=archived。
+- `cleaned`：见下复核行（worktree×4 + 分支×3）。
