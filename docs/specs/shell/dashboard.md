@@ -60,8 +60,11 @@
   主窗同 component/VM 桥——状态一致即视觉一致，非截图/缩放）；事件带
   face app 标签直达该会话（卡内交互零中转）。
 - **格位（PLAN-035 SD-02 修订；PLAN-040 复核与 SD-01 满框 2 行格 152px
-  口径对齐，T-18 残留清零）**：`dashboard_layout` 行主序单卡行
-  next-fit（**span 2|3 缺省 2**，卡高恒 2 行格 = 152px；余量不足裁剪）；
+  口径对齐，T-18 残留清零；PLAN-041 SD-01 span 收缩）**：`dashboard_layout`
+  行主序单卡行 next-fit（**span 2|3 缺省 2**，卡高恒 2 行格 = 152px；
+  **溢出时 span-3 卡依序收缩到 2（收缩仅本布局生效，不回写声明/存储；
+  双行 wrap 会把 2 格高卡折半高/溢框，弃）——全容纳仍不下才裁剪 + dev
+  日志**）；
   span 三级消费序 = 存储覆写 `shell.dashboard.span.<app>` → **app 源
   声明标记**（源内唯一标记 `dashboard span: N`，N∈{2,3}；注释形态
   `// dashboard span: 3`，全文扫描、不锚定 `view mini` 位置——头注
@@ -76,6 +79,12 @@
   + update 拦截臂；卡内交互控件优先命中（N6d 内外层机制）。
 - **占位卡**：无会话且不可孵化（daemon/back_root/exe 门）→ 宿主合成面
   （标题 + "未运行 — 点击启动"），点击 = `__dashboard_launch:<id>`。
+- **face 时钟活值（PLAN-041 SD-02）**：012-clock mini 的日期 = civil 算法
+  活值（源内内联 Hinnant 整除式，随孵化会话 tick 每拍重算——禁止硬编码
+  日期初始值：曾致 face/主视图日期恒停旧日）；时间 = 语义 token
+  （`text-foreground`）活绑定。face 值的"陈旧/缺席"现象根因 = 宿主呈现
+  停摆（纯订阅 tick 不触发 present，PLAN-041 T-14 修——见 showdesk-ux-polish
+  present 契约），非 face 值通道缺陷。
 
 ## SD-03 faces 推导与孵化
 

@@ -309,6 +309,11 @@
           "id": "P040-1",
           "title": "PLAN-040 变更摘要 — desktop-ux-fit-and-taskbar（桌面 UX 三连修）",
           "content": "fit 双轴自然测量（fit_aware_root Both-scrollable+锚点 Shrink×Shrink，P679-D1 宽度 Fill 视口钳制退役，011-calculator 等 fit 窗不再停 60% viewport）；任务栏单击恢复（DC::ActivateApp 可见窗择优 + shell.at IconClick 外层 mouse-area 菜单感知——popover 锚点 overlay 捕获吞点击根修）+ hover 预览 dismissal 稳定化（mouseleave 即灭死区消除，多实例预览列全实例缩略可点）；快照冻结集（最小化/隐藏/被遮挡/跨分区窗不重抓不 TTL——预览恒画末帧，wm_minimize 即时冻结+回调裁决前现算判据双保险）；随带 012-stopwatch ghost 清理+图标映射改名三同步、壁纸负缓存 1s 重试。交付：auto-os 0309f8e（代码）+c032160/77bbd29（复审记录），auto-lang 5dd8bf8fd/1f8cc66b5（代码）；F-R0 字面鼠标交互复核经用户裁定 merge 后补（先 merge 事后验证——其他工程依赖，2026-09-22）。"
+        },
+        {
+          "id": "P041-1",
+          "title": "PLAN-041 变更摘要 — desktop-sweep-fixes（VM 桌面巡检问题批）",
+          "content": "VM 桌面巡检 15 观察全数处置（15/15 任务）：空闲呈现保活（iced 0.14 纯订阅 tick 不 present 四象根因——unconditional-rendering feature + Win32 InvalidateRect 1s 异步兜底）；config-poll 主题快照全撤补缺（F-R1 根修：bus/poll 双路径等价）；分区切换即时呈现三面（切分区=窗口随分区隐现，残影根修）；恢复窗标题注册表对齐（通用 App→展示名）；dashboard face span 自适应收缩（第 4 face 恒裁剪根修）+时钟日期 civil 活值（硬编码 9月18日 根修）+面板暗色双分支玻璃；通知面板 ≤1 ServiceTick；日志卫生双点降噪；VM back 模块装载补链（src/ 基目录——025-sys-monitor/kanban api.* 家族根修，全功能启动实证）。交付：auto-lang 9ed0da75d+61ccf23fc（os-041-dev rebased，含复审 F-R-01 围栏扩 auto-term）/auto-os e6ffa66+delivery/auto-os-config 93b2d7b。"
         }
       ]
     },
@@ -1740,6 +1745,11 @@
           "id": "P040-r1",
           "title": "PLAN-040 desktop-ux-fit-and-taskbar 复审与合并收据",
           "content": "R pass（2026-09-22，plan_revision 040-r2，同会话复审工件重建声明在案）：AC-1 pass（fit-trace+boot 截图窗口贴合）/AC-2 pass 命令级（bus 实测 win_min 全最小化→activate focused 位翻转+回前台；F2c IconClick 外移已装载）/AC-3 pass 内容已证（用户确认预览末帧正确；可达性复核延后）/AC-4 pass（8 红基线对拍零新增）。findings：F-R0 字面鼠标交互（最小化→单击恢复/预览移入可点）经用户裁定 merge 后补验（先 merge 事后验证——其他工程依赖，2026-09-22；不通过则按 needs_fix 重开 F2c）；F-R1 主题热切换 dashboard face 滞留待澄清（规避=重启）；F-R2 snapshot 单测 flake watch；F-R3 主检出直接实施偏差如实记录（处置=main 提交维持，后续计划回归 worktree 纪律）。merge：consolidation worktree .wt/os-040/auto-os（plan-040-dev）落盘规范增量（dashboard.md+specs.json）ff-only 合入 main；auto-lang 配对 ADR-23 @c77831511；归档 docs/plans/archive/040-desktop-ux-fit-and-taskbar.md。"
+        },
+        {
+          "id": "P041-r1",
+          "title": "PLAN-041 desktop-sweep-fixes 复审与合并收据",
+          "content": "R pass（2026-09-22，plan_revision 2，同会话复审声明在案、verdict 由实机复现+工件重建）：T-03/T-10 尾项随实机走查核销——kanban ✓ 真窗、auto-term ✗→崩溃围栏（Init future_all/race，与 017-chat 树/布局失配同属 base 补链后可达、master 期链接失败掩蔽族，债 P041-D1 围栏在位）、ui-gallery ✓ 干净 worktree（主检出 ✗=并行 WIP 归因，符号随编辑漂移）；T-10 借 daemon（AUTOOS_BACK_PORT=17701）+cdylib 破 not-migrated 后实证：主题钮单行完整+五色板 3+2 全正圆。tf 5452 跑 5444 绿/8 红全归因（7×0922 基线+a2vue_desktop_surface master 漂移对拍同红）零新增。findings：F-R-01 auto-term 崩溃族（已围栏，根修后摘）；F-R-02 ui-gallery 主检出 WIP（域外自愈）；F-R-03 a2vue 金样 master 预存红（域外）；F-R-04 face 时间恒 stella 暖橙观察（不阻断）。storage 污染事故（隔离 env 拼误写用户真实 storage）已披露已修复（图标按 boot 截图重建）。merge：rebase 1 冲突（Cargo.toml iced 键 + PLAN-691 gpui 删除断面）合成解决，range-diff 88d00369f=61ccf23fc 全等、35b55d48e→9ed0da75d 冲突面已述明。"
         }
       ]
     }
