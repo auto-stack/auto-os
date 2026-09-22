@@ -346,8 +346,9 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
     "深色/浅色"钮单行完整、五色板 3+2 全正圆（shot-t10-g6.png），migrated。
   - **AC 映射**：AC-01..15 全 pass（AC-03 含围栏定性；AC-10 本腿实证；AC-14
     定性=图标扩张 storage 态/同位拖拽瞬态/计数差一系旧构建 bp-admin 重基线
-    口径）。证据：`.auto/iso041/`（boot6..17）、`.auto/rev-*.png`、
-    `p041-shots/`。
+    口径）。证据：`.auto/iso041/`（boot6..17，关键件已抢救至
+    `docs/plans/reports/p041-shots/iso041/`——worktree 清理后权威位置）、
+    `.auto/rev-*.png`、`p041-shots/`。
   - **测试门**：cargo tf 5452 跑 5444 绿 / 8 红——7 × 0922 换代基线预存
     （musk×6+projector_counter）+ 1 × test_a2vue_desktop_surface_asset（主检
     出纯净态同红对拍归因 master 漂移：PLAN-682 vue 生成器变更后 desktop.at

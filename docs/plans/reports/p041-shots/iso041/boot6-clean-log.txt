@@ -1,0 +1,40 @@
+AutoUI MCP: listening on http://127.0.0.1:9350
+[CALL_HANDLER] widget=Desktop event_name=Init fn_name=handler_Desktop_Init args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=Init fn_name=handler_DesktopSurface_Init args=[]
+[app-registry] apps.manifest entry `kanban` skipped: D:/autostack/.wt/os-041/auto-os\../auto-kanban has no pac.at
+[app-registry] apps.manifest entry `auto-musk` skipped: D:/autostack/.wt/os-041/auto-os\../auto-musk has no pac.at
+[app-registry] apps.manifest entry `auto-term` skipped: D:/autostack/.wt/os-041/auto-os\../auto-term/app has no pac.at
+[session] app registry: 40 entries (26 desktop-visible) from D:\autostack\.wt\os-041\auto-lang\crates\auto-lang\..\..\examples\ui
+[CALL_HANDLER] widget=DashboardPanel event_name=Init fn_name=handler_DashboardPanel_Init args=[]
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "hatched")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+AutoUI MCP: first state sync in view()
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "hatched")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[session] launch_app(inproc) 025-sys-monitor
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "running")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[CALL_HANDLER] widget=NotificationCenter event_name=Init fn_name=handler_NotificationCenter_Init args=[]
+[CALL_HANDLER] widget=NotificationCenter event_name=RebuildNotes fn_name=handler_NotificationCenter_RebuildNotes args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "running")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "running")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[session] launch_app(inproc) 017-chat
+[session] back-proxy lazy-start on "017-chat" (port 3358)
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "hatched"), ("020-music-player", "placeholder"), ("025-sys-monitor", "running")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+
+thread 'main' (20840) panicked at C:\Users\zhaop\.cargo\registry\src\mirrors.aliyun.com-0671735e7cc7f5e7\iced_widget-0.14.2\src\container.rs:291:42:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
