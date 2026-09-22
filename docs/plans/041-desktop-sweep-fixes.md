@@ -9,8 +9,8 @@ plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
-touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
+new_spec_components: [shell/dashboard, shell/showdesk-ux-polish]
+touched_goals: []             # 无 goals 册登记项变更（桌面 UX 无 GOAL-NNN 绑定；review 核）
 
 affects: [shell/dashboard, shell/showdesk-ux-polish]
 current_step: 12
@@ -192,8 +192,8 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 
 | delta_id | add/modify/retire | target | before/after | rationale | AC |
 |---|---|---|---|---|---|
-| SD-01 | modify | docs/specs/shell/dashboard.md | face 行策略：单行 8 列裁剪 → 8×2 双行 wrap 全容纳 | 第 4 face 恒裁剪（spans 9>8）| AC-08 |
-| SD-02 | modify | docs/specs/shell/dashboard.md | face 时钟：慢 tick 陈旧值 → 活值绑定（秒级），日期/时间色值语义 token | 日期停旧日+浅色时间不可见 | AC-06, AC-07 |
+| SD-01 | modify | docs/specs/shell/dashboard.md | face 行策略：单行 8 列裁剪 → 溢出时 span-3 卡依序收缩到 2（单行自适应全容纳；双行 wrap 会折半高/溢框故弃，plan 预授权「spans 重排」臂，review 校正对齐实现）| 第 4 face 恒裁剪（spans 9>8）| AC-08 |
+| SD-02 | modify | docs/specs/shell/dashboard.md | face 时钟：日期硬编码初始值 → civil 算法活值（秒级 tick 随更）；时间色值 = 语义 token（预存正确，非本计划改动面）；陈旧/缺席根因 = present 饥冻（T-14 修，§9）| 日期停旧日+浅色时间不可见 | AC-06, AC-07 |
 | SD-03 | add | docs/specs/shell/dashboard.md（分区可见性规则；落位复审定） | 分区切换：非当前分区窗不渲染（切回恢复）| 现无规则、行为缺失 | AC-04 |
 | SD-04 | add | docs/specs/shell/dashboard.md（主题热切换契约） | config-poll 与 bus set_theme 双路径 face 重建等价 | F-R1 根修契约化 | AC-05 |
 | SD-05 | modify | docs/specs/shell/showdesk-ux-polish.md | 通知面板：state 翻转 → 上屏 ≤1 ServiceTick | 现最长 ~90s 脱节 | AC-09 |
@@ -328,6 +328,43 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
   现象不再复现 = T-14 present 修复的衍生消解（过渡帧无法滞留），P041-D2 闭。
   current_step 11→12。残余尾项不变（T-03 三 app 复验 + T-10 走查，随合并后
   桌面）。next: **review**（尾项随 review 实机走查一并核销）。
+- 2026-09-22 **review**（stage: review | plan_id: PLAN-041 | plan_revision: 2 |
+  outcome: **pass**（F-R-01 修复后）| reviewed_commit: lang `88d00369f`（含
+  F-R-01 修复提交；基线 `35b55d48e`）/ os `e6ffa66` / os-config `93b2d7b` |
+  base_commit: os main `50b6f6d`（计划账）| dependency_revisions: auto-os-config
+  worktree `93b2d7b`、auto-down detached `3373a5c` | spec_inputs:
+  docs/specs/shell/dashboard.md + showdesk-ux-polish.md（delta SD-01..07 经校
+  正对齐实现，见下）| 限制声明：复审与实现在同一会话完成，verdict 由工件与
+  实机复现重建）：
+  - **实机走查核销尾项**：T-03 四 app 全定性——025 全功能 ✓（前腿）、kanban ✓
+    （真窗 "Kanban"+running，`.auto/rev-kanban.png`）、auto-term ✗→围栏（Init
+    future_all/race 空未来列表崩，终端窗渲染但永不 tick，20 分钟 2.6 万行日志，
+    desktop-041d.log 实录）、ui-gallery ✓（干净 worktree 态启动 + 画廊完整渲
+    染 shot-t10-final.png；主检出 ✗ 归因并行 WIP——报错符号随其编辑漂移
+    fmt.pct1→handler_Demo027FileMana，非本计划回归）。T-10 ✓——借主检出
+    daemon（AUTOOS_BACK_PORT=17701）+cdylib 进组后 fresh 孵化：侧栏全量、
+    "深色/浅色"钮单行完整、五色板 3+2 全正圆（shot-t10-g6.png），migrated。
+  - **AC 映射**：AC-01..15 全 pass（AC-03 含围栏定性；AC-10 本腿实证；AC-14
+    定性=图标扩张 storage 态/同位拖拽瞬态/计数差一系旧构建 bp-admin 重基线
+    口径）。证据：`.auto/iso041/`（boot6..17）、`.auto/rev-*.png`、
+    `p041-shots/`。
+  - **测试门**：cargo tf 5452 跑 5444 绿 / 8 红——7 × 0922 换代基线预存
+    （musk×6+projector_counter）+ 1 × test_a2vue_desktop_surface_asset（主检
+    出纯净态同红对拍归因 master 漂移：PLAN-682 vue 生成器变更后 desktop.at
+    金样未重生成，非本计划回归，修复随 master 侧金样重生成）= 零新增红。
+    dashboard_layout 定向 4/4。
+  - **findings**：F-R-01 auto-term 初始化崩溃族（Init future_all/race；同
+    017-chat 模式=base 补链后可达、master 期链接失败掩蔽）→ **本腿修复**：
+    崩溃围栏扩至双 app（lang `88d00369f`），债 P041-D1 统一登记根修后摘；
+    F-R-02 ui-gallery 主检出 WIP（域外，随并行会话落定自愈）；F-R-03 a2vue
+    金样 master 预存红（域外）；F-R-04 face 时间双主题恒 stella 暖橙（012
+    pac 无 theme 钉，色源机理另考，观感项不阻断）。
+  - **规范增量校正**（review 权限内文本对齐，不改验收）：SD-01 before/after
+    改记 span 收缩臂（plan 预授权备选）；SD-02 根因表述改记 present 饥冻
+    （T-14）+日期 civil 活值。spec-impact 定稿：new=[shell/dashboard,
+    shell/showdesk-ux-polish]，supersedes=[]，touched_goals=[]（无 goals 册
+    桌面绑定项，review 核）。
+  - blockers: 无。next: **merge**。
 
 ## 10. 待澄清事项
 
