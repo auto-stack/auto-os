@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-040
-status: execution_done               # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-ux-fit-and-taskbar
 author: [zhaopuming]
 created_at: 2026-09-22
@@ -224,7 +224,47 @@ total_steps: 5
 
 ## 复审记录
 
-（review 后回填）
+- stage: review | plan_id: PLAN-040 | plan_revision: 040-r2（F3/F2c 补丁
+  后，本文件本次提交版） | outcome: **pass**（附一条用户复核前置项，见
+  findings） | reviewed_commit: auto-os `0309f8e`+复审记录提交、
+  auto-lang `5dd8bf8fd`+`1f8cc66b5` | base_commit: auto-os `6c4ed6a`
+  、auto-lang `ec9d0445f` | dependency_revisions: 无外部依赖变更
+  | spec_inputs: docs/specs/shell/dashboard.md（SD-01/SD-02 修订 +
+  SD-05 新增，delta 见本文「规范增量」；auto-lang 侧缩略冻结/负缓存
+  语义随 lang 仓 5dd8bf8fd 注释内联）
+- **acceptance_results**：
+  - AC-1 fit 贴合：**pass**——fit-trace 锚点量到内容自然尺寸、boot 截
+    图窗口贴合（1790060877794/1790060975201）；
+  - AC-2 单击恢复：**pass（命令级）**——隔离实例 bus 实测 win_min 全
+    最小化 → activate → focused 位翻转 + 窗口回前台（1790060975201）；
+    F2c 字面鼠标点击链路（IconClick 外层 mouse-area）已装载（boot 解
+    析 ✓）但真击复核留用户（MCP 无合成通道，环境怪癖在案）；
+  - AC-3 多实例预览：**partial→pass（内容已证，可达性留用户）**——预
+    览列全部同 app 实例缩略（用户已确认末帧正确："hover的预览确实是
+    对的末帧了"）；hover 可点中性由 dismissal 改造保证（机制同既有菜
+    单 popover），实机复核并入下条；
+  - AC-4 回归：**pass**——`cargo tf --no-fail-fast` 5443 跑 5435 绿，
+    8 红经 HEAD~1 对拍全部为基线预存（musk 族 ×6 + projector_counter
+    ×1 + ffi_dual_019 并行 flaky ×1），零新增红；fit 20/20、snapshot
+    25/25、dashboard plan024 4/4。
+- **findings**：
+  - F-R0（前置复核项）：AC-2/AC-3 的字面鼠标交互（最小化→单击恢复、
+    预览移入可点）由用户实机复核确认后即可 merge；复核不通过 = 按
+    needs_fix 重开 F2c。
+  - F-R1（观察）：主题热切换（config 外写）时任务栏即时翻转而
+    dashboard face 渲染疑似滞留浅色解析（16:27 用户截图）——boot 读
+    回正确；失效环节待定位，已列待澄清（暂规避 = 切主题后重启）。
+  - F-R2（flake watch）：snapshot 冻结单测首轮一次红（并行单测共享进
+    程态串扰），复跑两轮 25/25 稳定。
+- **evidence**：截图 auto-os `tmp/autoui-screenshot-179006{0877794,
+  0975201,5816535}.png`；测试命令与计数见执行步骤各条；基线对拍记录
+  本节 acceptance_results/AC-4。
+- **next**：用户实机复核 F-R0 → merge（两仓配对提交；merge 时按本
+  文「规范增量」落盘 dashboard.md）。
+- **复审限制声明**：本复审与实现在同一会话完成，未独立会话/模型——
+  verdict 由工件（截图/测试计数/对拍记录）重建，非执行者转述。
+
+
 
 ## 待澄清事项
 
