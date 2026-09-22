@@ -1,10 +1,12 @@
 ---
 plan_id: PLAN-040
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-ux-fit-and-taskbar
 author: [zhaopuming]
 created_at: 2026-09-22
 updated_at: 2026-09-22
+plan_revision: 2
+completion_kind: delivered
 
 supersedes_spec_components:
   - docs/specs/shell/dashboard.md#SD-01（8×3 几何/右上 pill 分页 → 8×2 + 下缘 tab 条）
@@ -272,6 +274,29 @@ total_steps: 5
   文「规范增量」落盘 dashboard.md）。
 - **复审限制声明**：本复审与实现在同一会话完成，未独立会话/模型——
   verdict 由工件（截图/测试计数/对拍记录）重建，非执行者转述。
+- **合并收据（PLAN-040:r2，2026-09-22 merge）**：F-R0 经用户裁定延后
+  ——「先 merge 事后验证」（其他工程依赖本次 merge；复核不过则按
+  needs_fix 重开 F2c）。检查点（证据逐项验证）：
+  - `prepared`：reviewed 基线 0309f8e（+复审记录 c032160/77bbd29）
+    经 `git merge-base --is-ancestor` 验证均为 main 祖先 ✓；冻结增量
+    = 本文「规范增量」节逐字落盘；consolidation worktree
+    `.wt/os-040/auto-os`（分支 plan-040-dev，基于 main 5fcffd0——
+    F-R3 主检出实施无 dev 分支，归档文档面按规程走专属 worktree）。
+  - `landed`：`26ccc6f`（dashboard.md 增量 + specs.json）经
+    `git merge --ff-only plan-040-dev` 合入 main——无合并提交，
+    main tip == delivery commit ✓（实施链 0309f8e..5fcffd0 本就在
+    main，docs/projection-only 后裔交付）。
+  - `ledger_refreshed`：`.autoos/specs.json` 五条（P040-1
+    reports/designs/architecture/tests + P040-r1 reviews）写后读回
+    校验 ✓（30/36/31/30/35 items）。
+  - `lang 配对`：auto-lang `docs/specs/auto-lang/ui/architecture.md`
+    ADR-23（快照冻结集/负缓存重试/fit 双轴）@`c77831511`（master
+    直提——docs-only，F-R3 处置延续）。
+  - `archived`：本文 `git mv` → `docs/plans/archive/040-desktop-ux-
+    fit-and-taskbar.md`，status: archived + completion_kind:
+    delivered。
+  - `cleaned`：worktree 移除（wt-guard clean 前置）+ plan-040-dev
+    分支删除（见下补记）。
 
 
 
