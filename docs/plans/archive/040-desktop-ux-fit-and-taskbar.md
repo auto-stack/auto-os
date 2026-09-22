@@ -295,8 +295,9 @@ total_steps: 5
   - `archived`：本文 `git mv` → `docs/plans/archive/040-desktop-ux-
     fit-and-taskbar.md`，status: archived + completion_kind:
     delivered。
-  - `cleaned`：worktree 移除（wt-guard clean 前置）+ plan-040-dev
-    分支删除（见下补记）。
+  - `cleaned`：worktree 移除（wt-guard clean 前置 ✓）+ plan-040-dev
+    分支删除（was 26ccc6f）+ 空组目录 `.wt/os-040` 移除——`.wt` 全清
+    （2026-09-22 补记）。
 
 
 
