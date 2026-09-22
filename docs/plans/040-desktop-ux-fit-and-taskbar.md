@@ -256,6 +256,15 @@ total_steps: 5
     回正确；失效环节待定位，已列待澄清（暂规避 = 切主题后重启）。
   - F-R2（flake watch）：snapshot 冻结单测首轮一次红（并行单测共享进
     程态串扰），复跑两轮 25/25 稳定。
+  - F-R3（流程偏差，如实记录）：本计划未按 Plan 529 布局创建
+    `.wt/os-040/auto-os` 组 worktree（new-plan.sh 取号提醒被跳过），
+    实施直接落在两仓主检出并以 main/master 提交收口（auto-os
+    0309f8e/c032160、auto-lang 5dd8bf8fd/1f8cc66b5）。动因 = 会话由
+    在线走查小修演进、验证环路在主检出现成；代价 = main 上存在
+    review 前实施态、与并行会话共享主检出的事故面（实测：CWD 被带
+    跑、9247 被抢占、对拍 checkout 往返冲掉未提交断言）。处置 = 维持
+    main 提交 + F-R0 复核后直接归档（复核不过则 main 追加 fix 提交）；
+    后续计划回归 worktree 纪律。
 - **evidence**：截图 auto-os `tmp/autoui-screenshot-179006{0877794,
   0975201,5816535}.png`；测试命令与计数见执行步骤各条；基线对拍记录
   本节 acceptance_results/AC-4。
