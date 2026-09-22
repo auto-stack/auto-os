@@ -5,6 +5,7 @@ feature_name: desktop-sweep-fixes
 author: [agent]
 created_at: 2026-09-22
 updated_at: 2026-09-22
+plan_revision: 2
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
@@ -13,7 +14,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [shell/dashboard, shell/showdesk-ux-polish]
 current_step: 0
-total_steps: 14
+total_steps: 15
 ---
 
 # [PLAN-041] desktop-sweep-fixes
@@ -23,9 +24,11 @@ total_steps: 14
 2026-09-22 晚 VM 桌面（ui_desktop iced 轨，auto-lang `a5926b8c2` 重建 + auto-os main
 `7403b20`）实机巡检批的**问题记录与修复跟踪**。MCP 驱动（autoui_screenshot /
 autoui_state / autoui_desktop bus 动词）全面走查桌面/任务栏/dashboard/launcher/多
-app/主题/分区/通知中心，沉淀 14 项观察（P1×2 / P2×7 / P3×5），其中 12 项立修复任务，
+app/主题/分区/通知中心，沉淀 15 项观察（P1×2 / P2×8 / P3×5），其中 13 项立修复任务，
 2 项 bounded 复现定性；PLAN-040 在账 F-R1 本轮实机复现并**收窄失效环节**，F-R0 保持
-用户实机复核（机器怪癖：MCP 无 hover/真击合成通道）。
+用户实机复核（机器怪癖：MCP 无 hover/真击合成通道）。rev2（同日 20:37）：并入用户
+截图裁定观察⑮——深色壁纸+深色主题下小组件玻璃卡对比度不足，设计方向用户已定
+（背景更不透明+偏深色、前景文字偏浅色）。
 
 跨仓改动面：auto-os（shell/*.at）、auto-lang（crates/auto-lang/src/ui/*）、
 auto-os-config（auto/src/front/theme_picker.at 等）。
@@ -40,7 +43,8 @@ auto-os-config（auto/src/front/theme_picker.at 等）。
 - **G3 主题热切换一致性**：config 外写与 bus `set_theme` 双路径行为等价（F-R1 根
   修）；浅色主题下 dashboard 时钟 face 时间数字可见。
 - **G4 dashboard face 健康度**：日期活值（现停 9月18日）；第 4 face 不再裁剪
-  （spans 9>8 v2 债）；通知面板 state 翻转 ≤1s 上屏（现 ~90s）。
+  （spans 9>8 v2 债）；通知面板 state 翻转 ≤1s 上屏（现 ~90s）；小组件卡在深色
+  壁纸+深色主题下可读（玻璃卡对比度，观察⑮用户裁定方向）。
 - **G5 恢复链保真**：会话恢复窗口标题栏不再是通用 "App"。
 - **G6 settings 布局**：主题卡"浅色"钮单行完整显示；主色调第三色板形状归一。
 - **G7 日志卫生**：`__mcp_heartbeat`/`__scroll_state_read` handler-not-found 停止
@@ -110,6 +114,7 @@ JSON-RPC `POST /mcp`）+ bus 动词，驱动脚本见 `docs/plans/reports/p041-s
 | ⑫ launcher 计数 1/28 vs 注册表 29 desktop-visible | shot-03；boot 日志 43 entries(29 visible) | 低置信 |
 | ⑬ `__wm_fp` 图标 2、3 同位 (0,0) | 巡检 state 读取 | 用户拖拽期间产生 |
 | ⑭ 图标集 11（boot，storage 恢复）→ ~29（20:27 后全注册表）扩张 | shot-04 vs shot-07/09 对比 | 触发源未定位（用户并行操作 / config 外写重扫两假说）|
+| ⑮ 深色壁纸+深色主题下小组件玻璃卡对比度不足（卡底 `bg-white/10` 低透白单态 + face 文字灰阶对比弱，繁忙壁纸进一步压可读性）| shot-15-user-dark-widgets-contrast.png（用户 20:37 截图裁定）| 卡底板 `shell/dashboard.at:89`（单态不分支主题）；face 文字色由宿主 mini 视图渲染注入（lang 侧语义 token，dark 分支值待提亮）|
 
 **在账引用**：PLAN-040（已归档）F-R0/F-R1 findings；P040 v2 face 债；M7-c②③ 延
 期裁定（2026-09-21）；012-clock 改名三同步教训；开发机怪癖清单（合成输入不可用/
@@ -162,6 +167,13 @@ front 调用点与 back 定义点均在源码层面成立，断点在**装载链
   （沿 PLAN-040 mini 视图全语义 token 先例）。
 - **通知面板时效**：`__wm_notes_visible` 翻转与面板渲染脱节 ~90s（shot-12/13）；
   与 B 轨 face 重建信号同族，接同一快路径（目标 ≤1 ServiceTick）。
+- **小组件卡对比度（观察⑮，用户裁定方向）**：现卡底板 `bg-white/10 +
+  border-white/25 + backdrop-blur-md`（`shell/dashboard.at:89`）单态不分支主题，
+  深色壁纸下"低透白"悬空、face 内文字灰阶对比弱。设计方向（用户 20:37 定）：
+  **深色主题下卡背景更不透明且偏深色、前景文字偏浅色**——卡底板按主题分支
+  （dark：深色高不透明玻璃，如深底 ~85% 不透明档位 + 磨砂保留；light：沿现浅
+  玻璃）；face 文字主/次层级提亮（宿主 mini 视图语义 token dark 分支值提升，
+  主文字趋近白/90、次级信息不低于白/70 档），以用户壁纸实拍走查验收。
 
 ### D 轨：os-config settings（G6）
 
@@ -186,6 +198,7 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 | SD-04 | add | docs/specs/shell/dashboard.md（主题热切换契约） | config-poll 与 bus set_theme 双路径 face 重建等价 | F-R1 根修契约化 | AC-05 |
 | SD-05 | modify | docs/specs/shell/showdesk-ux-polish.md | 通知面板：state 翻转 → 上屏 ≤1 ServiceTick | 现最长 ~90s 脱节 | AC-09 |
 | SD-06 | add | docs/specs/shell/showdesk-ux-polish.md | 动态臂 app back 符号装载契约（或"需后端"声明语义，随 T-01 决策） | Undefined symbol 家族契约空白 | AC-01, AC-02 |
+| SD-07 | modify | docs/specs/shell/dashboard.md | 小组件卡底板：单态 `bg-white/10` → 主题双分支（dark=深色高不透明玻璃/light=浅玻璃保留），face 文字 dark 分支主/次层级提亮（白/90、白/70 档） | 深色壁纸下可读性（用户裁定方向，观察⑮） | AC-15 |
 
 ## 6. 测试设计
 
@@ -219,6 +232,7 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 | AC-12 | 空闲 60s 日志增量无 `__mcp_heartbeat`/`__scroll_state_read` not-found 行 | 日志增量 grep |
 | AC-13 | ui_desktop 启动日志无 `App.Init failed: handler not found: Init` | 启动日志 grep |
 | AC-14 | ⑫⑬⑭ 三观察项定性落 §9（修/债/不修各归其位）| 结论行 |
+| AC-15 | 深色主题+用户壁纸（stella purple）下：小组件卡背景明显偏深且高不透明、face 文字（时间/待办/曲名等）浅色可读；浅色主题浅玻璃不回退 | 用户壁纸实拍走查（dark/light 双主题截图）|
 
 ## 8. 执行步骤
 
@@ -258,12 +272,21 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 - **T-14**（卫生）⑫⑬⑭ 复现定性：launcher 计数差一归因；图标同位/扩张复现实验
   （隔离验收配方：`AUTOVM_STORAGE_FILE`/`AUTOOS_DESKTOP_CONFIG` 临时实例）。验证：
   AC-14。依赖：无。
+- **T-15**（C轨）小组件卡对比度（观察⑮）。文件：`shell/dashboard.at:89` 卡底板
+  主题双分支 + lang 侧宿主 mini 视图 face 文字语义 token dark 分支提亮（定位面：
+  workspace_preview/dashboard 宿主渲染臂）；shell pack 三重对拍（金样 + codegen
+  门 + 三主题走查）+ 用户壁纸实拍。验证：AC-15。依赖：无（建议与 T-06/T-08 同
+  checkpoint 落，同文件冲突面）。
 
 ## 9. 复审记录
 
 - 2026-09-22 drafting handoff（stage: new, PLAN-041 rev1）——outcome: **pass**
   （14 任务覆盖 AC-01..14 与 SD-01..06；路径经巡检实测锚定；待澄清五项已落 §10
   并绑任务）。next: **work**。证据基线：`docs/plans/reports/p041-shots/`。
+- 2026-09-22 rev2（用户截图裁定，仍 drafting）——并入观察⑮（小组件卡对比度，
+  用户定方向：dark 背景更不透明偏深 + 前景文字偏浅）→ G4 扩、T-15/AC-15/SD-07
+  增，total_steps 14→15。证据 `p041-shots/shot-15-user-dark-widgets-contrast.png`。
+  其余合同不变。next 不变：**work**。
 
 ## 10. 待澄清事项
 
