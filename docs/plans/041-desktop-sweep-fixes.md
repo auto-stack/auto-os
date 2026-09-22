@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [shell/dashboard, shell/showdesk-ux-polish]
-current_step: 0
+current_step: 11
 total_steps: 15
 ---
 
@@ -238,6 +238,13 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 
 > 执行载体：分组平铺 worktree `.wt/os-041/auto-os`（plan-041-dev）+ auto-lang /
 > auto-os-config 对配分支；本计划起草提交在 main（.next-id + plan + 证据归档）。
+>
+> **状态总表（2026-09-22 work 首腿，详见 §9 执行记录）**：
+> T-01 [x] T-02 [x] T-03 [x]（025 实测 ✓/017 围栏+债 D1/kanban·auto-term·
+> ui-gallery 切桌面复验）T-04 [x] T-05 [x] T-06 [ ]（浅色 face 时间缺席，债
+> P041-D2）T-07 [x] T-08 [x] T-09 [x] T-10 [x]（实施完毕，实机走查随合并）
+> T-11 [x] T-12 [x] T-13 [x] T-14 [x]（idle-present 根因修复；图标定性；计数
+> 差一切桌面核销）T-15 [x] —— 11/15，`executing` 继续。
 
 - **T-01**（A轨）VM 动态符号调查决策件。文件：lang `crates/auto-lang/src/ui/`
   （vm_bridge/装载序，探查定位）；产出 `docs/plans/reports/p041-vm-symbol-decision.md`。
@@ -287,6 +294,32 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
   用户定方向：dark 背景更不透明偏深 + 前景文字偏浅）→ G4 扩、T-15/AC-15/SD-07
   增，total_steps 14→15。证据 `p041-shots/shot-15-user-dark-widgets-contrast.png`。
   其余合同不变。next 不变：**work**。
+- 2026-09-22 **work 进度落账**（stage: work | plan_id: PLAN-041 | rev2 |
+  outcome: 部分完成、`executing` 继续 | code_commit: lang `35b55d48e`（os-041-dev）/
+  os `e6ffa66`（plan-041-dev）/ os-config `93b2d7b`（os-041-dev）|
+  task_ids: T-01,02,04,05,07,08,09,11,12,13,14,15 ✅ / T-03,10 ◐ / T-06 ✗ |
+  evidence: `.auto/iso041/`（隔离实例 13 轮 boot 日志+截图，:9350）+
+  `p041-vm-symbol-decision.md`）：
+  - **新根因（巡检四怪象伞形）**：iced 0.14 纯订阅 tick 不触发窗口
+    present（AboutToWait 臂仅在 widget 请求 NextFrame 时落帧）——状态活/
+    表面陈旧（时钟停走、分区残影、通知滞后、F-R1 半象同源）。修 =
+    `unconditional-rendering` feature + Win32 InvalidateRect 1s 异步兜底。
+    实证：80s 零输入双拍分钟字前进（21:59→22:00）。
+  - **F-R1 根修实证**：config 外写深浅往返 face 全跟随（旧构建滞留）。
+  - **T-02 实证**：025-sys-monitor 全功能启动（"后端正常 (sysinfo)"、
+    CPU/内存真数据）；T-11 恢复窗 title="计算器"。
+  - **T-03 定性**：017-chat = VM front 树/布局失配（timer 重建 × bounds
+    operate 竞态 → iced container 布局子节点 unwrap），base 补链后可达、
+    master 期被链接失败掩蔽 → 崩溃围栏（精确 id）+ 债 P041-D1。
+  - **遗留**：T-06 浅色 face 时间缺席（深色正常、日期活值 ✓，根因未钉）；
+    T-10 已实施待合并后实机走查（worktree 组内 os-config cdylib 缺席
+    not-migrated 无法走查）；T-03 残项 kanban/auto-term/ui-gallery 切桌面
+    后复验；launcher 计数差一切桌面核销。
+  - **执行事故披露**：隔离实例 env 拼误（AUTOVM_STORAGE_FILE → 应为
+    AUTO_VM_STORAGE_FILE）读写用户真实 storage——图标集 11→27 覆盖（已按
+    boot 截图重建 11 图标集+单列位，用户原排列不可精确复原）+ 通知 +1 条
+    （已摘除重排）。review 时请用户复核桌面图标布局。
+  - blockers: 无（T-06 根因钉定入下一腿）。next: **review 前先补 T-06**。
 
 ## 10. 待澄清事项
 
@@ -299,3 +332,12 @@ boot 的 `App.Init failed: handler not found: Init` 探测噪声静音（占位�
 4. **T-01 决策点**：back 符号装载 vs "需后端"声明语义——涉及 M7-c②③ 延期边界
    （样式大改延期 ≠ 启动坏延期），决策件给出推荐后由复审确认。
 5. **launcher 28/29 差一**归因（bp-admin 升格注册表重基线 vs 过滤臂）——T-14 定性。
+6. **P041-D1（work 新立债）**：017-chat VM front 树/布局失配（iced container
+   布局子节点 unwrap 崩桌面，三复现；back 补链后可达、master 期被链接失败掩
+   蔽）——崩溃围栏（精确 id）在位，根修后摘围栏。
+7. **P041-D2（work 新立债）**：T-06 浅色主题 dashboard 时钟 face 时间文本整体
+   缺席（深色正常、日期活值正常、色板值源正确 ink #2a2723——非色值问题，渲染
+   元素缺席根因未钉）；隔离配方 `.auto/iso041/` 可复现。
+8. **storage 污染披露**（work 执行事故）：隔离实例 env 拼误读写用户真实
+   storage——图标集已按 boot 截图重建（11 图标+单列位，原排列不可精确复原）、
+   通知测试条已摘除。用户复核桌面图标布局即可闭此事项。
