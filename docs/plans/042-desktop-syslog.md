@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-042
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-syslog（系统日志 app）
 author: [agent]
 created_at: 2026-09-23
 updated_at: 2026-09-23
 plan_revision: 1
-current_step: 0
+current_step: 9
 total_steps: 9
 
 # /auto-plan:review 结束时填写：
@@ -270,45 +270,163 @@ task 完成续体路径）→ 修复使延续收到 body → 单测转绿。与�
   新文件 + 模块挂载）：SyslogEntry/环/seq/snapshot/`syslog!` 宏；
   单测容量淘汰+seq 单调。验证：`cargo test -p auto-lang syslog` 绿。
   → AC-01。依赖：无。
+  [✅ 已完成] lang os-042-dev commit（T-01 单独提交）：syslog.rs 295 行
+  （环 cap1000 满弹头/AtomicU64 seq/dirty_seq/snapshot 全序/injection_due
+  500ms 节流纯函数/HostLogger log::Log trap+install 降级链/syslog! 双写宏
+  语句宏语义）；ui/mod.rs 零 feature 门挂载；`cargo test -p auto-lang
+  --lib syslog` 6/6 绿（并发进程内唯一 source 过滤口径；dirty_seq 精确
+  相等断言改相对不变量——同进程并发写入者实证）。
 - **T-02 log trap + 诊断家族双写**：①排查桌面轨 logger 初始化现状
   （bounded，产物=一行结论进本节证据）；②boot 装环 logger（或已装
   降级路径）；③§4 所列 eprintln 载重站点加 `syslog!` 双写（renderer.rs
   12 站点起步，补全以 grep 复核为准）。→ AC-02。依赖：T-01。
+  [✅ 已完成] ①结论：桌面 iced 轨真入口 = ui_desktop **example 进程**
+  （`cargo run --example ui_desktop`），本无任何 logger 初始化；`auto`
+  CLI 的 simplelog（auto/src/main.rs:174）只在 CLI 子命令进程，与桌面
+  进程无涉——装环即全量，降级链仅保险。②examples/ui_desktop.rs main()
+  顶部 install_host_logger()。③renderer.rs 16 站点（session 诊断家族+
+  shell/surface load failed+outproc spawn+fallback 臂+fit 重试+registry
+  scan 等含 info 级）+ back_provision×2/shell-pack/hot_reload 共 20 站点
+  双写；11685 dashboard refresh 与 9481 msg-pump 每帧 trace **刻意不入环**
+  （刷屏红线）。与 T-03/T-04 同 commit（e996c3393）。
 - **T-03 VM 错误 trap**：排查 handler/face 失败与未捕获 VM 错误出口
   （10506/10643/10788/11714 族 + msg pump dispatch 路径），统一
   `syslog!(error, "vm:<app>", ...)`。→ AC-03。依赖：T-01。
+  [✅ 已完成] dynamic.rs 两臂（on_with_input_for Err 臂 + 路由派发 Err
+  臂）入环；face 归因 = source_path 父目录/文件干（`vm:<dir>/<stem>`，
+  无路径回退根 widget 名）；timer 回调失败既有 log::warn 经 HostLogger
+  自流入环；vm_bridge:1744 exports/字节 dump 噪声站点不入环（renderer
+  调用点已收口 Err）。T-08 探针实证：坏 handler 行落环 source=
+  `vm:scan_probe/app`。同 commit e996c3393。
 - **T-04 `log` 动词**：session.rs DesktopCommand::Syslog + parse 臂
   （notify 同型）+ 执行臂入环（notify_source 归因）+ 协议 v1.9 版记；
   单测 parse/兜底/归因。→ AC-04。依赖：T-01。
+  [✅ 已完成] DesktopCommand::Syslog(SyslogLevel, String)；encode/parse
+  臂（\u{1F}/\t 双轨；未知 level parse 兜底 info；空 text 弃单）；
+  roundtrip 词表全量测试加样例（52→53 变体）；执行臂 notify_source 归因
+  （None → "privileged"）；协议 v1.9 版记落 shell_projection.rs 头。
+  单测 `syslog_verb_parse_semantics` + roundtrip + session::tests 84 全绿。
+  同 commit e996c3393。
 - **T-05 viewer app**：auto-os `apps/039-syslog/` 全套（pac.at/src/
   front/tests/README）+ apps.manifest 行（ports [17800]，无 daemon）+
   本仓 README Apps 表同步（AGENTS.md §4）。→ AC-05/AC-07（窗体部分）。
   依赖：无（可与 T-01..04 并行，store 以 mock 注入开发）。
+  [✅ 已完成] auto-os plan-042-dev：pac.at（name syslog/17800/scroll-text/
+  系统日志/system/desktop true/无 daemon 无 desktop_exe=解释态 launch）+
+  src/front/app.at 单组件（launcher 约束同款——store 子组件 vue TS 生成
+  损坏；平行字符串列表接缝 `__syslog_seq/time/level/source/msg` + hosted/
+  级别三选 chip + 关键字过滤 + 暂停积压条 + 行选择详情 + clipboard_
+  set_text 复制[剪贴板 native 2926 在册，§10.3 定为真复制] + 独立模式
+  mock 自证面）+ tests/desktop_mcp.py 冒烟 5 断言 + README + manifest 行
+  + README Apps 表。执行修正：registry_id=目录名 `039-syslog`（§10.2
+  复核后钉死；泵匹配用）。
 - **T-06 注入泵**：renderer ServiceTick 段（registry_id 定位 + seq 门
   + 500ms 节流 + `__syslog_entries` 注入）；单测假时钟。→ AC-06。
   依赖：T-01/T-05。
+  [✅ 已完成] ServiceTick 段（sync_dash_dark_bit 邻位）+ syslog_inject_
+  tick()：wm.wins 线性查 registry_id=="039-syslog"（窗不在零扫描门）→
+  injection_due(dirty,last,500ms) → snapshot 全量 → 五平行字符串列表
+  write_state_vec（**执行修正：Vec<Obj> → 平行字符串列表**——B12 家族
+  宿主注入 Obj 数组 handler 字段读失效，launcher apps_* 先例；plan §5.4
+  "Vec<Obj> 平行数组"按已证形态落）→ 显式 call_handler("Rebuild")（宿主
+  写状态不触发 handler，RebuildNotes 同规）→ 簿记后置（写失败下拍重试）。
+  DesktopState 增 syslog_inject_seq/syslog_last_inject。节流判定单测 =
+  T-01 injection_due 假时钟 6 断言；段本体薄（查+门+写），headless 断言
+  随 T-09。iced example 构建绿。
 - **T-07 music 插桩**：020-music-player scan 链三钉（`music-scan`
   前缀）。→ AC-08。依赖：T-04。
+  [✅ 已完成] app.at Init 臂四记录累积写 `__desktop_cmd`（\n 分隔多记录
+  ——parse_records 按行切；钉1 发起 info / 钉2 响应到达[store __scan_ok]
+  / 钉3 entries 计数[=0 error]）；player_store.at `__scan_ok` 旗标。
+  **执行修正：字节数钉退役**——T-08 勘定 `Http.get_json` 表达式值 = 已
+  解析 Obj（PLAN-080 F-2③ 编译期内联 to_value），原始 body 字节在 .at
+  层不可观测；到达+解析由旗标与计数钉承载（AC-08 ≥3 行不受影响：发起/
+  到达或失败/计数 = 3-4 行）。与 T-08 同 commit。
 - **T-08 D6 修复腿（可分离）**：ScanProbe.at 复现重建 → 单测钉红 →
   VM 异步回传修复 → 绿。→ AC-09。依赖：T-04（复现件用 `log` 动词自证
   可见）；与 T-01..07 无序耦合。
+  [✅ 已完成] **根因翻案（证据钉死）**：VM 异步延续**无 bug**——探针
+  实证延续推值正确（tagged string NV）。真根因 = **PLAN-080 F-2③ 编译
+  期改写 × PLAN-617 T-10 文档配方相戗**：`Http.get_json(url)` 自此编译
+  为 `get_json + json.to_value`（web 轨 fetch().json() 语义），文档配方
+  `json.to_value(Http.get_json(url))`（音乐 030-video 存量同形）成二次
+  转换——旧 to_value 把 Obj 强转 String（NV 位型显示即「20 位数字串」
+  实体）解析失败 → 静默 null → `data.entries ?? []` 恒空 = entries 0。
+  根修 = **to_value 幂等**（TAG_OBJECT/TAG_LIST 接收者直通；stdlib.rs
+  shim_json_to_value），存量 .at 消费方零改绿。回归钉 = plan042_scan_
+  probe_tests.rs 双测（裸形态 + 文档配方）：进程内真 HTTP 端点 × 生产
+  装载管线 build_dynamic_component × on_with_input_for；配方测关修复
+  实测红（entries=0）、开修复绿（entries=1）。json 63 测 + plan083 桥
+  5 测绿。探针勘定副产品：mount 自发 Init + 显式 Init 双派发形态、
+  http 失败体 `{"error","status"}` Obj 形态。音乐 .at 零改动（幂等根修
+  直接治愈）。
 - **T-09 收口验证 + spec 沉淀**：headless+实机全量 AC 过台、证据入
   `docs/plans/evidence/p042/`、SD-01/02 落笔、双仓门（auto-lang
   `cargo t` 对拍基线、auto-os app 侧 e2e）。→ AC 全量。依赖：T-01..08。
+  [✅ 已完成] **headless**：p042_app_at_parses（viewer 源解析门）+
+  p042_log_verb_ring_attribution（AC-04 执行臂归因：privileged/registry_id
+  双证）+ p042_bad_handler_error_lands_in_ring（AC-03：source=
+  vm:scan_probe/bad 行入环）全绿；p042_syslog_window_launch_and_pump
+  （#[ignore]+P042_APPS_DIR 门，lang 测试跨仓扫 os worktree 注册表）：
+  launch→窗在册 registry_id 归因→环 3 行基线注入→平行列表可读→Rebuild
+  consumed=3→新行 500ms 攒批拒→过节流追平——AC-05/06 泵全程绿。
+  **app 侧 e2e**：tests/desktop_mcp.py 8/8（VM 轨：mock 种子/级别过滤/
+  关键字/暂停积压-恢复/计数）。**实机**（ui_desktop iced 真桌面 ×3 轮，
+  证据 docs/plans/evidence/p042/）：bus 真排空臂 launch 039-syslog → 普
+  通虚拟窗开（AC-05，非 overlay）→ 窗内**真环行**（boot registry 行
+  host 归因+真时刻，AC-02 实机半证）→ music launch → back-proxy 懒启
+  3358 → 窗内 3 行 music-scan（initiated/arrived/entries parsed: 393，
+  registry_id 归因，AC-08；393=P037 真机同数——D6 修复实机互验，AC-09）
+  → 选择详情条/复制钮可见（AC-07 截图）。实机勘定两处泵修正（顶层优先
+  窗定位+hosted="1" 泵写）随 lang 8f1785733。**双仓门**：auto-lang 全量
+  lib 套件对拍——基线 ca880b0e0（无本计划改动）243 failed/5226 passed
+  vs 本分支 238 failed/5240 passed（+14 passing 恰=本计划新增测试数；
+  基线红集不增，属在册 flaky 域）；json 63/stdlib 26/dynamic 89/session
+  114 定向全绿。**spec 沉淀**：SD-01（docs/specs/shell/syslog.md）+
+  SD-02（docs/specs/apps/syslog-app.md）plan-proposed 落盘（review 门随
+  计划，未入台账）。
 
 ## 9. 复审记录
 
 - 2026-09-23 r1 起草 handoff（/auto-plan:new）：stage: new；
   outcome: pass（授权面=用户提案+设计共识，D6 优先级裁定记录于 §4，
   默认随腿可分离）；next: work（`.wt/os-042/` 双仓组开工）。
+- 2026-09-23 r2 work handoff（/auto-plan:work）：stage: work；
+  plan_id: PLAN-042 | plan_revision: 1 | outcome: pass（execution_done）|
+  code_commit: auto-os plan-042-dev 3e4da88（base 01f1e88）；auto-lang
+  os-042-dev 8f1785733（base ca880b0e0）| task_ids: T-01..T-09 全链 |
+  evidence: §8 各任务 [✅ 已完成] 行 + docs/plans/evidence/p042/ + 双仓
+  提交链（lang 3931b5b5a→e996c3393→46c6ed30e→8f1785733；os 80e5185→
+  3e4da88）| blockers: 无 | next: review。AC-01..09 全量过台（headless
+  单测/app e2e 8/8/实机三轮截图）；基线对拍红不增（243→238，含 14 新测
+  绿）；组 `.wt/os-042/{auto-os,auto-lang,auto-down,baseline-lang}` 留
+  组待 review/merge（merge 技能负责 wt-guard 清组）。
 
 ## 10. 待澄清事项
 
 1. **D6 优先级裁定**（用户）：默认窗口先行、D6 随腿（T-08 可分离）；
    若裁定 D6 单独先行，本计划 T-08 移交独立腿，AC-09 随撤。
+   → **已按默认执行**（窗口先行 + D6 随腿完成，AC-09 全证）。
 2. apps/039 编号登记时复查（并行会话撞号防线——launcher 4028/038
    4038 先例说明 apps 编号与 examples 编号可能交错）。
+   → **已复查**：登记时 apps/ 无 039 目录、manifest 无 17800 占用。
 3. .at 剪贴板能力现状（T-05 单条复制的实作形态：真复制 vs 选中详态
    降级）——T-05 实作时按仓库现状定，不阻塞。
+   → **已定**：`clipboard_set_text`（native 2926）在册，真复制落地。
 4. 桌面轨 logger 初始化现状（T-02 ①产物）：simplelog 若已占位，
-  trap 改宏面覆盖——已在 T-02 内 bounded 处置。
+   trap 改宏面覆盖——已在 T-02 内 bounded 处置。
+   → **已勘定**：桌面 iced 轨（ui_desktop example 进程）本无 logger，
+   装环即全量；CLI simplelog 异进程无涉；降级链留保险。
+5. **执行期新增（勘定记录，非阻塞）**：
+   - 注入形态修正：plan §5.4 `Vec<Obj> 平行数组` → **平行字符串列表**
+     （B12 家族已证形态，launcher apps_* 先例）。
+   - viewer 单组件化（plan §5.4 "store + 页面" → 状态内聚 App——store
+     子组件 vue TS 生成损坏，launcher 约束同款）。
+   - registry_id = 目录名 `039-syslog`（plan §2 词面 "syslog" 修正）。
+   - T-07 字节数钉退役：`Http.get_json` 表达式值 = 已解析 Obj
+     （PLAN-080 F-2③ 编译期内联 to_value），raw body 字节 .at 层不可
+     观测；AC-08 ≥3 行以钉 2 拆双行满足。
+   - **D6 根因翻案**：VM 异步延续无 bug（探针实证）；真根因 =
+     PLAN-080 编译期改写 × PLAN-617 T-10 文档配方二次转换；根修 =
+     to_value 幂等（T-08，全量证据见 §8 T-08 行）。plan §5.7/§4 的
+     "VM 异步回传站点修复"表述按实证翻案，AC-09 以新根因口径验收。
