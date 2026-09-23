@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-044
-status: execution_done       # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: config-write-safety
 author: [agent]
 created_at: 2026-09-23
@@ -346,6 +346,36 @@ daemon 两个文件已在 T-03。**不**给这批上锁（单进程内存态为�
   本地替身（不引全量 dep）；④worktree 组实建 6 成员（+auto-down detached、
   auto-musk、auto-ai）。T-06 的本仓 e2e 抽样由实机轮承载替代（本仓零代码改动，
   理由见 T-06 行）；README 互链沿计划文件记录承载，落 merge 阶段随台账一并处理。
+  〔勘误〕os-config 提交经 amend（并入 create 模板原子化），终哈希 **76970a6**
+  （上文 ef8c545 为 amend 前暂记）。
+- 2026-09-23 review：stage=review | plan_id=PLAN-044 | plan_revision=1 |
+  outcome=**pass** → status=reviewed | reviewed_commit——lang ffa4838b2 /
+  os-config 76970a6 / musk 5ed25be / auto-ai 75bbf19 / os worktree spec 备稿
+  （state-files.md 新增 + showdesk-icons SD-04，plan-044-dev）| base_commit——
+  lang 0f6a91b29 / os-config 62ed10f / musk 4f8bf45 / auto-ai 58bee8d |
+  spec_inputs——SD-01/SD-02 备稿与实现逐条对读一致；new_spec_components=
+  [docs/specs/shell/state-files.md] 定案；touched_goals=[]（无 GOAL 条目受影响，
+  本计划为横切基础设施不挂目标）。**独立性声明：评审在实现会话内进行，verdict
+  以工件独立重跑为准（下述全部为本评审阶段重跑，未沿用执行期结论）。**
+  acceptance_results：AC-01 pass（storage_cross_process 5/5 重跑绿）；AC-02 pass
+  （kill_mid_write 轮 + state_file 6/6）；AC-03 pass（save_merges 绿 + 
+  desktop_config 15/15 + daemon 41/41 + 锁路径对称性核验——daemon
+  config_root USERPROFILE/.config/autoos + registry file="apps/desktop/config.at"
+  与宿主 desktop_config_path 同一绝对路径 ⇒ 同一把锁）；AC-04 pass（三态播种 +
+  实机损坏态自愈轮）；AC-05 pass（grep 门重跑——残余 fs::write 命中均在
+  #[cfg(test)] fixture，豁免类）；AC-06 pass（cargo tf 完整档 5506 跑 5495 绿、
+  cargo tv 完整档 5653 跑 10 红、默认档全量 5505 跑 10 红——三档红名单与 base
+  （0f6a91b29）对拍**逐一同名**＝预存红不增；musk lib 单测 476/476；auto-ai-cli
+  49/49；os-config 41/41；tt/tb 未跑——无 transpiler/book 面改动，豁免）。
+  findings（全部非阻塞）：F-1〔信息〕musk parity_* 集成测试目标环境受限——
+  378MB debug rlib 并行 rustc 下反复 os error 1455（页面文件太小，两轮实录）；
+  lib 干净 + 476 单测绿已覆盖改动面（5 处一行原子写替换），parity 门留待低负载
+  时机或 merge 前补跑。F-2〔信息〕tf 满并行下 p508_g2_outproc_arm 超时红——
+  隔离重跑 PASS（36.7s，spawn 采样型慢测试），负载型抖动非回归（tv/默认档均未
+  触发）。F-3〔信息〕daemon/宿主 home 解析 env 源不同（USERPROFILE vs HOME 序），
+  本机同值；异环境理论分歧记档不修。evidence 锚点：测试名可复现（cargo t
+  <name> / cargo nextest run --test storage_cross_process），实机轮记录在 T-06
+  行，红名单与 base 对拍方法在案。next=**merge**。
 
 ## 10. 待澄清事项
 
