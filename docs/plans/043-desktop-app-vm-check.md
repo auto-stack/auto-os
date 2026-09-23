@@ -62,22 +62,74 @@ total_steps: 1
 - pac.at 注释仍写 picsum.photos 固定 seed（Plan 537 旧描述），与
   Plan 628 改写后的本地照片实现不符。
 
-**修复方向（待用户裁定）**：
-- A. 加真后端：pac `back` + `src/back/api.at` `#[api]` scan 端点
-  （port 4029 带），运行期扫 `C:\Users\zhaop\Pictures`，缩略图按需生成/
-  缓存；前端 Init fetch。——与 020-music-player 的 media scan 先例同构。
-- B. 保守：把烘焙脚本修到主检出可重跑（路径参数化 + 相对路径），
-  文档注明"重新生成"操作；不解决实时性。
-- 倾向 A（app 是桌面常驻成员，"照片目录变了图库不变"是产品级缺陷）。
+**修复方向（2026-09-23 用户裁定）：A——加真后端，HTTP 供给图片素材**
+（浏览器/Vue 端不能读本地文件，缩略图与原图一律走后端 HTTP）。
 
-**验收（修复后）**：照片目录增删文件 → 重启 app（或刷新）后集合跟随
-变化；桌面 VM 轨实机截图留痕。
+### Part 1 详细设计（方向 A 定案）
+
+架构 = **复刻 Plan 617 `media_root` 能力臂模式**，做照片专用的
+`photo_root` 平行件（不发 app 级 `src/back`，框架能力臂随 pac 声明激活，
+与 020 同构）：
+
+1. **`crates/auto-lang/src/ui/photo_service.rs`（新模块）**——镜像
+   `media_service.rs` 形态：递归索引（jpg/jpeg/png/webp，symlink 跳过、
+   深度帽）、blake3 token id（绝对路径不出后端）、自然排序；增量字段
+   `width/height`（image::image_dimensions 头解析）、`date`（mtime）、
+   `album`（rel_dir 首段，根文件归 "photos"）。缩略图端点语义：
+   `thumb/{id}?w=260` 按需生成（`image` crate 解码→EXIF 朝向规范化
+   （kamadak-exif，image-pipeline 既有依赖）→imageops 变换→thumbnail
+   →JPEG），磁盘缓存 `%TEMP%/autoos-photo-thumbs/<id>-<mtime>-<w>.jpg`
+   （mtime 参与缓存键，目录变化自动失效）；`full/{id}` 原图字节 +
+   image content-type。整体 `cfg(feature = "image-pipeline")` 门控
+   （恰为该特性语义；宿主 ui-iced 与生成后端均已含）。
+2. **`crates/auto-man/src/pac.rs`**：`photo_root: "C:\\Users\\zhaop\\Pictures"`
+   解析入 pac config（media_root 同款单源）。
+3. **`crates/auto-man/src/api_gen.rs`**：pac 含 photo_root → 生成后端
+   发射 `PHOTO_SERVICE_HANDLERS`（`/api/photos/scan|thumb/{id}|full/{id}`，
+   axum 形态镜像 MEDIA_SERVICE_HANDLERS）；**scan 的 url 字段发绝对地址**
+   `http://127.0.0.1:{back_port}/api/photos/...`（VM native 渲染器
+   `load_image_bytes` 对非 http src 走本地文件臂，相对 URL 不可用——
+   020 能用相对值是因 mpv 契约特判，image widget 无此臂；Vue 端绝对值
+   经 dev proxy 照常工作）。
+4. **`crates/auto-lang/src/back_proxy.rs`**：桌面懒启 proxy 增
+   `try_native_photos` 原生路由（`/apps/<id>/api/photos/*`，绝对 base
+   镜像 media_scan 的 §5.3 裁定）。
+5. **`crates/auto-lang/src/ui/back_provision.rs`**：能力判定/plan 增
+   photo_root 臂（media_root 平行）。
+6. **app 改写**：`pac.at` 删烘焙痕迹、加 `photo_root:`；`src/front/app.at`
+   删全部 p_* 硬编码数组，Init `Http.get_json("/api/photos/scan")` 拉取，
+   photos/view_list 由响应构建；相册侧栏按响应 album 动态分组（不再写死
+   photos/screenshots 两段）；favorites 落 app storage（重开保留）。
+   烘焙三脚本（prepare_gallery/generate_at/assemble_app）删除。
+7. **安全边界**：sd 同 media_service——后端只出 token，路径永不序列化；
+   thumb/full 按 token 反查索引，越界请求 404。
+
+**验收（修复后）**：
+- 独立形态 `auto run -r vm 029-photo-gallery`：scan 200、条目数 =
+  当前目录实数、缩略图/原图 HTTP 200 + Content-Type 正确；
+  目录增删照片 → 重启 app 后集合跟随。
+- 桌面形态：launch 图库（懒启 proxy 臂）→ 网格实渲染、大图可开、
+  MCP 截图留痕。
+- 回归：020 的 media 路由零触碰（新模块平行，不并 SUPPORTED_EXTENSIONS）；
+  `cargo check -p auto-lang` + 作用域测试过门。
+
+**执行仓/分支**：auto-lang 侧改动（crates + examples/ui/029）走
+`D:/autostack/.wt/lang-043/auto-lang`（分支 plan-043-dev，Plan 529 组
+布局）；计划簿记本文件留 auto-os main。跨仓互链按 AGENTS §1。
 
 ## 执行步骤
 
 - [✅ 已完成] 2026-09-23 走查启动：boot 43/29，MCP :9471 驱动臂验证可用。
 - [✅ 已完成] Part 1 根因定位（烘焙流水线实证，见上）。
-- [ ] Part 1 修复（方向待裁定）+ 双端验证。
+- [✅ 已完成] Part 1 设计定案（方向 A；photo_root 能力臂五件 + app 改写，
+  见「Part 1 详细设计」）。
+- [ ] T1 lang worktree `.wt/lang-043/auto-lang`（plan-043-dev）创建。
+- [ ] T2 photo_service.rs 新模块（索引 + thumb 磁盘缓存 + full 流）。
+- [ ] T3 pac.rs photo_root 解析 + api_gen.rs PHOTO_SERVICE_HANDLERS 发射。
+- [ ] T4 back_proxy try_native_photos + back_provision plan 臂。
+- [ ] T5 app 改写（pac.at + app.at 去烘焙 + 动态相册分组）+ 删烘焙脚本。
+- [ ] T6 验证：独立 VM 形态 scan/缩略图/原图断言 + 桌面形态 MCP 截图 +
+  目录变化跟随性实证；回归 cargo check + 作用域测试。
 - [ ] 继续走查其余 app（027-file-manager、030-video-player、031-image-viewer、
   031-paint、036-tetris、037-klondike、038-minesweeper、041-auto-edit、
   auto(os-config)、ui-gallery、widgets-gallery、kanban、auto-musk、
@@ -104,6 +156,5 @@ total_steps: 1
 
 ## 待澄清事项
 
-- Part 1 修复方向（A 真后端 / B 保守重烘焙）待用户裁定。
 - 宿主 panic 是否单独立 plan（auto-lang crates/ 改动 Category A/B 门档），
   还是在本 plan 内做 os 侧复现 + lang 侧修复协同。
