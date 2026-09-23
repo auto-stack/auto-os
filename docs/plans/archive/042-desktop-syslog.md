@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-042
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-syslog（系统日志 app）
 author: [agent]
 created_at: 2026-09-23
@@ -456,6 +456,20 @@ task 完成续体路径）→ 修复使延续收到 body → 单测转绿。与�
   review 未再改动语义）| evidence 持久化：docs/plans/evidence/p042/
   （os 仓内，worktree 移除后仍可溯）+ 本记录命令摘录 | next: **merge**
   （用户已授权 review→merge 链）。
+- 2026-09-23 r4 merge（/auto-plan:merge）| PLAN-042:r1 收据 | **prepared**:
+  reviewed 基线（os 3e4da88 / lang d5a9f609f）+ 台账五条起草于 dev 分支
+  （specs.json 读回验证 5 条/169 总）| **landed**: lang master
+  ca880b0e0→**cb1d9b435**（5 提交 rebase，range-diff 五行全 `=` 等价；
+  master 侧并行 PLAN-088 vtree 代码提交无文件交集，rebased tip 定向门
+  scan_probe 5/syslog 7/roundtrip 1/p042 4/iced example 构建零错后落）
+  ff-only；os main 01f1e88→**1ca9dc9**（3 提交 rebase，range-diff 三行全
+  `=`）ff-only；落定态冒烟 apps/039-syslog desktop_mcp 8/8（main 副本）|
+  **ledger_refreshed**: .autoos/specs.json 169 条（P042-1×4 reports/
+  architecture/designs/tests + P042-r1 reviews），main 读回验证 5 条 |
+  **archived**: docs/plans/archive/042-desktop-syslog.md（git mv + status
+  archived）| **cleaned**: 待清（wt-guard 双仓+依赖+基线四 worktree，清后
+  回填本行）| 并行会话 WIP（lang main back_prefix.rs/PLAN-696、os main
+  .next-id/ui-gallery）全程未触碰。
 
 ## 10. 待澄清事项
 
