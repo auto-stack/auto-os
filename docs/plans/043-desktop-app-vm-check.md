@@ -123,11 +123,22 @@ total_steps: 1
 - [✅ 已完成] Part 1 根因定位（烘焙流水线实证，见上）。
 - [✅ 已完成] Part 1 设计定案（方向 A；photo_root 能力臂五件 + app 改写，
   见「Part 1 详细设计」）。
-- [ ] T1 lang worktree `.wt/lang-043/auto-lang`（plan-043-dev）创建。
-- [ ] T2 photo_service.rs 新模块（索引 + thumb 磁盘缓存 + full 流）。
-- [ ] T3 pac.rs photo_root 解析 + api_gen.rs PHOTO_SERVICE_HANDLERS 发射。
-- [ ] T4 back_proxy try_native_photos + back_provision plan 臂。
-- [ ] T5 app 改写（pac.at + app.at 去烘焙 + 动态相册分组）+ 删烘焙脚本。
+- [✅ 已完成] T1 lang worktree `.wt/lang-043/auto-lang`（plan-043-dev）+
+  组兄弟 `.wt/lang-043/auto-down`（autodown-core path 依赖，纯检出零改动）。
+- [✅ 已完成] T2 photo_service.rs 新模块（索引 + thumb 磁盘缓存 + full
+  流 + EXIF 朝向；8/8 单测绿）。
+- [✅ 已完成] T3 pac.rs photo_root 解析 + api_gen.rs PHOTO_SERVICE_HANDLERS
+  发射（scan/thumb/full 三路由，绝对 URL）+ AUTO_PHOTO_ROOT env 注入
+  （main.rs）+ 注册表/LaunchSpec photo_root 透传全链。
+- [✅ 已完成] T4 back_proxy try_native_photos（镜像 media 臂）+
+  back_provision plan 臂（native_photos）；back_proxy e2e 33/34 绿
+  （1 个重跑即过，真 TCP 环境抖动；photo_service/app_registry/api_gen
+  作用域测试绿）。
+- [✅ 已完成] T5 app 改写：pac.at（photo_root + api/back_port）+
+  最小 src/back/api.at（status 控制面，后端进程因它而在）+
+  app.at 全量重写（Init 拉 scan 建网格 / 动态相册分组 / 收藏落
+  Storage `photo-gallery.favs`）+ 烘焙脚本/数据/缩略图删除 + SPEC.md
+  重写。
 - [ ] T6 验证：独立 VM 形态 scan/缩略图/原图断言 + 桌面形态 MCP 截图 +
   目录变化跟随性实证；回归 cargo check + 作用域测试。
 - [ ] 继续走查其余 app（027-file-manager、030-video-player、031-image-viewer、
