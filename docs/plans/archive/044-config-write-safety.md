@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-044
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
 feature_name: config-write-safety
 author: [agent]
 created_at: 2026-09-23
@@ -385,3 +385,22 @@ daemon 两个文件已在 T-03。**不**给这批上锁（单进程内存态为�
 2. **锁超时策略**：缺省 best-effort 放行+eprintln（可用性优先）；若复审要求严格拒写
    （正确性优先），T-01 加开关常量，行为变更走 plan_revision。
 3. **musk 双实例互踩**：本期记债不上锁；若实机常发再立小 plan。
+- 2026-09-23 merge 收据（PLAN-044:r1）——五 checkpoint 全数核实：
+  **prepared**：reviewed 基线（main 0cd77e7）+canonical spec 备稿（os worktree
+  26d603b：state-files.md 新增/showdesk-icons SD-04）+台账离线 RMW（fbba4e5，
+  P044 五条，结构往返校验过；spec.json 整文件 LF 规范化重写为已知噪音，内容
+  等价）+交付提交（四仓 reviewed commit）。
+  **landed**：五仓全 `--ff-only` 零 merge commit——lang master **d164b1d50**
+  （rebase onto 543eccdc4；旧→新映射 1df3b6597→bc6fece01/4f4c6952e→c67468d9d/
+  ffa4838b2→d164b1d50，`git range-diff` 三提交全 `=`=安全重写证明；rebase 态
+  冒烟 state_file 6/6+cross-process 5/5+config/seed 2/2 绿）；os-config main
+  **76970a6**；musk main **5ed25be**；auto-ai main **75bbf19**；auto-os main
+  **21966f3**（spec 备稿+台账，rebase range-diff 双 `=`）。主检出并行 WIP 与
+  本计划改动面交集核验=空，未触碰。
+  **ledger_refreshed**：`.autoos/specs.json` P044-1（reports/architecture/
+  designs/tests）+P044-r1（reviews）五条落 main 21966f3；architecture 条目
+  file→docs/specs/shell/state-files.md（canonical 单源）。
+  **archived**：git mv docs/plans/044-config-write-safety.md →
+  docs/plans/archive/044-config-write-safety.md + status: archived +
+  completion_kind=delivered。
+  **cleaned**：见下方清理记录（guard+worktree/分支/组目录摘除回填）。
