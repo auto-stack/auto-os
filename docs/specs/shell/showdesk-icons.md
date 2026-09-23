@@ -64,6 +64,23 @@
 - **已知债（非阻塞）**：深色主题下深色窗缩略贴深色底对比度低——后续
   预览底换浅色 surface 或瓦片加 1px 描边。
 
+## SD-04 桌面快捷方式预置与自愈（PLAN-044）
+
+- **预置集单源**：`DEFAULT_DESKTOP_ICONS`（auto-lang
+  `ui/desktop_config.rs`，11 id = PLAN-018 一次性预置的盘上实况：
+  011-calculator / 012-clock / 013-todo / 014-weather / 015-notes /
+  020-music-player / 028-launcher / 029-photo-gallery / 030-video-player /
+  jade-garden / auto-musk）。此前预置只存在于盘上 JSON，一次空库覆盖即
+  永久缩水且无自愈。
+- **缺键自愈**：boot（renderer 桌面装载点，hole_mode 装载后）发现 storage
+  `shell.desktop.icons` **缺键或空串** → 播种预置集并经 PLAN-044 合并写
+  落盘（后续重启不再触发）；有键非空 = 用户/预置态，no-op。
+  `shell.desktop.hidden` 空串为合法用户态（PLAN-012 W4 缺省空），**不**
+  播种。
+- **回退语义不变**：桌面图标集 = icons − hidden；未登记 id 仍渲染、图标
+  回退 lucide（既有语义）。写安全契约（锁/原子替换/合并写）归
+  `state-files.md`。
+
 ## 验证
 
 - 代码标记（HEAD 复核）：shell.at 7 枚 iconfile 按钮全 ghost、`mt-[3px]`
