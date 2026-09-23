@@ -467,8 +467,10 @@ task 完成续体路径）→ 修复使延续收到 body → 单测转绿。与�
   **ledger_refreshed**: .autoos/specs.json 169 条（P042-1×4 reports/
   architecture/designs/tests + P042-r1 reviews），main 读回验证 5 条 |
   **archived**: docs/plans/archive/042-desktop-syslog.md（git mv + status
-  archived）| **cleaned**: 待清（wt-guard 双仓+依赖+基线四 worktree，清后
-  回填本行）| 并行会话 WIP（lang main back_prefix.rs/PLAN-696、os main
+  archived）| **cleaned**: 四 worktree wt-guard 全 clean（auto-os/auto-lang/
+  auto-down/baseline-lang）→ git remove + 残目录强删（orphan auto.exe
+  PID 22524 占用，kill 后净）+ 分支 plan-042-dev/os-042-dev 双删 +
+  .wt/os-042 组目录移除；worktree list 零 os-042 残留、进程零占用| 并行会话 WIP（lang main back_prefix.rs/PLAN-696、os main
   .next-id/ui-gallery）全程未触碰。
 
 ## 10. 待澄清事项
