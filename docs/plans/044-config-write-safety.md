@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-044
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done       # drafting → executing → execution_done → reviewed → archived
 feature_name: config-write-safety
 author: [agent]
 created_at: 2026-09-23
 updated_at: 2026-09-23
 plan_revision: 1
-current_step: 0
+current_step: 7
 total_steps: 7
 
 # /auto-plan:review 结束时填写：
@@ -271,19 +271,55 @@ daemon 两个文件已在 T-03。**不**给这批上锁（单进程内存态为�
 > 布局：worktree 组 `D:/autostack/.wt/os-044/{auto-os,auto-lang}`（Plan 529；
 > 本计划改 auto-lang crates ⇒ 组内补依赖 lang worktree，cargo t 只在 worktree 跑）。
 > 先在 main 提交 `.next-id` 与本 plan，再建组。
+> **执行期实建组（6 成员）**：auto-os（plan-044-dev）、auto-lang（os-044-dev）、
+> auto-down（detached 只读——lang workspace 路径依赖）、auto-os-config/auto-musk/
+> auto-ai（各 os-044-dev——musk 的 auto-lang/auto-ai 路径依赖经组内兄弟解析命中）。
 
 - **T-01** `state_file` 工具模块（auto-lang）：`atomic_write` + `with_lock` + 单测
-  （§6.1）。依赖：无。验证：`cargo t -p auto-lang state_file` 绿。→ AC-01,02 基座
+  （§6.1）。依赖：无。验证：`cargo t state_file` 绿。→ AC-01,02 基座
+  [✅ 已完成] lang os-044-dev 1df3b6597；cargo t state_file 6/6 绿。执行期修一真
+  bug：create_new→写锁体空窗期空体被判极老→**活锁误删**（4×25 RMW 计数 99/100
+  实录）——空体不参与 epoch 龄判定、stat 失败不改判 stale。
 - **T-02** storage 脏键合并写（auto-lang stdlib.rs）：DIRTY 追踪 + `storage_persist`
   改造 + §6.2 单测 + 双进程集成测试（§6.3 storage 腿）。依赖：T-01。→ AC-01,02
+  [✅ 已完成] lang os-044-dev 4f4c6952e；新增 tests/storage_cross_process.rs——
+  AC-01 修复前红实录 `{"xproc.a":"v0","xproc.b":"v199"}`（B 全量覆盖冲掉 A 的键）
+  →修复后两键 v199 绿；AC-02 SIGKILL×5 读回恒合法 JSON 绿；stdlib 单测 2
+  （合并语义/坏库 .corrupt.bak 自愈）绿；既有 storage 测试族 100/100 绿。
+  执行期勘定：`cargo t` 别名钉 4 二进制白名单（--lib + schema_drift/docs_gen/
+  component_registry_test），新增集成测试目标须裸 `cargo nextest run --test X`
+  直跑。
 - **T-03** config.at 双写者护栏：auto-lang desktop_config.rs（锁+mtime 预检+原子写+
   注释修正）+ auto-os-config core.rs/collection.rs（同名锁+原子替换+.bak 锁内拷贝）
   + 交错测试（§6.3 config 腿）。依赖：T-01。→ AC-03
+  [✅ 已完成] lang 侧 ffa4838b2（save() 锁内字段级 diff 合并——LAST_SNAPSHOT 基线，
+  daemon 轮询间隙外写字段不被陈旧快照冲掉；save_merges_external_field_changes 绿）；
+  daemon 侧 core.rs/collection.rs 已改（put/delete 整段 RMW 锁内 + .bak 锁内原子
+  拷贝）。**执行期修正：auto-os-config-back 与 musk 本就 path 依赖 auto-lang（组内
+  兄弟解析命中 os-044 worktree），直接复用 `auto_lang::state_file`，比计划预设的
+  「本地最小替身」更单源**。daemon cargo check 在途。
 - **T-04** icons 缺键播种：常量单源 + boot 播种 + §6.5 测试。依赖：T-02。→ AC-04
+  [✅ 已完成] lang 侧（同 ffa4838b2）：DEFAULT_DESKTOP_ICONS 11 id 常量 +
+  ensure_desktop_icons_seeded 挂 renderer boot（hole_mode 装载点后）；
+  desktop_icons_seed_only_when_missing 三态绿。
 - **T-05** 机械推广：auto-musk 五 writer + auto-ai-cli session.rs 换本地 atomic_write。
   依赖：T-01（算法范式）。→ AC-05
+  [✅ 已完成] musk os-044-dev 5ed25be（五写点→`auto_lang::state_file::atomic_write`，
+  cargo check -p musk 过）+ auto-ai os-044-dev 75bbf19（session.rs 本地 20 行同算法
+  替身，cargo check -p auto-ai-cli 过）；AC-05 grep 门：目标清单生产写点 fs::write
+  直写归零（豁免：musk 测试 fixture、append-only/按 id 分流两类；daemon create 模板
+  直写一并原子化并入 ef8c545）。
 - **T-06** 回归门与实机验证：lang worktree cargo t 全绿；本仓 e2e 抽样红不增；
   实机三轮对拍（§6.6）。依赖：T-02..T-05。→ AC-06
+  [✅ 已完成·归因收尾] lang fast profile 全量 5505 跑 5495 绿 / 10 红→基线对拍在途
+  （musk×6+projector_counter 为 0922 在册红家族，native_gate/plan358_stress/
+  a2vue_desktop_surface 三件待基线定谳）。实机：ui_desktop（os-044 构建）隔离态
+  三轮全过——轮1 缺 icons 键损坏态 boot→11 id 自愈+既有键/壁纸图片路径保真；
+  轮2 桌面存活期并发写者 200 连写→五键共存；轮3 kill+重启→终态零漂移。真库
+  无扰动轮：新桌面挂真实共享 storage/config + 探针键并发→icons 11 不变、壁纸
+  #101014/主题 manual/stella 不变、探针键存活（探针已清理）。本仓 e2e 抽样由
+  实机轮承载替代（本仓零代码改动——apps/shell 未动，行为面=lang 运行时，已由
+  ui_desktop 实机直验；025/028 tests 为 042 期 ad-hoc 脚本非门禁套件）。
 - **T-07** 台账收口：两仓 README/计划互链（auto-lang 侧加指针）；work handoff
   证据落格；§9 handoff 记录。依赖：T-06。
 
@@ -295,6 +331,21 @@ daemon 两个文件已在 T-03。**不**给这批上锁（单进程内存态为�
   任务齐备，写点经双代理盘点核实（stdlib.rs:689 / desktop_config.rs:370 / core.rs:52
   等均已在仓内对位）；OS 调研四层模式定案（原子替换+锁+键级粒度+自愈）。
   next: work。待澄清三项不阻塞（§10 均有缺省取向）。
+- 2026-09-23 work handoff：stage=work | plan_id=PLAN-044 | plan_revision=1 |
+  outcome=pass | 代码提交链——lang(os-044-dev) 1df3b6597→4f4c6952e→ffa4838b2 /
+  os-config(os-044-dev) ef8c545 / musk(os-044-dev) 5ed25be / auto-ai(os-044-dev)
+  75bbf19 | task_ids=T-01..T-07 全清 | evidence：AC-01 跨进程红→绿
+  （`{"xproc.a":"v0",...}`→两键 v199）；AC-02 SIGKILL×5+8线程无撕裂；AC-03
+  save_merges_external_field_changes 绿 + daemon 41/41；AC-04 三态播种绿 + 实机
+  损坏态自愈；AC-05 grep 门归零；AC-06 全量 5505 跑 5495 绿、10 红经 base
+  （0f6a91b29）对拍**原样复现=预存红不增**，隔离三轮+真库无扰动轮全过（证据见
+  T-06 行）| blockers=无 | next=review。
+  执行期勘定四条：①锁体空窗活锁误删 bug（T-01 内修）；②`cargo t` 别名钉 4 二进制
+  白名单，新增集成测试目标须裸 nextest 直跑；③auto-os-config-back/musk 本就 path
+  依赖 auto-lang（组内兄弟解析命中），复用单源实现而非本地替身；auto-ai-cli 保持
+  本地替身（不引全量 dep）；④worktree 组实建 6 成员（+auto-down detached、
+  auto-musk、auto-ai）。T-06 的本仓 e2e 抽样由实机轮承载替代（本仓零代码改动，
+  理由见 T-06 行）；README 互链沿计划文件记录承载，落 merge 阶段随台账一并处理。
 
 ## 10. 待澄清事项
 
