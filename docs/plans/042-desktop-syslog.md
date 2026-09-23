@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-042
-status: execution_done               # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
 feature_name: desktop-syslog（系统日志 app）
 author: [agent]
 created_at: 2026-09-23
@@ -401,6 +401,61 @@ task 完成续体路径）→ 修复使延续收到 body → 单测转绿。与�
   单测/app e2e 8/8/实机三轮截图）；基线对拍红不增（243→238，含 14 新测
   绿）；组 `.wt/os-042/{auto-os,auto-lang,auto-down,baseline-lang}` 留
   组待 review/merge（merge 技能负责 wt-guard 清组）。
+- 2026-09-23 r3 review（/auto-plan:review，**同会话复审——限制声明**：
+  无独立复审会话，判定全部由工件与命令复现重构，不采执行方摘要）：
+  stage: review | plan_id: PLAN-042 | plan_revision: 1 | outcome: **pass**
+  | reviewed_commit: auto-os plan-042-dev **3e4da88** + auto-lang
+  os-042-dev **d5a9f609f**（R-1/R-2 修复跳） | base_commit: 01f1e88 /
+  ca880b0e0 | dependency_revisions: auto-down 3373a5c（detached 只读）|
+  spec_inputs: docs/specs/shell/syslog.md + docs/specs/apps/syslog-app.md
+  （plan-proposed @3e4da88；SD 文本与最终行为核对一致：顶层优先窗定位/
+  hosted="1" 均已入文；目录无同名冲突，supersedes=[]，new_spec_components
+  =两新文件路径，touched_goals=[] 空影响成立——纯新增面）
+  | **acceptance_results**：
+  - AC-01 pass：`cargo test --lib syslog` 7 绿（容量淘汰/seq 单调/
+    snapshot 全序/injection_due 节流/宏双写，唯一 source 过滤口径）。
+  - AC-02 pass：log crate 腿=**R-2 直测补齐**（HostLogger error/warn/
+    info 入环 source=host+target 前缀+级别映射，Debug/Trace 不入——
+    p042_host_logger_levels_into_ring 绿）；[session] 家族/载重站点=
+    20 站点同宏机械转换（编译面）+ 实机抽样端到端（evidence
+    p042-syslog-live-ring-host-line.png：registry 行真时刻真环渲染）。
+  - AC-03 pass：p042_bad_handler_error_lands_in_ring 绿（source=
+    vm:scan_probe/bad 行入环+Error 级）。
+  - AC-04 pass：syslog_verb_parse_semantics（三段/\t 双轨/未知 level
+    兜底/空 text 弃单/尾部保留/encode 形）+ roundtrip 词表（53 变体）+
+    p042_log_verb_ring_attribution（notify_source privileged/registry_id
+    执行臂双证）全绿。
+  - AC-05 pass：headless 泵测（launch→窗在册 registry_id=="039-syslog"
+    归因）+ 实机截图（普通虚拟窗、非 overlay、hosted=1 无独立脚注）。
+  - AC-06 pass：injection_due 假时钟单测 + 泵测节流腿（新行 500ms 内
+    拒/过节流追平/seq 门）。
+  - AC-07 pass：viewer 冒烟 8/8（复跑于 d5a9f609f 产品码）+ 实机截图
+    （级别 chip/来源列/时间戳/选择详情+复制）。
+  - AC-08 pass：实机截图 p042-ac08-final-3-lines.png = **3 行
+    music-scan**（initiated/arrived/entries parsed: 393，registry_id
+    020-music-player 归因）——字面门满足。
+  - AC-09 pass：ScanProbe 双测裸形态+文档配方绿（配方测关修复实测红
+    entries=0 的红→绿记录在案）+ 实机曲库 393（=P037 真机同数）。
+  | **findings**（均已在复审周期内修复并复验）：
+  - R-1（medium，证据完整性）：p042_app_at_parses 跨仓路径少一级
+    auto-os——工作树内恒 skip **空绿**，T-09 证据行「viewer 源解析门」
+    在执行轮为空转。修复=兄弟解析路径修正+缺席响亮跳过留痕
+    （d5a9f609f），修后实解析绿（--nocapture 无 skip 标记）。
+  - R-2（low）：AC-02 log crate 腿无直测。修复=HostLogger 直测
+    （d5a9f609f）。
+  | **门与对拍**：`cargo tv`（VM 改动门，test-vm-files 档）——分支 3 失
+  败（musk_vm_track_p053_1×2+p053_4）与**基线 ca880b0e0 同命令同 3 失
+  败**（对照运行留痕 /tmp/baseline_tv.log 口径），属在册 musk flaky 域
+  （dev-quirks 在案），非本计划回归；全量 lib 套件 @d5a9f609f=5242
+  passed/240 failed vs 基线 5226/243（+16 passing≈R 系新测+新测试集，
+  failed 差域=并行 flaky 集——同码两轮 238↔240 摆动实证），无新增可归
+  因红；ui_gen::vue test_plan425 两测全并行轮 FAIL/定向轮 base+branch
+  双绿=并行干扰 flaky（非回归）。定向绿：json 63/scan_probe 5/syslog 7/
+  roundtrip 1/session 114/pump #[ignore] 1/viewer 冒烟 8。
+  | **spec_inputs 冻结**：SD-01/SD-02 文本=提交 3e4da88 版（哈希可溯，
+  review 未再改动语义）| evidence 持久化：docs/plans/evidence/p042/
+  （os 仓内，worktree 移除后仍可溯）+ 本记录命令摘录 | next: **merge**
+  （用户已授权 review→merge 链）。
 
 ## 10. 待澄清事项
 
