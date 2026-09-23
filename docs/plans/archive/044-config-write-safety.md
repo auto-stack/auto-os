@@ -403,4 +403,11 @@ daemon 两个文件已在 T-03。**不**给这批上锁（单进程内存态为�
   **archived**：git mv docs/plans/044-config-write-safety.md →
   docs/plans/archive/044-config-write-safety.md + status: archived +
   completion_kind=delivered。
-  **cleaned**：见下方清理记录（guard+worktree/分支/组目录摘除回填）。
+  **cleaned**：六 worktree 逐一 `wt-guard.sh` clean（auto-os/auto-lang/
+  auto-down/auto-os-config/auto-musk/auto-ai）后摘除；分支五枚删除
+  （auto-os plan-044-dev@21966f3、lang os-044-dev@d164b1d50、config
+  os-044-dev@76970a6、musk os-044-dev@5ed25be、ai os-044-dev@75bbf19——均
+  =落地 tip）；auto-down detached 位经正确属仓（auto-down 仓）摘除；组目录
+  `D:/autostack/.wt/os-044/` 摘除零残留；真库备份预先移持久位
+  `~/.config/autoos/backup-p044-merge/`（isoverify 临时夹具随组清理）。
+  completion_kind=**delivered**。
