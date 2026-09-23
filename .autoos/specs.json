@@ -314,6 +314,11 @@
           "id": "P041-1",
           "title": "PLAN-041 变更摘要 — desktop-sweep-fixes（VM 桌面巡检问题批）",
           "content": "VM 桌面巡检 15 观察全数处置（15/15 任务）：空闲呈现保活（iced 0.14 纯订阅 tick 不 present 四象根因——unconditional-rendering feature + Win32 InvalidateRect 1s 异步兜底）；config-poll 主题快照全撤补缺（F-R1 根修：bus/poll 双路径等价）；分区切换即时呈现三面（切分区=窗口随分区隐现，残影根修）；恢复窗标题注册表对齐（通用 App→展示名）；dashboard face span 自适应收缩（第 4 face 恒裁剪根修）+时钟日期 civil 活值（硬编码 9月18日 根修）+面板暗色双分支玻璃；通知面板 ≤1 ServiceTick；日志卫生双点降噪；VM back 模块装载补链（src/ 基目录——025-sys-monitor/kanban api.* 家族根修，全功能启动实证）。交付：auto-lang 9ed0da75d+61ccf23fc（os-041-dev rebased，含复审 F-R-01 围栏扩 auto-term）/auto-os e6ffa66+delivery/auto-os-config 93b2d7b。"
+        },
+        {
+          "id": "P042-1",
+          "title": "PLAN-042 变更摘要 — desktop-syslog（系统日志 app）",
+          "content": "桌面常驻系统日志查看器全链交付（9/9 任务）：①宿主环 auto-lang ui/syslog.rs（cap1000 FIFO 满弹头/seq 单调/dirty_seq 脏判据/snapshot 全序/syslog! 双写宏——stderr 归档层保留）；②三层采集=HostLogger log crate trap（ui_desktop boot 安装，桌面轨本无 logger 勘定）+诊断家族 20 站点双写（每帧 trace 刻意不入环防刷屏）+VM handler 失败双出口入环（face 归因 vm:<dir>/<stem>）；③log␟level␟text 动词（协议 v1.9，notify 同型三段/未知 level 兜底 info/notify_source 分段归因 registry_id，特权面 privileged 兜底）；④注入泵=ServiceTick 顶层优先窗定位（z_order 逆序非隐藏）+seq 门+500ms 攒批（≤2Hz）+五平行字符串列表下行（B12 已证形态）+显式 call_handler(\"Rebuild\")+首拍 hosted=\"1\"，窗关零扫描零注入；⑤viewer=apps/039-syslog（17800/front-only 无 daemon/普通虚拟窗非 overlay/级别三选+关键字过滤/暂停积压条/选择详情+clipboard 复制/独立模式 mock）。**D6 根因翻案**：VM 异步延续无 bug（ScanProbe 实证）——真根因=PLAN-080 F-2③ Http.get_json 编译期内联 json.to_value × PLAN-617 T-10 文档配方 json.to_value(Http.get_json()) 二次转换（旧 to_value 把 Obj 强转 String 解析失败→静默 null→entries 恒空，「20 位数字串」=NV 位型）；根修=to_value 幂等（TAG_OBJECT/TAG_LIST 直通），存量 .at 零改绿；实机曲库 entries 393（=P037 真机同数）。交付：auto-lang os-042-dev d5a9f609f（3931b5b5a→e996c3393→46c6ed30e→8f1785733→d5a9f609f rebased）/auto-os plan-042-dev 3e4da88。"
         }
       ]
     },
@@ -707,6 +712,11 @@
           "id": "P040-1",
           "title": "ADR-23 — 快照冻结集/图片负缓存重试/fit 双轴自然测量（lang 侧语义）",
           "content": "auto-lang docs/specs/auto-lang/ui/architecture.md 增 ADR-23（@c77831511）：①窗口缩略快照末帧保留（frozen 集 request_capture no-op/cache_put 拒收/stale 恒 fresh + sync 每 tick 判据校正 + SnapshotShot 回调前现算——Plan 497 裁剪式快照对最小化/遮挡窗像素污染根修，DWM/backing store 同款惯例）②load_image_bytes 本地文件失败负缓存改 1s 重试（壁纸重启丢失根修，PLAN-035 T-17 姊妹语义）③fit 窗锚点双轴自然测量（fit_aware_root Both-scrollable+Shrink×Shrink，Plan 512 v1 语义修订；后代 bbox 方案因桌面复合场景同坐标系污染弃用）。代码面 @5dd8bf8fd/1f8cc66b5。"
+        },
+        {
+          "id": "P042-1",
+          "title": "宿主 syslog 环三层采集与注入泵契约 — 架构注记",
+          "content": "环=进程内有界 FIFO（push O(1) 零 view 重建，视图刷新唯一通道=注入泵）；三层采集归一（log trap/宏双写/App log 动词）；泵=窗在才扫描（registry_id==039-syslog 顶层优先）+injection_due 节流（seq 无变化零注入/<500ms 攒批/首拍基线）+全量快照替换（v1 不做增量协议）；宿主写状态不触发 handler——注入后必须显式 call_handler(\"Rebuild\")（RebuildNotes 同规）。详见 docs/specs/shell/syslog.md。"
         }
       ]
     },
@@ -1043,6 +1053,11 @@
           "id": "P040-1",
           "title": "SD-01/02 修订 + SD-05 新增 — dashboard.md 规范增量（8×2 定框/下缘 tab 条/快照冻结集）",
           "content": "auto-os docs/specs/shell/dashboard.md：SD-01 几何吸附 8×3（696×232）→8×2（外框 720×176 @ 12px 四围 PAD，内网格 696×152、节距 88/80 不变，PLAN-035 T-14 表述并入）；右上 pill 分页退役→面板正下缘 28px 预留带 hover 显隐双页签直显（IconClick 外层承载恢复点击）；face 卡高 满高 3 行格（232）→满框 2 行格（152）；SD-02 卡高口径 152px 复核对齐（T-18 残留清零）；新增 SD-05 快照冻结集：最小化/隐藏/被遮挡/跨分区窗进入冻结集——不重抓、条目不过期、预览画末帧（Plan 497 待澄清③ 替代语义），实现锚 snapshot.rs frozen 集+renderer.rs sync_snapshot_frozen+wm_minimize 即时冻结。"
+        },
+        {
+          "id": "P042-1",
+          "title": "SD-01/02 新增 — shell/syslog.md + apps/syslog-app.md 规范增量",
+          "content": "SD-01=宿主 syslog 环契约（cap1000/seq 单调/双写宏/log 动词词面 v1.9/注入节流红线 ≥500ms·seq 门·窗关零开销）；SD-02=039-syslog app spec（front-only 无 daemon/平行字符串列表消费/hosted 旗标/暂停-过滤-复制面/端口 17800）。两文档 PLAN-042 新建（无 supersedes；空 goals 影响成立=纯新增面）。"
         }
       ]
     },
@@ -1374,6 +1389,11 @@
           "id": "P040-1",
           "title": "PLAN-040 测试语料 — fit/snapshot 单测族 + 全量基线对拍",
           "content": "fit 族 20/20（Plan 512 滞回/用户锁定语义零回归）；snapshot 族 25/25 含 F3 冻结新测 frozen_window_skips_capture_and_serves_last_frame（首轮单次红=并行单测共享进程态串扰，复跑两轮稳定，F-R2 flake watch）；plan024_dashboard 布局 4/4；cargo tf --no-fail-fast 5443 跑 5435 绿，8 红经 HEAD~1 对拍全为基线预存（musk×6+projector_counter+ffi_dual flaky）零新增红；boot 截图 auto-os tmp/autoui-screenshot-179006{0877794,0975201,5816535}.png（fit 贴合+恢复前台+深色适配）。"
+        },
+        {
+          "id": "P042-1",
+          "title": "PLAN-042 测试语料 — 环/动词/泵/ScanProbe 族 + 三轨验证",
+          "content": "单测：环 7（容量/seq/dirty/节流假时钟/宏/HostLogger 级别过滤）+动词 parse+roundtrip 词表 53 变体+session 114；ScanProbe 回归钉双测（进程内真 HTTP×生产装载管线：裸形态+文档配方，配方测关修复实测红 entries=0）；headless：坏 handler 入环/执行臂归因/泵全程（launch→registry_id→基线注入→Rebuild→攒批拒→追平，#[ignore]+P042_APPS_DIR）+viewer 源解析门（R-1 修后实解析）；app e2e=desktop_mcp.py 8/8；实机=ui_desktop 三轮截图（真环行/music-scan 3 行 393/选择详情）。对拍：cargo tv musk×3 基线同失败（在册 flaky 归因）；全量 lib 5242/240 vs 基线 5226/243 无新增归因红。证据：docs/plans/evidence/p042/。"
         }
       ]
     },
@@ -1750,6 +1770,11 @@
           "id": "P041-r1",
           "title": "PLAN-041 desktop-sweep-fixes 复审与合并收据",
           "content": "R pass（2026-09-22，plan_revision 2，同会话复审声明在案、verdict 由实机复现+工件重建）：T-03/T-10 尾项随实机走查核销——kanban ✓ 真窗、auto-term ✗→崩溃围栏（Init future_all/race，与 017-chat 树/布局失配同属 base 补链后可达、master 期链接失败掩蔽族，债 P041-D1 围栏在位）、ui-gallery ✓ 干净 worktree（主检出 ✗=并行 WIP 归因，符号随编辑漂移）；T-10 借 daemon（AUTOOS_BACK_PORT=17701）+cdylib 破 not-migrated 后实证：主题钮单行完整+五色板 3+2 全正圆。tf 5452 跑 5444 绿/8 红全归因（7×0922 基线+a2vue_desktop_surface master 漂移对拍同红）零新增。findings：F-R-01 auto-term 崩溃族（已围栏，根修后摘）；F-R-02 ui-gallery 主检出 WIP（域外自愈）；F-R-03 a2vue 金样 master 预存红（域外）；F-R-04 face 时间恒 stella 暖橙观察（不阻断）。storage 污染事故（隔离 env 拼误写用户真实 storage）已披露已修复（图标按 boot 截图重建）。merge：rebase 1 冲突（Cargo.toml iced 键 + PLAN-691 gpui 删除断面）合成解决，range-diff 88d00369f=61ccf23fc 全等、35b55d48e→9ed0da75d 冲突面已述明。"
+        },
+        {
+          "id": "P042-r1",
+          "title": "PLAN-042 desktop-syslog 复审与合并收据",
+          "content": "R pass（2026-09-23，plan_revision 1，同会话复审声明在案——verdict 由工件与命令复现重构）：R-1 修复（p042_app_at_parses 跨仓路径少一级 auto-os 恒 skip 空绿——兄弟解析修正后实解析）+R-2 补齐（HostLogger 直测，AC-02 log crate 腿）；AC-01..09 全 pass；cargo tv 门 musk×3 基线 ca880b0e0 同命令同失败（在册 flaky 归因非回归）；ui_gen vue test_plan425 全并行 FAIL/定向 base+branch 双绿=并行干扰 flaky；计划 @ os 3e4da88/lang d5a9f609f。合并收据见 archived 042 案卷 §9 r4。"
         }
       ]
     }
