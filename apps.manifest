@@ -73,6 +73,14 @@
       "ports": [4028],
       "status": "active",
       "added": "2026-09-21"
+    },
+    {
+      "id": "039-syslog",
+      "repo": "apps/039-syslog",
+      "kind": "local",
+      "ports": [17800],
+      "status": "active",
+      "added": "2026-09-23"
     }
   ]
 }

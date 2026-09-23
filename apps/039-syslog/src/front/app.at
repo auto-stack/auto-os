@@ -1,0 +1,356 @@
+// app.at — 039-syslog 根组件（PLAN-042 T-05）。
+//
+// 形态：宿主 syslog 环的只读 tail 视图。数据接缝 = 宿主 ServiceTick 注入
+// 泵 ≥500ms 一拍全量快照写 `__syslog_*` **平行字符串列表**（launcher
+// apps_* 同族——宿主注入 Obj 数组的 handler 字段读失效，B12；字符串列表
+// 下标读双端保真），行重建在本组件 handler 内完成（in-VM Obj 数组视图
+// 迭代安全——launcher ranked 先例）。
+//
+// 单组件约束（launcher 文件头注同款，双端转译实测结论）：
+//   - 模块级 fn 不进 vue SFC → 行构建/过滤全写成状态法 handler（.Rebuild）；
+//   - store 子组件 vue TS 生成损坏 → 全部状态内聚 App；
+//   - 模板文本插值不能调 .len() → 计数在 handler 算成 .count 串；
+//   - 时间戳宿主侧预格式化 HH:MM:SS（通知面板 at 串先例——避开 .at 算术）。
+//
+// 暂停语义（PLAN-042 §5.4）：paused 期间注入照收列表（宿主泵不感知），
+// 仅不重建 rows——恢复时一拍全量快照替换追平（pending 计数条提示）。
+
+widget App {
+    msg {
+        Init, SetQ(str), Rebuild, ToggleLevel(str), TogglePause,
+        Select(int), CopySel, DemoLine
+    }
+
+    model {
+        // ---- 宿主注入接缝（desktop 模式宿主泵写；独立模式恒空 + mock）----
+        var hosted str = "0"
+        var __syslog_seq = []
+        var __syslog_time = []
+        var __syslog_level = []
+        var __syslog_source = []
+        var __syslog_msg = []
+
+        // ---- 过滤态（级别三选 + 关键字；ql = 预小写副本）----
+        var f_error str = "1"
+        var f_warn str = "1"
+        var f_info str = "1"
+        var q str = ""
+        var ql str = ""
+
+        // ---- 展示态 ----
+        var rows = []            // {i,time,level,source,msg,rowcls,msgcls}
+        var n int = 0            // rows 数（view 条件用，替代模板 .len()）
+        var count str = ""       // 头部计数串
+        var total int = 0        // 注入总行数（环视口）
+        var paused str = "0"
+        var pending int = 0      // 暂停期间新行数（恢复条）
+        var consumed int = 0     // 已消费行数（paused 判定基准）
+        var sel int = -1         // 选中行绝对下标（详情/复制）
+        var sel_text str = ""
+        var pending_label str = "" // 暂停积压条文案（handler 算好，模板不插值）
+        var demo_n int = 0       // 独立模式 mock 行计数
+        var demo_lv str = "info" // mock 级别轮转（info→warn→error）
+    }
+
+    view {
+        col {
+            style: "w-full h-full bg-background text-foreground flex flex-col"
+
+            // ---- 头部：标题 + 计数 + 暂停钮 ----
+            row {
+                style: "flex items-center gap-2 px-3 py-2 border-b shrink-0"
+                text "📜" { style: "text-base" }
+                text "系统日志" { style: "text-sm font-semibold" }
+                text .count { style: "text-xs text-muted-foreground" }
+                spacer { style: "flex-1" }
+                if .paused == "1" {
+                    button (text: "▶ 已暂停") {
+                        onclick: .TogglePause
+                        style: "h-6 px-2.5 text-xs rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40"
+                    }
+                } else {
+                    button (text: "⏸ 暂停") {
+                        onclick: .TogglePause
+                        style: "h-6 px-2.5 text-xs rounded-full bg-muted/60 text-muted-foreground border"
+                    }
+                }
+            }
+
+            // ---- 过滤行：级别三选 chip + 关键字 ----
+            row {
+                style: "flex items-center gap-1.5 px-3 py-2 border-b shrink-0"
+                if .f_error == "1" {
+                    button (text: "● error") {
+                        onclick: .ToggleLevel("error")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-red-500/15 text-red-400 border border-red-500/40"
+                    }
+                } else {
+                    button (text: "○ error") {
+                        onclick: .ToggleLevel("error")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-muted/40 text-muted-foreground border"
+                    }
+                }
+                if .f_warn == "1" {
+                    button (text: "● warn") {
+                        onclick: .ToggleLevel("warn")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/40"
+                    }
+                } else {
+                    button (text: "○ warn") {
+                        onclick: .ToggleLevel("warn")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-muted/40 text-muted-foreground border"
+                    }
+                }
+                if .f_info == "1" {
+                    button (text: "● info") {
+                        onclick: .ToggleLevel("info")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-sky-500/15 text-sky-400 border border-sky-500/40"
+                    }
+                } else {
+                    button (text: "○ info") {
+                        onclick: .ToggleLevel("info")
+                        style: "h-6 px-2.5 text-xs rounded-full bg-muted/40 text-muted-foreground border"
+                    }
+                }
+                input {
+                    value: .q
+                    oninput: .SetQ
+                    placeholder: "过滤 source / 文本…"
+                    style: "flex-1 min-w-24 h-7 text-xs text-foreground bg-background/50 border rounded-lg px-2"
+                }
+            }
+
+            // ---- 暂停积压条（PLAN-042 §5.4：恢复一拍追平）----
+            // 注：视图条件无 && 先例（全 examples 零用例）——嵌套 if 同义。
+            if .paused == "1" {
+                if .pending > 0 {
+                    row {
+                        style: "flex items-center gap-2 px-3 py-1.5 bg-amber-500/15 border-b border-amber-500/30 shrink-0"
+                        text .pending_label { style: "text-xs text-amber-400 flex-1" }
+                        button (text: "恢复") {
+                            onclick: .TogglePause
+                            style: "h-6 px-2.5 text-xs rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40"
+                        }
+                    }
+                }
+            }
+
+            // ---- 日志行区（最新在尾；hover 天然暂停观感——注入照收，
+            // 重建仅在宿主拍点，滚动中的行内容不被顶走：暂停钮为显式面）----
+            col {
+                style: "flex-1 overflow-y-auto font-mono text-xs"
+                if .n == 0 {
+                    col {
+                        style: "flex flex-col items-center py-10 gap-1"
+                        text "（无匹配日志行）" { style: "text-muted-foreground text-sm" }
+                        if .total == 0 {
+                            text "环内暂无日志——宿主三层采集（log trap / 诊断双写 / App log 动词）就绪后此处实时滚动" {
+                                style: "text-muted-foreground/60 text-xs max-w-md text-center"
+                            }
+                        }
+                    }
+                }
+                for r in .rows {
+                    row (onclick: .Select(r.i)) {
+                        style: "flex px-3 py-1 gap-2 items-baseline border-b border-border/40 ${r.rowcls}"
+                        text r.time { style: "text-muted-foreground/70 shrink-0" }
+                        if r.level == "error" {
+                            text "●" { style: "text-red-500 shrink-0" }
+                        }
+                        if r.level == "warn" {
+                            text "●" { style: "text-amber-500 shrink-0" }
+                        }
+                        if r.level == "info" {
+                            text "●" { style: "text-sky-400/70 shrink-0" }
+                        }
+                        text r.source { style: "text-violet-300/80 shrink-0 max-w-40 truncate" }
+                        text r.msg { style: "flex-1 ${r.msgcls}" }
+                    }
+                }
+            }
+
+            // ---- 详情/复制条（选中行；剪贴板能力 native 2926）----
+            if .sel >= 0 {
+                row {
+                    style: "flex items-center gap-2 px-3 py-2 border-t shrink-0 bg-muted/30"
+                    text .sel_text { style: "flex-1 text-xs font-mono truncate text-muted-foreground" }
+                    button (text: "复制") {
+                        onclick: .CopySel
+                        style: "h-6 px-2.5 text-xs rounded-full bg-primary/15 text-primary border"
+                    }
+                    button (text: "×") {
+                        onclick: .Select(-1)
+                        style: "h-6 px-2 text-xs rounded-full bg-muted/50 text-muted-foreground border"
+                    }
+                }
+            }
+
+            // ---- 独立模式脚注（hosted=0：mock 自证面）----
+            if .hosted == "0" {
+                row {
+                    style: "flex items-center gap-2 px-3 py-2 border-t shrink-0"
+                    text "独立模式（无宿主环）" { style: "text-xs text-muted-foreground" }
+                    spacer { style: "flex-1" }
+                    button (text: "＋测试行") {
+                        onclick: .DemoLine
+                        style: "h-6 px-2.5 text-xs rounded-full bg-muted/60 text-foreground border"
+                    }
+                }
+            }
+        }
+    }
+
+    // ---- handlers（状态法；launcher ApplyFilter 同规）----
+    on {
+        .Init -> {
+        if .hosted == "0" {
+            // 独立模式 mock 种子（vue 调试轨自证；desktop 模式列表为空待注入）。
+            .__syslog_seq.push("1")
+            .__syslog_time.push("12:00:01")
+            .__syslog_level.push("info")
+            .__syslog_source.push("host")
+            .__syslog_msg.push("[mock] syslog viewer standalone (hosted=0)")
+            .__syslog_seq.push("2")
+            .__syslog_time.push("12:00:02")
+            .__syslog_level.push("warn")
+            .__syslog_source.push("host")
+            .__syslog_msg.push("[mock] sample warn line (fit measure retry)")
+            .__syslog_seq.push("3")
+            .__syslog_time.push("12:00:03")
+            .__syslog_level.push("error")
+            .__syslog_source.push("vm:020-music-player/app")
+            .__syslog_msg.push("[mock] sample error line (handler crash)")
+            .consumed = 3
+            .total = 3
+        }
+        .Rebuild()
+    }
+
+    .SetQ(t) -> {
+        .q = t
+        .ql = t.lower()
+        .Rebuild()
+    }
+
+    .ToggleLevel(lv) -> {
+        if lv == "error" {
+            if .f_error == "1" { .f_error = "0" } else { .f_error = "1" }
+        }
+        if lv == "warn" {
+            if .f_warn == "1" { .f_warn = "0" } else { .f_warn = "1" }
+        }
+        if lv == "info" {
+            if .f_info == "1" { .f_info = "0" } else { .f_info = "1" }
+        }
+        .Rebuild()
+    }
+
+    .TogglePause -> {
+        if .paused == "1" {
+            .paused = "0"
+            .Rebuild()
+        } else {
+            .paused = "1"
+        }
+    }
+
+    .Select(i) -> {
+        .sel = i
+        if i >= 0 {
+            .sel_text = f"${.__syslog_time[i]} ${.__syslog_level[i]} ${.__syslog_source[i]} ${.__syslog_msg[i]}"
+        } else {
+            .sel_text = ""
+        }
+    }
+
+    .CopySel -> {
+        if .sel >= 0 {
+            clipboard_set_text(.sel_text)
+        }
+    }
+
+    .DemoLine -> {
+        // 级别轮转 info→warn→error（字符串状态机——.at 条件内不依赖算术）。
+        var lv str = "info"
+        if .demo_lv == "info" { lv = "warn" }
+        if .demo_lv == "warn" { lv = "error" }
+        if .demo_lv == "error" { lv = "info" }
+        .demo_lv = lv
+        .demo_n = .demo_n + 1
+        .__syslog_seq.push(f"d${.demo_n}")
+        .__syslog_time.push(f"demo:${.demo_n}")
+        .__syslog_level.push(lv)
+        .__syslog_source.push("mock")
+        .__syslog_msg.push(f"[mock] demo line #${.demo_n} (${lv})")
+        .Rebuild()
+    }
+
+    .Rebuild -> {
+        var len int = .__syslog_seq.len()
+        .total = len
+        if .paused == "1" {
+            // 暂停面：只记积压，不重建 rows（注入照收）。
+            .pending = len - .consumed
+            if .pending < 0 { .pending = 0 }
+            .count = f"已暂停 · 显示 ${.n} / ${len} 行"
+            .pending_label = f"⏸ 暂停中——${.pending} 条新日志"
+        } else {
+            .consumed = len
+            .pending = 0
+            .rows = []
+            .n = 0
+            // 展示窗尾 400 行（环 1000 全量渲染重建过重；头部 count 注明截断）。
+            var start int = 0
+            if len > 400 { start = len - 400 }
+            var i int = start
+            while i < len {
+                var lv str = .__syslog_level[i]
+                var want int = 0
+                if lv == "error" {
+                    if .f_error == "1" { want = 1 }
+                }
+                if lv == "warn" {
+                    if .f_warn == "1" { want = 1 }
+                }
+                if lv == "info" {
+                    if .f_info == "1" { want = 1 }
+                }
+                if want == 1 {
+                    var hit int = 1
+                    if .ql != "" {
+                        hit = 0
+                        var m str = .__syslog_msg[i].lower()
+                        var s str = .__syslog_source[i].lower()
+                        if m.contains(.ql) { hit = 1 }
+                        if s.contains(.ql) { hit = 1 }
+                    }
+                    if hit == 1 {
+                        var rowcls str = "hover:bg-muted/40"
+                        if .sel == i { rowcls = "bg-primary/10" }
+                        var msgcls str = "text-foreground/85"
+                        if lv == "error" { msgcls = "text-red-400" }
+                        if lv == "warn" { msgcls = "text-amber-300" }
+                        var row = { i: i, time: .__syslog_time[i], level: lv, source: .__syslog_source[i], msg: .__syslog_msg[i], rowcls: rowcls, msgcls: msgcls }
+                        .rows.push(row)
+                        .n = .n + 1
+                    }
+                }
+                i = i + 1
+            }
+            if .n == 0 {
+                if len == 0 {
+                    .count = "环空"
+                } else {
+                    .count = f"0 / ${len} 行（过滤器全遮）"
+                }
+            } else {
+                if start > 0 {
+                    .count = f"显示尾 ${.n} 行 / 共 ${len} 行"
+                } else {
+                    .count = f"${.n} / ${len} 行"
+                }
+            }
+        }
+        }
+    }
+}

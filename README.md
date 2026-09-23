@@ -69,6 +69,7 @@ auto-os/
 | 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁；a2r 化 PLAN-039) |
 | tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005；a2r 化 PLAN-039) |
 | 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006；a2r 化 PLAN-039) |
+| 039-syslog | 系统日志（System Log） | `apps/039-syslog/` | local | 17800 | active (PLAN-042；front-only 无 daemon，宿主 syslog 环查看器) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；

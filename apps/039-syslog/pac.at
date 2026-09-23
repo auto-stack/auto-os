@@ -1,0 +1,24 @@
+// pac.at — 039-syslog（PLAN-042）。
+//
+// 桌面「系统日志」查看器：宿主 syslog 环（ui::syslog，cap 1000）的常驻
+// 开发者诊断窗。普通注册表虚拟窗（**非 overlay 槽**——PLAN-042 §2 设计
+// 共识，避开面板层叠坑）；窗开 = 宿主 ServiceTick 注入泵 ≥500ms 一拍
+// 全量快照下行（`__syslog_*` 平行字符串列表），窗关 = 泵零扫描零注入。
+//
+// front_port: 17800（17xxx 带空位，apps.manifest 同步登记）；无独立后端
+// 无 daemon（auto-term 先例：声明缺席合法）。render "vue" 为开发目标端；
+// VM 轨兼容由注入面平行列表形态保证（B12 同族：宿主注入 Obj 数组的
+// handler 字段读失效，launcher apps_* 先例字符串列表下标读保真）。
+
+name: "syslog"
+version: "0.1.0"
+description: "Desktop system log viewer - host syslog ring (1000-entry FIFO) live tail"
+
+scene: "ui"
+render: "vue"
+front_port: 17800
+icon: "scroll-text"
+title: "System Log"
+title_zh: "系统日志"
+category: "system"
+desktop: "true"
