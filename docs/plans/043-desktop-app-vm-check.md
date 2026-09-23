@@ -139,8 +139,47 @@ total_steps: 1
   app.at 全量重写（Init 拉 scan 建网格 / 动态相册分组 / 收藏落
   Storage `photo-gallery.favs`）+ 烘焙脚本/数据/缩略图删除 + SPEC.md
   重写。
-- [ ] T6 验证：独立 VM 形态 scan/缩略图/原图断言 + 桌面形态 MCP 截图 +
-  目录变化跟随性实证；回归 cargo check + 作用域测试。
+- [✅ 已完成] T6 半闭环：**后端半全过**——独立形态 curl 级断言：scan 200
+  / 411 条目（实目录全量，旧烘焙 24 张对照）/ root_missing 三态；
+  thumb 200 image/jpeg 173×260 等比 19KB，二次请求 0.2s（磁盘缓存命中）；
+  full 200 3.4MB Content-Type 正确。**前端半被预存框架回归阻塞**（见
+  Part 2——非本计划改动引入）。
+- [ ] T6 收尾：Part 2 框架回归修复后 → 独立形态网格实渲染截图 + 桌面
+  形态 launch + 目录增删跟随性实证。
+
+## Part 2：split 形态 VM 前端 `Http.get_json` 返回解码坏（预存框架回归，
+阻塞 Part 1 前端验收 + 020 生产坏）
+
+**现象**：app 前端 `Http.get_json("/api/photos/scan")`（同 `/api/media/scan`）
+拿到的返回值不是响应体，而是一个 20 字符十进制数（实测
+`18443647848969734819`，顶部位 0xFFF2——疑似 NaN-boxed 指针位被当整数
+读出）。`json.to_value` 将其解析为 number → `data.entries ?? []` → 空表
+→ **静默空态，无错误抛出**。curl 直查同一端点数据完整（029 scan 411 条 /
+020 media scan 393 条）。
+
+**影响面**：020-music-player（本计划零改动的 app）同症状——独立 split
+形态 item_count=0/library_error=""（后端 393 条）；桌面形态同样中招
+（2026-09-23 主检出 09:47 构建 ui_desktop boot 即报「本地曲库为空」，
+E:\Music 实有 393 首）。即**双形态下所有靠 get_json 拉后端数据的 app
+全部静默空数据**。
+
+**证据链**：
+- Rust 层响应正确：`AUTO_LANG_HTTP_TRACE=1` 实证 status=200 +
+  body 前缀正确。
+- 值在入 .at 前已坏：前端把 raw 落盘（`File.write_text`）实证 20 字节
+  数字串；与响应体大小无关（3 张迷你根目录同症状）。
+- 回归窗口：Plan 027 内存修复两提交恰好改该路径消费语义——
+  `e5a3e85d5`（09-21，ASYNC_RESULTS 消费即删键）与 `69420195f`
+  （09-22，Err 条目映射 + worker 池化 + entry.or_insert）；
+  Plan 037 时代（≤09-15）AC-04 曾实证 020 split 出曲库正常。
+- 嫌疑链：`shim_http_get_json` re-entry → `check_async_http_result` →
+  `push_string_result`（`vm.add_string` + `rc_push_str_idx`）→ .at 侧
+  读取解码。修复方向 = 该链路的 tag/索引位约定核对（lang 侧 bisect
+  e5a3e85d5^..69420195f 可分钟级定位）。
+
+**处置（待用户裁定）**：lang 侧单独立 plan 修复（Category B 门档；
+修复后 Part 1 T6 收尾 + 020 自动恢复）。本计划内不再展开。
+
 - [ ] 继续走查其余 app（027-file-manager、030-video-player、031-image-viewer、
   031-paint、036-tetris、037-klondike、038-minesweeper、041-auto-edit、
   auto(os-config)、ui-gallery、widgets-gallery、kanban、auto-musk、
@@ -164,6 +203,10 @@ total_steps: 1
   native 降级（Plan 412 在案）。
 - **launcher 覆盖层**：summon 后 launcher 覆盖层长时间驻留，bus Esc/
   重 summon 未关闭；启动 app 的窗口开在其后（z 序/聚焦问题待查）。
+- **Windows 端口保留段（环境）**：Hyper-V 保留 8251-8850 等段——020
+  pac `back_port: 8320` 恰在段内，独立形态本机起不来（8429 实测
+  PermissionDenied）；029 已改 4429（4776 以下空闲）。020 的独立形态
+  验证需 `-B` 覆盖或 pac 改端口（待澄清，可能与 Part 2 修复同批做）。
 
 ## 待澄清事项
 
