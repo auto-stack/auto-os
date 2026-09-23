@@ -29,6 +29,14 @@ $OsRoot = if ($env:DESKTOP_OS_ROOT) { (Resolve-Path $env:DESKTOP_OS_ROOT).Path }
           else { (Resolve-Path (Join-Path $PSScriptRoot '..')).Path }
 $OsParent = Split-Path $OsRoot -Parent
 
+# PLAN-698 T-04b/SD-04：桌面=真实 desktop 端点——启动时孵化 rqhost 合成器
+# daemon（`auto rqhost --pipe autodesk-rqhost-desktop-<pid>`，子进程形态；
+# winit Windows 单事件循环约束否决同进程库形态）并发布
+# AUTO_DESKTOP_ENDPOINT env（子进程启动即继承——a2r exe
+# `--desktop-endpoint` 采纳进桌面宿主的合成器，不孵化语义）。显式置
+# AUTO_DESKTOP_RQHOST=0 可停用（宿主侧门=auto-lang run_session Desktop 臂）。
+if (-not $env:AUTO_DESKTOP_RQHOST) { $env:AUTO_DESKTOP_RQHOST = "1" }
+
 function Test-LangRoot([string]$p) {
     (Test-Path (Join-Path $p 'crates\auto-lang')) -and (Test-Path (Join-Path $p 'examples\desktop-host'))
 }
