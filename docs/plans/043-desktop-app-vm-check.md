@@ -255,7 +255,9 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
 
 **需求（用户裁定）**：深色主题壁纸 = `C:/Users/zhaop/Pictures/
 微信图片_20260914172949_1733_1.jpg`（紫色古风剑士，用户钦定截图）；
-浅色主题壁纸 = `C:/Users/zhaop/Pictures/songyu.png`（用户钦定）。
+浅色主题壁纸 = `D:/Down/stella-os/wallpapers/songyu.png`（用户钦定——
+`D:\Down\stella-os\wallpapers` 即机器缺省壁纸目录，
+`wallpapers_dir` 留空时代码探测兜底就是它，picker 扫描同源）。
 
 **现状（已证实）**：无此功能——`DesktopConfig` 单 `wallpaper_path`，
 `set_theme` 动词只切 `dark_theme`/`theme_source` 不触碰壁纸。执行期
@@ -285,6 +287,11 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   设 songyu → `wallpaper_path_light`=songyu 且活跃值=songyu；
   `set_theme dark` → **活跃值自动跟回剑士图**（config 实录）。
   终态：dark_theme=true、活跃=剑士图、双槽齐备。
+- **执行期修正 @ 8cb2a4db1**：实机 picker 选图暴露反斜杠路径被
+  `__desktop_cmd` VM 字符串管道吃掉（`D:\Down\...` 落盘成
+  `D:Downstella-os...`，靠目录首图兜底假活、选非首图必错）——
+  `execute_set_wallpaper` 入口统一规整正斜杠。终态浅槽 =
+  `D:/Down/stella-os/wallpapers/songyu.png`（用户改正的路径）实录。
 
 ## Phase 4：桌面图标默认排布列主序（2026-09-24 用户并入；✅ 同日执行收口，分析修正）
 
