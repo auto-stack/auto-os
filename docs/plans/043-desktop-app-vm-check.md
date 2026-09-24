@@ -253,9 +253,11 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
 
 ## Phase 3：分主题壁纸——深/浅主题各记一张（2026-09-24 用户并入；✅ 同日执行收口）
 
-**需求（用户裁定）**：深色主题壁纸 = `C:/Users/zhaop/Pictures/
-微信图片_20260914172949_1733_1.jpg`（紫色古风剑士，用户钦定截图）；
-浅色主题壁纸 = `D:/Down/stella-os/wallpapers/songyu.png`（用户钦定——
+**需求（用户裁定，09-24 两轮修正）**：深色主题壁纸 =
+`D:/Down/stella-os/wallpapers/purple.png`（用户经设置 picker 自选；
+执行期曾被执行臂误覆盖为剑士图、又因反斜杠 bug 落过坏路径，终态已
+恢复用户选值）；浅色主题壁纸 =
+`D:/Down/stella-os/wallpapers/songyu.png`（用户钦定——
 `D:\Down\stella-os\wallpapers` 即机器缺省壁纸目录，
 `wallpapers_dir` 留空时代码探测兜底就是它，picker 扫描同源）。
 
@@ -285,8 +287,9 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
 - 实机（MCP acceptance 驱动）：深色设剑士图 → config 落
   `wallpaper_path_dark`=剑士；`set_theme light`（浅槽空 → 壁纸保持）→
   设 songyu → `wallpaper_path_light`=songyu 且活跃值=songyu；
-  `set_theme dark` → **活跃值自动跟回剑士图**（config 实录）。
-  终态：dark_theme=true、活跃=剑士图、双槽齐备。
+  `set_theme dark` → **活跃值自动跟回槽值**（config 实录）。
+  终态（用户两轮修正后）：dark_theme=true、深槽=purple.png、
+  浅槽=songyu.png、活跃=purple.png。
 - **执行期修正 @ 8cb2a4db1**：实机 picker 选图暴露反斜杠路径被
   `__desktop_cmd` VM 字符串管道吃掉（`D:\Down\...` 落盘成
   `D:Downstella-os...`，靠目录首图兜底假活、选非首图必错）——
