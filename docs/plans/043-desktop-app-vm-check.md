@@ -244,12 +244,16 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   pac `back_port: 8320` 恰在段内，独立形态本机起不来（8429 实测
   PermissionDenied）；029 已改 4429（4776 以下空闲）。020 的独立形态
   验证需 `-B` 覆盖或 pac 改端口（待澄清，可能与 Part 2 修复同批做）。
-- **桌面快捷方式白名单（2026-09-24 数据级已扩，语义级待裁）**：本会话
-  已把 storage `shell.desktop.icons` 从预置 11 直写扩为全量 30
-  desktop-visible id（实测 30 图标上屏；001/003/004 无 icon 素材回退
-  lucide 属预存语义）。语义级"未来新 app 自动上榜"需
-  `DEFAULT_DESKTOP_ICONS`（lang desktop_config.rs:350 静态 11 单源）
-  改 registry 驱动播种——候选范围，未裁定。
+- **桌面快捷方式白名单（2026-09-24 两轮裁定，终态 27）**：本会话先把
+  storage `shell.desktop.icons` 从预置 11 扩为全量 30 desktop-visible，
+  用户随即裁定 **demo 三件（001-helloworld/003-converter/004-profile-card）
+  不上桌面**——终态 27 = desktop-visible 30 − demo 3（launcher 29 含
+  demo、不含自身；桌面 27 = launcher − demo 3，多一个启动器图标自洽）。
+  已实机验证 27 图标全真位图（此前仅有的 lucide 兜底正是 demo 三件）。
+  语义级"新 app 自动上榜 + demo 排除"仍属 DEFAULT_DESKTOP_ICONS
+  registry 驱动候选。**执行期教训**：`desktop-storage.json` 仍是 load-once
+  + 整文件覆盖写（PLAN-044 键级合并只护 config.at）——外部改写必须在
+  无桌面实例运行时做，否则被运行实例内存态整体写回（本轮实证一次）。
 
 ## Phase 3：分主题壁纸——深/浅主题各记一张（2026-09-24 用户并入；✅ 同日执行收口）
 
