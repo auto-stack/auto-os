@@ -1,8 +1,8 @@
 ---
 plan_id: PLAN-043
 status: executing               # drafting → executing → execution_done → reviewed → archived
-                               # （Part 1+2 代码已 merge 收口；桌面终验 + 其余 app
-                               #   走查 Part 3+ 未完，整 plan 保持 executing）
+                               # （Part 1+2 merge + 桌面终验 + Phase 3/4 均收口；
+                               #   其余 app 走查未完，整 plan 保持 executing）
 feature_name: desktop-app-vm-check
 author: []
 created_at: 2026-09-23
@@ -15,7 +15,7 @@ touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/examples/ui, auto-lang/crates/ui, auto-lang/crates/auto-man, apps/]
 current_step: 2
-total_steps: 2
+total_steps: 4
 ---
 
 # [PLAN-043] desktop-app-vm-check
@@ -157,8 +157,18 @@ total_steps: 2
   加载实测 412 张冻死 UI——网格只画前 60 张 +「加载更多」分批
   （render_cap=60，过滤/排序/导航归位）。lang 层异步图片加载记为
   后续债。
-- [ ] 桌面形态终验：worktree ui_desktop 重编译后 launch 029（懒启
-  proxy photo 臂）截图留痕——构建超时挂起，下轮续。
+- [✅ 已完成] **桌面形态终验**（2026-09-24 补验，主检出重建 ui_desktop
+  @lang master 5af53ff3f）：MCP acceptance 召唤 029 → back-proxy 懒启
+  （:3358）→ 窗口明示「后端实时扫描 · 根目录」，15 项真实内容 + 真实
+  相册分组（PixPin 6 / Saved Pictures 0 等），截图留痕
+  `tmp/autoui-screenshot-1790227582516.png`。原"worktree 重编译"路径
+  已无必要（代码已在 master，主检出构建等价）。
+- [✅ 已完成] Phase 3（分主题壁纸）：双槽+迁移+SetTheme/SetWallpaper 臂
+  落地（lang 5ff4646fc），19/19 单测 + 实机深浅切换跟随全过——深槽=
+  剑士图、浅槽=songyu.png（用户钦定值已设）。
+- [✅ 已完成] Phase 4（图标列主序）：分析修正（自由填充本已列主序；
+  真因=apply_drop 补位臂行主序分裂 + 底稿遗产数据）——apply_drop 对
+  齐 + 清 14 个 positions 键，实机列主序截图过。
 
 ## Phase 2 执行记录（get_json 回归修复，2026-09-24 收口）
 
@@ -212,6 +222,18 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
 - **017-chat**：launch 解析失败，弹「应用暂不可用 无法启动: 017-chat」。
 - **018-book-reader**：`use back.api`（get_book/list_chapters...）解析
   失败（PLAN-664 静默跳过）→ 同样「无法启动」占位。
+- **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
+  VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
+  `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
+  **组件文件**里解析失败 → `icon_base` undefined（报错 17:53 实落第 18 行
+  `style: icon_base` 引用处，解析器行号偏 1），后续 19 个
+  `Expected term, got RBrace` 全为级联误报。**关键鉴别证据**：同款
+  `use stylekit.styles: <item>` 在 app.at（029/031 实测能开）解析正常、
+  组件文件失败——机制嫌疑=组件文件的 use 解析上下文（与 024/026 的
+  `{ package` 块形同族）。连坐面：018 的 tree_icon.at 与 027 字节级同
+  md5；024-charts 四个图表组件带同款 use（高危未测）。修法模板：026
+  拷贝已内联 class 字符串（无 use 行）；四胞胎拷贝（018/026/027）需
+  同步。vue 轨不受影响（用户实机 027 正常）。
 - **024-charts**：use `{ package: ... from "components" }` 多行形解析失败
   （页面仍出，但引用的符号面落空）。
 - **016-calendar**：use `datetime` 模块解析失败（静默跳过）+ `flex-wrap`
@@ -222,6 +244,83 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   pac `back_port: 8320` 恰在段内，独立形态本机起不来（8429 实测
   PermissionDenied）；029 已改 4429（4776 以下空闲）。020 的独立形态
   验证需 `-B` 覆盖或 pac 改端口（待澄清，可能与 Part 2 修复同批做）。
+- **桌面快捷方式白名单（2026-09-24 数据级已扩，语义级待裁）**：本会话
+  已把 storage `shell.desktop.icons` 从预置 11 直写扩为全量 30
+  desktop-visible id（实测 30 图标上屏；001/003/004 无 icon 素材回退
+  lucide 属预存语义）。语义级"未来新 app 自动上榜"需
+  `DEFAULT_DESKTOP_ICONS`（lang desktop_config.rs:350 静态 11 单源）
+  改 registry 驱动播种——候选范围，未裁定。
+
+## Phase 3：分主题壁纸——深/浅主题各记一张（2026-09-24 用户并入；✅ 同日执行收口）
+
+**需求（用户裁定）**：深色主题壁纸 = `C:/Users/zhaop/Pictures/
+微信图片_20260914172949_1733_1.jpg`（紫色古风剑士，用户钦定截图）；
+浅色主题壁纸 = `C:/Users/zhaop/Pictures/songyu.png`（用户钦定）。
+
+**现状（已证实）**：无此功能——`DesktopConfig` 单 `wallpaper_path`，
+`set_theme` 动词只切 `dark_theme`/`theme_source` 不触碰壁纸。执行期
+另有实证：多实例写竞态把活跃壁纸冲回 `#101014`（本 Phase 落地后槽值
+走字段级合并护栏，此类丢失不再复现）。
+
+**实现（lang plan-043-dev @ 5ff4646fc）**：
+1. `desktop_config.rs`：DesktopConfig 增 `wallpaper_path_dark` /
+   `wallpaper_path_light` 双槽；serialize/parse/`apply_field`（字段级
+   合并）同步；`load()` 尾部挂 `apply_per_theme_wallpaper_slots`——
+   ①存量单值迁移（当前主题槽空且单值非空 → 播种，幂等）②boot 按生效
+   主题取槽（槽非空 → 单值跟随，内存生效不回写）。活跃值语义不变
+   （`wallpaper_path` 仍是渲染层读的单源，槽 = 记忆面）。
+2. renderer `execute_set_wallpaper`：写**当前主题**槽（另一槽不动）。
+3. renderer `execute_set_theme`：切主题后目标槽非空且 ≠ 活跃值 →
+   `execute_set_wallpaper(slot)`（旧布局快照/落盘/快照全撤/格子重注入
+   同链复用）。
+4. os 侧零改动（picker 语义宿主收口——shell 只发 `set_wallpaper`，槽
+   路由在宿主按当前主题完成）。
+
+**验证**：
+- 单测：desktop_config 作用域 **19/19 绿**（含 4 个新 per_theme 用例：
+  槽往返 / 单值播种迁移 / boot 按主题取槽 / 播种不碰另一主题槽；
+  `save_merges_external_field_changes` 合并回归带新字段过）。
+- 实机（MCP acceptance 驱动）：深色设剑士图 → config 落
+  `wallpaper_path_dark`=剑士；`set_theme light`（浅槽空 → 壁纸保持）→
+  设 songyu → `wallpaper_path_light`=songyu 且活跃值=songyu；
+  `set_theme dark` → **活跃值自动跟回剑士图**（config 实录）。
+  终态：dark_theme=true、活跃=剑士图、双槽齐备。
+
+## Phase 4：桌面图标默认排布列主序（2026-09-24 用户并入；✅ 同日执行收口，分析修正）
+
+**需求（用户裁定）**：默认排列 = 最左列起从上往下、满列再排下一列。
+
+**执行期分析修正**（起草时两处预设都不准，实测修正）：
+- ~~`layout.rs:219` Grid 翻列主序~~——该函数是**窗口平铺**（WM 布局
+  动词 grid 档），与桌面图标无关，不动。
+- ~~自由填充改列主序~~——`desktop_icon_cells` ② 的未定位补位**已经是
+  列主序**（2026-09-15 用户裁定在案：`k/rows, k%rows` 纵向优先）。
+
+**真因（两个）**：
+1. **口径分裂**：`desktop_icon_apply_drop` 的无位补位仍是**线性行主序**
+   扫描（`s=0,1,2…`），注释却写"与 desktop_icon_cells 同口径"——
+   09-15 改展示网格列主序时漏了拖拽臂，拖拽一发生补位图标横插。
+2. **缺省底稿遗产数据**：`shell.desktop.positions`（+13 个 wp 桶）为
+   旧时代产物，其 `c:r` 值经现行读卡器解读成横向条带（用户截图顶行
+   计算器/时钟/待办/天气/备忘录横排即此）——新壁纸 fallback 到底稿
+   即被污染。
+
+**修复**：
+1. lang `desktop_icon_apply_drop`：补位循环改列主序（rows 口径照抄
+   desktop_icon_cells；占位跳过同构）——plan-043-dev @ 5ff4646fc。
+2. 数据修复：备份 `desktop-storage.json` + `config.at` 至
+   `~/.config/autoos/backup-p043-phase34/` 后，清除全部 14 个
+   `shell.desktop.positions*` 键——所有壁纸语境走纯列主序默认流
+   （用户拖拽按壁纸键落新桶，互不污染）。
+
+**验证**：desktop_icon 作用域 3/3 绿；清键后重启实机截图——第 1 列
+自上而下 = icons 清单序前 9（001→003→004→计算器→时钟→待办→天气→
+备忘录→日历），满列换列，与需求逐项吻合
+（`tmp/autoui-screenshot-1790239488832.png`；中段图标为会话恢复窗
+遮挡，非缺失）。
+
+**遗留观察**：切主题 dashboard face 渲染滞留（F-R1，在案）不在本
+Phase 范围。
 
 ## 复审记录
 
