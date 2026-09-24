@@ -1,19 +1,21 @@
 ---
 plan_id: PLAN-043
 status: executing               # drafting → executing → execution_done → reviewed → archived
+                               # （Part 1+2 代码已 merge 收口；桌面终验 + 其余 app
+                               #   走查 Part 3+ 未完，整 plan 保持 executing）
 feature_name: desktop-app-vm-check
 author: []
 created_at: 2026-09-23
-updated_at: 2026-09-23
+updated_at: 2026-09-24
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: []
+new_spec_components: [P043-1, P043-2, P043-R1]   # .autoos/specs.json 已沉积
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
-affects: [auto-lang/examples/ui, apps/]
-current_step: 1
-total_steps: 1
+affects: [auto-lang/examples/ui, auto-lang/crates/ui, auto-lang/crates/auto-man, apps/]
+current_step: 2
+total_steps: 2
 ---
 
 # [PLAN-043] desktop-app-vm-check
@@ -220,6 +222,29 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   pac `back_port: 8320` 恰在段内，独立形态本机起不来（8429 实测
   PermissionDenied）；029 已改 4429（4776 以下空闲）。020 的独立形态
   验证需 `-B` 覆盖或 pac 改端口（待澄清，可能与 Part 2 修复同批做）。
+
+## 复审记录
+
+**2026-09-24 work 复审（Part 1 + Phase 2，lang plan-043-dev 双提交）— pass**：
+- **验收对账**：Part 1 独立形态验收标准逐项重验（scan 三态/thumb 缓存/full
+  Content-Type/目录跟随/导航全链/收藏跨会话）——全过；桌面形态 launch
+  终验为**合并后剩余项**（不阻塞代码 merge，验证面非代码面）。
+- **遗漏/债扫描**：分批渲染闸为 documented 性能边界（lang 层异步图片
+  加载记后续债）；str[i] 字符码陷阱与 text 表达式两坑已修并注记；
+  030 配方修订未单独实机验（幂等臂回归钉覆盖 + 020/029 实机绿，
+  残余风险登记）。
+- **健康检查**：fmt/警告零新增（diff 面）、无调试印残留。
+- **合并实况**：master 已含 PLAN-042 T-08 同 bug 收敛修复（object/list
+  直通）——冲突消解取并集（043 扩 bool/null + 幂等回归钉 + 029/030
+  配方），020 取 master 插桩版；合并缝修 master 新 LaunchSpec 字面量
+  缺 photo_root 字段。合并树 photo_service 10/10、p080 5/5、
+  cargo check 零 error。
+- **merge receipt**：`auto-lang master 5af53ff3f`（合 plan-043-dev
+  @ 5778b1b55）；worktree 移除前 wt-guard 拦截 360 个 pnpm junction
+  → 逐一枚举 rmdir 清链后复扫 clean → 移除零残留；分支 plan-043-dev
+  已删；组目录 `.wt/lang-043` 已清（auto-down 兄弟检出同步移除）。
+- spec 沉积：`.autoos/specs.json` +3（P043-1 photo_service 能力臂 /
+  P043-2 to_value 幂等臂 / P043-R1 本复审）。
 
 ## 待澄清事项
 
