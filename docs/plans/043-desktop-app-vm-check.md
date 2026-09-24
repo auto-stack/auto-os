@@ -220,8 +220,23 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   疑似坏 app 的残缺 view 触发宿主布局 unwrap。待：最小复现 + 宿主
   渲染兜底（panic 边界不应杀死整个桌面）。
 - **017-chat**：launch 解析失败，弹「应用暂不可用 无法启动: 017-chat」。
-- **018-book-reader**：`use back.api`（get_book/list_chapters...）解析
-  失败（PLAN-664 静默跳过）→ 同样「无法启动」占位。
+- **018-book-reader**：✅ **2026-09-24 修复收口**（lang master
+  4dc4d581a）。两层根因：①front 三文件 `use back.api` 直接导入 VM 轨
+  P-15 静默跳过 → Init 调 undefined → VmBridge init 崩 → 无法启动——
+  改 HTTP 配方（book_store/book_detail/reading 全部
+  Http.get_json/post/put/delete 打既有 #[api] 端点）；②CRUD back 不建
+  proxy session（back_needs_session 旧判据只认 ~Stream/~Promise/
+  use auto.，"inproc CALL 面已通"在桌面轨失效）——谓词增 `#[api]`
+  命中，CRUD back 一律 proxy session 供给。实测：launch → lazy-start
+  :3358 → Library 真数据渲染（Rivers of Time 33% 书卡）。改造前后
+  对照：026 内联模板同样思路（绕开断掉的直接导入面）。
+  小观察：书架计数 f-string `.len()` 渲染空（cosmetic，在账）。
+- **017-chat**：解析层已修（chat_store/app.at 同款 HTTP 改造，@4dc4d581a）
+  ——但 launch 即崩桌面：iced_widget container.rs:291 unwrap
+  （**P041-D1 债本尊，今日围栏放行实验复现**，front build/back 供给全过、
+  崩在布局竞态）。**围栏恢复，017 维持无法启动**——待 P041-D1 根修
+  （timer 重建 × bounds operate 竞态，lang crates 深水区，独立立项）；
+  front 已就位，根修落地即活。
 - **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
   VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
   `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
