@@ -139,46 +139,59 @@ total_steps: 1
   app.at 全量重写（Init 拉 scan 建网格 / 动态相册分组 / 收藏落
   Storage `photo-gallery.favs`）+ 烘焙脚本/数据/缩略图删除 + SPEC.md
   重写。
-- [✅ 已完成] T6 半闭环：**后端半全过**——独立形态 curl 级断言：scan 200
-  / 411 条目（实目录全量，旧烘焙 24 张对照）/ root_missing 三态；
-  thumb 200 image/jpeg 173×260 等比 19KB，二次请求 0.2s（磁盘缓存命中）；
-  full 200 3.4MB Content-Type 正确。**前端半被预存框架回归阻塞**（见
-  Part 2——非本计划改动引入）。
-- [ ] T6 收尾：Part 2 框架回归修复后 → 独立形态网格实渲染截图 + 桌面
-  形态 launch + 目录增删跟随性实证。
+- [✅ 已完成] T6 收尾（独立形态全过）：Part 2 修复后网格实渲染截图
+  （迷你根 3 张 + 真实根实机照片）、查看器原图/上下张环绕、收藏跨
+  会话恢复、目录增删跟随（3→4 张实证）、加载更多分批；020 对照
+  item_count=393 恢复（框架修复红利，020 仅改配方）。
+- [✅ 已完成] **导航模型修订**（2026-09-24 用户裁定：非递归）：
+  `index_directory`（递归平铺）→ `list_directory`（只列当前目录 +
+  子目录导航条目带直属计数）；`?dir=` 相对段 `sanitize_rel_dir` 拒
+  穿越/盘符/反斜杠；token→路径注册表按 root 分桶；thumb/full 走
+  token 反查。前端：页签=全部/收藏，子目录 chips 导航 + GoUp 返回，
+  收藏改全记录 JSON 往返（跨目录聚合）。独立形态实机：根 15 直属 +
+  7 子目录 chips、Screenshots 339 导航/返回全链。photo_service 10/10
+  单测重写绿；提交 lang worktree `plan-043-dev`。
+- [✅ 已完成] **分批渲染闸**（性能边界）：VM native image 同步阻塞
+  加载实测 412 张冻死 UI——网格只画前 60 张 +「加载更多」分批
+  （render_cap=60，过滤/排序/导航归位）。lang 层异步图片加载记为
+  后续债。
+- [ ] 桌面形态终验：worktree ui_desktop 重编译后 launch 029（懒启
+  proxy photo 臂）截图留痕——构建超时挂起，下轮续。
 
-## Part 2：split 形态 VM 前端 `Http.get_json` 返回解码坏（预存框架回归，
-阻塞 Part 1 前端验收 + 020 生产坏）
+## Phase 2 执行记录（get_json 回归修复，2026-09-24 收口）
 
-**现象**：app 前端 `Http.get_json("/api/photos/scan")`（同 `/api/media/scan`）
-拿到的返回值不是响应体，而是一个 20 字符十进制数（实测
-`18443647848969734819`，顶部位 0xFFF2——疑似 NaN-boxed 指针位被当整数
-读出）。`json.to_value` 将其解析为 number → `data.entries ?? []` → 空表
-→ **静默空态，无错误抛出**。curl 直查同一端点数据完整（029 scan 411 条 /
-020 media scan 393 条）。
+**根因（实锤）**：PLAN-080 F-2③（a4d48faa6，09-21）把 UI 路径裸
+`Http.get_json` 编译期改写为 `auto.http.get_json` + `auto.json.to_value`
+（返回**解析产物**而非 body 字符串）——旧配方 `json.to_value(Http.get_json(..))`
+（stdlib 注释层文档化、020/029/030 在用）变成双重解析：内层已产
+`__json_object`，外层 `shim_json_to_value` 走 `String` 弹栈的
+`{:?}` 兜底 → **NanoValue 调试串（~20 位数字）**，`json.to_value` 解析
+为 number → `data.entries` 恒空 → 静默空态。020（零改动 app）同症状
+实证为框架回归；桌面形态同中招（今早主检出构建 boot 即报曲库空）。
 
-**影响面**：020-music-player（本计划零改动的 app）同症状——独立 split
-形态 item_count=0/library_error=""（后端 393 条）；桌面形态同样中招
-（2026-09-23 主检出 09:47 构建 ui_desktop boot 即报「本地曲库为空」，
-E:\Music 实有 393 首）。即**双形态下所有靠 get_json 拉后端数据的 app
-全部静默空数据**。
+**修复**：① `shim_json_to_value` 幂等臂——object/list/bool/null 实参
+原样透传（stdlib.rs，注释全链）；② 020/029/030 前端配方同步修订
+（去冗余外包）；③ p080 测试家族补幂等回归钉
+（`json_to_value_idempotent_on_parsed_object`）；④  stale 配方注释
+（shim_http_get 文档块）修订。
 
-**证据链**：
-- Rust 层响应正确：`AUTO_LANG_HTTP_TRACE=1` 实证 status=200 +
-  body 前缀正确。
-- 值在入 .at 前已坏：前端把 raw 落盘（`File.write_text`）实证 20 字节
-  数字串；与响应体大小无关（3 张迷你根目录同症状）。
-- 回归窗口：Plan 027 内存修复两提交恰好改该路径消费语义——
-  `e5a3e85d5`（09-21，ASYNC_RESULTS 消费即删键）与 `69420195f`
-  （09-22，Err 条目映射 + worker 池化 + entry.or_insert）；
-  Plan 037 时代（≤09-15）AC-04 曾实证 020 split 出曲库正常。
-- 嫌疑链：`shim_http_get_json` re-entry → `check_async_http_result` →
-  `push_string_result`（`vm.add_string` + `rc_push_str_idx`）→ .at 侧
-  读取解码。修复方向 = 该链路的 tag/索引位约定核对（lang 侧 bisect
-  e5a3e85d5^..69420195f 可分钟级定位）。
+**验证**：新钉过；p080 家族 5/5；json 族 63/63；020 独立形态
+item_count=393 恢复；029 端到端全链绿。th 档 back_proxy 17 红 =
+Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环境性）。
 
-**处置（待用户裁定）**：lang 侧单独立 plan 修复（Category B 门档；
-修复后 Part 1 T6 收尾 + 020 自动恢复）。本计划内不再展开。
+## Part 2：split 形态 VM 前端 `Http.get_json` 返回解码坏（预存框架回归）——
+## ✅ 2026-09-24 Phase 2 已修复收口（见「Phase 2 执行记录」）
+
+**~~处置（待用户裁定）~~ → 用户裁定：本计划内立 Phase 2 修复（已收口）**。
+原分析存档（现象/影响面/证据链）保留如下——根因最终定位与初判
+（Plan 027 内存修复窗口）不同：**真凶是 PLAN-080 F-2③ 的编译期改写
+变更了 get_json 返回协议**（字符串→解析值），旧配方双重解析触发
+`{:?}` 兜底。初判证据链中"回归窗口 09-21/09-22"为误导（080 同处
+09-21，a4d48faa6 在窗口内但方向不同），最终以 Phase 2 执行记录为准。
+
+**现象（已解决）**：app 前端旧配方拿到的返回值是 20 字符十进制数
+（NanoValue 调试串），`data.entries` 恒空、静默无错。curl 直查同端点
+数据完整。020（零改动 app）同症状双形态中招。
 
 - [ ] 继续走查其余 app（027-file-manager、030-video-player、031-image-viewer、
   031-paint、036-tetris、037-klondike、038-minesweeper、041-auto-edit、
