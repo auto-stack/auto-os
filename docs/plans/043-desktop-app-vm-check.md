@@ -246,6 +246,22 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   开 + 秒表计时 + back HTTP 数据全通 + 零 panic。auto-term 留围栏观察
   （无独立实证）。宿主 panic 族（最高优先遗留）获同款缓解——其余部件
   同型 unwrap ~25 处未补，再现同型崩溃按需扩展（patches/README.md）。
+- **036-tetris / 037-klondike**：✅ **2026-09-25 修复收口**（两层根因）。
+  ①**桌面实例缺 rqhost 端点**（主根因）：outproc-native 原生 exe 经
+  `--desktop-endpoint` 附着 rqhost 合成器渲染——直启 exe 不带
+  `AUTO_DESKTOP_RQHOST=1`（desktop.ps1 标准入口默认开）时 spawn 即退
+  （进程无窗）；带端点重启后双游戏 outproc-native 附着渲染全通（纸牌
+  接龙全屏截图在案）。②**构建层三件**（盘上修，rust-workspace 系
+  gitignore 生成物）：tetris workspace 摆脱已退役 ui-gpui feature 声明
+  （PLAN-691 后 resolve 即拒）+ front aria-label 摘除（a2r 词表门）+
+  main.rs 按现行模板再生（ClientOpts 增 remote 字段）；klondike front
+  ondblclick 摘除（VM/native 走 store「再点一次」路径零损失）+ 生成
+  main.rs bool 条件位 as_bool 直修 + Cargo.lock hyper-util 降 0.1.20
+  （aliyun 镜像缺 0.1.21）。
+  **lang 侧记账债**：a2r 视图 if 条件位对 record 字段访问按字符串降链
+  （应 bool→as_bool）——codegen 根修待立项；另旧 exe（9/14 构建）与
+  新桌面二进制合成协议不匹配（进程活窗不出），原生 exe 需随桌面协议
+  重建。
 - **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
   VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
   `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
