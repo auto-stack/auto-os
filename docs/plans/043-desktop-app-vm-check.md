@@ -258,6 +258,20 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   合成器，**活的 cmd 会话渲染在桌面内**（版本横幅+提示符+分屏工具栏，
   截图在案）。**围栏全空**（VM_LAUNCH_FENCE=[]：017 iced 补丁 +
   auto-term 协议对齐双双根治；若再现旧崩形按需恢复围栏）。
+  **✅ 2026-09-25 续：按用户裁定切回 VM 集成形态**（"本版本只做 VM
+  集成；RQHost 下个版本"）——约定产物（target/debug/auto-term.exe）
+  摘除 → convention 落空 → launch 落回 inproc VM 解释渲染。实测：
+  **工具栏干净渲染（无乱码——乱码是 outproc 原生 exe 形态的图标字体
+  缺口，随 RQHost 形态退场）**；**shell 面板空**（P041-D1 崩溃签名
+  精确复现：handler_App_Init/Tick `future_all/race: empty or invalid
+  future list` 每拍崩——back 模块合并成功（mux_/term_ 符号全在），
+  崩在 mux tick 的 future 组合器空列表 = 引擎链（autoterm_core.dll
+  已部署宿主 exe 同目录 → mux_init → PTY spawn → 内容馈送）在桌面
+  内嵌 VM 形态未驱动起来，与 PLAN-041"渲染但永不 tick"同根）。
+  **剩余工程**：引擎 DLL 链诊断（dll 加载确认/PTY spawn 失败点/
+  mux future 列表构建）——auto-term VM 集成的核心缺口，独立立项；
+  终端窗暂不可用（空面板），建议关闭该窗至引擎链修复（每秒 Tick
+  错误日志有量）。
 - **ui-gallery**：✅ **2026-09-25 修复收口**（根因=0922 遗留未提交 WIP）：
   主工作树里 ui-gallery 的 d027 flat-module 重构 WIP（0922 19:22 遗留，
   三天未动）用了 **handler 直调语句**（`.NavTo(h)`/`.NavTo(up2)`）——VM
