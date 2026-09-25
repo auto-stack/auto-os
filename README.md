@@ -70,6 +70,7 @@ auto-os/
 | tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005；a2r 化 PLAN-039) |
 | 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006；a2r 化 PLAN-039) |
 | 039-syslog | 系统日志（System Log） | `apps/039-syslog/` | local | 17800 | active (PLAN-042；front-only 无 daemon，宿主 syslog 环查看器) |
+| jade-edit | JadeEdit 玉简编辑（AutoDown 编辑器，PLAN-081 单工程双轨 vm+vue） | [../jade-edit](../jade-edit) | repo | 4181（vm 轨桌面直挂） | active (2026-09-25；submodule 收编候选) |
 
 > 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
 > examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；
