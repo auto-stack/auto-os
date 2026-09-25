@@ -354,6 +354,14 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   rqhost 端点无关），此前"缺端点致游戏打不开"的判断有误（该端点服务
   的是更新的 desktop 方言路线，非游戏所需）。VM-only 桌面终态：全部
   .at app + 双游戏 + 025 摘要（行区债在账）正常。
+  **❌ 0925 深挖定位：klondike 原生 exe 明牌牌面全空**（白底无点数
+  无花色；VM 解释形态正常）。vtree 实证：明牌容器/rank 文本/花色在
+  渲染树中 **0 出现**，视图渲染的是七个空列占位——**发牌只落了 down
+  计数（col0..6_down=0..6 ✓）与 stock=24，七个列数组在视图期为空**：
+  a2r 生成 store 的发牌数组填充静默失败（down 计数同源赋值却生效——
+  半途断裂形态）。suspect=a2r store codegen 的数组 push 落地（auto-man
+  rust_ui 生成链）——lang/auto-man 深水债，独立立项。附着形态本身无恙
+  （SHM 桥照常出图：牌背/卡底/工具栏全渲染）。
 - **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
   VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
   `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
