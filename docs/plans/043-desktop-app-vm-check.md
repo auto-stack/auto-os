@@ -228,9 +228,14 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   proxy session（back_needs_session 旧判据只认 ~Stream/~Promise/
   use auto.，"inproc CALL 面已通"在桌面轨失效）——谓词增 `#[api]`
   命中，CRUD back 一律 proxy session 供给。实测：launch → lazy-start
-  :3358 → Library 真数据渲染（Rivers of Time 33% 书卡）。改造前后
-  对照：026 内联模板同样思路（绕开断掉的直接导入面）。
+  :3358 → Library 真数据渲染（Rivers of Time 33% 书卡）。
   小观察：书架计数 f-string `.len()` 渲染空（cosmetic，在账）。
+  **✅ 2026-09-25 UI 修正**（用户反馈书架单列满宽 + Continue 横幅占屏）：
+  书架改原生 grid 部件 `cols:3`（Tailwind 响应式类 md:/lg: 原生渲染器
+  不吃 → 塌单列；原生 grid cols 支持状态表达式绑定，宽度信号注入后可
+  升级自适应 2/3 列）；Continue Reading 大横幅降级标题栏按钮（▶ 书名 ·
+  进度）；书架计数 f-string len() 渲染空改 book_count 管线；头两按钮
+  whitespace-nowrap。实机截图三列真数据过（lang master 后续提交）。
 - **017-chat**：解析层已修（chat_store/app.at 同款 HTTP 改造，@4dc4d581a）
   ——但 launch 即崩桌面：iced_widget container.rs:291 unwrap
   （**P041-D1 债本尊，今日围栏放行实验复现**，front build/back 供给全过、
@@ -249,6 +254,10 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   md5；024-charts 四个图表组件带同款 use（高危未测）。修法模板：026
   拷贝已内联 class 字符串（无 use 行）；四胞胎拷贝（018/026/027）需
   同步。vue 轨不受影响（用户实机 027 正常）。
+  **2026-09-25 更新：027 实测可启动**（用户实机 launch 无 fatal 无
+  toast——stylekit 组件 use 解析链在此期间的解释器演进中恢复，018 的
+  tree_icon 同源 use 亦不再 fatal）。029/031-image-viewer/031-paint 亦
+  实测可启动（031-paint 首次走查通过）。
 - **024-charts**：use `{ package: ... from "components" }` 多行形解析失败
   （页面仍出，但引用的符号面落空）。
 - **016-calendar**：use `datetime` 模块解析失败（静默跳过）+ `flex-wrap`
