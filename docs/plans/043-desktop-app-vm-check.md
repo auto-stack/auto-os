@@ -1,8 +1,11 @@
 ---
 plan_id: PLAN-043
-status: executing               # drafting → executing → execution_done → reviewed → archived
-                               # （Part 1+2 merge + 桌面终验 + Phase 3/4 均收口；
-                               #   其余 app 走查未完，整 plan 保持 executing）
+status: execution_done          # drafting → executing → execution_done → reviewed → archived
+                               # （2026-09-25 会话收口：Part 1+2 merge、桌面终验、
+                               #   Phase 3/4、027/018/017/ui-gallery/036/037/
+                               #   jade-edit/图标/壁纸/主题/围栏全空等本轮全部
+                               #   修复与记录收口；剩余项=下方遗留清单+待澄清，
+                               #   移交下个会话的新计划跟踪——见"移交下会话清单"）
 feature_name: desktop-app-vm-check
 author: []
 created_at: 2026-09-23
@@ -258,6 +261,15 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   合成器，**活的 cmd 会话渲染在桌面内**（版本横幅+提示符+分屏工具栏，
   截图在案）。**围栏全空**（VM_LAUNCH_FENCE=[]：017 iced 补丁 +
   auto-term 协议对齐双双根治；若再现旧崩形按需恢复围栏）。
+- **boot 直挂计算器退役 + 围栏全空（lang 提交链 70bcd5246→86b56884b）**：
+  ui_desktop 入口的 011 boot 直挂组件装配拆除（用户报告"每次启动都开
+  计算器"——无 autostart 机制，是入口硬编码直挂）+ run_dynamic_iced_multi
+  空组件表守卫降级日志（boot 窗全部经注册表 launch 链）。
+- **跨会话教训（2026-09-25）**：共享主检出多会话并行期间，`taskkill /IM
+  auto.exe` 类按映像名清扫会误杀他会话的构建/运行进程（PLAN-701 T-01
+  F-RV6 根因勘定在案：其会话基线 2/5 与下游同率、watcher 实捕同秒双进程
+  蒸发=外部 TerminateProcess 形）——并行期清扫一律 /PID 精确制导
+  （tools/perf/README.md:65 指导在案）。
   **✅ 2026-09-25 续：按用户裁定切回 VM 集成形态**（"本版本只做 VM
   集成；RQHost 下个版本"）——约定产物（target/debug/auto-term.exe）
   摘除 → convention 落空 → launch 落回 inproc VM 解释渲染。实测：
@@ -495,3 +507,36 @@ Phase 范围。
 
 - 宿主 panic 是否单独立 plan（auto-lang crates/ 改动 Category A/B 门档），
   还是在本 plan 内做 os 侧复现 + lang 侧修复协同。
+
+## 移交下会话清单（2026-09-25 会话收口；新计划从这里起）
+
+已根治/收口（本 plan 内闭环，勿重复立项）：029 实时扫描、get_json 幂等、
+017/018 HTTP 配方+iced 补丁、027/029/031/031-paint 走查恢复、036/037
+游戏启动（SHM 桥+构建三件）、ui-gallery（WIP stash 后恢复）、jade-edit
+注册（manifest+README+图标换位）、图标 29=launcher 镜像、分主题壁纸
+双槽、图标列主序、boot 直挂退役、围栏全空、auto-kanban 图标。
+
+移交清单（新计划的候选工作面，按优先序）：
+1. **025-sys-monitor 表格桌面内嵌不渲染**（深挖未决，证据链+三 suspects
+   +诊断工具缺口见条目）——最高优先之一。
+2. **宿主 panic 族兜底扩展**（patches/iced_widget 已缓解 container 一族；
+   其余部件同型 ~25 处未补 + 最小复现待做）。
+3. **auto-term VM 集成引擎链**（autoterm_core.dll 已部署宿主 exe 同目录、
+   mux tick future 空列表崩溃每拍、shell 面板空——引擎 DLL 链诊断）。
+4. **a2r codegen 两债**：视图 if 条件位 bool 降链（klondike main.rs 直修
+   在案，再生会回退）；工作区脚手架 ui-gpui 残留复核（tetris/auto-term
+   盘上已清，模板已净，再生场景复核）。
+5. **016-calendar**：use `datetime` 解析失败 + flex-wrap native 降级
+   （Plan 412 在案）。
+6. **024-charts**：use `{ package }` 多行形（引用符号面落空）。
+7. **launcher 覆盖层驻留 + z 序**（summon 后不关、启动窗开在其后）。
+8. **Windows 端口保留段**：020 back_port 8320 在段内起不来（改口或 -B）。
+9. **DEFAULT_DESKTOP_ICONS registry 驱动播种 + demo 排除**（图标白名单
+   语义化；本会话数据级 29 已稳）。
+10. **jade-edit / auto-kanban 的 submodule 收编**（用户：将来考虑；
+    kanban 先例）。
+11. **RQHost 路线（下版本）**：desktop 方言统一（旧 exe 重编）、中文渲染
+    /图标字体、auto-term 引擎链在 outproc 形态的完善。
+
+跨会话纪律（并行会话在案）：共享主检出多会话并行常态——清扫用 /PID、
+外部 exe 产物重建前先对协议、gitignore 生成物的修复要登记（再生会回退）。
