@@ -336,6 +336,12 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   （应 bool→as_bool）——codegen 根修待立项；另旧 exe（9/14 构建）与
   新桌面二进制合成协议不匹配（进程活窗不出），原生 exe 需随桌面协议
   重建。
+  **✅ 2026-09-25 17:53 修正（rqhost 端点脱钩）**：用户裁定本版本纯
+  VM 加载（AUTO_DESKTOP_RQHOST 不设）后实测——**tetris/klondike 照常
+  渲染**：原生 exe 走 Plan 020 血统的 **SHM 像素桥**（协议稳定，与
+  rqhost 端点无关），此前"缺端点致游戏打不开"的判断有误（该端点服务
+  的是更新的 desktop 方言路线，非游戏所需）。VM-only 桌面终态：全部
+  .at app + 双游戏 + 025 摘要（行区债在账）正常。
 - **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
   VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
   `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
