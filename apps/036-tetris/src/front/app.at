@@ -40,7 +40,7 @@ widget App {
                         gap: 1
                         style: "w-full h-full min-h-0"
                         for cell in .store.cells {
-                            button { aria-label: cell.aria, onclick: .Start, class: cell.cell_class }
+                            button { onclick: .Start, class: cell.cell_class }
                         }
                     }
                 }
