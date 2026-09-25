@@ -246,6 +246,15 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   开 + 秒表计时 + back HTTP 数据全通 + 零 panic。auto-term 留围栏观察
   （无独立实证）。宿主 panic 族（最高优先遗留）获同款缓解——其余部件
   同型 unwrap ~25 处未补，再现同型崩溃按需扩展（patches/README.md）。
+- **ui-gallery**：✅ **2026-09-25 修复收口**（根因=0922 遗留未提交 WIP）：
+  主工作树里 ui-gallery 的 d027 flat-module 重构 WIP（0922 19:22 遗留，
+  三天未动）用了 **handler 直调语句**（`.NavTo(h)`/`.NavTo(up2)`）——VM
+  链接器不解析 handler 间直调符号 → `link failed: Undefined symbol:
+  handler_Demo027FileManager_NavTo` → 无法启动。处置：整块 WIP 带标签
+  stash 保全（`ui-gallery d027 flat-module WIP…恢复 git stash pop`），
+  画廊回 HEAD 态——实测构建过、窗口全 UI 渲染（demo 列表+内嵌视口）。
+  WIP 恢复前提：handler 直调语法需先上 VM 链接支持（新符号面，lang 侧
+  待议）。widgets-gallery 不涉（独立目录，本就正常）。
 - **036-tetris / 037-klondike**：✅ **2026-09-25 修复收口**（两层根因）。
   ①**桌面实例缺 rqhost 端点**（主根因）：outproc-native 原生 exe 经
   `--desktop-endpoint` 附着 rqhost 合成器渲染——直启 exe 不带
