@@ -246,6 +246,18 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   开 + 秒表计时 + back HTTP 数据全通 + 零 panic。auto-term 留围栏观察
   （无独立实证）。宿主 panic 族（最高优先遗留）获同款缓解——其余部件
   同型 unwrap ~25 处未补，再现同型崩溃按需扩展（patches/README.md）。
+- **auto-term**：✅ **2026-09-25 修复收口**：围栏放行实验发现其走
+  **outproc-native**（有 desktop_exe——PLAN-041 围栏自始拦的其实是原生
+  exe 形态）；spawn 失败两层：①exe 为 9/21 旧协议构建（PLAN-693/694
+  desktop 方言之前）→ 附着握手不认识即退；②auto-term/app/rust-workspace
+  的 app Cargo.toml 残留 ui-gpui 声明（PLAN-691 退役家族第三例，a2r
+  重生成前置的 resolve 即拒）。修复：摘 ui-gpui 声明（rust-workspace 系
+  gitignore 生成物，盘上修法即归属；脚手架模板已随 PLAN-691 清理）+
+  app 根 `auto build -r rust` 再生成 main.rs（含 View::Terminal history
+  字段——a2r 模板已跟上）+ 重编 exe。实测：outproc-native 附着 rqhost
+  合成器，**活的 cmd 会话渲染在桌面内**（版本横幅+提示符+分屏工具栏，
+  截图在案）。**围栏全空**（VM_LAUNCH_FENCE=[]：017 iced 补丁 +
+  auto-term 协议对齐双双根治；若再现旧崩形按需恢复围栏）。
 - **ui-gallery**：✅ **2026-09-25 修复收口**（根因=0922 遗留未提交 WIP）：
   主工作树里 ui-gallery 的 d027 flat-module 重构 WIP（0922 19:22 遗留，
   三天未动）用了 **handler 直调语句**（`.NavTo(h)`/`.NavTo(up2)`）——VM
