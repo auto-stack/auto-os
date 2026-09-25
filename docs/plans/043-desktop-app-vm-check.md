@@ -266,7 +266,10 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   main.rs 按现行模板再生（ClientOpts 增 remote 字段）；klondike front
   ondblclick 摘除（VM/native 走 store「再点一次」路径零损失）+ 生成
   main.rs bool 条件位 as_bool 直修 + Cargo.lock hyper-util 降 0.1.20
-  （aliyun 镜像缺 0.1.21）。
+  （aliyun 镜像缺 0.1.21）。auto-kanban 桌面图标修复：白名单 id 写了
+  目录名 auto-kanban，而 manifest 臂注册 id=manifest id `kanban`（映射
+  表键原生在）——id 对不上整条查询落空；白名单改正后位图+正式名
+  "Kanban" 渲染 ✓（icon_file 临时诊断已还原）。
   **lang 侧记账债**：a2r 视图 if 条件位对 record 字段访问按字符串降链
   （应 bool→as_bool）——codegen 根修待立项；另旧 exe（9/14 构建）与
   新桌面二进制合成协议不匹配（进程活窗不出），原生 exe 需随桌面协议
