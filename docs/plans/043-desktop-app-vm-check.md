@@ -239,9 +239,13 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
 - **017-chat**：解析层已修（chat_store/app.at 同款 HTTP 改造，@4dc4d581a）
   ——但 launch 即崩桌面：iced_widget container.rs:291 unwrap
   （**P041-D1 债本尊，今日围栏放行实验复现**，front build/back 供给全过、
-  崩在布局竞态）。**围栏恢复，017 维持无法启动**——待 P041-D1 根修
-  （timer 重建 × bounds operate 竞态，lang crates 深水区，独立立项）；
-  front 已就位，根修落地即活。
+  崩在布局竞态）。**✅ 2026-09-25 根治收口**：iced_widget 本地补丁
+  （`patches/iced_widget`，[patch.crates-io] 挂载）——container.rs 五处
+  operate/update/mouse_interaction/draw/overlay 的布局空窗 unwrap 改良性
+  降级（至多丢一拍操作/绘制，不崩进程）。017 摘围栏实机验证：双实例并
+  开 + 秒表计时 + back HTTP 数据全通 + 零 panic。auto-term 留围栏观察
+  （无独立实证）。宿主 panic 族（最高优先遗留）获同款缓解——其余部件
+  同型 unwrap ~25 处未补，再现同型崩溃按需扩展（patches/README.md）。
 - **027-file-manager**（2026-09-24 本会话实机两次复现 + 行级定位）：
   VM 轨 boot **fatal**（plan-446 C1 起 fatal at boot）——
   `components/tree_icon.at` 头部 `use stylekit.styles: icon_base` 在
