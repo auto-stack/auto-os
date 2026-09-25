@@ -255,6 +255,42 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   画廊回 HEAD 态——实测构建过、窗口全 UI 渲染（demo 列表+内嵌视口）。
   WIP 恢复前提：handler 直调语法需先上 VM 链接支持（新符号面，lang 侧
   待议）。widgets-gallery 不涉（独立目录，本就正常）。
+- **ui-gallery / jade-edit / boot 直挂退役（2026-09-25 会话伴随改动）**：
+  ①桌面"玉圃"位改开 **jade-edit**（../jade-edit，PLAN-081 单工程双轨）
+  ——apps.manifest 注册 repo 臂（ports [4181]）+ README 表同步 + icons
+  白名单 jade-garden→jade-edit 换位；实机 launch 即开（vm 解释渲染，
+  26 actions/8 toolbar，back 会话经 CRUD 供给懒启，文件树/工作区全活）。
+  **submodule 收编候选在案**（用户：将来 git submodule 引入
+  apps/jade-edit，kanban 先例）。jade-garden 旧版仍在 manifest/launcher
+  未裁撤。②**boot 直挂计算器退役**（lang 70bcd5246）：ui_desktop 入口
+  原把 011-calculator 作 boot 直挂组件装配（APP_B include_str!，用户
+  报告"每次启动都开计算器"）——拆除 + run_dynamic_iced_multi 空表守卫
+  降级为日志；boot 窗全部经注册表 launch 链。③020-music-player 的
+  SwitchMode handler not found（按钮点了没反应）——观察面待查。
+- **025-sys-monitor 表格桌面内嵌不渲染（2026-09-25 深挖未决，最高优先
+  之一）**：桌面内嵌形态进程表**表头+计数徽标渲染、行区全空**（用户
+  截图 286/实测 249-257）；**独立 `auto run -r vm` 正常**。证据链：
+  ①back 侧无虞——会话 back 经 proxy 直拉
+  `/apps/025-sys-monitor/api/system/snapshot` HTTP 200，**procs 257 条
+  全字段**（curl 实证）；②summary 链活——KPI 卡实时真值
+  （procCount=257 来自 snap.summary.proc_count，与 procs 同源同对象）；
+  ③front 数据两种提取形态均失败：原 `use back.api` 直导（跨 VM 句柄，
+  疑调用栈弹出即回收→句柄悬垂→for 迭代空；独立单 VM 无跨桥所以正常
+  ——musk [VM-IDX] no-heap-object 同族）与 HTTP 配方
+  （Http.get_json + ?? [] 提取 + while 索引物化，029 验证形态）均
+  行区空；④排序状态（storage sysmon.sort_dir=asc 遗留）重置 cpu/desc
+  走直拷分支亦空——嵌套 .Sort 调用假设排除；⑤HTTP 配方破坏独立形态
+  （独立 VM 轨相对 /api 无路由 → backend_ok=false + Refresh 阻塞），
+  **已回滚**至 use back.api 原形态（独立可用；桌面回到已知症状）。
+  **剩余 suspects**：(a) 桌面内嵌解释器对 HTTP JSON 值的字段/迭代语义
+  （029 同配方在 029 桌面内嵌却工作——差异待查：029 数据经 photo
+  native 臂 vs 025 经 lazy session）；(b) table-row 部件在内嵌 vwin
+  的渲染（行高塌陷/裁剪）；(c) 跨 VM 句柄返回值 stake/物化（call_vm_fn
+  返回侧无 stake——PLAN-053 只修了参数侧）。**诊断工具缺口**：MCP
+  vtree/state 对 app 窗口内容全盲（只读桌面壳层，最小化时全盲）——
+  app 窗口状态检查通道需补（否则此类问题只能盲诊）。025 独立运行的
+  Tick 预算告警（handler_App_Tick busy 2s）为既有性能面（249 行
+  HTTP+重排每秒）非本缺陷。
 - **036-tetris / 037-klondike**：✅ **2026-09-25 修复收口**（两层根因）。
   ①**桌面实例缺 rqhost 端点**（主根因）：outproc-native 原生 exe 经
   `--desktop-endpoint` 附着 rqhost 合成器渲染——直启 exe 不带
