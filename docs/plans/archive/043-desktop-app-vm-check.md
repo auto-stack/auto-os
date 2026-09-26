@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-043
-status: reviewed               # drafting → executing → execution_done → reviewed → archived
+status: archived               # drafting → executing → execution_done → reviewed → archived（终态；2026-09-27 merge delivered，收据 PLAN-043:r1 见复审记录）
                                # （2026-09-25 会话收口：Part 1+2 merge、桌面终验、
                                #   Phase 3/4、027/018/017/ui-gallery/036/037/
                                #   jade-edit/图标/壁纸/主题/围栏全空等本轮全部
@@ -567,6 +567,25 @@ Phase 范围。
   patches/iced_widget/README.md 为仓内持久载体，引链即可。
 - **结论：pass**（全部代码/行为判据过；F-R1 状态面已修复、F-R2 非
   code 阻塞转 merge 知识沉积）。next=merge。
+
+**2026-09-27 merge 收据（PLAN-043:r1）— delivered**：
+- **prepared**：consolidation worktree `.wt/os-043/auto-os`（分支
+  plan-043-dev @ ec4485f，wt-guard clean）；canonical delta=新档
+  `docs/specs/shell/desktop-app-launch.md`（LD-01 声明与查表/LD-02
+  纯 VM 版本裁定/LD-03 原生形态前置债）+ `showdesk-wallpaper.md`
+  SD-05（双槽契约+迁移+正斜杠规整+F-R1 状态面注记）+ specs.json
+  +P043-3/+P043-4/+P043-R2（reviews file=None 沿 P044-r1 近例）+
+  frontmatter new_spec_components 六件；提交 `8f2d5a7`。
+- **landed**：main `ec4485f`→`8f2d5a7` **--ff-only 零合并提交**（分支
+  基于已落 main 基线，rebase 不适用）；main tip=8f2d5a7 实证。
+- **ledger_refreshed**：`.autoos/specs.json` designs+2 / reviews+1
+  （schema 读回 OK；related=PLAN-043；canonical file 指向
+  docs/specs/shell/ 两档；R2 收据本体在 reviews 节，五 checkpoint
+  本条为准）。
+- **archived**：git mv 本文件 → `docs/plans/archive/043-desktop-app-vm-check.md`
+  + status archived（同提交）。
+- **cleaned**：wt-guard 复扫 clean → worktree `.wt/os-043/auto-os`
+  remove + 分支 plan-043-dev 删除（cleaned 补记见归档后提交）。
 
 ## 待澄清事项
 

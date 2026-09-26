@@ -1,0 +1,58 @@
+ -:  --------- >  1:  87c2e50a4 docs(plans): PLAN-690 review pass——AC-01..06 逐条裁定（tf 5453 跑 9 红全预存/环境归因：晚间基线三族+outproc 新鲜度家族隔离复跑绿，零新增）；独立性声明+工件重构证据；R-1/R-2 双 info；status→reviewed next=merge (Plan 690)
+ -:  --------- >  2:  ec8fe403c fix(018): embed-safe shell + reading App UI/UX redesign (Plan 684)
+ -:  --------- >  3:  11b4e3185 fix(018): format progress percent to 1 decimal (Plan 684)
+ -:  --------- >  4:  a2f90e92b feat(022): kanban app frame + semantic theme palette (Plan 684 rev2)
+ -:  --------- >  5:  982ba9c80 fix(chart): fold package_origin bare tags to component SFCs (Plan 684 rev3)
+ -:  --------- >  6:  7cc0dc676 fix(vue): ADR-19 Init replay on props change (Plan 684 rev4)
+ -:  --------- >  7:  c5ddd6437 docs(p684): gallery 018/022/024 walkthrough evidence
+ -:  --------- >  8:  5f8974a9e feat(025): sys-monitor compact UI + 1-decimal metrics (Plan 684)
+ -:  --------- >  9:  d4182e038 fix(025): adaptive rate units + sticky sort + perf crash + drop details tab
+ -:  --------- > 10:  e51b91c6c fix(025): ApplySort on refresh so sort dir no longer flips each tick
+ -:  --------- > 11:  3f8f42968 feat(026): fit gallery viewport + compact DB table (Plan 684)
+ -:  --------- > 12:  71ed580f2 feat(026): one-line title, compact pager, tighter table (Plan 684)
+ -:  --------- > 13:  219a50334 fix(026): vertically center header title
+ -:  --------- > 14:  4f0940906 feat(027): fill viewport + vue-track demo virtual FS (Plan 684 rev6)
+ -:  --------- > 15:  3ea13d9e5 fix(027): run vue-track demo FS at boot
+ -:  --------- > 16:  ce3bc0628 feat(027): real local directory over back API read path (Plan 684 rev7)
+ -:  --------- > 17:  d1c1d3dc6 docs(specs): PLAN-684 T-07 SD-01..03 — 嵌入安全壳层禁令（viewport-boundary）、示例壳层+thin 契约纪律（ui/overview）、P675-D1 ①② demo 面清偿 + P684-D1/D2 记债 (Plan 684)
+ -:  --------- > 18:  365853a2c test: PLAN-684 复审随批——plan408 断言对齐 ADR-19 __autoReplayInit 形态（T-12 改发射未跟测试=本分支引入红，tf 快败根因）+ auto-man 测试面修复 PLAN-681 generate_api_rs 三参化遗留 11 处 E0061（master 测试目标编译即坏，本分支修复构建；余 3 红=shell_pack 已知预存 + css golden/merged client 681/672 基线漂移另案）(Plan 684)
+ -:  --------- > 19:  e6b408c52 docs(ledger): PLAN-684 账本三件套——ui/plans.md 表行 + specs.json P684-1/P684-2 外科插入（designs/reviews 两节）+ INDEX 再生 (Plan 684)
+ -:  --------- > 20:  9b11c25f3 docs(plans): PLAN-684 归档 delivered——git mv archive/ + status archived + merge 收据五 checkpoint（prepared/landed e6b408c52 ff-only 双轮 rebase range-diff 全等+哈希映射/ledger P684-1+2 落库/archived；cleaned 随后行）；终态 tf 10 红全预存对账（musk×6/P678/p508 陈旧 exe/682-683 金样漂移另案）(Plan 684)
+ -:  --------- > 21:  90d578c08 docs(plans): PLAN-691 立项——拆仓前减面四刀（90%注释订正/gpui删除[用户裁定]/pixels退役[前置690合并]/91散测试归位）；status→executing (Plan 691)
+ -:  --------- > 22:  eeae65e66 docs(plans): PLAN-684 归档收据 cleaned 尾行——guard clean（1824 链接摘除）/clone 目录+分支+组目录全清（五 checkpoint 闭环 delivered） (Plan 684)
+ -:  --------- > 23:  1d3437293 feat(ui): PLAN-690 T-02/T-03/T-07 IME 下行通道+preedit 选区上行+D5 零尺寸自愈——wire ControlMsg::ImeRequest{ImeReq{cursor,purpose}}/SetCursor 两追加 tag+InputMsg::ImePreedit cursor:WRect 原位重定义 selection:Option<(u32,u32)>（iced 0.14 Preedit 第二参勘正=字节选区非矩形）；headless State::Updated{input_method,mouse_interaction} 截获（T-01 勘定：iced_winit 仅 Redraw 臂消费——事件路径截获会瞬态误发 Disable，drive_and_draw 独占）+去重基线+drain_window_controls 泵缝（0 哨兵→真实 wid 回填 set_wid）；daemon window::run→HWND→IMM（win_ime.rs：ImmAssociateContextEx IACE_DEFAULT/CHILDREN+ImmSetCompositionWindow CFS_POINT+ImmSetCandidateWindow CFS_EXCLUDE，winit ime.rs 同语义；非 Windows no-op 观测行）+scale_factor 开窗取样+rq_view mouse_area interaction 光标 view 态应用（每帧 update_mouse 覆盖面的规避）；LiveInput::ImePreedit selection 透传全链（session/rqhost/mcp/broker_ime_preedit 四构造消费点）；T-07 WindowResized 0x0 守卫（最小化路径不转发基线不动）；测试=p690 headless 截获环（聚焦→Enabled 下行+SetCursor(Text)+preedit 上报回环+Commit winit 序镜像 Preedit("")先行+Esc 取消）+p690 管道环（下行到位/preedit 选区上行中文上屏出帧/0x0 守卫）+codec round-trip 扩展；desktop_protocol 201 绿（2 红全预存 base 同红 counter×1+autocenter 干扰态） (Plan 690)
+ -:  --------- > 24:  3d1b54f0a feat(ui): PLAN-690 T-04/T-05/T-06 实机走查+wndproc 子类桥+规模化观测——win_ime 子类桥（SetWindowLongPtrW GWLP_WNDPROC：WM_IME_COMPOSITION 读 GCS_RESULTSTR 提交串/GCS_COMPSTR+GCS_CURSORPOS 组合串+光标字节位→注册表→daemon 15ms Tick 泵 drain_ime_uplinks 转 LiveInput 上行——T-04 实机勘定：winit WM_IME 臂门控内部 ime_allowed 旗标[&dyn Window 面不可达]+提交串走 WM_IME_CHAR[winit 无 handler 恒丢]，OS 侧组合 UI 不受旗标影响实证：候选窗/组合串按 App 焦点框定位可见[录证 p690-ime-walkthrough]）；rqhost gate 放行 --render remote（PLAN-683 接线残留，cmd_autodesk）+BackendType remote→Vm 映射；perf 观测行（per-client fps+合成面精确 wire 字节+op/text 计数，与 mem 行同拍）；规模化实测 5 窗（帧<1KB 全档/charts tick 2.4-2.7fps 吻合/daemon≈1.2MB/窗增量→报告 p690-scale.md）；SD-01 desktop-protocol-v1 v1.17 行+§1.17 节+SD-02 ui overview remote 四面契约+rq-remote-renderer 第二阶段状态行+P683-D5 销号/P683-D6 大部销号（物理连续段留一键复核）；desktop_protocol 201 绿（2 红全预存） (Plan 690)
+ -:  --------- > 25:  8a1b9a1ed chore(specs): PLAN-690 合并账本三件套——plans.md 表行 690+specs.json P690-1(designs)/P690-2(reviews) 外科插入(indent=1)+INDEX 再生；delivery commit=reviewed_commit 文档派生唯一增量 (Plan 690)
+ -:  --------- > 26:  7cc6c0e3b docs(plans): PLAN-690 归档 delivered——git mv archive/+status archived+合并收据（landed 8a1b9a1ed ff-only+两轮并发 rebase 映射 range-diff/md5 证明+ledger P690-1/2 658 items；cleaned 随后行） (Plan 690)
+ -:  --------- > 27:  5f62ebac5 docs(plans): PLAN-690 归档收据 cleaned 尾行——双 worktree guard clean 后移除+分支删+组目录清，五 checkpoint 闭环 delivered (Plan 690)
+ -:  --------- > 28:  09ea1e79b docs(plans): PLAN-691 r2 簿记——T-01/02/04 交付在案(f876e2661/a5c5d0d49/1b56f9541)+T-03 阻塞等 690 merge；勘正=gpui 面扩 style/gpui_adapter(554 行)+examples 19 个+test_runner 例外留根(生产依赖勘定)+AC-02 数据面豁免口径+plan077 死文件；环境/并发注记在案(blueprints 盘损他方作业+worktree specs 外部位写) (Plan 691)
+ -:  --------- > 29:  bebd09387 docs(plans): PLAN-692 起草——widget-gallery scroll demo 改良+滚动条双路径统一+scroll size/hover/active 三增强（vue 臂验收；跨仓 auto-os 兄弟 worktree；7 任务/8 AC/2 SD）(Plan 692)
+ -:  --------- > 30:  b909bf0a9 docs(plans): PLAN-691 r3 簿记——T-04 完成(24ddad334,事故恢复在案:tests.rs open('w')截断→67 声明丢失→nextest 双侧对拍发现→git 原文重拼,四档全过 t=5451/9 逐位对齐基线)+T-03 勘定收口=顺延(条件②labels not-yet+terminal/imagesurface M7-c 未立项,Q-2 默认裁定;P-RQ-PIX 债册行 684-690 间不在册,SD-02 目标勘正为设计档门行) (Plan 691)
+ -:  --------- > 31:  fd30459c9 docs(plans): PLAN-691 work 收尾——execution_done；T-05 tf 全过(10红=预存9+在册ffi flaky,双侧solo绿证)；handoff=next review；复审注意三件在案(specs外部位写归属/分支基点旧须rebase冲突面Cargo.toml/blueprints盘损路由)；组内auto-down detached@3373a5c 依赖位在案 (Plan 691)
+ -:  --------- > 32:  eff3f336a docs(plans): PLAN-692 执行完毕——T-01..T-06 勾选+证据（三单测绿/iced 271 绿/实机 AC-01..06 全过/size 16 端到端/hover 20px 实测），T-07 merge 阶段；execution_done 待复审 (Plan 692)
+ -:  --------- > 33:  d132ff248 docs(plans): PLAN-691 review pass——AC-01..05 全 pass（独立性声明+工件重推：裸 examples 增量重跑 0 错/告警 351→344 纯减/rename 90×R100/tf 10 红与 689+684 双互证）；F-1 先在 #[path] 声明族 info+F-2 plan077 死文件删除候选；R-1 外来 specs 位写裁定 merge 收编；status→reviewed next=merge (Plan 691)
+ -:  --------- > 34:  c60cf8905 docs(design)/chore(cargo): PLAN-691 T-01 两处 90% 体量注释勘误——Design 32 §0 + Cargo.toml:13 注释改 ~52%（约30万/58万行 cat 口径复核；原分母 30.3万 系 xargs wc -l|tail-1 分批截断，09-20 当日 git archive 实测 55.7万）；纯注释零行为面 (Plan 691)
+ -:  --------- > 35:  3ac279750 feat(ui): PLAN-691 T-02 gpui 死后端移除——src/ui/gpui/(4 文件)+style/gpui_adapter.rs(554 行)+ui-gpui feature+gpui-lib/gpui-component/anyhow 三 optional deps+19 examples cfg 阶梯臂+HostBackend::Gpui 变体/臂/选择块；活码现役断言注释 18 处轻扫(历史成因注记保留)；aura 目录契约数据面(config/session/BackendMatrix.gpui)裁定保留；rider=p023_probe 补 required-features=iced-layout-tests 门(裸 --examples 预存 14×E0433 勘定收口)；门禁=check 0 错+examples(build-examples) 0 错+cargo t 9 红全预存零新增(musk×6/desktop_protocol×2/a2vue×1,主检出 28 红含 blueprints 环境红 19 对照在案) (Plan 691)
+ -:  --------- > 36:  a72257e6f refactor(tests): PLAN-691 T-04 顶层散测试归位——90 文件(30,241 行)+test_util/ 目录 git mv 至 src/tests/（90×R100 纯 move+2×R09x=plan492 互引 crate::tests:: 前缀修）；mod 声明块(含 cfg 门/溯源注释)自 lib.rs 迁入 tests.rs（lib.rs -91 块）；例外=test_runner 留根（VM native auto.test.* 生产依赖 stdlib.rs:10921 勘定）+plan077_integration_tests 死文件(声明已注释)随迁保留注释态；renderer.rs doc 注释 plan437 路径同步；并发注记=4 个 docs/specs 文件同毫秒簇被外部位写（SD-03 同步面），按多会话礼仪不吞并、留位未暂存 (Plan 691)
+ -:  --------- > 37:  ffe800947 docs(specs): PLAN-691 SD-03 gpui 活提及同步——INDEX/project/ui.architecture/ui.overview 四件六处后端清单与 style 适配列表去 gpui（位写来源=并行执行会话 21:47 SD-03 编辑，按 R-1 复审裁定收编；内容与 T-02 实现一致） (Plan 691)
+ -:  --------- > 38:  0236239ae chore(specs): PLAN-691 合并账本三件套——ui/plans.md 表行 691+specs.json P691-1(tests)/P691-2(reviews) 外科插入（660 条）+INDEX 再生幂等零 diff；顺手清 684 遗留孤儿冲突标记行（>>>>>>> 37ac4b3a1，无配对块） (Plan 691)
+ -:  --------- > 39:  fb258bd8e docs(plans): PLAN-691 archived delivered—git mv archive/+status archived+merge receipt 4/5 checkpoint (Plan 691)
+ -:  --------- > 40:  655440d0d docs(plans): PLAN-691 归档收据 cleaned 尾行——双 worktree guard clean 后移除+分支删（was 0236239ae）+组目录清，五 checkpoint 闭环 delivered (Plan 691)
+ -:  --------- > 41:  ce18a20bf docs(plans): PLAN-692 F-1 复审记录——拖拽回归根因（items-center 位移原点偏移 70px）+修复（items-start+厚度轴居中）+18px 预存 A/B 定论+合成拖拽验证边界留档 (Plan 692)
+ -:  --------- > 42:  b28c5b18f docs(plans): PLAN-692 rev2——用户裁定按住高亮撤销改 hover 微亮（muted-foreground/60），AC-05 改述/AC-06 退役（用户直接授权），F-1+rev2 复审记录，plan_revision 1→2 (Plan 692)
+ 1:  35b55d48e ! 43:  9ed0da75d fix(ui): PLAN-041 桌面巡检修复批（os-041 配对）——空闲呈现保活（T-14：iced 0.14 纯订阅 tick 不 present 四象根因，unconditional-rendering + Win32 InvalidateRect 异步兜底 1s 节流）；config-poll 主题快照全撤补缺（T-05=F-R1 根修）+分区切换即时呈现三面（T-04）；恢复窗标题注册表对齐（T-11）；dashboard face 单行 span 自适应收缩（T-08=SD-01）+暗色注入位（T-15）；日志卫生双点降噪（T-12 heartbeat/scroll 探测 __ 前缀降 debug+T-13 Init 缺席静默）；VM back 模块装载补链 src/ 基目录（T-02=025-sys-monitor api.kill_process 家族根修，决策件 p041-vm-symbol-decision.md）+017-chat 树/布局失配崩溃围栏（T-03 债 P041-D1）；012-clock 活日期 civil 算法（T-07）；dashboard test 更新收缩契约 4/4
+    @@ Commit message
+     
+      ## crates/auto-lang/Cargo.toml ##
+     @@ crates/auto-lang/Cargo.toml: futures = "0.3"
+    - gpui-lib = { version = "0.2.2", package = "gpui", optional = true }
+    - gpui-component = { version = "0.5.0", optional = true }
+    - anyhow = { version = "1.0", optional = true }
+    --iced = { version = "0.14.0", features = ["tokio", "image", "svg", "advanced", "canvas"], optional = true }
+    + # Plan 015: UI Backend dependencies (optional)
+    + # （gpui-lib/gpui-component/anyhow 三 optional deps 随 ui-gpui feature 移除——PLAN-691）
+    + iced = { version = "0.14.0", features = ["tokio", "image", "svg", "advanced", "canvas"], optional = true }
+     +# PLAN-041 T-14：unconditional-rendering——iced_winit 缺省只在 widget 主动
+     +# 请求 NextFrame 时 present（AboutToWait 臂），纯订阅 tick（桌面帧泵）驱动
+     +# 的 update 不落帧 → 空闲期 OS 表面滞留旧帧（时钟停走/分区残影/通知滞后
+ 2:  88d00369f = 44:  61ccf23fc fix(ui): PLAN-041 复审 F-R-01 修复——崩溃围栏扩至 auto-term（Init future_all/race 空未来列表，handler_App_Init/Tick 每 拍 崩、20 分钟 2.6 万行日志实录；与 017-chat 同属 base 补链后可达、master 期链接失败掩蔽的初始化崩溃族，债 P041-D1 统一登记根修后摘围栏）
