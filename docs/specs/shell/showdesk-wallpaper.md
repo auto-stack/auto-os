@@ -109,6 +109,30 @@
 - 语义：壁纸 A/B 各自摆布互不覆盖、切换跟随、flip 对比所见即所得、
   重启保持（storage 持久）。
 
+## SD-05 分主题壁纸双槽（PLAN-043 Phase 3）
+
+- 契约：`DesktopConfig` 增 `wallpaper_path_dark` / `wallpaper_path_light`
+  双槽（用户钦定记忆面）；`wallpaper_path` 仍是渲染层读的**活跃单源**
+  （槽不直接驱动渲染，boot/切主题时把槽值灌入单源）。
+- 写臂：`set_wallpaper` 动词写**当前主题**槽（另一槽不动）；
+  `set_theme` 动词切主题后，目标槽非空且 ≠ 活跃值 → 应用槽值（复用
+  旧布局快照/落盘/快照全撤/格子重注入同链）。槽空 = 维持当前壁纸。
+- 迁移/启动（`load()` 尾 `apply_per_theme_wallpaper_slots`）：
+  ①存量单值播种（当前主题槽空且单值非空 → 灌槽，幂等，不碰另一主题
+  槽）；②boot 按生效主题取槽（槽非空 → 活跃单值跟随；内存生效不
+  回写）。
+- 路径规整：`execute_set_wallpaper` 入口统一 `\`→`/`——`__desktop_cmd`
+  VM 字符串管道吃反斜杠（实机 `D:\Down\...` 落盘成 `D:Down...`、靠目录
+  首图兜底假活的先例）。
+- 已知状态面风险：`desktop-storage.json` 的图标/布局键仍是 load-once +
+  整文件覆盖写（config.at 键级合并不覆盖此文件）——多实例并行下外部
+  改写会被运行实例内存态整体写回（PLAN-043 复审 F-R1 实证）；根修 =
+  单实例防御 + storage 合并写（移交候选，非本 spec 契约）。
+- 验证：desktop_config 作用域 19/19（槽往返/单值播种/boot 取槽/播种
+  不碰邻槽 + `save_merges_external_field_changes` 合并回归带新字段）；
+  实机深浅切换跟随（MCP acceptance，config 实录）。钦定值：深=
+  `D:/Down/stella-os/wallpapers/purple.png`、浅=`.../songyu.png`。
+
 ## 验证
 
 - 宿主单测（auto-lang，`cargo t <filter>`，Category A 允许——本 spec 由

@@ -14,8 +14,9 @@ updated_at: 2026-09-24
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: [P043-1, P043-2, P043-R1, P043-3, P043-4]   # 1/2/R1 已沉积；
-                               # 3（launch 字段机制）/4（分主题壁纸双槽）merge 阶段补沉积
+new_spec_components: [P043-1, P043-2, P043-R1, P043-3, P043-4, P043-R2]   # 1/2/R1 已沉积；
+                               # 3/4（launch 字段机制/分主题壁纸双槽）+R2（收口复审
+                               # 收据）2026-09-27 merge 沉积
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/examples/ui, auto-lang/crates/ui, auto-lang/crates/auto-man, apps/]

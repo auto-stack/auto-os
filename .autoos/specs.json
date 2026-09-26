@@ -1117,6 +1117,30 @@
           "status": "published",
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
+        },
+        {
+          "related": [
+            "PLAN-043"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27",
+          "id": "P043-3",
+          "file": "docs/specs/shell/desktop-app-launch.md",
+          "title": "PLAN-043 桌面 app 启动方式声明（apps.manifest launch 字段）",
+          "content": "per-app \"launch\":\"vm\"|\"native\"（缺席=旧 desktop_exe 探测向后兼容）；manifest_launch_lookup 单名查表（键=注册表 id，036-tetris 对齐先例）；launch_app 门分派：声明 vm 恒 inproc 解释（产物存在也不附着），native/缺席维持 SHM 像素桥原生链。版本裁定：本版纯 VM 集成（10 条目全 vm），RQHost 下版本。原生形态前置债=a2r 两债（store 数组 push 静默失败/bool 条件位降链）+exe 随桌面协议重建。canonical：docs/specs/shell/desktop-app-launch.md。"
+        },
+        {
+          "related": [
+            "PLAN-043"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27",
+          "id": "P043-4",
+          "file": "docs/specs/shell/showdesk-wallpaper.md",
+          "title": "PLAN-043 分主题壁纸双槽（showdesk-wallpaper SD-05）",
+          "content": "DesktopConfig wallpaper_path_dark/light 双槽（记忆面），wallpaper_path 仍为活跃单源；set_wallpaper 写当前主题槽、set_theme 应用目标槽（槽空=维持）；load() 迁移=存量单值播种+boot 按生效主题取槽（内存生效不回写）；set_wallpaper 入口正斜杠规整（__desktop_cmd 吃反斜杠先例）。钦定值深=purple.png/浅=songyu.png。状态面风险注记：desktop-storage.json 仍整文件覆盖写（F-R1 实证）。canonical：docs/specs/shell/showdesk-wallpaper.md SD-05。"
         }
       ]
     },
@@ -1868,6 +1892,18 @@
           "file": "docs/plans/043-desktop-app-vm-check.md",
           "title": "PLAN-043 Part 1 + Phase 2 review — pass（lang plan-043-dev 双提交）",
           "content": "复审门三件套：①验收对账——独立形态 scan/thumb/full curl 级 + 实机端到端（网格/查看器/收藏跨会话/目录跟随/导航全链）全过，桌面形态终验列为合并后剩余项；②债扫描——分批渲染闸为 documented 性能边界（lang 异步图片加载记后续债），str[i] 字符码/text 表达式两坑已修并注记；③健康——fmt/警告零新增、无调试印。合并发现：master PLAN-042 T-08 同 bug 收敛修复（取并集 bool/null），冲突两处消解干净，合并树 photo_service 10/10 + p080 5/5 + check 零错。merge receipt：auto-lang master 5af53ff3f（ff 合并 plan-043-dev 5778b1b55），worktree/分支/组目录零残留（wt-guard 扫 360 reparse point 先清）。遗留：桌面形态 launch 029 终验、其余 app 走查 Part 3+。"
+        },
+        {
+          "related": [
+            "PLAN-043"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27",
+          "id": "P043-R2",
+          "file": null,
+          "title": "PLAN-043 全计划收口复审与合并收据（2026-09-27 pass→merge）",
+          "content": "review pass @ os ec4485f（reviewed_commit 1ae80c6）：代码面六件 master 实证（launch 查表门/围栏空/iced 补丁/back_needs_session #[api]/018 HTTP 配方/壁纸双槽）+数据面对拍（manifest 10×launch:vm、config 浅槽、mapping 键、025 回滚、klondike/tetris/auto-term 盘上清、stash 保全）；哈希漂移勘正 5ff4646fc→d50c61ff8、8cb2a4db1→3e3e1e297。F-R1 状态回归（09-26 并行窗口 storage 整写回空+深槽冲回默认）已离线修复（icons 29 重写+深槽 purple.png，备份 backup-p043-review）。F-R2 知识面=本次 merge 补沉积 P043-3/4。合并收据见归档 plan 复审记录 PLAN-043:r1。归档：docs/plans/archive/043-desktop-app-vm-check.md。"
         }
       ]
     }
