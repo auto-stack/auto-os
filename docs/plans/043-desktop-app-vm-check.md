@@ -1,11 +1,12 @@
 ---
 plan_id: PLAN-043
-status: execution_done          # drafting → executing → execution_done → reviewed → archived
+status: reviewed               # drafting → executing → execution_done → reviewed → archived
                                # （2026-09-25 会话收口：Part 1+2 merge、桌面终验、
                                #   Phase 3/4、027/018/017/ui-gallery/036/037/
                                #   jade-edit/图标/壁纸/主题/围栏全空等本轮全部
                                #   修复与记录收口；剩余项=下方遗留清单+待澄清，
                                #   移交下个会话的新计划跟踪——见"移交下会话清单"）
+                               # （2026-09-27 全计划收口复审 pass——见复审记录末条）
 feature_name: desktop-app-vm-check
 author: []
 created_at: 2026-09-23
@@ -13,7 +14,8 @@ updated_at: 2026-09-24
 
 # /auto-plan:review 结束时填写：
 supersedes_spec_components: []
-new_spec_components: [P043-1, P043-2, P043-R1]   # .autoos/specs.json 已沉积
+new_spec_components: [P043-1, P043-2, P043-R1, P043-3, P043-4]   # 1/2/R1 已沉积；
+                               # 3（launch 字段机制）/4（分主题壁纸双槽）merge 阶段补沉积
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/examples/ui, auto-lang/crates/ui, auto-lang/crates/auto-man, apps/]
@@ -517,6 +519,53 @@ Phase 范围。
   已删；组目录 `.wt/lang-043` 已清（auto-down 兄弟检出同步移除）。
 - spec 沉积：`.autoos/specs.json` +3（P043-1 photo_service 能力臂 /
   P043-2 to_value 幂等臂 / P043-R1 本复审）。
+
+**2026-09-27 review（全计划收口复审，实现会话内独立 artifact 重构）— pass**：
+- **基线**：plan @ os main `1ae80c6`（HEAD）；依赖=auto-lang master——
+  5af53ff3f / 4dc4d581a / 70bcd5246 / 86b56884b / 1d597e3f4 merge-base
+  祖先实证 OK；**哈希漂移勘正**：plan 引用的 5ff4646fc/8cb2a4db1 为
+  rebase 前哈希，内容以 `d50c61ff8`（Phase 3/4）/`3e3e1e297`（反斜杠
+  修正）落 master（git log -S 实证）。specs 输入=.autoos/specs.json
+  P043-1/2/R1（内容与计划一致）。lang 主检出 clean；os tracked 树 clean。
+  worktree 已清（无 os-043 组），按 commit 祖先+记录史验证落点。
+- **局限声明**：复审在实现会话内进行——判定由盘上代码/数据/截图
+  artifact 重构，不依赖执行摘要。
+- **代码面六件 master 实证**：launch 查表门（session.rs:3241 +
+  app_registry.rs:645 manifest_launch_lookup）；VM_LAUNCH_FENCE=[]（renderer.rs:13946）；
+  patches/iced_widget + [patch.crates-io] 挂载（Cargo.toml:105）；
+  back_needs_session `#[api]` 谓词（back_provision.rs:29-32）；018 三
+  文件 HTTP 配方（lang examples/ui/018 src/front 全中）；desktop_config
+  wallpaper 双槽 + apply_field + 迁移（desktop_config.rs:64/168）。
+- **数据/状态面对拍**：apps.manifest 10/10 `launch:"vm"` + tetris id
+  036-tetris 对齐 ✓；config.at 浅槽 songyu.png + dark_theme=true ✓；
+  README jade-edit 行 ✓；icons mapping kanban 键在/auto-kanban 死键无 ✓；
+  025 sys_store `use back.api` 回滚完整（Http.get_json 零命中）✓；
+  klondike 无 ondblclick / tetris 无 aria-label / auto-term rust-workspace
+  无 ui-gpui ✓；stash@{0} ui-gallery WIP 保全标签在案 ✓；positions
+  遗产键零残留 ✓。
+- **运行时证据复用理由**：同日同内容提交（SHA 绑定）的实机验收记录
+  （VM-only 桌面终态/双游戏/壁纸深浅跟随/图标列主序，截图
+  tmp/autoui-screenshot-1790{3227582516→330037788}.png 族在盘）+
+  后续 PLAN-044 全量 5495 套件对拍覆盖同内容面；桌面当前未运行，
+  不做重复实机驱动（避免扰动用户环境）。
+- **发现 F-R1（状态回归，非代码缺陷）——已修复**：09-26 08:22→23:17
+  间（并行会话窗口）desktop-storage.json 被某运行实例整体写回近空态
+  （shell.desktop.icons 29 白名单 + wp 桶全失，仅剩 vm.* 两键）且
+  config.at 深槽被冲回 #101014——即本计划在案的 load-once+整文件覆盖
+  × 多实例症状族复发（08:22 截图仍 29 健生态、23:17 截图已自愈播种
+  11 默认图标 + 纯色壁纸，实证窗口）。代码防线上游均已在位（config
+  字段合并=PLAN-044 已 merge；storage 键级合并写与单实例防御=移交
+  清单 9/10 候选）。处置：桌面离线窗口备份后修复——icons 29 白名单
+  重写（序=08:22/17:53 截图证实老序 + jade-edit 换位 + ui-gallery/
+  widgets-gallery/kanban 补入尾部）、config 深槽/活跃=purple.png；
+  复读校验过。备份：`~/.config/autoos/backup-p043-review/`。
+- **发现 F-R2（知识面，转 merge 处置）**：09-25/26 新增持久决策
+  （per-app launch 字段机制、分主题壁纸双槽契约）未入 specs.json
+  （现存三条为 09-24 面）——merge 阶段补沉积 designs 两条
+  （P043-3/P043-4，frontmatter 已增补）；iced 补丁政策以
+  patches/iced_widget/README.md 为仓内持久载体，引链即可。
+- **结论：pass**（全部代码/行为判据过；F-R1 状态面已修复、F-R2 非
+  code 阻塞转 merge 知识沉积）。next=merge。
 
 ## 待澄清事项
 
