@@ -6,6 +6,7 @@
       "kind": "repo",
       "ports": [17100, 17101],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-07"
     },
     {
@@ -14,6 +15,7 @@
       "kind": "repo",
       "ports": [17200, 17201],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-11",
       "daemon": {
         "port": 17201,
@@ -27,6 +29,7 @@
       "kind": "repo",
       "ports": [17300, 17301],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-11",
       "daemon": {
         "port": 17301,
@@ -40,6 +43,7 @@
       "kind": "repo",
       "ports": [17400, 17401],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-12"
     },
     {
@@ -48,6 +52,7 @@
       "kind": "local",
       "ports": [17600, 17601],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-14"
     },
     {
@@ -56,6 +61,7 @@
       "kind": "local",
       "ports": [17500, 17501],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-14"
     },
     {
@@ -64,6 +70,7 @@
       "kind": "local",
       "ports": [4038],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-21"
     },
     {
@@ -72,6 +79,7 @@
       "kind": "local",
       "ports": [4028],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-21"
     },
     {
@@ -80,6 +88,7 @@
       "kind": "local",
       "ports": [17800],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-23"
     },
     {
@@ -88,6 +97,7 @@
       "kind": "repo",
       "ports": [4181],
       "status": "active",
+      "launch": "vm",
       "added": "2026-09-25"
     }
   ]
