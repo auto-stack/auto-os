@@ -584,8 +584,10 @@ Phase 范围。
   本条为准）。
 - **archived**：git mv 本文件 → `docs/plans/archive/043-desktop-app-vm-check.md`
   + status archived（同提交）。
-- **cleaned**：wt-guard 复扫 clean → worktree `.wt/os-043/auto-os`
-  remove + 分支 plan-043-dev 删除（cleaned 补记见归档后提交）。
+- **cleaned**（2026-09-27 补记）：移除前 wt-guard 复扫 clean →
+  `git worktree remove D:/autostack/.wt/os-043/auto-os` 零残留 →
+  分支 plan-043-dev 删除（was 8f2d5a7=landed tip）→ 组目录
+  `.wt/os-043` 摘除；worktree list 只剩主检出。五 checkpoint 全绿。
 
 ## 待澄清事项
 
