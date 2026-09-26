@@ -56,7 +56,7 @@
       "added": "2026-09-14"
     },
     {
-      "id": "tetris",
+      "id": "036-tetris",
       "repo": "apps/036-tetris",
       "kind": "local",
       "ports": [17500, 17501],
