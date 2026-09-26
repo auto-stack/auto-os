@@ -261,6 +261,13 @@ Hyper-V 端口保留段轮转覆盖硬编码测试端口（干净树同败，环
   合成器，**活的 cmd 会话渲染在桌面内**（版本横幅+提示符+分屏工具栏，
   截图在案）。**围栏全空**（VM_LAUNCH_FENCE=[]：017 iced 补丁 +
   auto-term 协议对齐双双根治；若再现旧崩形按需恢复围栏）。
+- **per-app 主启动方式声明（2026-09-26 用户需求落地，lang 1d597e3f4）**：
+  apps.manifest 条目增 `launch` 字段（"vm"|"native"；缺席=既有 exe 存在
+  即原生的向后兼容）——manifest_launch_lookup 单名查表（daemon lookup
+  同款独立读取），launch_app 门按声明分派：声明 vm 的 app 恒 inproc
+  解释（编译产物存在也不走原生附着）。本版 10 条目全声明 vm；tetris
+  条目 id 顺修 036-tetris（manifest id 对齐注册表 id）。实测：tetris/
+  klondike inproc VM 解释渲染可玩（.at 游戏 UI 桌面内完整）。
 - **boot 直挂计算器退役 + 围栏全空（lang 提交链 70bcd5246→86b56884b）**：
   ui_desktop 入口的 011 boot 直挂组件装配拆除（用户报告"每次启动都开
   计算器"——无 autostart 机制，是入口硬编码直挂）+ run_dynamic_iced_multi
