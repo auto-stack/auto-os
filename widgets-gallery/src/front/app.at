@@ -176,7 +176,11 @@ widget App {
             row (style: "flex-1 overflow-hidden") {
                 // Desktop sidebar (hidden on mobile)
                 aside (style: "hidden md:flex w-64 lg:w-72 border-r bg-background flex-col shrink-0") {
-                    sidebar_provider (class: "w-full min-h-0 flex-1 flex-col") {
+                    // PLAN-045 T-06: memo opt-in——sidebar 子树组件级缓存
+                    // （路由切换仅 active 翻转组重求值；机制见
+                    // docs/specs/shell/vm-render-memo.md）。缺省 false 形态
+                    // 逐字节保留，去掉本 prop 即回原始路径。
+                    sidebar_provider (class: "w-full min-h-0 flex-1 flex-col", memo: true) {
                         // 2026-09-05: sidebar_content(内置 overflow-auto 原生
                         // 滚动条) → scroll(AutoUI 组件,Vue=shadcn ScrollArea
                         // 主题化滚动条,VM=Scrollable)——用户裁定。
@@ -689,7 +693,7 @@ widget App {
                 // 拿不到有界高度 → SidebarContent(overflow-auto) 永不触发,
                 // 内容被 overflow-hidden 裁剪(P614 用户实录:主面板无滚动条)。
                 main (style: "flex-1 overflow-hidden flex flex-col") {
-                    sidebar_provider (class: "w-full min-h-0 flex-1 flex-col") {
+                    sidebar_provider (class: "w-full min-h-0 flex-1 flex-col", memo: true) {
                         // ash-scroll-fade:平时隐藏滚动条,hover 面板时以
                         // primary 半透明浮现(PLAN-614 T-10,scaffold 变体)
                         sidebar_content (style: "h-full ash-scroll-fade") {

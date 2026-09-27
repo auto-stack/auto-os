@@ -1,0 +1,115 @@
+{
+ "protocol": "同一 memo 宿主构建（os-045 lang worktree debug ui_desktop），语料 memo prop 翻转 A/B；block_ms = 宿主 [VM-VIEW] widget=App build_ms（VM 整树重解释时延，0927 口径）",
+ "A_memo_on_first_visit": [
+  {
+   "page": "Row",
+   "click_to_build": 25441,
+   "block_ms": 25249
+  },
+  {
+   "page": "Column",
+   "click_to_build": 26023,
+   "block_ms": 25827
+  },
+  {
+   "page": "Center",
+   "click_to_build": 17931,
+   "block_ms": 17771
+  },
+  {
+   "page": "Flex",
+   "click_to_build": 22331,
+   "block_ms": 22147
+  },
+  {
+   "page": "Alignment",
+   "click_to_build": 8624,
+   "block_ms": 8465
+  },
+  {
+   "page": "Absolute",
+   "click_to_build": 13073,
+   "block_ms": 12913
+  },
+  {
+   "page": "Home",
+   "click_to_build": 180,
+   "block_ms": 2
+  }
+ ],
+ "A3_memo_on_revisit": [
+  {
+   "page": "Row",
+   "click_to_build": 200,
+   "block_ms": 2
+  },
+  {
+   "page": "Column",
+   "click_to_build": 169,
+   "block_ms": 2
+  },
+  {
+   "page": "Center",
+   "click_to_build": 158,
+   "block_ms": 2
+  },
+  {
+   "page": "Flex",
+   "click_to_build": 170,
+   "block_ms": 2
+  },
+  {
+   "page": "Alignment",
+   "click_to_build": 196,
+   "block_ms": 2
+  },
+  {
+   "page": "Absolute",
+   "click_to_build": 159,
+   "block_ms": 2
+  },
+  {
+   "page": "Home",
+   "click_to_build": 167,
+   "block_ms": 2
+  }
+ ],
+ "B_memo_off": [
+  {
+   "page": "Row",
+   "click_to_build": 26548,
+   "block_ms": 26393
+  },
+  {
+   "page": "Column",
+   "click_to_build": 25065,
+   "block_ms": 26442
+  },
+  {
+   "page": "Center",
+   "click_to_build": 24403,
+   "block_ms": 25876
+  },
+  {
+   "page": "Flex",
+   "click_to_build": 15459,
+   "block_ms": 17134
+  },
+  {
+   "page": "Alignment",
+   "click_to_build": 21547,
+   "block_ms": 23063
+  },
+  {
+   "page": "Absolute",
+   "click_to_build": 20583,
+   "block_ms": 21983
+  },
+  {
+   "page": "Home",
+   "click_to_build": 20963,
+   "block_ms": 22462
+  }
+ ],
+ "conclusion": "B 全程 8.9~26.4s；A2 首访=FILL 全价（同 B 量级）；A3 回访全列 block_ms=2（AC-05 ≤2s 达标，较基线降三个数量级）；MEMO-DIAG 实机：侧栏 nav 块每帧 6 HIT+1 MISS（仅 active 翻转组重求值），页门回访全 HIT slow"
+}
