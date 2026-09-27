@@ -330,6 +330,17 @@
           "status": "published",
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
+        },
+        {
+          "id": "P045-1",
+          "title": "PLAN-045 变更摘要 — VM 渲染组件级 memo 第一批（菜单族+sidebar nav 块+outlet 页）",
+          "content": "VM 轨组件实例级 memo 交付（8/8 任务+T-05b 扩展·三仓）：①机制单源 auto-lang ui/memo_deps.rs+builder memo 门（值指纹慢路径/全局 seq 快速路径[桥写六口补 bump，ensure_child_state 值变化才计]/骨架键 (ctx,site,skeleton_fp,probe_on)/降级宁缺勿错/LRU 256/桥+计数器）；②消费者=菜单族四件（menubar 双形态/toolbar/dropdown 族，原始体 *_raw 逐字节保留）+sidebar nav 块（provider memo:true 武装，派生值键 per-button active+组开态——实机每帧 7 组门 6 HIT+1 MISS）+outlet 页产物（T-05b：拆账实证导航阻塞 99.9% 在页渲染[0927 侧栏主导归因推翻]，AUTO_OUTLET_MEMO=1 环境门+Init 身份门+簿记重放+组件模板感知扫描）；③语料 opt-in：widgets-gallery sidebar_provider、jade-edit menubar（各一处 prop）。实测：切页 memo OFF 8.9~26.4s → ON 回访 block_ms=2（首访 FILL 全价）；jade-edit 勾选链 memo ON/OFF 逐项一致。",
+          "related": [
+            "PLAN-045"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27"
         }
       ]
     },
@@ -764,6 +775,18 @@
           "file": "docs/plans/043-desktop-app-vm-check.md",
           "title": "PLAN-043 json.to_value 幂等臂与 get_json 返回协议",
           "content": "PLAN-080 F-2③ 后 UI 路径裸 Http.get_json 编译期自带 to_value（返回解析产物非 body 字符串）；旧配方 json.to_value(Http.get_json(..)) 双重解析曾致 NanoValue 调试串、数据静默全空（020/029/030 全族）。PLAN-042 T-08 修 object/list 直通，PLAN-043 Phase 2 扩 bool/null；p080 家族幂等回归钉。文档配方：app 侧单写 Http.get_json(url) 即可，显式外包等价。"
+        },
+        {
+          "id": "P045-1",
+          "title": "VM 渲染组件级 memo 契约 — 架构注记",
+          "content": "opt-in memo: true（缺省/false 走 *_raw 原始体逐字节一致）；正确性下限=memo 错误只允许变慢绝不陈旧。正确性论证：转换器确定式 f(AST 子树[桥生命周期不可变，hot-reload 新建桥缓存弃置], prop 表达式解析值[慢路径同通道重解析值指纹——不依赖写点归因], 隐藏读面[nav 派生值/episode 全局], episode 态[theme_epoch+menubar/popover 开态+action_config 身份])。键=(ctx_state_obj, site, 骨架指纹[纯 AST 漫步], probe_on)；宿主 VmBridge（builder 每帧借用临时）；LRU 256/桥+hits/misses/degraded 计数器。快速路径=seq 未动∧episode 同零重解析；慢路径=读槽重解析值指纹比对（堆引用展开[Obj/ListData]后哈希，不可展开→条目降级，预算 4096）。降级面：Call/Block/FStr/Lambda/Closure/ForLoop/Conditional/Component[无 registry 时]/插值/StyleBinding/bindings 非空/computed 非空。probe_on 进键+命中重放（acceptance 事件索引保持）。outlet 页门：Init 身份门（变化帧弃缓存保派发语义）+簿记重放（mounted/path sink/callback routes/state prep）。",
+          "related": [
+            "PLAN-045"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27"
         }
       ]
     },
@@ -1141,6 +1164,18 @@
           "file": "docs/specs/shell/showdesk-wallpaper.md",
           "title": "PLAN-043 分主题壁纸双槽（showdesk-wallpaper SD-05）",
           "content": "DesktopConfig wallpaper_path_dark/light 双槽（记忆面），wallpaper_path 仍为活跃单源；set_wallpaper 写当前主题槽、set_theme 应用目标槽（槽空=维持）；load() 迁移=存量单值播种+boot 按生效主题取槽（内存生效不回写）；set_wallpaper 入口正斜杠规整（__desktop_cmd 吃反斜杠先例）。钦定值深=purple.png/浅=songyu.png。状态面风险注记：desktop-storage.json 仍整文件覆盖写（F-R1 实证）。canonical：docs/specs/shell/showdesk-wallpaper.md SD-05。"
+        },
+        {
+          "id": "P045-1",
+          "title": "SD-01 — shell/vm-render-memo.md 新增（组件级 memo 机制 canonical 档）",
+          "content": "SD-01=vm-render-memo.md 新建：opt-in 开关与非 memo 逐字节保留（*_raw 形态）/缓存键与命中条件（快速 seq+episode、慢路径读槽值指纹；probe_on 进键）/正确性论证与降级面（宁缺勿错，nav 块派生值键=active 复刻判定序+组开态）/缓存宿主与容量（VmBridge+LRU 256）/边界与非目标（contextmenu 与页级语料 prop 留后批、Vue 轨不适用、interpreter 读集拦截不做）。T-05b 扩展登记：outlet 页产物 memo（AUTO_OUTLET_MEMO=1 环境门——裸 outlet 节点无 props 载体，语料级 prop 留档 B 显式语法；Init 身份门+簿记重放）。无 supersedes；空 goals 影响成立=框架渲染层横切机制不挂目标。",
+          "related": [
+            "PLAN-045"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27"
         }
       ]
     },
@@ -1488,6 +1523,17 @@
           "status": "published",
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
+        },
+        {
+          "id": "P045-1",
+          "title": "PLAN-045 测试语料 — memo 单测族 + 全量对拍 + 实靶 A/B",
+          "content": "单测（cargo t -p auto-lang --features ui-iced）：memo_deps 9（指纹确定性/堆展开/骨架键/扫描降级族/LRU 逐出/episode 翻面）+plan045_memo_tests 7（menubar 命中失效链/off 惰性/动态降级/sidebar nav 组派生键/outlet 页门快慢路径/AC-06 probe 重放在册）。全量门：ui-iced lib ~5.4k 测三轮对拍 detached 基线 c0a52de7b（263/269 vs 283）——差集逐条归因环境/并行 flaky 家族（photo 基线同红、bp/cb/ffi_dual 单跑绿、MENUBAR_OPEN 进程全局并发翻转），计划代码面零新增回归。实靶（debug 同构建，docs/plans/evidence/p045/ 数据在档）：切页 A/B=OFF 8.9~26.4s/ON 首访 FILL/回访 block_ms=2（AC-05）；jade-edit 菜单展开+勾选链 ON/OFF 逐项一致（AC-02）；MEMO-DIAG 实机 nav 块 6 HIT+1 MISS、页门回访全 HIT slow。",
+          "related": [
+            "PLAN-045"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27"
         }
       ]
     },
@@ -1904,6 +1950,17 @@
           "file": null,
           "title": "PLAN-043 全计划收口复审与合并收据（2026-09-27 pass→merge）",
           "content": "review pass @ os ec4485f（reviewed_commit 1ae80c6）：代码面六件 master 实证（launch 查表门/围栏空/iced 补丁/back_needs_session #[api]/018 HTTP 配方/壁纸双槽）+数据面对拍（manifest 10×launch:vm、config 浅槽、mapping 键、025 回滚、klondike/tetris/auto-term 盘上清、stash 保全）；哈希漂移勘正 5ff4646fc→d50c61ff8、8cb2a4db1→3e3e1e297。F-R1 状态回归（09-26 并行窗口 storage 整写回空+深槽冲回默认）已离线修复（icons 29 重写+深槽 purple.png，备份 backup-p043-review）。F-R2 知识面=本次 merge 补沉积 P043-3/4。合并收据见归档 plan 复审记录 PLAN-043:r1。归档：docs/plans/archive/043-desktop-app-vm-check.md。"
+        },
+        {
+          "id": "P045-r1",
+          "title": "PLAN-045 vm-render-memo 复审与合并收据",
+          "content": "R pass（2026-09-27，plan_revision 1，实现会话内复审——verdict 由工件独立复跑重构）：AC-01..06 全 pass（AC-01 口径=基线相对零增量三轮对拍归因；AC-06 原验证面缺失 F-R1 已修=probe 重放单测 813b91a1b）。T-05b 扩展裁定复核通过（拆账实证驱动+授权依据在案+偏离点 Q-04 登记：env 载体与嵌套 Init 抑制语义）。三仓落地（ff-only 零 merge commit）：lang master[rebase 自 c0a52de7b 基，range-diff 等价=安全重写证明]/jade-edit main[rebase 自 98dd55e]/os main[rebase 自 046d09f]；台账 P045 五条（本提交）随 plan-045-dev ff 落 main。归档 docs/plans/archive/045-vm-render-memo.md delivered。",
+          "related": [
+            "PLAN-045"
+          ],
+          "status": "published",
+          "created": "2026-09-27",
+          "last_modified": "2026-09-27"
         }
       ]
     }
