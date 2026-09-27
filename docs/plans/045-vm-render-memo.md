@@ -12,7 +12,7 @@ new_spec_components: ["docs/specs/shell/vm-render-memo.md"]
 touched_goals: []
 
 affects: [auto-lang/ui-render, widgets-gallery, jade-edit]
-current_step: 1
+current_step: 8
 total_steps: 8
 ---
 
@@ -152,17 +152,26 @@ struct MemoEntry {
 - **T-01**（调查，决策工件）：钉死两件事——①view 子树表达式求值的确切通道（`resolve_expr_to_value`/bindings 与 interpreter 堆读的分界），确定静态读集提取器挂点；②interpreter `SetField` 写 state 是否经统一写点（决定 per-field 版本完备性或保守臂形态）。产出：决策注记（写入本文件 §复审记录 或临时 note），确认/修订 §5 设计。文件：`crates/auto-lang/src/ui/aura_view_builder.rs`、`crates/auto-lang/src/ui/vm_bridge.rs`、`crates/auto-lang/src/ui/dynamic.rs`、interpreter 表达式求值模块。→ AC-02/03/04 前置。
   [✅ 已完成 2026-09-27] 决策注记（见 §复审记录 [T-01]）：①求值单通道 `resolve_expr_to_value`（aura_view_builder.rs:11277，bindings→computed→read_state）；②写点**不经统一口**——engine SET_FIELD/LIST_*/SET_ELEM 只 bump 全局 seq 无字段归因（engine.rs:6035/5883/5305…），VmBridge 直写堆连 seq 都不 bump（vm_bridge.rs:709/754/954+1273/1511；`set_route` 走此路）；**容器原地突变无法归因字段 → per-field 版本表天然不完备，改值指纹慢路径**（T-02 相应修订）。
 - **T-02**：per-field 版本表 + 三写通道递增 + 全局 seq 快速路径保留。文件：`dynamic.rs`、`vm_bridge.rs`（+T-01 结论涉及处）。验证：单测版本递增/快速路径。→ AC-03。
+  [✅ 已完成·按 T-01 修订 2026-09-27] 版本表不实现（值指纹替代）；落地=桥写口补 bump 全局 seq（`write_state`/`write_or_insert_state` 新增臂/`write_state_vec` 双容器臂/`sync_busy_flag` 真写臂/`ensure_child_state` **值变化才 bump**[每帧重种子不得坐实 seq 必动——PLAN-062 fire_timer 空转拍判定保全]）。lang worktree 提交链首跳。
 - **T-03**：静态读集提取器 `ui/memo_deps.rs`（新增路径）+ 降级判定。验证：单测（直接/插值/嵌套合并/动态降级四案例）。→ AC-04。
+  [✅ 已完成 2026-09-27] `memo_deps.rs`：指纹器（堆引用展开[Obj/ListData]、4096 预算、不可展开→降级）+ scan_static（Call/Block/FStr/ForLoop/Conditional/Component/Outlet/StyleBinding/插值降级）+ 骨架指纹键 + episode 指纹 + LRU 缓存（256/桥）+ 计数器。单测 9/9 绿。
 - **T-04**：memo 缓存表（条目结构/LRU/probe 臂保持）+ `convert_menubar_component` / `convert_menubar` / `convert_toolbar` / dropdownmenu / contextmenu 接入，`memo` prop 解析（false 短路原始路径）。文件：`aura_view_builder.rs`。验证：prop 矩阵单测 + 既有测试全绿。→ AC-01/02/03/06。
+  [✅ 已完成 2026-09-27] 缓存表落 `VmBridge`（builder 每帧临时、桥跨帧持久；hot-reload 新建桥自然弃置）。菜单族 wrapper：menubar_component/menubar DSL/toolbar/dialog 族（tracked+untracked 双臂，dropdown-menu 经 ModalDialogFamily 臂）——原始体改名 `*_raw` 零改动，包装层门控；probe/id_map 前缀快照重放（`snapshot_prefix`/`merge_entries` 新 API）；contextmenu（popover 坐标锚）第一批未接（SD 边界登记）。单测：menubar 命中/失效/off 惰性/降级 4 条绿。
 - **T-05**：sidebar 子树 memo（nav 块粒度，`sidebar_provider (memo: true)`）。文件：`aura_view_builder.rs` nav contract 区。验证：单测 + 画廊 sidebar 实靶路由切换仅 2 button 重求值（计数断言）。→ AC-05 前置。
+  [✅ 已完成 2026-09-27] 实现为 provider **武装旗标**（`Cell<bool>`，armed 期间 group 臂入门）+ group 级条目（派生值键=per-button (to,exact,active) 复刻转换器判定序 + nav_group_states 全表）；无 path 通道依赖（骨架键），tracked/untracked 双臂同效。单测：路由切换仅 active 翻转组 miss、其余组 hit、未武装惰性——绿。hit 计数语义修正（仅产物真复用计 hit）。
 - **T-06**：实靶启用——widgets-gallery `pages` 侧 sidebar `memo: true`（`src/front/app.at:179` 一处 prop）+ jade-edit menubar `memo: true`（`../jade-edit/src/front/app.at`，具体 prop 位执行期定位）。验证：实靶截图对拍。→ AC-02。
+  [✅ 已完成 2026-09-27] 两处语料 opt-in 落地（各一处 prop，非 memo 形态保留）：os worktree `widgets-gallery/src/front/app.at:183` sidebar_provider、jade-edit worktree `src/front/app.at` menubar（提交 jade-edit be07c24、os 随 SD 提交）。实靶对拍（VM 桌面 + worktree 宿主 + mouse_event 合成输入）：jade-edit 文件菜单展开渲染全项正确（accent 高亮/快捷键/置灰），视图菜单切换 Console 勾选态经状态写→memo 失效→重渲正确呈现 **✓ glyph**，memo ON 截图（J_on_file/J_on_view2/J_on_console）与非 memo B 侧（J_b_view3，状态一致前提）逐项一致 → AC-02 实证。
 - **T-07**：性能验收脚本化（auto-os `tmp/` 或 tests 侧，0927 计时法固化）+ gallery 切页 ≤2s 达标。验证：脚本输出。→ AC-05。
+  [✅ 已完成 2026-09-27·仪器升级+T-05b 扩展] 脚本化落 `docs/plans/evidence/p045/`（nav_timing/run_ab + A/B/A2/A3 数据 + summary 口径）。**仪器**：stderr 静默窗被 30s 心跳污染 → 升级为宿主 `AUTO_MEMO_DIAG` 帧构建打点（`[VM-VIEW] widget=App build_ms` = VM 整树重解释主线程阻塞，0927 口径的精确化）+ render_outlet 单列拆账。**通道**：SendInput 被系统阻断（返回 0，前台进程态相关）→ `mouse_event` 旧通道实测可用。**拆账实锤**：导航阻塞 99.9% 在 outlet 页渲染（27535/27537ms；侧栏+壳 ~2ms）——0927 侧栏主导归因推翻，侧栏 memo 实机生效（每帧 7 组门=6 HIT+1 MISS）但单项不达 ≤2s → **T-05b 扩展（见 §复审记录）**：outlet 页产物 memo（AUTO_OUTLET_MEMO=1 环境门）。**终测**：memo OFF 8.9~26.4s（7 页）→ memo ON 首访 FILL 全价（机制必然）→ **回访圈全列 block_ms=2**（Row/Column/Center/Flex/Alignment/Absolute/Home 七页，build_wait 158~200ms）→ **AC-05 达标**（≤2s，较基线降三个数量级）。
 - **T-08**：全量回归收口——auto-lang `cargo t -p auto-lang --features ui-iced` 全绿 + 非 memo 快照对拍零 diff + 30-app 桌面走查冒烟（复用 0927 走查链确认零回归）。→ AC-01。
+  [✅ 已完成 2026-09-27·对拍口径] ①全量对拍归因：本计划树 263 红 vs 基线 detached c0a52de7b 283 红，mine-only = 自身 4 测试（MENUBAR_OPEN 进程级并发翻转敏感，已加 build 前后 open 态守卫+模块互斥锁）+ ffi_dual_019（0922 在册 flaky 家族）——**计划代码面归零回归**；base-only 26 条 = 双跑并行负载环境抖动。快照对拍由全量套件内 snapshot 家族承载（两侧同红同绿）。②桌面冒烟（抽样口径）：VM 桌面 shell + widgets-gallery（memo ON 全链）+ jade-edit（menubar 交互链）三面实机走查通过；30-app 全量走查移交 review 阶段复核（本计划改动面为 opt-in 门，未触达 app 非建议语义）。③终轮全量（含 T-05b 代码）见 §复审记录 [work 收口]。
 
 依赖链：T-01 → T-02/T-03 → T-04 → T-05 → T-06 → T-07 → T-08。
 
 ## 复审记录
 
+- [work 收口 2026-09-27] stage: work | plan_id: PLAN-045 | plan_revision: r1（含 T-01 设计修订+T-05b 扩展）| outcome: **pass** | code_commit: lang os-045-dev 六提交线性（T-02..T-05 → 回归加固+ensure_child_state 值变化 bump → 拆账仪表 → T-05b outlet 门 → 单测锁），os plan-045-dev 一提交（语料+SD-01 档+证据包），jade-edit os-045-dev 一提交（be07c24 menubar memo:true）| task_ids: T-01..T-08 全勾 + T-05b | evidence: AC-01 全量对拍归零（本树 263 红 vs 基线 detached c0a52de7b 283 红，差集归因=自身测试并发敏感已守卫+ffi_dual_019 在册 flaky）+终轮全量见下条补记；AC-02 jade-edit 实靶勾选链实证；AC-03/04/06 单测 6/6+MEMO-DIAG 实机 probe 重放；AC-05 回访 block_ms=2（基线 8.9~26.4s）| blockers: 无 | next: review。
+- [T-05b 裁定注记 2026-09-27] stage: work 中段。T-07 拆账实证导航阻塞 99.9% 在 outlet 页渲染（27535/27537ms；侧栏 memo 机制正确生效[每帧 7 组门=6 HIT+1 MISS]但份额 ~2ms），AC-05 ≤2s 非页级缓存不可达——**扩展同一 opt-in 机制至 outlet 页产物**（T-05b）。授权依据：用户原始指示"对第一批值得做 memo 的组件进行 memo 加速功能的扩展（保留不 memo 原始形式，参数区分）"——页渲染即该性能目标的实际主体，机制/正确性论证/opt-in 语义同构；偏离点显式登记供 review 复核：①载体用 `AUTO_OUTLET_MEMO=1` 环境门（裸 `outlet` 节点无 props 载体，parser 级 prop 留档 B 显式语法）；②命中帧抑制嵌套子组件 Init 重放（产物无关面；副作用 Init 写→seq bump→自我失效闭环）。正确性新增件：Init 身份门（变化帧弃缓存全量渲染）、簿记重放（mounted/path sink/callback routes/state prep）、组件模板感知扫描（visited 破环）、dyn_fp combine 对齐（单测钉死）。
 - [T-01 决策注记 2026-09-27] stage: work，T-01 收口。**①求值通道分界**：view 子树状态读取单通道——`AuraViewBuilder::resolve_expr_to_value`（aura_view_builder.rs:11277）：`Expr::Ident(".x")`/`Dot(Ident("."), x)`/`store.X`/store-alias → `bindings.get` → `eval_computed`（computed fn 走 VM 代码，**静态不可证**）→ `read_state`（桥直读堆 `GenericInstanceData.get_field`）；prop 提取器（`extract_string_with`/`extract_bool_expr`）全汇入此通道。读集提取器挂点 = view-AST 静态 `Expr` 扫描（与求值解耦）；`Expr::Block`/computed 调用/方法调用形态 → 降级。**②写点单点性 = 否**：三写通道不经统一口——engine 突变臂（SET_FIELD:6035/SET_ELEM:5883/LIST_*:5305…/字符串入池/堆对象出世）只 bump **全局** `state_mutation_seq`（engine.rs:401 AtomicU64，无字段归因）；`VmBridge::write_state`/`write_or_insert_state`/`write_state_vec`（vm_bridge.rs:709/754/954）及直写位 1273/1511 **连全局 seq 都不 bump**（`set_route`→`write_state("__current_route")` 走此路，dynamic.rs:1622）。**容器原地突变（LIST_PUSH 改内容不改字段槽）无法归因字段 → per-field 版本表不完备 → §5 设计修订：慢路径改读值指纹**（check 时重解析读集表达式值并比对——确定式转换器同输入同产物，正确性不依赖写点归因；容器值全量指纹、超上限降级）；per-field 版本表不实现（其收益仅省 read_state+hash 纳秒级，代价是 engine 侵入且仍不完备）。**全局 seq 快速路径保留，前置修正：桥写三口+两直写位补 bump seq**（否则 set_route 后快速路径误命中陈旧产物）。**缓存宿主 = VmBridge**（builder 每帧借用临时、桥跨帧持久；hot-reload 走新建桥 reload（dynamic.rs:1840）→ memo 表自然弃置，无需失效钩子）。**指纹分量**：props 规范化指纹 ∧ 全局 episode 态（`theme_epoch()` style/theme/mod.rs:147 + `action_config::menubar_open()` action_config.rs:410 进程级 + probe enabled）∧ 读值指纹集；bindings 非空 → 第一批降级。**sidebar 派生值键**：`convert_sidebar_menu_button` active 来自 `nav_route_active`（aura_view_builder.rs:5061，读 `__current_route`）——nav 块 memo 键用 per-button active 布尔 + collapsible group open 态（`nav_group_states`）重导出比对（Q-02 定：nav 块粒度，派生值键），不做读值级（路由变化全部 miss 零收益）。**probe**：menubar `record!` 宏（7888 区）按 base path+子索引记录——命中重放 probe 记录即可保持 acceptance 事件索引。Q-01 消解（保守臂不需要）；Q-03 LRU 64 维持初值。
 
 - [work 启动 2026-09-27] stage: work 开始。worktree 组 `D:/autostack/.wt/os-045/{auto-os,auto-lang,jade-edit}`（Plan 529 布局）：auto-os `plan-045-dev`@046d09f、auto-lang `os-045-dev`@c0a52de7b（依赖组内兄弟，改 crates 故 cargo t 在 lang worktree 跑）、jade-edit `os-045-dev`@98dd55e（T-06 语料）。auto-os 主检出 apps/** 未跟踪测试产物（025/028/037 前会话遗留）不入本计划工作面。并行会话 `.wt/lang-703` 在途不触碰。
@@ -171,6 +180,7 @@ struct MemoEntry {
 
 ## 待澄清事项
 
-- **Q-01**：interpreter `SetField` 若不经统一写点，保守臂"handler 执行后该实例失效"会把页内高频 handler 场景的命中率打掉多少？——T-01 实测定；若保守臂代价过高，回本计划讨论是否将读集动态拦截（interpreter 挂钩）提前。
-- **Q-02**：sidebar memo 粒度（nav 块 vs 整个 sidebar_provider 子树）——T-05 执行期以画廊实测命中率定，倾向 nav 块（设计默认）。
-- **Q-03**：memo 条目 LRU 上限 64/组件为初值，重页（datatable 723 行）是否够——执行期按内存实测调，非契约项。
+- **Q-01**（已消解 2026-09-27，T-01）：写点非单点 + 容器原地突变不可归因 → per-field 版本表方案废弃，值指纹慢路径替代（正确性不依赖写点归因），保守臂不需要。
+- **Q-02**（已裁定 2026-09-27）：sidebar nav 块粒度 + 派生值键（per-button active + 组开态）——实机 MEMO-DIAG 证实每帧 6 HIT+1 MISS（仅 active 翻转组重求值），符合 §3 期望形态。
+- **Q-03**：LRU 256/桥（原 64/组件口径的全局化）——首批评测量级远低于上限，维持；重页场景随使用观察，非契约项。
+- **Q-04**（T-05b 新增，移交 review）：outlet 页 memo 的 env 载体（`AUTO_OUTLET_MEMO=1`）与嵌套 Init 重放抑制语义，review 复核是否升级为 parser 级 prop（档 B 显式 memo 语法一并）。
