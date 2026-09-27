@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-045
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing              # drafting → executing → execution_done → reviewed → archived
 feature_name: VM 渲染组件级 memo 第一批（菜单族 + sidebar）
 author: [zcode-agent]
 created_at: 2026-09-27
@@ -12,7 +12,7 @@ new_spec_components: ["docs/specs/shell/vm-render-memo.md"]
 touched_goals: []
 
 affects: [auto-lang/ui-render, widgets-gallery, jade-edit]
-current_step: 0
+current_step: 1
 total_steps: 8
 ---
 
@@ -150,6 +150,7 @@ struct MemoEntry {
 ## 执行步骤
 
 - **T-01**（调查，决策工件）：钉死两件事——①view 子树表达式求值的确切通道（`resolve_expr_to_value`/bindings 与 interpreter 堆读的分界），确定静态读集提取器挂点；②interpreter `SetField` 写 state 是否经统一写点（决定 per-field 版本完备性或保守臂形态）。产出：决策注记（写入本文件 §复审记录 或临时 note），确认/修订 §5 设计。文件：`crates/auto-lang/src/ui/aura_view_builder.rs`、`crates/auto-lang/src/ui/vm_bridge.rs`、`crates/auto-lang/src/ui/dynamic.rs`、interpreter 表达式求值模块。→ AC-02/03/04 前置。
+  [✅ 已完成 2026-09-27] 决策注记（见 §复审记录 [T-01]）：①求值单通道 `resolve_expr_to_value`（aura_view_builder.rs:11277，bindings→computed→read_state）；②写点**不经统一口**——engine SET_FIELD/LIST_*/SET_ELEM 只 bump 全局 seq 无字段归因（engine.rs:6035/5883/5305…），VmBridge 直写堆连 seq 都不 bump（vm_bridge.rs:709/754/954+1273/1511；`set_route` 走此路）；**容器原地突变无法归因字段 → per-field 版本表天然不完备，改值指纹慢路径**（T-02 相应修订）。
 - **T-02**：per-field 版本表 + 三写通道递增 + 全局 seq 快速路径保留。文件：`dynamic.rs`、`vm_bridge.rs`（+T-01 结论涉及处）。验证：单测版本递增/快速路径。→ AC-03。
 - **T-03**：静态读集提取器 `ui/memo_deps.rs`（新增路径）+ 降级判定。验证：单测（直接/插值/嵌套合并/动态降级四案例）。→ AC-04。
 - **T-04**：memo 缓存表（条目结构/LRU/probe 臂保持）+ `convert_menubar_component` / `convert_menubar` / `convert_toolbar` / dropdownmenu / contextmenu 接入，`memo` prop 解析（false 短路原始路径）。文件：`aura_view_builder.rs`。验证：prop 矩阵单测 + 既有测试全绿。→ AC-01/02/03/06。
@@ -161,6 +162,10 @@ struct MemoEntry {
 依赖链：T-01 → T-02/T-03 → T-04 → T-05 → T-06 → T-07 → T-08。
 
 ## 复审记录
+
+- [T-01 决策注记 2026-09-27] stage: work，T-01 收口。**①求值通道分界**：view 子树状态读取单通道——`AuraViewBuilder::resolve_expr_to_value`（aura_view_builder.rs:11277）：`Expr::Ident(".x")`/`Dot(Ident("."), x)`/`store.X`/store-alias → `bindings.get` → `eval_computed`（computed fn 走 VM 代码，**静态不可证**）→ `read_state`（桥直读堆 `GenericInstanceData.get_field`）；prop 提取器（`extract_string_with`/`extract_bool_expr`）全汇入此通道。读集提取器挂点 = view-AST 静态 `Expr` 扫描（与求值解耦）；`Expr::Block`/computed 调用/方法调用形态 → 降级。**②写点单点性 = 否**：三写通道不经统一口——engine 突变臂（SET_FIELD:6035/SET_ELEM:5883/LIST_*:5305…/字符串入池/堆对象出世）只 bump **全局** `state_mutation_seq`（engine.rs:401 AtomicU64，无字段归因）；`VmBridge::write_state`/`write_or_insert_state`/`write_state_vec`（vm_bridge.rs:709/754/954）及直写位 1273/1511 **连全局 seq 都不 bump**（`set_route`→`write_state("__current_route")` 走此路，dynamic.rs:1622）。**容器原地突变（LIST_PUSH 改内容不改字段槽）无法归因字段 → per-field 版本表不完备 → §5 设计修订：慢路径改读值指纹**（check 时重解析读集表达式值并比对——确定式转换器同输入同产物，正确性不依赖写点归因；容器值全量指纹、超上限降级）；per-field 版本表不实现（其收益仅省 read_state+hash 纳秒级，代价是 engine 侵入且仍不完备）。**全局 seq 快速路径保留，前置修正：桥写三口+两直写位补 bump seq**（否则 set_route 后快速路径误命中陈旧产物）。**缓存宿主 = VmBridge**（builder 每帧借用临时、桥跨帧持久；hot-reload 走新建桥 reload（dynamic.rs:1840）→ memo 表自然弃置，无需失效钩子）。**指纹分量**：props 规范化指纹 ∧ 全局 episode 态（`theme_epoch()` style/theme/mod.rs:147 + `action_config::menubar_open()` action_config.rs:410 进程级 + probe enabled）∧ 读值指纹集；bindings 非空 → 第一批降级。**sidebar 派生值键**：`convert_sidebar_menu_button` active 来自 `nav_route_active`（aura_view_builder.rs:5061，读 `__current_route`）——nav 块 memo 键用 per-button active 布尔 + collapsible group open 态（`nav_group_states`）重导出比对（Q-02 定：nav 块粒度，派生值键），不做读值级（路由变化全部 miss 零收益）。**probe**：menubar `record!` 宏（7888 区）按 base path+子索引记录——命中重放 probe 记录即可保持 acceptance 事件索引。Q-01 消解（保守臂不需要）；Q-03 LRU 64 维持初值。
+
+- [work 启动 2026-09-27] stage: work 开始。worktree 组 `D:/autostack/.wt/os-045/{auto-os,auto-lang,jade-edit}`（Plan 529 布局）：auto-os `plan-045-dev`@046d09f、auto-lang `os-045-dev`@c0a52de7b（依赖组内兄弟，改 crates 故 cargo t 在 lang worktree 跑）、jade-edit `os-045-dev`@98dd55e（T-06 语料）。auto-os 主检出 apps/** 未跟踪测试产物（025/028/037 前会话遗留）不入本计划工作面。并行会话 `.wt/lang-703` 在途不触碰。
 
 - [drafting handoff 2026-09-27] stage: new，PLAN-045 r1。outcome: pass——T 覆盖全部 AC 与 SD-01，路径/命令对勘察过的仓库坐标落地；两个设计不确定点（表达式求值通道分界、interpreter 写点单点性）已收进 T-01 有界调查并给保守臂，不阻塞 work 启动。next: work。
 
