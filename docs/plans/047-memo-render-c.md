@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-047
-status: execution_done        # drafting → executing → execution_done → reviewed → archived
+status: reviewed              # drafting → executing → execution_done → reviewed → archived
 feature_name: VM 渲染 memo 档 C（动态读拦截 + per-path 版本 + computed 信号网）
 author: [zcode-agent]
 created_at: 2026-09-28
@@ -230,6 +230,7 @@ total_steps: 8
 
 - [new 2026-09-28] stage: new，PLAN-047 rev1。outcome: pass（drafting → 待 /auto-plan:work 执行）。next: work。SD-08..11 待 review 终审定稿；T-02 普查产物回填附录。
 - [work 2026-09-28] stage: work | plan_id: PLAN-047 | plan_revision: 1 | **outcome: pass** | code_commit: lang os-047-dev@70595f10c（七提交链 553f79a0e→f202d01c6→a27be452b→27c9061ce→325a2efff→c47888381→70595f10c）+ auto-os plan-047-dev@f11df72（证据包） | task_ids: T-01..T-08 全毕（current_step 8/8） | evidence: docs/plans/evidence/p047/（scoped 门 plan047 24/24+memo 86+plan04 76+vm_bridge 52+engine 20 全绿；满载门对拍 5504/329 vs 基线 5498/311——新红 22 全数单跑绿/污染家族实证，零真回归） | blockers: 无（⚠ 现场碰撞实录见 T-08——706 会话占用 os-047 worktree 目录，交付分支指针无损，处置留观） | **next: review**（execution_done）。
+- [review 2026-09-28] stage: review | plan_id: PLAN-047 | plan_revision: 1 | **outcome: pass** | reviewed_commit: lang os-047-dev@70595f10c + auto-os plan-047-dev@f11df72 | base_commit: lang 9b5a10e51（=046 落地 tip）+ auto-os 6c9c7ba | dependency_revisions: auto-down 3373a5c detached（只读依赖位） | spec_inputs: docs/specs/shell/vm-render-memo.md（canonical，SD-01..07 版本=046 落地） | **独立性声明**：复审与实施同会话——裁定从工件重建（复审 worktree `.wt/os-047/auto-lang-rv`@70595f10c 新鲜复跑 + 代码巡检），不采实施摘要自证。 | acceptance_results: **AC-01 pass**（满载对拍 5504/329 vs 5498/311——新红 22 全数单跑绿/plan492 临时目录污染家族实证[基线同证 29 既有测同根因]+2 漂移单跑双绿；复用 work 跑对拍证据，理由=reviewed 提交与对拍跑完全同代码同条件，证据包在 plan-047-dev@f11df72）；**AC-02 pass**（plan047_version_fast_unrelated_write_zero_reeval——check 帧求解增量==快路径帧口径+fp_slow 零调用，新鲜复跑绿）；**AC-03 pass**（plan047_attribution 5/5——exact 定点性/列表 wildcard 精度面/桥写/hashmap 闭合/C 类全局-only）；**AC-04 pass**（plan047_signal 3/3——inline/block 双通道+级联吸收）；**AC-05 pass**（plan047_convergence——computed-widget memo 化产物逐字节对拍+条目在册+级联保真）；**AC-06 pass**（计数器口径在档+语料 opt-in 在册零改动；交互式计时沿 046 Q-04 留观先例——部署观察项）；**AC-07 pass**（content_change 无陈旧+预算弃整集+盲区降级[extra_dyn 跳 version_fast/computed 源 dyn_deps=None]）。**fresh 复跑**：plan047 24/24+memo 86+vm_bridge 52+plan04 76+engine 20 全绿（rv worktree）。巡检：bump_path/path_versions、dyn_deps、ComputedSignal 面、memo_ctx_ok 改判、record_heap_read 四臂——7 文件 +1910/-81 在位。 | findings: **F-1（非阻塞，merge 义务）**：canonical 档两处被 SD-09/SD-11 supersede 待 merge 改写——L71（SD-03 绑定门 computed 排除句）+ L184（边界 T-01 裁定"引擎拦截不在本机制"）；SD-08..11 落档时同步收敛。**F-2（非阻塞）**：worktree 目录 os-047/{auto-os,auto-lang} 处 706 会话控制（review worktree 另立 auto-lang-rv 规避）；merge 按 046 收据流程处置、wt-guard 照常。 | evidence: docs/plans/evidence/p047/（plan-047-dev@f11df72；gate 双跑日志文件留现场 os-047/auto-os worktree 未入库[.gitignore log 面]） | **next: merge**（reviewed）。
 
 ## 10. 待澄清事项
 
