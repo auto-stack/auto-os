@@ -3,11 +3,13 @@
 > Source of truth for VM 轨组件实例级 memo 缓存契约（PLAN-045 第一批：
 > 菜单族四件 menubar/toolbar/dropdownmenu/contextmenu 族 + sidebar nav 块；
 > PLAN-046 档 B：for key 化 SD-05 + 显式 memo 块 SD-06 + outlet 语料级
-> SD-07）。
+> SD-07；PLAN-047 档 C：动态依赖录制 SD-08 + 写点归因与 per-path 版本
+> SD-09 + computed 信号网 SD-10 + check 三级判定与降级面收敛 SD-11）。
 > 实现单源：auto-lang `crates/auto-lang/src/ui/memo_deps.rs`（缓存/指纹/扫描）
 > + `aura_view_builder.rs`（memo 门引擎与 `*_raw` 包装层）+ `vm_bridge.rs`
-> （缓存宿主与 seq 补 bump）。正确性下限：**memo 错误的表现形式只允许
-> "变慢"，绝不允许"显示陈旧"**。
+> （缓存/录制/信号宿主与 seq 补 bump）+ `vm/dep_track.rs`（录制核心类型单源）
+> + `vm/engine.rs`（写点归因 bump_path/per-path 版本表 + 读臂拦截槽）。
+> 正确性下限：**memo/信号错误的表现形式只允许"变慢"，绝不允许"显示陈旧"**。
 
 ## SD-01 opt-in 开关与非 memo 逐字节保留
 
@@ -67,8 +69,11 @@
   覆盖；episode 态入指纹。故命中 ⇒ 产物必同，无陈旧。
 - 静态降级（不建条目走原始路径）：`Expr::Call`/`Block`/`FStr`/Lambda/
   Closure/借用系等 VM 代码形态；`ForLoop`/`Conditional`/`Component`/`Outlet`
-  子节点；插值文本；`StyleBinding` prop。绑定门：bindings 非空或 widget 声明
-  computed → 上下文整体不 memo（循环变量与 computed 走 VM 代码，静态不可证）。
+  子节点；插值文本；`StyleBinding` prop。绑定门：bindings 非空 → 上下文
+  整体不 memo（循环变量版本静态不可证且不随录制域——v1 保守边界）。
+  **档 C（SD-11）起 widget 声明 computed 不再整体排除**——computed 读面由
+  动态依赖录制闭合（SD-08 三通道 + SD-10 信号级联），产物逐字节对拍承载
+  等价性（PLAN-045 T-01 静态不可证裁定就此清偿）。
 - **档 B 项级（keyed-for）扫描规则**（`scan_for_item_body`）——项值指纹覆盖
   循环变量的一切展开，扫描只找**外部状态读**入槽：
   - 条件臂递归：条件串 `parse_expr_fragment` 解析入槽（解析失败降级
@@ -178,11 +183,84 @@
   一行（app.at `outlet (memo: true)`），env 未设下 `site=6 FILL` 经 prop
   开火（宿主日志在档）。
 
+## SD-08 动态依赖录制（recorder——档 C 引擎面）
+
+- **录制器**：桥宿主 `dep_recorder: RefCell<Option<RecState>>` + 引擎录制槽
+  `AutoVM.dep_recorder_slot: Mutex<Option<Arc<Mutex<RecState>>>>` +
+  `dep_rec_active: AtomicBool` 快速门（先填槽后开旗 Release/先关旗后清槽；
+  未激活读臂一次原子 load 直落——非 memo 零行为零开销红线）。核心类型
+  `DepKey(heap_id, path)/RecState` 单源 `vm/dep_track.rs`（不挂 feature 门，
+  memo_deps 转发导出）。
+- **录制通道三口**：桥读通道（`read_state` 具名字段 / `read_state_as_vec`
+  容器 any / `materialize_obj_ref` 堆展开 any / `vmref_to_vec` 共享列表解
+  引用）；view-builder 求值通道（`resolve_expr_to_value` 经桥读通道落账）；
+  引擎读臂四口（`GET_FIELD` field_name 解码后 / `GET_GENERIC_FIELD`
+  field_names 可证名 / `LIST_GET_INT` + `GET_ELEM` 堆对象臂容器 any）。
+- **guard 语义**：`dep_recording_guard` RAII（finish/drop 双路恢复）；嵌套
+  = 外层并集吸收内层（含引擎影子集收编）+ overflow 同向传播——外层条目
+  覆盖内层 computed/子求值全部依赖。预算 `REC_DEP_BUDGET=256`，超限弃
+  **整集**（半录制集=盲区，绝不半信）。
+- **录制域义务（正确性三补，AC-07）**：静态槽/声明 deps 估值必须在录制域
+  内（未走分支的槽读面必须入集——漏录 = version_fast 漏失效面 = 陈旧）；
+  keyed-for iterable 依赖显式注入（录制域内 read_state + 堆身份 any；
+  computed 源 → dyn_deps=None 退档 A/B）。
+
+## SD-09 写点字段归因与 per-path 版本表
+
+- 版本表宿主 = `AutoVM.path_versions: DashMap<(u64, String), u64>`（键原生
+  元组不依赖 ui 门控类型）。`bump_path(heap_id, Some(field))` = A 类带名写
+  （**同时** bump exact 与 `"*"` 通配）；`bump_path(heap_id, None)` = B 类
+  容器/未知字段写（只 bump 通配）。全局 `state_mutation_seq` 在 bump_path
+  内同步 bump——既有消费者（seq 快路径/fire_timer 空转判定）语义零变化，
+  per-path 表纯增量。
+- **归因分类**（PLAN-047 T-02 普查 14 位点 + 桥 7 口，表在计划附录）：
+  A 类（SET_FIELD/SET_ELEM map 三臂按键名/桥 write_state 系/ensure_child_state
+  值变才 bump/sync_busy_flag 双归因）exact+通配；B 类（LIST_*_INT/
+  shim_list_*/SET_ELEM 列表臂/write_state_vec 容器臂）通配；C 类（字符串池
+  intern/insert_heap_object 出世）纯全局 bump（不动既有内容，version_fast
+  命中安全）。
+- **普查发现顺路闭合**：SET_ELEM ListData 臂与 `shim_hashmap_insert_str`
+  原无任何 seq bump（PLAN-062 遗漏的全局快路径陈旧命中窗口）——补定点
+  归因（B/按键名 A-able）+ 全局补齐。
+
+## SD-10 computed 信号网
+
+- 信号表宿主 = `VmBridge.computed_signals: RefCell<HashMap<(String,String),
+  ComputedSignal{cached, deps 基线对}>>`，键 (widget, prop)，生命周期随桥。
+- **双通道同构**：inline 表达式（resolve 录制）与 block 体隐藏 VM fn
+  （`call_computed_fn` 执行期引擎读臂录制）——bindings-free 保守面才入网
+  （bindings 参与的求值位置相关；keyed-for 项内 computed 沿项级条目承载，
+  v1 边界）。命中 = deps 版本全同 → 值缓存复用；miss = 录制重求值入网；
+  空集/超预算不入网（退每帧重算，同档 A/B）。
+- **级联闭合（pull 式）**：命中时把信号节点 dep 键**吸收进当前录制域**
+  （嵌套 guard 并集）——外层 memo 条目/外层信号覆盖内层信号失效面（内层
+  deps 变 → 内层重算 → 外层条目版本比对失效 → 重渲染）；不建主动订阅图
+  （漏传播只落重算，不陈旧——正确性下限同构）。
+
+## SD-11 memo 门 check 三级判定与降级面收敛
+
+- **三级判定序**（组件族 `memo_gate_begin`/outlet/keyed-for/memo 块四级门
+  同构）：`seq_fast`（全局 seq 未动 ∧ episode 同）→ `version_fast`（条目
+  `dyn_deps` 基线对版本全同 → **零重解析命中**）→ `fp_slow`（既有静态扫描
+  读槽重解析 + 值指纹比对，降级回退）。fp_slow 命中基线前移（`refresh_deps`
+  ——值同证明版本前进无害，后续帧回快路径）。
+- **version_fast 两例外**（落指纹慢路径，行为同档 A/B）：条目 dyn_deps
+  None（录制空集/超预算/iterable computed 源）；extra_dyn 派生面（sidebar
+  nav 路由/组开态——Rust 侧读通道为 VM 录制盲区，由 extra_dyn 指纹承载）。
+- **计数器口径**：`SiteCounts` 增 check-kind 分解（seq_fast/version_fast/
+  fp_slow 全局 + per-site）；`resolve_probe_count`（AC-02 零重解析断言观测
+  面——version_fast 帧 check 阶段零额外重解析，pass-1 key 规划为每帧合法
+  求解）。
+- **降级面收敛**：computed-exclusion 解除（见 SD-03 绑定门改写）——AC-05
+  逐字节对拍承载；bindings 排除保持。
+
 ## 边界与非目标
 
 - memo 范围限同步求值产物；含图片节点/异步产物子树不缓存（保守排除）。
-- interpreter 字节码级动态读集拦截不在本机制（T-01 裁定：值指纹已闭合
-  正确性，版本表不完备[容器原地突变无字段归因]且需 engine 侵入）。
+- ~~interpreter 字节码级动态读集拦截不在本机制~~（PLAN-045 T-01 裁定，
+  **档 C SD-08/SD-09 清偿**：引擎读臂四口拦截 + per-path 版本表字段归因
+  在册；残余盲区面[NativeCall/FFI 内部读]靠 C 类全局兜底 + 盲区嫌疑条目
+  保守降级联合判定，正确性下限不变）。
 - contextmenu（popover 坐标锚形态）留待后续批次（机制通用，键面/粒度
   另议）。
 - keyed-for v1 边界：外层 for 体内不缓存（嵌套绑定上下文）；index 声明
@@ -209,3 +287,13 @@
     A/B 计时留观——测量会话与用户实机使用冲突，合成输入不安全）。
   - 计数器口径：`site_counts[7/8]` per-site 分解（验收与回归都用计数器
     断言，不靠体感）。
+- 档 C（PLAN-047，`docs/plans/evidence/p047/` 在档）：
+  - lang 单测：`ui::memo_deps`（DepKey/RecState 语义 4 条）+
+    `vm_bridge::tests` plan047 族（通道录制 5 + 归因 5[AC-03] + 引擎读臂
+    2 + 门三级判定 4[AC-02] + 信号网 3[AC-04] + 收敛对拍 1[AC-05]）——
+    24/24。
+  - 满载门对拍：本侧 5504 绿/329 红 vs 基线 9b5a10e51 5498/311——新红 22
+    全数单跑绿/plan492 临时目录污染家族实证（基线同证 29 既有测同根因），
+    零真回归。
+  - 交互式桌面 A/B 计时留观（沿 046 Q-04 先例：测量会话与用户实机使用
+    冲突，合成输入不安全）；计数器断言为验收口径。

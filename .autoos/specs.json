@@ -353,6 +353,18 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "P047-1",
+          "title": "PLAN-047 变更摘要 — VM 渲染 memo 档 C（动态读拦截+per-path 版本+computed 信号网）",
+          "content": "VM 渲染 memo 档 C 交付（T-01..T-08·两仓）：①SD-08 动态依赖录制——桥读通道（read_state 具名字段/read_state_as_vec 容器 any/materialize 堆展开 any/vmref_to_vec 共享解引用）+引擎读臂四口（GET_FIELD/GET_GENERIC_FIELD/LIST_GET_INT/GET_ELEM 堆对象臂）三通道录制，核心类型单源 vm/dep_track.rs（不挂 feature 门）；guard RAII 嵌套并集+overflow 传播，预算 256 超限弃整集；未激活一次原子 load 直落=非 memo 零行为零开销红线。②SD-09 写点字段归因——AutoVM.path_versions: DashMap<(u64,String),u64>，bump_path A 类 exact+通配双 bump/B 类通配/C 类纯全局；14 位点+桥 7 口普查分类（决策工件在计划附录）；顺路闭合 SET_ELEM ListData 臂与 hashmap.set native 既有零 bump 盲区（062 遗漏）。③SD-10 computed 信号网——(widget,prop) 信号节点{cached,deps 基线}，inline/block 体双通道同构，bindings-free 保守面；命中 dep 键吸收进当前录制域=嵌套 guard 并集=pull 式级联闭合（漏传播只落重算不陈旧）。④SD-11 check 三级判定 seq_fast→version_fast（零重解析）→fp_slow（基线前移 refresh_deps）；computed-exclusion 解除（降级面收敛，产物逐字节对拍承载）；计数器口径 SiteCounts check-kind 分解+resolve_probe_count。交付面 lang 七提交（dep_track 新模块/engine/native/aura_view_builder/memo_deps/vm_bridge）/auto-os 证据包 docs/plans/evidence/p047/；语料零改动（046 opt-in 续用自动拾取）。",
+          "related": [
+            "PLAN-047"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -811,6 +823,18 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "P047-1",
+          "title": "PLAN-047 架构决策 — 录制器宿主分层与归因分类",
+          "content": "档 C 架构三决定：①录制双宿主——桥 RefCell<Option<RecState>>（guard 嵌套并集语义）+ 引擎 Mutex<Option<Arc<Mutex<RecState>>>>+AtomicBool 快速门（顺序纪律：先填槽后开旗 Release/先关旗后清槽；未激活读臂一次原子 load 直落——非 memo 零开销红线）；核心类型 DepKey/RecState 下沉 vm/dep_track.rs（vm 模块不得依赖 ui 门控类型，memo_deps 转发导出保持引用面）。②归因三分类——A 类带名写（SET_FIELD/SET_ELEM map 臂/桥 write_state 系）exact+通配双 bump（通配保 materialize/容器粗粒度 dep 面不漏）；B 类容器写（LIST_*/shim_list_*/write_state_vec 臂）通配；C 类（字符串池 intern/堆对象出世）纯全局（出世 id 无既有 dep 可指；版本表键原生元组不反向依赖）。③录制域义务——静态槽/声明 deps 估值必须在录制域内（未走分支读面必须入集，漏录=version_fast 漏失效面=陈旧；plan046 两测实证抓出）；extra_dyn 派生面（sidebar nav 路由 Rust 侧读=VM 录制盲区）跳过 version_fast 落指纹慢路径；keyed-for iterable 依赖显式注入（computed 源→dyn_deps=None 退档 A/B）。",
+          "related": [
+            "PLAN-047"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -1212,6 +1236,18 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "P047-1",
+          "title": "PLAN-047 设计 — SD-08..11 规范增量（canonical 档 vm-render-memo.md 全量扩展）",
+          "content": "canonical 档四节落档：SD-08 动态依赖录制（三通道+guard 嵌套并集+预算弃整集+录制域义务三补）；SD-09 写点归因与 per-path 版本表（bump_path A/B/C 分类+全局 seq 语义零变化+普查盲区闭合）；SD-10 computed 信号网（双通道同构+bindings-free 保守面+命中 dep 吸收级联闭合）；SD-11 check 三级判定与降面收敛（version_fast 两例外[None/extra_dyn]+fp_slow 基线前移+计数器口径+computed-exclusion 解除）。同步改写：SD-03 绑定门（computed 不再整体排除——PLAN-045 T-01 静态不可证裁定清偿）+边界节 T-01 裁定行（引擎拦截在册，残余盲区保守联合判定）+实现单源头注（dep_track/engine 入列）。正确性下限沿袭：memo/信号错误只允许变慢绝不陈旧。",
+          "related": [
+            "PLAN-047"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -1577,6 +1613,18 @@
           "content": "单测（cargo t -p auto-lang --features ui-iced）：parser 矩阵 12（key 子句 7/memo 块 4/outlet prop 1）+memo_deps 扩展 8（项级扫描/嵌套扩展正反例/FStr 根段/站点指纹/容量抬升+per-site 计数）+plan046_for_memo_tests 10（fill/快路径/重排全命中+输出序/单项修改 miss/增删 delta/index 保守失效/降级三案产物对拍/嵌套降级/probe 重放）+plan046_memo_block_tests 7（AC-04/05 语义+Call-prop+嵌套 exact 豁免+untracked 共享门+per-site）+plan046_outlet_prop_priority 三态。全量门：评审基线 bd239d785 重跑 5499 绿/305 红 vs 基线 detached 5c558778f 291——新红 20 归因已知家族[自有测试 18 满载全局翻转单跑 38/38+80/80 绿+write_state 单跑绿+bp::registry 在册族]，代码面零新增真回归（AC-01 相对零增量）。实靶（docs/plans/evidence/p046/）：outlet site=6 FILL 经语料 prop[env 未设]、filetree site=7 frame fills=10、侧栏 7HIT/2MISS；回访全命中/charts 块命中交互实录经用户明示接受单测计数器断言替代[2026-09-28 复审会话原话'接受单测']。",
           "related": [
             "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
+        },
+        {
+          "id": "P047-1",
+          "title": "PLAN-047 测试证据 — plan047 24 条+满载对拍归因（docs/plans/evidence/p047/）",
+          "content": "门与证据：①scoped——memo_deps 语义 4（键形态/预算弃整集/absorb 并集+overflow/边界）+桥通道 5（未激活零录制/字段/容器 any/嵌套并集/Drop 恢复）+归因 5（AC-03 exact 定点性 root.count 前进而 root.label 零扰动/列表 push 仅列表 wildcard/桥写 exact/hashmap shim 直调闭合/C 类全局-only）+引擎读臂 2（槽语义/handler 端到端 GET 臂录制）+门三级判定 4（AC-02 version_fast 零重解析[check 帧求解增量==快路径帧口径]/fp_slow 基线刷新/内容真变无陈旧/判定序）+信号网 3（AC-04 inline 命中失效/block 通道隐藏 fn 端到端/级联吸收）+收敛对拍 1（AC-05 computed-widget menubar memo 化逐字节一致+条目在册+级联保真）=24/24；回归 memo 86/plan04 76/vm_bridge 52/engine 20 全绿。②满载门对拍（evidence/p047/gate-output-*.log）：本侧 70595f10c 5504 绿/329 红 vs 基线 9b5a10e51 5498/311——新红 22=20 plan047 新测（满载红全数 plan492 临时目录污染根因，基线同证 29 既有测同报错同根因；单跑 24/24 绿）+2 漂移（plan632-f4/ffi_dual-019 单跑双绿）；反向漂移 4；零真回归。③语料 opt-in 零改动（gallery outlet memo/filetree keyed 在册自动拾取）；交互式 A/B 计时留观沿 046 Q-04 先例（计数器断言为验收口径）。",
+          "related": [
+            "PLAN-047"
           ],
           "file": "docs/specs/shell/vm-render-memo.md",
           "status": "published",
@@ -2016,6 +2064,18 @@
           "content": "R needs_fix→re-review pass（2026-09-28，plan_revision 1，实现会话内复审——verdict 由工件重建[字节级对比/新鲜套件/实靶日志/语料核验]）。首轮 AC-01..06 pass+AC-07 partial[F-R1=实靶计数器补测两次因用户在机中止，焦点守卫零误注入]→用户明示接受单测替代→重复审 pass。AC-01 关键证据=keyless untracked 臂字节级一致[唯一差异=模式行绑定 key_expr 结构性必需]+评审基线全量对拍归因零真回归。两仓落地（ff-only 零 merge commit）：lang master[os-046-dev 九提交线性 7d60d5327..bd239d785，基=master tip 5c558778f 零重写]/os main[plan-046-dev 六提交，rebase 自 a488727 基]；台账 P046 五条（本提交）随 plan-046-dev ff 落 main。归档 docs/plans/archive/046-memo-render-b.md delivered。",
           "related": [
             "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
+        },
+        {
+          "id": "P047-r1",
+          "title": "PLAN-047 vm-render-memo 档 C 复审与合并收据",
+          "content": "R pass（2026-09-28，plan_revision 1，实现会话内复审——独立性声明=裁定从工件重建[rv worktree 新鲜复跑+代码巡检]，不采实施摘要自证）。AC-01..07 全 pass：AC-01 满载对拍归因零真回归（同提交复用）；AC-02..05/07 新鲜复跑绿；AC-06 计数器口径在档+语料零改动（交互计时留观沿 046 Q-04）。findings：F-1=canonical 档两处 supersede（L71/L184）已随本 merge 改写落档；F-2=worktree 目录 os-047/{auto-os,auto-lang} 执行期被并行 Plan 706 会话切占（其分支 plan-706-os-dev/plan-706-dev 并提交）——本计划交付分支指针无损（os-047-dev/plan-047-dev），706 分支上混入本计划一次证据提交 c63ea70（父=bde65b0）未回退，两计划后续合并动线留用户裁定。两仓落地（ff-only 零 merge commit）：lang master[os-047-dev 七提交线性 553f79a0e..70595f10c，rebase 至 594daab77 基，range-diff 7/7 全等，新基 9645b338e]/os main[plan-047-dev，rebase 自 6c9c7ba 基]；台账 P047 五条（本提交）随 plan-047-dev ff 落 main。归档 docs/plans/archive/047-memo-render-c.md delivered。部署观察项（landing≠deployment）：源码/语料面落地——桌面宿主下次 scripts/desktop.sh 启动现场构建自动拾取；release 工具链二进制与 web bundle 未在范围未重建（沿 046 收据口径）。",
+          "related": [
+            "PLAN-047"
           ],
           "file": "docs/specs/shell/vm-render-memo.md",
           "status": "published",
