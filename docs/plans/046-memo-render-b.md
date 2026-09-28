@@ -7,8 +7,8 @@ created_at: 2026-09-28
 updated_at: 2026-09-28
 
 # /auto-plan:review 结束时填写：
-supersedes_spec_components: []
-new_spec_components: ["docs/specs/shell/vm-render-memo.md"]
+supersedes_spec_components: ["docs/specs/shell/vm-render-memo.md"]
+new_spec_components: []
 touched_goals: []
 
 affects: [auto-lang/ui-render, auto-lang/parser, widgets-gallery, auto-os]
