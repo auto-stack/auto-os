@@ -472,75 +472,77 @@ widget AreaChart (data: List, index: str = "m", fields: List<str> = ["v"], color
                 }
                 col (style: "flex-1") {
                     col (style: "relative") {
-                        svg (viewBox: "0 0 560 300", style: "w-full h-auto") {
-                            if .grid {
-                                path (d: .gridPath, stroke: "#e2e8f0", stroke-width: "1") {}
-                            }
-                            line (x1: "40", y1: "260", x2: "550", y2: "260", stroke: "#94a3b8", stroke-width: "1") {}
-                            line (x1: "40", y1: "20", x2: "40", y2: "260", stroke: "#94a3b8", stroke-width: "1") {}
-                            if .a0 != "" {
-                              if .visAr0 {
-                                if .hovAr == 0 {
-                                    path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.45") {}
-                                    path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "3") {}
-                                } else {
-                                    if .hovAr == 9 {
-                                        path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.25") {}
-                                        path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "2") {}
-                                    } else {
-                                        path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.08") {}
-                                        path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "2", stroke-opacity: "0.25") {}
-                                    }
+                        memo (deps: .gridPath, .a0, .a1, .a2, .a3, .l0, .l1, .l2, .l3, .hovAr, .visAr0, .visAr1, .visAr2, .visAr3, .grid, .legendColor0, .legendColor1, .legendColor2, .legendColor3) {
+                            svg (viewBox: "0 0 560 300", style: "w-full h-auto") {
+                                if .grid {
+                                    path (d: .gridPath, stroke: "#e2e8f0", stroke-width: "1") {}
                                 }
-                              }
-                            }
-                            if .a1 != "" {
-                              if .visAr1 {
-                                if .hovAr == 1 {
-                                    path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.45") {}
-                                    path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "3") {}
-                                } else {
-                                    if .hovAr == 9 {
-                                        path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.25") {}
-                                        path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "2") {}
+                                line (x1: "40", y1: "260", x2: "550", y2: "260", stroke: "#94a3b8", stroke-width: "1") {}
+                                line (x1: "40", y1: "20", x2: "40", y2: "260", stroke: "#94a3b8", stroke-width: "1") {}
+                                if .a0 != "" {
+                                  if .visAr0 {
+                                    if .hovAr == 0 {
+                                        path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.45") {}
+                                        path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "3") {}
                                     } else {
-                                        path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.08") {}
-                                        path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        if .hovAr == 9 {
+                                            path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.25") {}
+                                            path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "2") {}
+                                        } else {
+                                            path (key: .a0, d: .a0, fill: .legendColor0, fill-opacity: "0.08") {}
+                                            path (key: .l0, d: .l0, fill: "none", stroke: .legendColor0, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        }
                                     }
+                                  }
                                 }
-                              }
-                            }
-                            if .a2 != "" {
-                              if .visAr2 {
-                                if .hovAr == 2 {
-                                    path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.45") {}
-                                    path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "3") {}
-                                } else {
-                                    if .hovAr == 9 {
-                                        path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.25") {}
-                                        path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "2") {}
+                                if .a1 != "" {
+                                  if .visAr1 {
+                                    if .hovAr == 1 {
+                                        path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.45") {}
+                                        path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "3") {}
                                     } else {
-                                        path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.08") {}
-                                        path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        if .hovAr == 9 {
+                                            path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.25") {}
+                                            path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "2") {}
+                                        } else {
+                                            path (key: .a1, d: .a1, fill: .legendColor1, fill-opacity: "0.08") {}
+                                            path (key: .l1, d: .l1, fill: "none", stroke: .legendColor1, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        }
                                     }
+                                  }
                                 }
-                              }
-                            }
-                            if .a3 != "" {
-                              if .visAr3 {
-                                if .hovAr == 3 {
-                                    path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.45") {}
-                                    path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "3") {}
-                                } else {
-                                    if .hovAr == 9 {
-                                        path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.25") {}
-                                        path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "2") {}
+                                if .a2 != "" {
+                                  if .visAr2 {
+                                    if .hovAr == 2 {
+                                        path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.45") {}
+                                        path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "3") {}
                                     } else {
-                                        path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.08") {}
-                                        path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        if .hovAr == 9 {
+                                            path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.25") {}
+                                            path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "2") {}
+                                        } else {
+                                            path (key: .a2, d: .a2, fill: .legendColor2, fill-opacity: "0.08") {}
+                                            path (key: .l2, d: .l2, fill: "none", stroke: .legendColor2, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        }
                                     }
+                                  }
                                 }
-                              }
+                                if .a3 != "" {
+                                  if .visAr3 {
+                                    if .hovAr == 3 {
+                                        path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.45") {}
+                                        path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "3") {}
+                                    } else {
+                                        if .hovAr == 9 {
+                                            path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.25") {}
+                                            path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "2") {}
+                                        } else {
+                                            path (key: .a3, d: .a3, fill: .legendColor3, fill-opacity: "0.08") {}
+                                            path (key: .l3, d: .l3, fill: "none", stroke: .legendColor3, stroke-width: "2", stroke-opacity: "0.25") {}
+                                        }
+                                    }
+                                  }
+                                }
                             }
                         }
                         if .tooltip {

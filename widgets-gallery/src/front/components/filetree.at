@@ -42,7 +42,7 @@ widget FileTree (nodes: List, default_expanded: List = []) {
 
     view {
         col (style: "w-full text-sm") {
-            for r in .ftRows {
+            for r in .ftRows key: r.id {
                 row (style: "items-center") {
                     for g in r.guides {
                         if g == "l" {

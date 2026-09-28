@@ -1,0 +1,156 @@
+[ui-desktop] start pid=4752 fullscreen=false apps_dir=D:\autostack\.wt\os-046\auto-lang\crates\auto-lang\..\..\examples\ui t=1790574450
+[ui-desktop] boot components empty — shell-only desktop
+AutoUI MCP: listening on http://127.0.0.1:9247
+[CALL_HANDLER] widget=Desktop event_name=Init fn_name=handler_Desktop_Init args=[]
+[CALL_HANDLER] widget=DesktopSurface event_name=Init fn_name=handler_DesktopSurface_Init args=[]
+[app-registry] apps.manifest entry `kanban` skipped: D:/autostack/.wt/os-046/auto-os\../auto-kanban has no pac.at
+[app-registry] apps.manifest entry `auto-musk` skipped: D:/autostack/.wt/os-046/auto-os\../auto-musk has no pac.at
+[app-registry] apps.manifest entry `auto-term` skipped: D:/autostack/.wt/os-046/auto-os\../auto-term/app has no pac.at
+[app-registry] apps.manifest entry `jade-edit` skipped: D:/autostack/.wt/os-046/auto-os\../jade-edit has no pac.at
+[app-registry] gallery roots: [("ui-gallery", "D:/autostack/.wt/os-046/auto-os\\ui-gallery"), ("widgets-gallery", "D:/autostack/.wt/os-046/auto-os\\widgets-gallery")] (AUTO_OS_ROOT=Some("D:/autostack/.wt/os-046/auto-os"))
+[syslog][info][host] [session] app registry: 41 entries (26 desktop-visible) from D:\autostack\.wt\os-046\auto-lang\crates\auto-lang\..\..\examples\ui
+[CALL_HANDLER] widget=DashboardPanel event_name=Init fn_name=handler_DashboardPanel_Init args=[]
+[session] back plan empty: 012-clock back_entry=None
+[CALL_HANDLER] widget=App event_name=Init fn_name=handler_App_Init args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "placeholder"), ("020-music-player", "placeholder"), ("025-sys-monitor", "placeholder")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[VM-VIEW] widget=DesktopSurface build_ms=6 dirty_before=true
+[VM-VIEW] widget=DashboardPanel build_ms=0 dirty_before=true
+AutoUI MCP: first state sync in view()
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "placeholder"), ("020-music-player", "placeholder"), ("025-sys-monitor", "placeholder")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[VM-VIEW] widget=DesktopSurface build_ms=6 dirty_before=true
+[VM-VIEW] widget=DashboardPanel build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=DesktopSurface build_ms=5 dirty_before=true
+[VM-VIEW] widget=DashboardPanel build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=DesktopSurface build_ms=6 dirty_before=true
+[VM-VIEW] widget=DesktopSurface build_ms=5 dirty_before=true
+[session] launch_app(inproc) widgets-gallery
+[session] back plan empty: widgets-gallery back_entry=None
+[AUTO-USE-DIAG] P-15 use 模块 `{ package` 解析失败（items: ["official from \"./components\" }"]）——候选基目录均无对应 .at/mod.at（PLAN-664）。该导入静默跳过，引用其符号的面将落空。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[AUTO-USE-DIAG] P-15 传递 use 模块 `{ package` 解析失败（items: ["official from \"../components\" }"]）——基目录 D:/autostack/.wt/os-046/auto-os\widgets-gallery\src\front\pages 均无对应 .at/mod.at（PLAN-664）。该导入静默跳过。
+[CALL_HANDLER] widget=DesktopSurface event_name=RunningSync fn_name=handler_DesktopSurface_RunningSync args=[]
+[dashboard] refresh: faces=4 statuses=[("012-clock", "hatched"), ("013-todo", "placeholder"), ("020-music-player", "placeholder"), ("025-sys-monitor", "placeholder")] panel=720x176@12
+[CALL_HANDLER] widget=DashboardPanel event_name=RebuildFaces fn_name=handler_DashboardPanel_RebuildFaces args=[]
+[VM-VIEW] widget=DesktopSurface build_ms=6 dirty_before=true
+[VM-VIEW] widget=DashboardPanel build_ms=0 dirty_before=true
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=6 FILL page=IndexPage
+[MEMO-DIAG] page_full enter page=IndexPage tracked=false
+[auto-lang/plan412] `flex-wrap` is not supported by the native (iced) renderer — degrading per Plan 412 §5 (see /position page degradation matrix).
+[VM-VIEW-OUTLET] outlet_ms=1
+[auto-lang/plan412] `sticky` is not supported by the native (iced) renderer — degrading per Plan 412 §5 (see /position page degradation matrix).
+[VM-VIEW] widget=App build_ms=4 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=DesktopSurface build_ms=6 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[MEMO-DIAG] site=5 MISS (slow mismatch)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 MISS (slow mismatch)
+[MEMO-DIAG] site=5 FILL (no entry)
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=5 HIT slow
+[MEMO-DIAG] site=6 FILL page=FileTreePage
+[MEMO-DIAG] page_full enter page=FileTreePage tracked=false
+[MEMO-DIAG] site=7 enter var=r iterable=.ftRows
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] child_widget=TreeIcon keyed_loops=0
+[MEMO-DIAG] site=7 frame hits=0 misses=0 fills=10 skip=0
+[VM-VIEW-OUTLET] outlet_ms=4509
+[VM-VIEW] widget=App build_ms=4510 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[ui-desktop] alive pid=4752 t=1790574480
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[ui-desktop] alive pid=4752 t=1790574510
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=1 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true
+[VM-VIEW] widget=Desktop build_ms=0 dirty_before=true

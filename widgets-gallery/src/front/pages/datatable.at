@@ -73,9 +73,11 @@ widget DatatablePage {
 
             h2 "Installation"
             text "1. Add the Table widget:" (style: "font-medium") {}
-            codeblock (lang: "bash", code: "npx shadcn-vue@latest add table") {}
-            text "2. Add TanStack Table dependency:" (style: "font-medium") {}
-            codeblock (lang: "bash", code: "npm install @tanstack/vue-table") {}
+            memo () {
+                codeblock (lang: "bash", code: "npx shadcn-vue@latest add table") {}
+                text "2. Add TanStack Table dependency:" (style: "font-medium") {}
+                codeblock (lang: "bash", code: "npm install @tanstack/vue-table") {}
+            }
 
             // Basic Table
             h2 "Basic Table"

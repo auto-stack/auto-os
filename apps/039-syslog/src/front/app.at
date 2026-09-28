@@ -150,7 +150,7 @@ widget App {
                         }
                     }
                 }
-                for r in .rows {
+                for r in .rows key: r.i {
                     row (onclick: .Select(r.i)) {
                         style: "flex px-3 py-1 gap-2 items-baseline border-b border-border/40 ${r.rowcls}"
                         text r.time { style: "text-muted-foreground/70 shrink-0" }
