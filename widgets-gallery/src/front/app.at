@@ -698,7 +698,7 @@ widget App {
                         // primary 半透明浮现(PLAN-614 T-10,scaffold 变体)
                         sidebar_content (style: "h-full ash-scroll-fade") {
                         div (style: "p-4 md:p-8 lg:p-10 max-w-5xl mx-auto pb-32 md:pb-20") {
-                            outlet
+                            outlet (memo: true)
                         }
                         }
                     }
