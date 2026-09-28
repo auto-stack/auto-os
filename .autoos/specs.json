@@ -341,6 +341,18 @@
           "status": "published",
           "created": "2026-09-27",
           "last_modified": "2026-09-27"
+        },
+        {
+          "id": "P046-1",
+          "title": "PLAN-046 变更摘要 — VM 渲染 memo 档 B（for key 化+显式 memo 块+outlet 语料级）",
+          "content": "VM 渲染 memo 档 B 交付（T-01..T-07·两仓）：①SD-05 keyed-for 项级缓存——`for x in .items key: .id`（有界 key 表达式解析器[self 根状态链/项字段链/Int/Str 字面量，Call 形态指名拒绝]；键=(ctx,site=7,站点骨架[头+槽形态+体结构],probe_on,item_key)；快/慢路径；重复 key/求值失败/超预算整体降级绝不静默去重；输出序恒随 iterable；重排全命中=事件载荷构建期解析位置无关+probe/idmap 项内相对路径重放[ForIter.index 补丁]）；②SD-06 显式 memo 块——`memo (deps: .a, .b){…}`+`exact: true` 纯 deps 信任模式（唯一显式豁口，语料签名担保）；默认=deps∪块内自动可证读槽[Call/FStr/StyleBinding 由 deps 覆盖不入槽不降级]；嵌套 ForLoop/Outlet/嵌套块/bindings 非空降级；③SD-07 outlet 语料级 prop——`outlet (memo: true)` 正载体，AUTO_OUTLET_MEMO 降兼容层（prop∨env 并集门）；④**执行期重大修正**：桌面渲染帧=untracked 轨（DynamicComponent::view()=build()），keyed/块门双轨挂载（伪造空簿记通道复用同一门，机制单源；probe 禁用→probe_on=false 键面）；⑤语料 opt-in：filetree key: r.id（嵌套 for g in r.guides 经循环变量根扩展可证）、syslog key: r.i、area_chart svg 体 memo 块、datatable 静态区 memo 块、app.at outlet (memo: true)。",
+          "related": [
+            "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -787,6 +799,18 @@
           "status": "published",
           "created": "2026-09-27",
           "last_modified": "2026-09-27"
+        },
+        {
+          "id": "P046-1",
+          "title": "VM 渲染 memo 档 B 契约 — 架构注记",
+          "content": "键扩展=MemoKey.item_key: Option<u64>（None=档 A 条目零变化）；项级慢路径=memo_combine_for(读槽∧项值∧[index 位])；块慢路径=memo_combine_block(deps∧[读槽]，exact=None)。项级扫描 scan_for_item_body：条件臂递归入槽[parse_expr_fragment]；插值/FStr 按根段∈循环变量判定[外部名降级]；嵌套 ForLoop iterable 根∈循环变量→递归[内层 var/index 并入]，根为状态降级；Outlet/嵌套块降级。块扫描 scan_memo_block_body：VM 代码形态容忍[deps 覆盖]；插值名逐名入槽；结构形态降级。双轨可达=桌面渲染帧 untracked（执行期实证 render_outlet_page_full tracked=false），门双轨挂载+伪造空簿记通道。MemoCache 共池单 LRU+ensure_capacity 按需抬升硬顶 4096（Q-03）。per-site 分解计数 site_counts（note_*_site）。性能注记：实测 filetree 页门 fills=10 后回访全命中语义成立[单测计数器断言+用户明示接受]；session 满载 memo 测试族对 menubar_open 全局面敏感（plan045 在册家族）。",
+          "related": [
+            "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -1176,6 +1200,18 @@
           "status": "published",
           "created": "2026-09-27",
           "last_modified": "2026-09-27"
+        },
+        {
+          "id": "P046-1",
+          "title": "SD-05/06/07 — shell/vm-render-memo.md 扩展（memo 档 B canonical 档）",
+          "content": "SD-05=keyed-for（key: 子句语法[软标识探测/有界解析器/缺省零差异/vue 不消费]/项级条目/降级三案/输出序恒随 iterable/重排全命中簿记重放）。SD-06=memo 块（memo( 前缀单 token 探测分发/头参专用解析[deps 逗号列表 Tuple 拍平+exact bool]/默认保守与 exact 信任双语义/块内组件门独立/块内相对路径簿记）。SD-07=outlet{memo} 变体+parser 可选头参[裸 outlet 字节兼容]+prop∨env 并集门。SD-02 修订=键增 item_key/站点指纹分量/per-site 计数；SD-03 修订=项级与块扫描规则；SD-04 修订=双轨可达+Q-03 容量。supersedes=vm-render-memo.md（modify-in-place，plan045 创建）；空 goals 影响=框架渲染层横切机制不挂目标。",
+          "related": [
+            "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -1534,6 +1570,18 @@
           "status": "published",
           "created": "2026-09-27",
           "last_modified": "2026-09-27"
+        },
+        {
+          "id": "P046-1",
+          "title": "PLAN-046 测试语料 — keyed/块/outlet 单测族 + 全量对拍归因 + 实靶",
+          "content": "单测（cargo t -p auto-lang --features ui-iced）：parser 矩阵 12（key 子句 7/memo 块 4/outlet prop 1）+memo_deps 扩展 8（项级扫描/嵌套扩展正反例/FStr 根段/站点指纹/容量抬升+per-site 计数）+plan046_for_memo_tests 10（fill/快路径/重排全命中+输出序/单项修改 miss/增删 delta/index 保守失效/降级三案产物对拍/嵌套降级/probe 重放）+plan046_memo_block_tests 7（AC-04/05 语义+Call-prop+嵌套 exact 豁免+untracked 共享门+per-site）+plan046_outlet_prop_priority 三态。全量门：评审基线 bd239d785 重跑 5499 绿/305 红 vs 基线 detached 5c558778f 291——新红 20 归因已知家族[自有测试 18 满载全局翻转单跑 38/38+80/80 绿+write_state 单跑绿+bp::registry 在册族]，代码面零新增真回归（AC-01 相对零增量）。实靶（docs/plans/evidence/p046/）：outlet site=6 FILL 经语料 prop[env 未设]、filetree site=7 frame fills=10、侧栏 7HIT/2MISS；回访全命中/charts 块命中交互实录经用户明示接受单测计数器断言替代[2026-09-28 复审会话原话'接受单测']。",
+          "related": [
+            "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     },
@@ -1961,6 +2009,18 @@
           "status": "published",
           "created": "2026-09-27",
           "last_modified": "2026-09-27"
+        },
+        {
+          "id": "P046-r1",
+          "title": "PLAN-046 vm-render-memo 档 B 复审与合并收据",
+          "content": "R needs_fix→re-review pass（2026-09-28，plan_revision 1，实现会话内复审——verdict 由工件重建[字节级对比/新鲜套件/实靶日志/语料核验]）。首轮 AC-01..06 pass+AC-07 partial[F-R1=实靶计数器补测两次因用户在机中止，焦点守卫零误注入]→用户明示接受单测替代→重复审 pass。AC-01 关键证据=keyless untracked 臂字节级一致[唯一差异=模式行绑定 key_expr 结构性必需]+评审基线全量对拍归因零真回归。两仓落地（ff-only 零 merge commit）：lang master[os-046-dev 九提交线性 7d60d5327..bd239d785，基=master tip 5c558778f 零重写]/os main[plan-046-dev 六提交，rebase 自 a488727 基]；台账 P046 五条（本提交）随 plan-046-dev ff 落 main。归档 docs/plans/archive/046-memo-render-b.md delivered。",
+          "related": [
+            "PLAN-046"
+          ],
+          "file": "docs/specs/shell/vm-render-memo.md",
+          "status": "published",
+          "created": "2026-09-28",
+          "last_modified": "2026-09-28"
         }
       ]
     }
