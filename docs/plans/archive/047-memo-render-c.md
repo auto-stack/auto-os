@@ -1,6 +1,7 @@
 ---
 plan_id: PLAN-047
-status: reviewed              # drafting → executing → execution_done → reviewed → archived
+status: archived              # drafting → executing → execution_done → reviewed → archived
+completion_kind: delivered    # PLAN-047:r1 五 checkpoint（prepared/landed/ledger_refreshed/archived/cleaned）见 §9 复审记录 merge 收据
 feature_name: VM 渲染 memo 档 C（动态读拦截 + per-path 版本 + computed 信号网）
 author: [zcode-agent]
 created_at: 2026-09-28
