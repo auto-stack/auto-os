@@ -12,7 +12,7 @@ render: "vm"
 icon: "layout-grid"
 title: "Widgets Gallery"
 title_zh: "组件画廊"
-front_port: 3024
+front_port: 4173
 // Plan 411: VM 原生窗口启动尺寸（逻辑像素，iced 会乘以系统 DPI 缩放）
 window: "1440x900"
 // PLAN-528 W6: kitchen-sink 页的 autodown_editor 需要 @autodown 引擎包

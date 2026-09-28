@@ -42,8 +42,10 @@ widget FileTree (nodes: List, default_expanded: List = []) {
 
     view {
         col (style: "w-full text-sm") {
-            for r in .ftRows key: r.id {
-                row (style: "items-center") {
+            // PLAN-706 D5: `for … key:` 不是合法 DSL（parser 期望 `{`）。
+            // key 按 Plan 008 惯用法挂在循环体行节点上。
+            for r in .ftRows {
+                row (key: r.id, style: "items-center") {
                     for g in r.guides {
                         if g == "l" {
                             div (style: "w-4 h-6 flex items-center justify-center") {

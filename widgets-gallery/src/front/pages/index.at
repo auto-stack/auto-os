@@ -15,7 +15,7 @@ widget IndexPage {
                 col (style: "relative px-4 py-12 md:py-20 lg:py-24 text-center items-center gap-4") {
                     badge (variant: "outline", style: "mx-auto mb-2") {
                         icon (name: "layers", style: "h-3 w-3 mr-1.5 text-primary") {}
-                        text "v1.0 — 63 Widgets"
+                        text "v1.0 — 70 Widgets"
                     }
 
                     // Plan 409 §8: "Auto UI" hero in the theme color. The old
@@ -51,12 +51,13 @@ widget IndexPage {
             // Component categories grid
             col (style: "gap-10 w-full") {
                 // Layout category (Plan 412: 布局专区,置顶)
-                category-section (name: "Layout", color: "sky", count: 12) {
+                category-section (name: "Layout", color: "sky", count: 13) {
                     component-card (to: "/row", name: "Row", desc: "Horizontal stacks", icon: "arrow-right") {}
                     component-card (to: "/col", name: "Column", desc: "Vertical stacks", icon: "arrow-down") {}
                     component-card (to: "/center", name: "Center", desc: "Centered content", icon: "plus") {}
                     component-card (to: "/flex", name: "Flex", desc: "Flexible sizing", icon: "move-horizontal") {}
                     component-card (to: "/alignment", name: "Alignment", desc: "Items × justify", icon: "align-center") {}
+                    component-card (to: "/absolute", name: "Absolute", desc: "Overlay positioning", icon: "layers") {}
                     component-card (to: "/spacing", name: "Spacing", desc: "Padding, margin, gap", icon: "space") {}
                     component-card (to: "/sizing", name: "Sizing", desc: "Width & height", icon: "ruler") {}
                     component-card (to: "/scroll", name: "Scroll", desc: "Overflow regions", icon: "chevrons-down") {}
@@ -67,7 +68,7 @@ widget IndexPage {
                 }
 
                 // Form category
-                category-section (name: "Form", color: "blue", count: 15) {
+                category-section (name: "Form", color: "blue", count: 16) {
                     component-card (to: "/button", name: "Button", desc: "Clickable actions", icon: "mouse-pointer-click") {}
                     component-card (to: "/input", name: "Input", desc: "Text fields", icon: "type") {}
                     component-card (to: "/textarea", name: "Textarea", desc: "Multi-line text", icon: "type") {}
@@ -81,6 +82,7 @@ widget IndexPage {
                     component-card (to: "/calendar", name: "Calendar", desc: "Date display", icon: "layout-grid") {}
                     component-card (to: "/datepicker", name: "DatePicker", desc: "Date selection", icon: "layout-grid") {}
                     component-card (to: "/radiogroup", name: "RadioGroup", desc: "Single-choice options", icon: "layout-grid") {}
+                    component-card (to: "/code-editor", name: "CodeEditor", desc: "Syntax-highlighted editor", icon: "code") {}
                     component-card (to: "/toggle", name: "Toggle", desc: "Toggle buttons", icon: "square-stack") {}
                     component-card (to: "/togglegroup", name: "ToggleGroup", desc: "Toggle groups", icon: "layout-grid") {}
                 }
@@ -133,6 +135,19 @@ widget IndexPage {
                     component-card (to: "/collapsible", name: "Collapsible", desc: "Expand/collapse", icon: "layout-grid") {}
                     component-card (to: "/accordion", name: "Accordion", desc: "Collapsible sections", icon: "layout-grid") {}
                     component-card (to: "/hovercard", name: "HoverCard", desc: "Hover popovers", icon: "layout-grid") {}
+                }
+
+                // Charts category (PLAN-706: 与侧栏对齐)
+                category-section (name: "Charts", color: "cyan", count: 4) {
+                    component-card (to: "/line-chart", name: "LineChart", desc: "Trend lines", icon: "chart-line") {}
+                    component-card (to: "/bar-chart", name: "BarChart", desc: "Category bars", icon: "chart-bar") {}
+                    component-card (to: "/area-chart", name: "AreaChart", desc: "Filled trends", icon: "chart-area") {}
+                    component-card (to: "/donut-chart", name: "DonutChart", desc: "Proportion rings", icon: "chart-pie") {}
+                }
+
+                // Diagrams category (PLAN-706: 与侧栏对齐)
+                category-section (name: "Diagrams", color: "violet", count: 1) {
+                    component-card (to: "/flow-diagram", name: "FlowDiagram", desc: "Flow / architecture", icon: "workflow") {}
                 }
             }
 

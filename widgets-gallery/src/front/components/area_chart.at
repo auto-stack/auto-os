@@ -472,7 +472,11 @@ widget AreaChart (data: List, index: str = "m", fields: List<str> = ["v"], color
                 }
                 col (style: "flex-1") {
                     col (style: "relative") {
-                        memo (deps: .gridPath, .a0, .a1, .a2, .a3, .l0, .l1, .l2, .l3, .hovAr, .visAr0, .visAr1, .visAr2, .visAr3, .grid, .legendColor0, .legendColor1, .legendColor2, .legendColor3) {
+                        // PLAN-706 D4: deps 原为逗号并列 `.a, .b`（parser 期望命名
+                        // 参数冒号，`.a0` 被当成参数名 → 解析失败、组件空预览）。
+                        // Vue 轨 memo 只透传子树；deps 改列表字面量以通过解析。
+                        // 若列表内表达式仍不被接受，可退 `memo ()`（与 datatable 同型）。
+                        memo (deps: [".gridPath", ".a0", ".a1", ".a2", ".a3", ".l0", ".l1", ".l2", ".l3", ".hovAr", ".visAr0", ".visAr1", ".visAr2", ".visAr3", ".grid", ".legendColor0", ".legendColor1", ".legendColor2", ".legendColor3"]) {
                             svg (viewBox: "0 0 560 300", style: "w-full h-auto") {
                                 if .grid {
                                     path (d: .gridPath, stroke: "#e2e8f0", stroke-width: "1") {}

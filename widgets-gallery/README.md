@@ -47,13 +47,17 @@ grid-span。
 ## 运行
 
 ```bash
-cd examples/widgets-gallery
+cd widgets-gallery
 auto gen        # 生成各后端代码
 auto run        # 全流程：pnpm install + shadcn-vue add + vite dev server
 ```
 
-`auto run` 会自动装齐所需 `ui/*` shadcn 组件、打上 Sonner lucide 图标名兼容
-补丁，并在 **http://localhost:3024/** 起 dev server。
+`auto run` 会自动装齐所需 `ui/*` shadcn 组件（含 form→label 等传递依赖）、
+打上 Sonner lucide 图标名兼容补丁，并在 **http://localhost:4173/** 起 dev server。
+
+> **端口（PLAN-706）**：默认 `front_port: 4173`。Windows 上 3024 落在
+> Hyper-V/保留端口排除段（`netsh interface ipv4 show excludedportrange`
+> 的 2992–3091），`auto run -F 3024` 会 EACCES；如需改端口请选排除段外端口。
 
 ## 目录结构
 
@@ -72,9 +76,11 @@ widgets-gallery/
 
 ## 已知边界
 
-- command / combobox / toggle-group 3 族组件目前退化为占位 div
-  （缺 WidgetSpec，非 Plan 408 §9 范围），页面与文档正常展示。
-  carousel 已可正常渲染 slide 内容（Basic / Sizes 示例均可见）。
+- command / combobox 依赖 shadcn `ui/command` 脚手架（PLAN-457 烘焙包已含，
+  materialize 传递闭包会带上）；togglegroup 已可正常渲染（旧「占位 div」
+  口径作废）。
+- icon 字面量若非 lucide 在册名（如 kitchen-sink 占位 `"sample"`），Vue 生成
+  回退 `Circle`，不再产生非法 import（PLAN-706）。
 - 未路由的 blocks 页已移除（避免 chart 组件脚手架风险），后续单独补。
 - **Layout 分组的降级矩阵**（flex-wrap / absolute 定位 / order / self-* /
   row-span / fixed / sticky 在 VM 的行为对照）见 `/position` 页内表格与
