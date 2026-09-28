@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-047
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: execution_done        # drafting → executing → execution_done → reviewed → archived
 feature_name: VM 渲染 memo 档 C（动态读拦截 + per-path 版本 + computed 信号网）
 author: [zcode-agent]
 created_at: 2026-09-28
@@ -13,7 +13,7 @@ new_spec_components: []
 touched_goals: []             # 引用 docs/specs/goals.md 的 GOAL-NNN
 
 affects: [auto-lang/ui-render, auto-lang/vm, widgets-gallery]
-current_step: 0
+current_step: 8
 total_steps: 8
 ---
 
@@ -181,24 +181,59 @@ total_steps: 8
 ## 8. 执行步骤
 
 > 工作布局沿 046：worktree 组 `D:/autostack/.wt/os-047/{auto-os,auto-lang}`（auto-os `plan-047-dev`，auto-lang `os-047-dev` 依赖组内兄弟——改 crates 故 cargo t 在 lang worktree 跑）。每步完成追加 `[✅ 已完成]` 证据行。
+>
+> **现场记录（work 启动 2026-09-28）**：auto-os `plan-047-dev`@6c9c7ba（=契约 rev1 提交）；auto-lang `os-047-dev`@9b5a10e51（=046 落地 tip/master 同点）；auto-down detached@3373a5c 只读（a2r-actor-tests 的 autodown-core 组内兄弟路径依赖位，046 同款）。auto-os 主检出 tracked-dirty=0（仅前会话未跟踪测试产物）；auto-lang 主检出有 docs 面脏文件（design/00、design/33、plans/.next-id——非 crates 代码路径，不入本计划工作面）。
 
 - **T-01 Recorder 基建**（→AC-02/07 基座）：`memo_deps.rs` 新增 `RecState/DepKey/guard`；`vm_bridge.rs` 宿主 + `read_state`/`read_state_as_vec`/`materialize_obj_ref` 三通道录制；预算与清理。验证：`plan047_recorder_tests` 前 4 条绿。
+  [✅ 已完成 2026-09-28] lang@553f79a0e。DepKey（heap_id+path，`"*"`=容器粗粒度面）/RecState（预算 REC_DEP_BUDGET=256 超限弃整集）/absorb（并集+overflow 传播）+vm_bridge `dep_recorder: RefCell<Option<RecState>>` 宿主（两 ctor 同置，ui-interpreter 门控同 memo_cache）/DepRecGuard（finish/drop 双路恢复+嵌套并集吸收）/读通道录制实装三口+共享口：`read_state`（具名字段）、`read_state_as_vec` Int 臂+`vmref_to_vec`（容器 any）、`materialize_obj_ref` Int/VmRef 臂（堆展开 any）；非 ui-interpreter 构建零伤 stub。验证：`cargo test -p auto-lang --features ui-iced --lib plan047_recorder` 9/9 绿（memo_deps 语义 4 + vm_bridge 通道 5，含未激活零录制/字段录制/容器 any/嵌套并集/drop 恢复）。执行注记：Dot 链逐段录制按 5.1 的等价实现——子对象字段读经 `materialize_obj_ref` 展开时记 `(heap_id,"*")` 粗粒度覆盖（任一字段原地变即失效，保守正确），builder 侧零改动；嵌套测试实证 items 列表读三依赖边（count+items 字段+列表 any）。
 - **T-02 写点普查（bounded investigation，决策工件）**：engine ~10 bump 位点 + 桥六写口逐一归因分类（A/B/C）；per-path 版本表宿主与 path_key 编码选型裁定；产物（位点清单表）入本计划附录。验证：表覆盖全部现存 bump 位点，无遗漏臂。
+  [✅ 已完成 2026-09-28] 普查表（lang worktree 勘察，os-047-dev@553f79a0e 面）：
+
+  | # | 位点 | Op/fn | 写面 | 归因 | 类 |
+  |---|---|---|---|---|---|
+  | E1 | engine.rs~1197 | add_string freelist 复用 | 字符串池槽覆写 | 无堆 id | C |
+  | E2 | engine.rs~1214 | add_string 追加 | 字符串池追加 | 无堆 id | C |
+  | E3 | engine.rs~1271 | insert_heap_object | 堆对象出世 | 新 id 无既有 dep 可指 | C |
+  | E4 | engine.rs~5313 | LIST_PUSH_INT | 列表 push | list_id | B |
+  | E5 | engine.rs~5352 | LIST_POP_INT | 列表 pop | list_id | B |
+  | E6 | engine.rs~5426 | LIST_SET_INT | 列表按位写 | list_id | B |
+  | E7 | engine.rs~5946 | SET_ELEM ObjectData 臂 | map 按键写 | id+key | B（A-able） |
+  | E8 | engine.rs~5969 | SET_ELEM GenericInstance 臂 | map 按键写 | id+key | B（A-able） |
+  | E9 | engine.rs~6002 | SET_ELEM HashMap 臂 | map 按键写 | id+key | B（A-able） |
+  | E10 | engine.rs~6038 | SET_GENERIC_FIELD | obj.field=value | id+field_name | A |
+  | N1 | native.rs~2797 | shim_list_push | 列表 push | list_id | B |
+  | N2 | native.rs~2924 | shim_list_pop | 列表 pop | list_id | B |
+  | N3 | native.rs~3305 | shim_list_set | 列表按位写 | list_id | B |
+  | B1 | bridge write_state | 根态字段写 | state_obj_id+field | A |
+  | B2 | bridge write_or_insert_state 新增臂 | 根态字段首写 | state_obj_id+field | A |
+  | B3 | bridge write_state_vec 容器臂×2 | 堆列表原地重写 | list_id | B |
+  | B4 | bridge ensure_child_state 值变重种子/新增臂×2 | 根态字段种子 | state_obj_id+field | A |
+  | B5 | bridge sync_busy_flag 真写臂 | __busy_handlers 重写 | (root,BUSY_STATE_FIELD)+list_id 双记 | A+B |
+
+  **选型裁定**：版本表宿主 = `AutoVM`（engine）侧 `DashMap<(u64, String), u64>`——键用原生元组不依赖 ui 门控类型（memo_deps 是 ui-interpreter 门控，vm 模块不能反向依赖）；`"*"` 通配键（`DEP_PATH_ANY` 同值语义）由 bump 侧维护：**A 类写同时 bump exact+wildcard，B 类只 bump wildcard**。check 侧（T-05）：具名 dep (id,path) 只比 exact 版本（通配翻不翻不影响它——根态槽位只能经带名写臂变，内容变经内层对象自己的 dep 兜住）；`"*"` dep 只比 wildcard。C 类保持纯全局 bump（E3 出世 id 无既有 dep；字符串池内容不被 dep 引用——全局翻 → 条目落慢路径重解析，正确性不受损）。**全局 `state_mutation_seq` 语义零变化**（所有位点保留既有 bump，per-path 表纯增量）——seq 快路径与 fire_timer 空转判定既有消费者零回归。
+  **普查发现（Q-01 附带证据）**：`auto.hashmap` 系 native 写（hashmap.set 插入）无任何 seq bump——既有全局快路径盲区（写后 memo 快路径可陈旧命中）；T-03 顺路补 `bump_path(map_id, None)`（B 类）闭合，全局语义同步补齐。
 - **T-03 版本表 + 写点归因升级**（→AC-03）：`engine.rs` `bump_path` + `DashMap<DepKey,u64>`；A 类位点与桥六口升级；B/C 类保守语义。验证：`plan047_attribution_tests` 绿。
+  [✅ 已完成 2026-09-28] lang@f202d01c6。`AutoVM.path_versions: DashMap<(u64,String),u64>`（T-02 裁定落地：原生元组键）+ `bump_path(heap_id, Option<&str>)`（A 类 exact+wildcard 双 bump / B 类 wildcard-only / 全局 seq 同步 bump 语义零变化）+ `path_version` 读口；升级位点：VM E4-E6（bump 移至 list_id 出栈后）、E7-E9（按键名 decode 后 exact+wildcard，普查 A-able 兑现）、E10 SET_FIELD（移至 field_name 解码后，错误路径不再多 bump——handler Err 置脏面方向不变）、N1-N3 shim_list_*；桥 B1/B2（A）、B3×2（B）、B4×2（值变才 bump A，语义保真）、B5（A+B 双归因：根态字段 exact+新镜像列表 wildcard）。普查发现顺路闭合：SET_ELEM ListData 臂补 bump（062 遗漏的全局盲区）+ shim_hashmap_insert_str 补 bump（原零 bump）。验证：`plan047_attribution` 5/5 绿（exact 定点性 root.count 前进而 root.label 不动 / 列表 push 仅列表 wildcard 前进根态 exact 零扰动 / 桥写 exact / hashmap shim 直调 exact+k+wildcard+全局补齐 / C 类全局-only 零 path 条目）+ 回归 scoped：memo 84/84、engine 20/20、vm_bridge 50/50、plan046 38/38 全绿。
 - **T-04 engine 读臂拦截**（→AC-04 block 通道）：recorder 句柄下探（`Arc<Option<…>>` 或 vm 字段直挂）；state obj 字段读/列表迭代臂录制；未激活零开销分支。验证：`call_computed_fn` 场景 dep 录制单测绿。
+  [✅ 已完成 2026-09-28] lang@a27be452b。执行形态与计划微差（等价实现）：录制核心类型下沉 `vm/dep_track.rs`（**不挂 feature 门**——vm 模块不得依赖 ui 门控类型，memo_deps 转发导出保持 T-01 引用面）；录制槽 = AutoVM `dep_recorder_slot: Mutex<Option<Arc<Mutex<RecState>>>>` + `dep_rec_active: AtomicBool` 快速门（先填槽后开旗 Release/先关旗后清槽，同线程串行无竞争）；读臂挂钩四口：GET_GENERIC_FIELD（field_names 可证名）/GET_FIELD（field_name 解码后挂；decode 兜底 id 过录=保守方向）/LIST_GET_INT+GET_ELEM 堆对象臂（容器 any 粗粒度面）；桥 guard 激活即 `vm.set_dep_recorder` 双通道绑定，finish 收编引擎影子集（record 并集+overflow 同规）。验证：`plan047` 全套 16/16 绿（新增槽语义+handler 端到端 GET 臂录制/去激活零账两条）+ memo 84/vm_bridge 52 回归绿。归因注记：`vm::ffi::http_server` 全组 40/1 红=基线并行串扰既有 flaky（主检出 9b5a10e51 同型复现，单跑绿，046 在册 flaky 家族同形），非本计划引入。
 - **T-05 memo 门 check 三级判定**（→AC-02）：`MemoEntry.dyn_deps` + fill 采编 + check 升级 + check-kind 计数器；keyed-for/memo 块站点同构。验证：`plan047_gate_tests` 判定序与零重解析计数断言绿。
 - **T-06 computed 信号节点**（→AC-04）：信号表 + inline/block 双通道 + bindings 保守面 + pull 级联。验证：`plan047_signal_tests` 绿。
+  [✅ 已完成 2026-09-28] lang@325a2efff。`VmBridge.computed_signals: RefCell<HashMap<(String,String), ComputedSignal{cached,deps 基线对}>>`（生命周期随桥）+ `computed_signal_hit`（deps 版本全同 → 值缓存复用；**命中时 dep 键吸收进当前录制域**——嵌套 guard 并集使外层 memo 条目/外层信号覆盖内层信号失效面 = pull 式级联闭合，computed 嵌套传递性陈旧缺口的设计闭合点）/`computed_signal_store`（空集/超预算不入网退档 A/B）+signal_hits/misses 观测计数；`eval_computed` 双通道接入（inline 表达式与 block 体隐藏 VM fn 同构信号包裹；bindings-free 保守面沿 v1 边界）。验证：`plan047_signal` 3/3 绿（inline 命中/失效保真 + block 通道隐藏 fn 端到端[合成在册预检] + 级联闭合[memo 条目收编信号 dep 面]）。执行注记：测试 builder 须 `.with_computed(...)` 显式挂表（生产链 dynamic.rs:1565 已挂）。
 - **T-07 降级面收敛**（→AC-05/07）：computed-exclusion 改判 + 产物逐字节对拍 + 盲区臂。验证：对拍 hash 相等、`plan047_gate_tests` 收敛臂绿。
+  [✅ 已完成 2026-09-28] lang@c47888381（+70595f10c 文档面）。`memo_ctx_ok` 改判：computed 声明不再整体排除 memo（PLAN-045 T-01 静态不可证裁定清偿——computed 读面由桥读通道+引擎读臂+信号网三通道动态录制闭合）；bindings 排除保持（循环变量版本不随录制域——v1 保守边界沿袭）；memo_deps 头注/扫描注释同步对齐。验证：`plan047_convergence` 1/1 绿（computed-widget menubar memo 化产物与原始路径逐字节对拍一致 + 条目在册确证非静默降级 + deps 变化经信号级联保真）。
 - **T-08 语料实靶 + 证据包**（→AC-06）：widgets-gallery 三页 + syslog 实测；check-kind/内存口径采集；证据包 `docs/plans/evidence/p047/`。验证：AC-06 计数器在档，lang 门全绿复跑。
+  [✅ 已完成 2026-09-28] **证据包在档**（auto-os plan-047-dev@f11df72，`docs/plans/evidence/p047/`：README 索引 + 满载门两跑全量日志 + 新红清单）。**AC-01 全量门满载对拍归因**：本侧 os-047-dev@70595f10c **5504 绿/329 红** vs 基线 9b5a10e51（=046 落地 tip）5498 绿/311 红——新红 22 = 20 条 plan047 新测（满载红全数同根因：`plan492-pkg-repro-m1-canary` 临时目录污染串入 VmBridge::new；基线同证 29 条既有 vm_bridge 测试同报错文本同根因；**plan047 单跑 24/24 绿在档**）+ 2 条漂移（plan632-f4/ffi_dual-019，**单跑双绿实证**）；反向漂移 4（基线独红）；**零真回归**。scoped 门：plan047 24/24 + memo 86 + plan04 76 + vm_bridge 52 + engine 20 全绿。**语料 opt-in 零改动确认**：widgets-gallery app.at:701 `outlet (memo: true)` + filetree.at:45 `key: r.id` 在册（046 面续用），档 C 机制自动拾取；AC-06 交互式实靶沿 046 Q-04 先例（计数器断言承载验收，桌面 A/B 计时留观——部署观察项：桌面宿主下次启动现场构建自动拾取）。**⚠ 现场碰撞实录**：auto-os worktree `D:/.wt/os-047/auto-os` 与 auto-lang worktree `D:/.wt/os-047/auto-lang` 在本计划执行期间被并行会话（Plan 706，WSL 侧 /mnt/d 路径）切换到其分支 `plan-706-os-dev`/`plan-706-dev` 并提交其工作（bde65b0/f06e2ec7a）——本计划交付面无损（lang 七提交在 `os-047-dev`@70595f10c 分支指针在档；auto-os 证据提交经 commit-tree 重建为 plan-047-dev@f11df72，未携带 706 内容）；本计划的一次证据提交 c63ea70 曾落上 706 分支（父=bde65b0），未回退（706 会话在用，不劫持其分支）；**处置留观：706 会话归属与两分支后续合并动线需用户裁定**。
 
 依赖序：T-01 → T-02 → T-03 → (T-04 ∥ T-05) → T-06 → T-07 → T-08。
 
 ## 9. 复审记录
 
 - [new 2026-09-28] stage: new，PLAN-047 rev1。outcome: pass（drafting → 待 /auto-plan:work 执行）。next: work。SD-08..11 待 review 终审定稿；T-02 普查产物回填附录。
+- [work 2026-09-28] stage: work | plan_id: PLAN-047 | plan_revision: 1 | **outcome: pass** | code_commit: lang os-047-dev@70595f10c（七提交链 553f79a0e→f202d01c6→a27be452b→27c9061ce→325a2efff→c47888381→70595f10c）+ auto-os plan-047-dev@f11df72（证据包） | task_ids: T-01..T-08 全毕（current_step 8/8） | evidence: docs/plans/evidence/p047/（scoped 门 plan047 24/24+memo 86+plan04 76+vm_bridge 52+engine 20 全绿；满载门对拍 5504/329 vs 基线 5498/311——新红 22 全数单跑绿/污染家族实证，零真回归） | blockers: 无（⚠ 现场碰撞实录见 T-08——706 会话占用 os-047 worktree 目录，交付分支指针无损，处置留观） | **next: review**（execution_done）。
 
 ## 10. 待澄清事项
 
-- **Q-01（T-02 决策工件覆盖）**：engine 读臂拦截面的完备性（NativeCall/native.rs 内部读是否可达）——普查裁定；不可达面按盲区联合判定保守兜住，不阻塞主链。
-- **Q-02（T-08 度量裁定）**：per-path 版本表内存上界（千行列表 × path 基数）——实测超预算则版本表自身 LRU 化（版本丢失 = 落 fp_slow，正确性不受损）。
-- **Q-03（边界沿袭确认）**：keyed-for 项内 computed（bindings 参与）v1 不入信号网，沿项级条目承载——如实靶显示增益不足，档后续批次再议。
+- **Q-01（已关闭 2026-09-28 T-02/T-04）**：engine 读臂完备性——GET 系四臂挂钩在册（GET_FIELD/GET_GENERIC_FIELD/LIST_GET_INT/GET_ELEM 堆对象臂）；残余盲区 = NativeCall/FFI 内部读与 extra_dyn 派生面（sidebar nav 路由 Rust 侧读）——后者跳过 version_fast 落指纹慢路径（T-05 正确性三补②），前者靠 C 类全局兜底 + 盲区嫌疑条目联合判定，保守闭合。
+- **Q-02（已裁定 2026-09-28 T-08）**：per-path 版本表内存——v1 无界 DashMap，基数 = 被 (heap_id,path) 写过的键数（与状态写活动同阶，实测无异常）；LRU 化留档后续批次（版本丢失 = 落 fp_slow，正确性不受损）。
+- **Q-03（沿袭确认）**：keyed-for 项内 computed（bindings 参与）v1 不入信号网（bindings-free 保守边界），沿项级条目承载；如实靶增益不足，档后续批次再议。
+- **Q-04（新增 2026-09-28，用户裁定项）**：Plan 706 会话在执行期间占用了本计划的 worktree 组目录（`.wt/os-047/{auto-os,auto-lang}`，切至 plan-706-os-dev/plan-706-dev 并提交其工作）——本计划交付分支指针无损（os-047-dev@70595f10c / plan-047-dev@f11df72），worktree 目录现处 706 会话控制下；review 阶段需新建/重取 worktree（merge 技能按分支处理，wt-guard 照常）。706 分支上混入的本计划证据提交 c63ea70（父=bde65b0）未回退——两计划后续合并动线需用户裁定。
