@@ -36,14 +36,18 @@ widget Carousel {
     }
 
     view {
-        div { style: .carouselClass, role: "region", "aria-roledescription": "carousel" }
+        div { style: .carouselClass, role: "region", "aria-roledescription": "carousel"
+            slot {}
+        }
     }
 }
 
 /// Carousel content container
 widget CarouselContent {
     view {
-        div { style: "flex" }
+        div { style: "flex"
+            slot {}
+        }
     }
 }
 
@@ -54,7 +58,9 @@ widget CarouselItem {
     }
 
     view {
-        div { style: f"min-w-0 shrink-0 grow-0 basis-full ${.class}" }
+        div { style: f"min-w-0 shrink-0 grow-0 basis-full ${.class}"
+            slot {}
+        }
     }
 }
 

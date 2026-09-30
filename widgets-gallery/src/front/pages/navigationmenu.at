@@ -14,7 +14,23 @@ widget NavigationmenuPage {
             h2 "Simple"
             preview-card (id: "navigationmenu-basic") {
                 row (style: "gap-4") {
-                    navigation-menu {}
+                    navigation-menu {
+                        navigation-menu-list {
+                            navigation-menu-item {
+                                navigation-menu-link (href: "#overview") {
+                                    text "Overview" {}
+                                }
+                            }
+                            navigation-menu-item {
+                                navigation-menu-trigger { text "Components" }
+                                navigation-menu-content {
+                                    navigation-menu-link (href: "#buttons") {
+                                        text "Buttons and forms" {}
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

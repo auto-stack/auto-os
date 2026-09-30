@@ -18,15 +18,15 @@ widget CommandPage {
                     command-list {
                         command-empty "No results found."
                         command-group (heading: "Suggestions") {
-                            command-item "Calendar"
-                            command-item "Search Emoji"
-                            command-item "Calculator"
+                            command-item (value: "Calendar") { text "Calendar" {} }
+                            command-item (value: "Search Emoji") { text "Search Emoji" {} }
+                            command-item (value: "Calculator") { text "Calculator" {} }
                         }
                         command-separator {}
                         command-group (heading: "Settings") {
-                            command-item "Profile"
-                            command-item "Billing"
-                            command-item "Settings"
+                            command-item (value: "Profile") { text "Profile" {} }
+                            command-item (value: "Billing") { text "Billing" {} }
+                            command-item (value: "Settings") { text "Settings" {} }
                         }
                     }
                 }

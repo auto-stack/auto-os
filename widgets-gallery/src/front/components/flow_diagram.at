@@ -20,7 +20,7 @@
 //
 // # Usage
 // use { package: official from "../components" }
-// flow-diagram (direction: "td") {
+// FlowDiagram (direction: "td") {
 //     nodes: .topoNodes
 //     edges: .topoEdges
 // }

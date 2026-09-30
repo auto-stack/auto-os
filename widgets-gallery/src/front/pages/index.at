@@ -151,6 +151,11 @@ widget IndexPage {
                 }
             }
 
+            // Reference pages
+            category-section (name: "Reference", color: "slate", count: 1) {
+                component-card (to: "/kitchen-sink", name: "Kitchen Sink", desc: "All schema examples", icon: "code") {}
+            }
+
             // Footer
             col (style: "border-t w-full pt-8 pb-4 text-center text-sm text-muted-foreground") {
                 text "Auto UI Component Gallery — Built with Auto Language"

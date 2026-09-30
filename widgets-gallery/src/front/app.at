@@ -196,6 +196,12 @@ widget App {
                                             text "Home" {}
                                         }
                                     }
+                                    sidebar_menu_item {
+                                        sidebar_menu_button (to: "/kitchen-sink") {
+                                            icon (name: "code") {}
+                                            text "Kitchen Sink" {}
+                                        }
+                                    }
 
                                 }
                             }

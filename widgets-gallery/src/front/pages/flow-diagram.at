@@ -36,7 +36,7 @@ widget FlowDiagramPage {
 
             h2 "Direction: lr"
             preview-card (id: "flow-diagram-lr") {
-                flow-diagram (direction: "lr") {
+                FlowDiagram (direction: "lr") {
                     nodes: .flowNodes
                     edges: .flowEdges
                 }
@@ -44,7 +44,7 @@ widget FlowDiagramPage {
 
             h2 "Basic (direction: td)"
             preview-card (id: "flow-diagram-basic") {
-                flow-diagram {
+                FlowDiagram {
                     nodes: .flowNodes
                     edges: .flowEdges
                 }

@@ -1,6 +1,6 @@
 // Plan 435 P5b —— kitchen-sink demo 页(schema/aura.at 生成,**勿手改**)
 // 再生成:auto docs gen(测试内等价 KITCHEN_SINK_UPDATE=1 cargo test -p auto-lang --test docs_gen)
-// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 54 个)。
+// 覆盖:builtin_widget 层含可字面化 props 的全部元素(当前 53 个)。
 
 widget KitchenSinkPage {
     msg { Go }
@@ -12,53 +12,52 @@ widget KitchenSinkPage {
             text "核心组件全量示例 —— schema 生成页,展示每个组件的 props 取值。" { style: "text-muted-foreground" }
 
             h2 "alert_dialog_action"
-            row (style: "gap-2 flex-wrap items-center") {
-                alert_dialog_action "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                alert_dialog { alert_dialog_trigger { button (text: "Open dialog", variant: "outline") {} } alert_dialog_content { alert_dialog_header { alert_dialog_title "Dialog sample" alert_dialog_description "Dialog content sample" } alert_dialog_footer { alert_dialog_cancel "Cancel" alert_dialog_action "Continue" } } }
             }
 
             h2 "alert_dialog_cancel"
-            row (style: "gap-2 flex-wrap items-center") {
-                alert_dialog_cancel "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                alert_dialog { alert_dialog_trigger { button (text: "Open dialog", variant: "outline") {} } alert_dialog_content { alert_dialog_header { alert_dialog_title "Dialog sample" alert_dialog_description "Dialog content sample" } alert_dialog_footer { alert_dialog_cancel "Cancel" alert_dialog_action "Continue" } } }
             }
 
             h2 "alert_dialog_description"
-            row (style: "gap-2 flex-wrap items-center") {
-                alert_dialog_description "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                alert_dialog { alert_dialog_trigger { button (text: "Open dialog", variant: "outline") {} } alert_dialog_content { alert_dialog_header { alert_dialog_title "Dialog sample" alert_dialog_description "Dialog content sample" } alert_dialog_footer { alert_dialog_cancel "Cancel" alert_dialog_action "Continue" } } }
             }
 
             h2 "alert_dialog_title"
-            row (style: "gap-2 flex-wrap items-center") {
-                alert_dialog_title "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                alert_dialog { alert_dialog_trigger { button (text: "Open dialog", variant: "outline") {} } alert_dialog_content { alert_dialog_header { alert_dialog_title "Dialog sample" alert_dialog_description "Dialog content sample" } alert_dialog_footer { alert_dialog_cancel "Cancel" alert_dialog_action "Continue" } } }
             }
 
             h2 "alert_dialog_trigger"
-            row (style: "gap-2 flex-wrap items-center") {
-                alert_dialog_trigger {}
-                alert_dialog_trigger (as_child: true) {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                alert_dialog { alert_dialog_trigger { button (text: "Open dialog", variant: "outline") {} } alert_dialog_content { alert_dialog_header { alert_dialog_title "Dialog sample" alert_dialog_description "Dialog content sample" } alert_dialog_footer { alert_dialog_cancel "Cancel" alert_dialog_action "Continue" } } }
             }
 
             h2 "autodown_editor"
-            row (style: "gap-2 flex-wrap items-center") {
-                autodown_editor {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                autodown_editor (content: "Sample editor content") {}
             }
 
             h2 "avatar"
-            row (style: "gap-2 flex-wrap items-center") {
-                avatar {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                avatar { text "sample" {} }
                 avatar (src: "/icon.png") {}
                 avatar (alt: "sample") {}
                 avatar (fallback: "sample") {}
             }
 
             h2 "badge"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 badge "sample" {}
                 badge (variant: "default") {}
                 badge (variant: "secondary") {}
             }
 
             h2 "button"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 button "sample" {}
                 button (variant: "default") {}
                 button (variant: "secondary") {}
@@ -67,91 +66,84 @@ widget KitchenSinkPage {
             }
 
             h2 "code_editor"
-            row (style: "gap-2 flex-wrap items-center") {
-                code_editor {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                code_editor { text "sample" {} }
             }
 
             h2 "col"
-            row (style: "gap-2 flex-wrap items-center") {
-                col {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                col { text "Column item" {} text "Second item" {} }
                 col (gap: 1) {}
                 col (align: "start") {}
                 col (align: "center") {}
             }
 
             h2 "container"
-            row (style: "gap-2 flex-wrap items-center") {
-                container {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                container { text "Contained sample" {} }
                 container (max_width: 1) {}
             }
 
             h2 "divider"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 divider {}
                 divider (direction: "horizontal") {}
                 divider (direction: "vertical") {}
             }
 
             h2 "drawer"
-            row (style: "gap-2 flex-wrap items-center") {
-                drawer {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                drawer { drawer-trigger "Open drawer" drawer-content { drawer-header { drawer-title "Drawer sample" drawer-description "Visible after opening the drawer." } } }
                 drawer (direction: "left") {}
                 drawer (direction: "right") {}
             }
 
             h2 "drawer_description"
-            row (style: "gap-2 flex-wrap items-center") {
-                drawer_description "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                drawer { drawer-trigger "Open drawer" drawer-content { drawer-header { drawer-title "Drawer sample" drawer-description "Drawer content sample" } drawer-footer { button (text: "Done") {} } } }
             }
 
             h2 "drawer_title"
-            row (style: "gap-2 flex-wrap items-center") {
-                drawer_title "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                drawer { drawer-trigger "Open drawer" drawer-content { drawer-header { drawer-title "Drawer sample" drawer-description "Drawer content sample" } drawer-footer { button (text: "Done") {} } } }
             }
 
             h2 "drawer_trigger"
-            row (style: "gap-2 flex-wrap items-center") {
-                drawer_trigger {}
-                drawer_trigger (as_child: true) {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                drawer { drawer-trigger "Open drawer" drawer-content { drawer-header { drawer-title "Drawer sample" drawer-description "Drawer content sample" } drawer-footer { button (text: "Done") {} } } }
             }
 
             h2 "dropdown-menu"
-            row (style: "gap-2 flex-wrap items-center") {
-                dropdown-menu "sample" {}
-                dropdown-menu (disabled: "true") {}
-                dropdown-menu (disabled: "false") {}
-                dropdown-menu (shortcut: "sample") {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                dropdown-menu { dropdown-menu-trigger { button (text: "Open menu", variant: "outline") {} } dropdown-menu-content { dropdown-menu-item "Profile" dropdown-menu-item "Settings" } }
             }
 
             h2 "grid"
-            row (style: "gap-2 flex-wrap items-center") {
-                grid {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                grid { text "Cell one" {} text "Cell two" {} text "Cell three" {} }
                 grid (columns: 1) {}
                 grid (gap: 1) {}
             }
 
             h2 "hover_card"
-            row (style: "gap-2 flex-wrap items-center") {
-                hover_card {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                hover_card { hover-card-trigger { button (text: "Hover for details", variant: "outline") {} } hover-card-content { text "Hover card sample" {} } }
                 hover_card (open_delay: 1) {}
                 hover_card (close_delay: 1) {}
             }
 
             h2 "hover_card_content"
-            row (style: "gap-2 flex-wrap items-center") {
-                hover_card_content {}
-                hover_card_content (side: "top") {}
-                hover_card_content (side: "right") {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                hover_card { hover_card_trigger { button (text: "Hover for details", variant: "outline") {} } hover_card_content { text "Hover card sample" {} } }
             }
 
             h2 "hover_card_trigger"
-            row (style: "gap-2 flex-wrap items-center") {
-                hover_card_trigger {}
-                hover_card_trigger (as_child: true) {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                hover_card { hover_card_trigger { button (text: "Hover for details", variant: "outline") {} } hover_card_content { text "Hover card sample" {} } }
             }
 
             h2 "icon"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 icon {}
                 icon (name: "sample") {}
                 icon (size: 1) {}
@@ -160,7 +152,7 @@ widget KitchenSinkPage {
             }
 
             h2 "image"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 image {}
                 image (src: "/icon.png") {}
                 image (alt: "sample") {}
@@ -169,7 +161,7 @@ widget KitchenSinkPage {
             }
 
             h2 "imagesurface"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 imagesurface {}
                 imagesurface (src: "/icon.png") {}
                 imagesurface (alt: "sample") {}
@@ -178,7 +170,7 @@ widget KitchenSinkPage {
             }
 
             h2 "input"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 input {}
                 input (placeholder: "sample") {}
                 input (type: "text") {}
@@ -186,101 +178,93 @@ widget KitchenSinkPage {
             }
 
             h2 "label"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 label "sample" {}
                 label (for: "sample") {}
                 label (selectable: true) {}
             }
 
             h2 "link"
-            row (style: "gap-2 flex-wrap items-center") {
-                link (text: "sample", href: "sample") {}
-                link (href: "sample") {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                link (text: "sample", href: "/button") {}
+                link (href: "/button") {}
             }
 
             h2 "mouse-area"
-            row (style: "gap-2 flex-wrap items-center") {
-                mouse-area {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                mouse-area { text "sample" {} }
                 mouse-area (coords: "sample") {}
             }
 
             h2 "native_button"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 native_button "sample" {}
                 native_button (disabled: true) {}
             }
 
             h2 "nav-group"
-            row (style: "gap-2 flex-wrap items-center") {
-                nav-group {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                nav-group { text "sample" {} }
                 nav-group (label: "sample") {}
                 nav-group (collapsible: true) {}
                 nav-group (indent: true) {}
             }
 
             h2 "nav-item"
-            row (style: "gap-2 flex-wrap items-center") {
-                nav-item {}
-                nav-item (to: "sample") {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                nav-item { text "sample" {} }
+                nav-item (to: "/button") {}
                 nav-item (exact: true) {}
                 nav-item (icon: "sample") {}
                 nav-item (label: "sample") {}
             }
 
             h2 "p"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 p "sample" {}
             }
 
             h2 "popover"
-            row (style: "gap-2 flex-wrap items-center") {
-                popover {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                popover { popover-trigger { button (text: "Open popover", variant: "outline") {} } popover-content { text "Popover sample" {} } }
                 popover (placement: "bottom") {}
                 popover (placement: "bottom-start") {}
             }
 
             h2 "progress"
-            row (style: "gap-2 flex-wrap items-center") {
-                progress {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                progress { text "sample" {} }
                 progress (value: 1) {}
                 progress (max: 1) {}
             }
 
             h2 "row"
-            row (style: "gap-2 flex-wrap items-center") {
-                row {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                row { text "First item" {} text "Second item" {} }
                 row (gap: 1) {}
                 row (align: "start") {}
                 row (align: "center") {}
             }
 
             h2 "scroll"
-            row (style: "gap-2 flex-wrap items-center") {
-                scroll {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                scroll (style: "h-20 w-64") { text "Scrollable sample content" {} text "Second line" {} }
                 scroll (axis: "y") {}
                 scroll (axis: "x") {}
                 scroll (scrollbar: "auto") {}
                 scroll (scrollbar: "always") {}
             }
 
-            h2 "scroll_test_content"
-            row (style: "gap-2 flex-wrap items-center") {
-                scroll_test_content {}
-                scroll_test_content (key: "sample") {}
-                scroll_test_content (extent_w: 1) {}
-                scroll_test_content (extent_h: 1) {}
-            }
-
             h2 "select"
-            row (style: "gap-2 flex-wrap items-center") {
-                select {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                select { select-trigger { select-value (placeholder: "Choose an option") {} } select-content { select-item (text: "Sample option", value: "sample") {} } }
                 select (placeholder: "sample") {}
                 select (disabled: "true") {}
                 select (disabled: "false") {}
             }
 
             h2 "separator"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 separator {}
                 separator (orientation: "horizontal") {}
                 separator (orientation: "vertical") {}
@@ -288,26 +272,23 @@ widget KitchenSinkPage {
             }
 
             h2 "sheet_content"
-            row (style: "gap-2 flex-wrap items-center") {
-                sheet_content {}
-                sheet_content (side: "top") {}
-                sheet_content (side: "right") {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                sheet { sheet_trigger { button (text: "Open sheet", variant: "outline") {} } sheet_content { sheet_header { sheet-title "Sheet sample" sheet-description "Sheet content sample" } } }
             }
 
             h2 "sheet_title"
-            row (style: "gap-2 flex-wrap items-center") {
-                sheet_title "sample" {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                sheet { sheet_trigger { button (text: "Open sheet", variant: "outline") {} } sheet_content { sheet_header { sheet-title "Sheet sample" sheet-description "Sheet content sample" } } }
             }
 
             h2 "sheet_trigger"
-            row (style: "gap-2 flex-wrap items-center") {
-                sheet_trigger {}
-                sheet_trigger (as_child: true) {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                sheet { sheet_trigger { button (text: "Open sheet", variant: "outline") {} } sheet_content { sheet_header { sheet-title "Sheet sample" sheet-description "Sheet content sample" } } }
             }
 
             h2 "sidebar"
-            row (style: "gap-2 flex-wrap items-center") {
-                sidebar {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                sidebar { text "sample" {} }
                 sidebar (side: "left") {}
                 sidebar (side: "right") {}
                 sidebar (variant: "sidebar") {}
@@ -315,21 +296,21 @@ widget KitchenSinkPage {
             }
 
             h2 "sidebar_menu_button"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 sidebar_menu_button "sample" {}
                 sidebar_menu_button (tooltip: "sample") {}
                 sidebar_menu_button (active: true) {}
             }
 
             h2 "sidebar_menu_sub_button"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 sidebar_menu_sub_button "sample" {}
-                sidebar_menu_sub_button (to: "sample") {}
+                sidebar_menu_sub_button (to: "/button") {}
                 sidebar_menu_sub_button (active: true) {}
             }
 
             h2 "slider"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 slider {}
                 slider (min: 1) {}
                 slider (max: 1) {}
@@ -337,30 +318,30 @@ widget KitchenSinkPage {
             }
 
             h2 "slot"
-            row (style: "gap-2 flex-wrap items-center") {
-                slot {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                slot { text "Slot content" {} }
                 slot (name: "sample") {}
             }
 
             h2 "spacer"
-            row (style: "gap-2 flex-wrap items-center") {
-                spacer {}
-                spacer (size: 1) {}
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
+                row (style: "w-full items-center gap-2") { text "Start" {} spacer {} text "End" {} }
+                row (style: "w-full items-center gap-2") { text "Start" {} spacer (size: 16) {} text "End" {} }
             }
 
             h2 "span"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 span "sample" {}
             }
 
             h2 "text"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 text "sample" {}
                 text (selectable: true) {}
             }
 
             h2 "textarea"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 textarea {}
                 textarea (placeholder: "sample") {}
                 textarea (disabled: true) {}
@@ -368,15 +349,17 @@ widget KitchenSinkPage {
             }
 
             h2 "toaster"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 toaster {}
+                text "Toast host (visible after a toast is queued)" {}
                 toaster (position: "top-left") {}
                 toaster (position: "top-center") {}
             }
 
             h2 "workspace_preview"
-            row (style: "gap-2 flex-wrap items-center") {
+            row (style: "gap-2 flex-wrap items-center w-full min-w-0") {
                 workspace_preview {}
+                text "Workspace preview needs a live host snapshot." {}
                 workspace_preview (ws: "sample") {}
                 workspace_preview (fallback: "sample") {}
             }

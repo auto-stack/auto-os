@@ -15,6 +15,7 @@ title_zh: "组件画廊"
 front_port: 4173
 // Plan 411: VM 原生窗口启动尺寸（逻辑像素，iced 会乘以系统 DPI 缩放）
 window: "1440x900"
-// PLAN-528 W6: kitchen-sink 页的 autodown_editor 需要 @autodown 引擎包
-// （015-notes 同款 link 依赖；本机路径 auto-down/autodown/packages/*）
-npm_deps: ["@autodown/editor:link:D:/autostack/auto-down/autodown/packages/editor", "@autodown/core:link:D:/autostack/auto-down/autodown/packages/core", "@autodown/engine:link:D:/autostack/auto-down/autodown/packages/engine"]
+// PLAN-528 W6 / PLAN-717: kitchen-sink 页的 autodown_editor 只依赖统一引擎包。
+// file: 会把本地包复制进前端 node_modules，不在计划 worktree 内创建 junction。
+// auto-os/widgets-gallery 与 auto-down 同组平铺；主检出中也解析到兄弟仓。
+npm_deps: ["@autodown/engine:file:../../auto-down/autodown/packages/engine"]
