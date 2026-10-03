@@ -330,6 +330,16 @@
           "status": "published",
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
+        },
+        {
+          "id": "V06-APP-IMPORT",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 应用源码导入",
+          "file": "docs/reports/v0.6-app-import.json",
+          "content": "21 个新产品源码快照、公开远端、依赖及已有 3 项应用 pin。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -764,6 +774,16 @@
           "file": "docs/plans/043-desktop-app-vm-check.md",
           "title": "PLAN-043 json.to_value 幂等臂与 get_json 返回协议",
           "content": "PLAN-080 F-2③ 后 UI 路径裸 Http.get_json 编译期自带 to_value（返回解析产物非 body 字符串）；旧配方 json.to_value(Http.get_json(..)) 双重解析曾致 NanoValue 调试串、数据静默全空（020/029/030 全族）。PLAN-042 T-08 修 object/list 直通，PLAN-043 Phase 2 扩 bool/null；p080 家族幂等回归钉。文档配方：app 侧单写 Http.get_json(url) 即可，显式外包等价。"
+        },
+        {
+          "id": "V06-APP-ORG",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "独立应用仓与 AutoOS 组合",
+          "file": "docs/specs/apps/independent-repositories.md",
+          "content": "固定 24 个应用源码组合；manifest 负责运行注册，gitlink 负责提交 pin。来源恢复与启动路径见规范。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -1464,6 +1484,16 @@
           "status": "published",
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
+        },
+        {
+          "id": "V06-APP-CHECK",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 组合验证",
+          "file": "docs/reports/v0.6-app-fresh-clone.json",
+          "content": "源码 hash、固定 pin、依赖/端口、实际注册表、两轨干运行与远端初始化；GUI 未验收。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -1868,6 +1898,16 @@
           "file": "docs/plans/043-desktop-app-vm-check.md",
           "title": "PLAN-043 Part 1 + Phase 2 review — pass（lang plan-043-dev 双提交）",
           "content": "复审门三件套：①验收对账——独立形态 scan/thumb/full curl 级 + 实机端到端（网格/查看器/收藏跨会话/目录跟随/导航全链）全过，桌面形态终验列为合并后剩余项；②债扫描——分批渲染闸为 documented 性能边界（lang 异步图片加载记后续债），str[i] 字符码/text 表达式两坑已修并注记；③健康——fmt/警告零新增、无调试印。合并发现：master PLAN-042 T-08 同 bug 收敛修复（取并集 bool/null），冲突两处消解干净，合并树 photo_service 10/10 + p080 5/5 + check 零错。merge receipt：auto-lang master 5af53ff3f（ff 合并 plan-043-dev 5778b1b55），worktree/分支/组目录零残留（wt-guard 扫 360 reparse point 先清）。遗留：桌面形态 launch 029 终验、其余 app 走查 Part 3+。"
+        },
+        {
+          "id": "V06-APP-REVIEW",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 应用接线复审",
+          "file": "docs/reports/v0.6-app-review.json",
+          "content": "AC-01–05 pass，绑定提交 02311c9b80da52dde5c137be5d7ec08f781421fe 和冻结规范增量；同会话工件复核。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     }
