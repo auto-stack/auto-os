@@ -26,9 +26,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-calc",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17810,
       "backPort": 17811,
@@ -48,7 +48,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/011-calculator",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-clock",
@@ -75,9 +76,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-clock",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17812,
       "backPort": 17813,
@@ -93,7 +94,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/012-clock",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-todo",
@@ -119,9 +121,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-todo",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17814,
       "backPort": 17815,
@@ -138,7 +140,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/013-todo",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-weather",
@@ -163,9 +166,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-weather",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17816,
       "backPort": 17817,
@@ -181,7 +184,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/014-weather",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-notes",
@@ -210,9 +214,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-notes",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17818,
       "backPort": 17819,
@@ -230,7 +234,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/015-notes",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-calendar",
@@ -257,9 +262,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-calendar",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17820,
       "backPort": 17821,
@@ -287,7 +292,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/016-calendar",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-chat",
@@ -312,9 +318,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-chat",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17822,
       "backPort": 17823,
@@ -343,7 +349,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/017-chat",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-reader",
@@ -370,9 +377,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-reader",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17824,
       "backPort": 17825,
@@ -401,7 +408,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/018-book-reader",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-blog",
@@ -445,9 +453,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-blog",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17826,
       "backPort": 17827,
@@ -476,7 +484,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/023-realworld",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-video",
@@ -529,9 +538,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-video",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17828,
       "backPort": 17829,
@@ -560,7 +569,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/030-video-player",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-music",
@@ -593,9 +603,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-music",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17830,
       "backPort": 17831,
@@ -624,7 +634,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/020-music-player",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-photos",
@@ -680,9 +691,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-photos",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17832,
       "backPort": 17833,
@@ -711,7 +722,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/029-photo-gallery",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-paint",
@@ -740,9 +752,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-paint",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17834,
       "backPort": 17835,
@@ -770,7 +782,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/031-paint",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-monitor",
@@ -801,9 +814,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-monitor",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17836,
       "backPort": 17837,
@@ -820,7 +833,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/025-sys-monitor",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-database",
@@ -846,9 +860,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-database",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17838,
       "backPort": 17839,
@@ -864,7 +878,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/026-database",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-explorer",
@@ -895,9 +910,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-explorer",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17840,
       "backPort": 17841,
@@ -926,7 +941,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/027-file-manager",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-launcher",
@@ -955,9 +971,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-launcher",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17842,
       "backPort": 17843,
@@ -973,7 +989,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/028-launcher",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-tetris",
@@ -1005,9 +1022,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-tetris",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17844,
       "backPort": 17845,
@@ -1024,7 +1041,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/036-tetris",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-solitaire",
@@ -1056,9 +1074,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-solitaire",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17846,
       "backPort": 17847,
@@ -1075,7 +1093,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/037-klondike",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-minesweeper",
@@ -1103,9 +1122,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-minesweeper",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17848,
       "backPort": 17849,
@@ -1121,7 +1140,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/038-minesweeper",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     },
     {
       "name": "auto-charts",
@@ -1147,9 +1167,9 @@
           }
         }
       ],
-      "status": "verified",
+      "status": "imported-and-connected",
       "url": "https://github.com/auto-stack/auto-charts",
-      "isEmpty": true,
+      "isEmpty": false,
       "visibility": "public",
       "frontPort": 17850,
       "backPort": 17851,
@@ -1177,7 +1197,8 @@
       "sourceSnapshotVerified": true,
       "remoteRefsVerified": true,
       "submodulePath": "apps/024-charts",
-      "connected": true
+      "connected": true,
+      "createdAsEmptyRepository": true
     }
   ],
   "existingSubmodules": [

@@ -1,5 +1,9 @@
 # Minesweeper AutoUI 应用规范
 
+> 2026-10-03 v0.6 组织更新：源码由 [auto-minesweeper](https://github.com/auto-stack/auto-minesweeper) 独立维护，
+> AutoOS 同路径为固定版本 submodule；端口与登记见 [组合规范](independent-repositories.md)。
+> 本次迁移验证接线，不重新宣称下述历史业务/GUI 验收已通过。
+
 > **Status**: active
 > **Owner**: auto-os / Plan 017
 > **Revision**: 1
@@ -14,7 +18,7 @@
 ## 运行模式与集成
 
 - **渲染双端同构**：AutoVM Native 桌面 (`auto run -r vm`) 与 Vue 3 Web (`auto run`)。
-- **端口契约**：`front_port: 4038`，场景 `scene: "ui"`，类别 `game`。
+- **端口契约**：`front_port: 17848`，场景 `scene: "ui"`，类别 `game`。
 - **窗口策略**：`window: "fit"`，窗口尺寸根据难度棋盘自适应贴合。
 
 ## 核心交互与视觉规范

@@ -1,5 +1,9 @@
 # Spec: 037-klondike — 经典纸牌接龙 (Klondike Solitaire)
 
+> 2026-10-03 v0.6 组织更新：源码由 [auto-solitaire](https://github.com/auto-stack/auto-solitaire) 独立维护，
+> AutoOS 同路径为固定版本 submodule；端口与登记见 [组合规范](independent-repositories.md)。
+> 本次迁移验证接线，不重新宣称下述历史业务/GUI 验收已通过。
+
 本规范定义 AutoOS 体系下 037-klondike 经典纸牌接龙应用的核心规则模型、交互契约、前后端分层与桌面集成标准。
 
 ## 1. 规则与状态模型 (SD-01)
@@ -50,7 +54,7 @@
 
 ## 4. 前后端分层与持久化规范 (SD-04)
 
-- **端口分配**：前端 `17600`，后端 `17601`（遵循 AGENTS.md §3 真实应用 17xxx 端口带）；
+- **端口分配**：前端 `17846`，后端 `17847`（遵循 AGENTS.md §3 真实应用 17xxx 端口带）；
 - **DTO 契约**：
   ```auto
   pub type GameRecord = {

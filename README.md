@@ -19,7 +19,7 @@
 |---|---|---|
 | **Stage A** | 伞形仓骨架（本仓）+ 首个真实 app [auto-kanban](../auto-kanban)（v1 计划板，只读） | 🔄 Plan 579 执行中（2026-09-07） |
 | **Stage B** | 桌面域资产自 auto-lang 搬迁入本仓（[Design 01](docs/design/01-stage-b-desktop-migration.md)） | 🔄 P-1..P-4/P-7 ✅；**P-5 ✅ + P-6 承载批 ✅**（2026-09-08，PLAN-009：§3-a 包装脚本 `scripts/desktop.{ps1,sh}`+V1/V2/V3 实机验收+CI 围栏保活+画廊部署触发端）；随迁七计划本体执行在途（os-003 开工） |
-| **Stage C** | 伞形组合机制升级评估（manifest vs submodule；触发条件 = 出现"CI 钉树构建 OS 镜像"类真实需求） | 未启动 |
+| **Stage C** | v0.6 独立应用源码组合（manifest + 固定 submodule） | 21 个新产品仓 + 3 个已有应用接线；运行制品安装体系另行开发 |
 
 **v0.6 应用组织（2026-10-03 用户确认）**：采用 `apps.manifest` + git submodule，
 分别承担运行注册与源码版本固定。21 个新产品仓已从可见 v0.5 基线导入；
