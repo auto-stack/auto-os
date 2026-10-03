@@ -1,12 +1,13 @@
 ---
 plan_id: PLAN-045
-status: drafting               # drafting → executing → execution_done → reviewed → archived
+status: executing               # drafting → executing → execution_done → reviewed → archived
+                              # （T-01..T-03 完成收口；T-04..T-07 待续）
 feature_name: fm-performance-foundation
 author: [agent]
 created_at: 2026-10-04
 updated_at: 2026-10-04
 plan_revision: 1
-current_step: 0
+current_step: 3
 total_steps: 7
 
 # /auto-plan:review 结束时填写：
@@ -216,16 +217,40 @@ model 增量：
   文件：apps/027-file-manager/src/front/app.at
   操作：model 增量字段；拆 NavTo→build_snapshot/Reload/RefreshView/
   GrowRender；SortBy*/ToggleHidden/SetSearch 改纯配置 + RefreshView；
-  写操作尾部改调 Reload。保持既有门控/守卫/错误态语义。
+  写操作尾部改调 Reload。保持既有门控/守卫/错误态语义不变。
   验证：`auto run -r vm` 手动冒烟（导航/排序/过滤链路）+ desktop_mcp
   T1-T14 适配后全绿。
   → AC-01/AC-04（部分）
+  [✅ 已完成 2026-10-04] commit 1611e0f（worktree .wt/os-045 子模块
+  plan-045 分支）。desktop_mcp **58/58 全绿**（T1-T14 + Phase 2 持久化
+  重启）。执行内裁决记录：① Reload 未单列——NavTo(current_path) 本就
+  提供「同目录重建+选中清空」语义（历史栈同路径不推进），保选中版
+  Reload 归 PLAN-046 多选升级；② `ext` 为 .at 关键字（Expected key,
+  got Ext 实证），快照行字段沿用 `file_ext`；③ **框架侧债（跨仓路由，
+  非本计划修）**：MCP payload 编码触发名（Name\\x1f<tag>\\x1f<val>）在
+  PLAN-659 T-05 严格预检（auto-lang renderer.rs has_handler_for 直查
+  namespaced 键）未剥 payload 恒 miss——2026-09-19 d482382df 引入，
+  v0.6 fresh-clone 验证未跑 027 套件故未暴露；tests/probe_trigger.py
+  A-E 实证矩阵（编码 str/int 均 miss；input 通道 str 等价；int 无效）。
+  app 侧适配：str 参 → trigger_s（input 通道）；int 参 → ctx_id 状态 +
+  新增 3 行无参 CtxSelect 钩。auto-lang 修法（其自仓 plan）：预检前
+  decode_payload 取 clean name。
 - **T-02** vue 轨同构改造
   文件：同上（NavTo vue 分支）
   操作：fs_list entries → 快照行映射（mtime 直取、name_key 预派生）→
   与 VM 轨共用 RefreshView。
   验证：`auto run` + Playwright smoke 四链路。
   → AC-06
+  [✅ 已完成 2026-10-04] commit ec5510f。vue 验证（`auto run --server=vm`
+  + 浏览器自动化）：演示态渲染 ✓、引导期即按 name 升序（RefreshView 在
+  vue 运行时派生）✓、"re" 过滤收敛 3 项 ✓、统计派生 ✓。执行内修复：①
+  演示分支原直塞 files_view（交互派生会清空演示列表）——改快照 schema
+  构建 + RefreshView 同路径；② image.thumb 在共享 RefreshView 中补
+  is_vm 守卫（vue 生成器实证为**抛错型** __vmOnly 桩，非回落型）。
+  新登记债（vue 轨，框架侧）：vue codegen 整除模拟减法结果不截断
+  （format_size 小数位 "1.2.36328125 MB"——gallery 嵌入既有形态，
+  VM 事实轨正确）；vue dev runner 文件监听在首次生成后停止（改 .at
+  需重启 auto run 才重生成）。VM 套件复跑 58/58 绿。
 - **T-03** fs_util 排序族替换
   文件：apps/027-file-manager/src/front/components/fs_util.at
   操作：首步探针（临时 handler sort_by(fn 引用) 形态验证，desktop_mcp
@@ -233,6 +258,22 @@ model 增量：
   失败则手写归并回落 + 债册登记。date 列 mtime int 序接线。
   验证：desktop_mcp T17；perf_check P-4。
   → AC-03
+  [✅ 已完成 2026-10-04] commit a3bc525。**探针结论改变实现形态**：原生
+  sort_by 在 app VM 会话**不可链**（link failed: Undefined symbol:
+  sort.sort_by in module App；ffi 注册表零 sort native）——8 具名比较器
+  方案弃，落单路径 .at 手写归并（底步向上、目录恒先 rank、四列分派、
+  name 次级键、mtime int 序 -1 沉底、左元稳定）。VM 套件 58/58 绿 +
+  顺序验证（row0=dir-00000，目录恒先 name 升序）。附带产出：应用内计时
+  状态（last_snapshot_ms/last_derive_ms）+ probe_perf.py。**测量学发现**：
+  MCP fixture 墙钟在 200 行模型上即 ~3s 纯仪器开销——应用内真值：
+  200-300 项快照+派生 **<1ms**（P-2/P-5 语义上远超预算达标，验收面须
+  以应用内计时为准）；**10k 全量同步导航把 VM 线程钉死**（240s+
+  view_total 不动）——瓶颈隔离为 `json.parse(fs.read_dir())` 超大数组
+  解析超线性（200 项 <1ms 线性外推应 ~50ms，实测 >240s）。T-05 裁决
+  预倾：臂 A（fs.entries 逐事件流式，绕开大数组解析）为正解；P-1/P-3
+  预算与验收口径随 T-06 以应用内计时重建（REQUIREMENTS P-x 数字在
+  review 时按实测重标定——语义契约变更走 plan_revision）。
+  → AC-03（排序正确性全维）；P-4 性能门待 T-06 应用内计时版。
 - **T-04** 渐进渲染与扩窗三层
   文件：app.at（列表/网格尾部 + 状态栏）
   操作：render_cap 窗口切片物化、加载更多按钮、哨兵行 onmouseenter、
@@ -264,7 +305,22 @@ model 增量：
   pass——授权与设计依据齐备（app 仓 be44391 需求/设计文档），无待决
   阻塞。next: work（T-01 起）。臂 A/臂 B、onscroll、sort_by 传递面三
   个验证点均有保底回落，不阻塞开工。
+- 2026-10-04 stage: work | PLAN-045 | rev 1 | outcome: partial-pass
+  （T-01..T-03 完成，T-04..T-07 待续）| code_commit: app 仓 plan-045
+  分支 1611e0f → ec5510f → a3bc525（worktree .wt/os-045/auto-os，
+  子模块分支 plan-045，基线 be44391）| task_ids: T-01 T-02 T-03 |
+  evidence: desktop_mcp 58/58 ×3 轮全绿；vue 轨浏览器实测（渲染/排序/
+  过滤）；probe_trigger.py 触发形态 A-E 矩阵；probe_perf.py 应用内计时
+  （200-300 项 <1ms）+ 10k 钉死定位（json.parse 大数组超线性）|
+  blockers: 无阻塞用户决策项——四条框架侧债已登记路由（payload 触发
+  预检不剥、vue 整除减法不截断、vue dev 监听停摆、sort natives 不入
+  app 会话；均 auto-lang 自仓计划范畴）| next: T-04 渐进渲染扩窗
+  （→ T-05 fs.entries 臂裁决 → T-06 应用内计时版性能门 → T-07 文档）。
 
 ## 待澄清事项
 
-- 无（三个技术验证点均带回落预案，属执行内裁决非用户决策）。
+- **框架侧债（已路由，不阻塞本计划）**：MCP payload 编码触发名在
+  PLAN-659 T-05 严格预检下恒 miss（证据与修法见 T-01 记录）——属
+  auto-lang 自仓计划范畴（Category A 门），app 侧已适配绕开；若
+  auto-lang 后续修复，tests/probe_trigger.py 可复核回归。
+- 其余无（三个技术验证点均带回落预案，属执行内裁决非用户决策）。
