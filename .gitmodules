@@ -1,3 +1,95 @@
 [submodule "apps/kanban"]
 	path = apps/kanban
-	url = git@github.com:auto-stack/auto-kanban.git
+	url = https://github.com/auto-stack/auto-kanban.git
+[submodule "apps/011-calculator"]
+	path = apps/011-calculator
+	url = https://github.com/auto-stack/auto-calc.git
+	branch = v0.6-dev
+[submodule "apps/012-clock"]
+	path = apps/012-clock
+	url = https://github.com/auto-stack/auto-clock.git
+	branch = v0.6-dev
+[submodule "apps/013-todo"]
+	path = apps/013-todo
+	url = https://github.com/auto-stack/auto-todo.git
+	branch = v0.6-dev
+[submodule "apps/014-weather"]
+	path = apps/014-weather
+	url = https://github.com/auto-stack/auto-weather.git
+	branch = v0.6-dev
+[submodule "apps/015-notes"]
+	path = apps/015-notes
+	url = https://github.com/auto-stack/auto-notes.git
+	branch = v0.6-dev
+[submodule "apps/016-calendar"]
+	path = apps/016-calendar
+	url = https://github.com/auto-stack/auto-calendar.git
+	branch = v0.6-dev
+[submodule "apps/017-chat"]
+	path = apps/017-chat
+	url = https://github.com/auto-stack/auto-chat.git
+	branch = v0.6-dev
+[submodule "apps/018-book-reader"]
+	path = apps/018-book-reader
+	url = https://github.com/auto-stack/auto-reader.git
+	branch = v0.6-dev
+[submodule "apps/023-realworld"]
+	path = apps/023-realworld
+	url = https://github.com/auto-stack/auto-blog.git
+	branch = v0.6-dev
+[submodule "apps/030-video-player"]
+	path = apps/030-video-player
+	url = https://github.com/auto-stack/auto-video.git
+	branch = v0.6-dev
+[submodule "apps/020-music-player"]
+	path = apps/020-music-player
+	url = https://github.com/auto-stack/auto-music.git
+	branch = v0.6-dev
+[submodule "apps/029-photo-gallery"]
+	path = apps/029-photo-gallery
+	url = https://github.com/auto-stack/auto-photos.git
+	branch = v0.6-dev
+[submodule "apps/031-paint"]
+	path = apps/031-paint
+	url = https://github.com/auto-stack/auto-paint.git
+	branch = v0.6-dev
+[submodule "apps/025-sys-monitor"]
+	path = apps/025-sys-monitor
+	url = https://github.com/auto-stack/auto-monitor.git
+	branch = v0.6-dev
+[submodule "apps/026-database"]
+	path = apps/026-database
+	url = https://github.com/auto-stack/auto-database.git
+	branch = v0.6-dev
+[submodule "apps/027-file-manager"]
+	path = apps/027-file-manager
+	url = https://github.com/auto-stack/auto-explorer.git
+	branch = v0.6-dev
+[submodule "apps/028-launcher"]
+	path = apps/028-launcher
+	url = https://github.com/auto-stack/auto-launcher.git
+	branch = v0.6-dev
+[submodule "apps/036-tetris"]
+	path = apps/036-tetris
+	url = https://github.com/auto-stack/auto-tetris.git
+	branch = v0.6-dev
+[submodule "apps/037-klondike"]
+	path = apps/037-klondike
+	url = https://github.com/auto-stack/auto-solitaire.git
+	branch = v0.6-dev
+[submodule "apps/038-minesweeper"]
+	path = apps/038-minesweeper
+	url = https://github.com/auto-stack/auto-minesweeper.git
+	branch = v0.6-dev
+[submodule "apps/024-charts"]
+	path = apps/024-charts
+	url = https://github.com/auto-stack/auto-charts.git
+	branch = v0.6-dev
+[submodule "apps/auto-term"]
+	path = apps/auto-term
+	url = https://github.com/auto-stack/auto-term.git
+	branch = main
+[submodule "apps/os-config"]
+	path = apps/os-config
+	url = https://github.com/auto-stack/auto-os-config.git
+	branch = main

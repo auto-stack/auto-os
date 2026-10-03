@@ -2,9 +2,12 @@
   "apps": [
     {
       "id": "kanban",
-      "repo": "../auto-kanban",
+      "repo": "apps/kanban",
       "kind": "repo",
-      "ports": [17100, 17101],
+      "ports": [
+        17100,
+        17101
+      ],
       "status": "active",
       "added": "2026-09-07"
     },
@@ -12,7 +15,10 @@
       "id": "auto-musk",
       "repo": "../auto-musk",
       "kind": "repo",
-      "ports": [17200, 17201],
+      "ports": [
+        17200,
+        17201
+      ],
       "status": "active",
       "added": "2026-09-11",
       "daemon": {
@@ -25,7 +31,10 @@
       "id": "jade-garden",
       "repo": "../auto-down/jade-garden/front/auto",
       "kind": "repo",
-      "ports": [17300, 17301],
+      "ports": [
+        17300,
+        17301
+      ],
       "status": "active",
       "added": "2026-09-11",
       "daemon": {
@@ -35,52 +44,258 @@
       }
     },
     {
-      "id": "auto-term",
-      "repo": "../auto-term/app",
+      "id": "039-syslog",
+      "repo": "apps/039-syslog",
+      "kind": "local",
+      "ports": [
+        17800
+      ],
+      "status": "active",
+      "added": "2026-09-23"
+    },
+    {
+      "id": "011-calculator",
+      "repo": "apps/011-calculator",
       "kind": "repo",
-      "ports": [17400, 17401],
+      "ports": [
+        17810
+      ],
       "status": "active",
-      "added": "2026-09-12"
+      "added": "2026-10-03"
     },
     {
-      "id": "037-klondike",
-      "repo": "apps/037-klondike",
-      "kind": "local",
-      "ports": [17600, 17601],
+      "id": "012-clock",
+      "repo": "apps/012-clock",
+      "kind": "repo",
+      "ports": [
+        17812
+      ],
       "status": "active",
-      "added": "2026-09-14"
+      "added": "2026-10-03"
     },
     {
-      "id": "tetris",
-      "repo": "apps/036-tetris",
-      "kind": "local",
-      "ports": [17500, 17501],
+      "id": "013-todo",
+      "repo": "apps/013-todo",
+      "kind": "repo",
+      "ports": [
+        17814,
+        17815
+      ],
       "status": "active",
-      "added": "2026-09-14"
+      "added": "2026-10-03"
     },
     {
-      "id": "038-minesweeper",
-      "repo": "apps/038-minesweeper",
-      "kind": "local",
-      "ports": [4038],
+      "id": "014-weather",
+      "repo": "apps/014-weather",
+      "kind": "repo",
+      "ports": [
+        17816
+      ],
       "status": "active",
-      "added": "2026-09-21"
+      "added": "2026-10-03"
+    },
+    {
+      "id": "015-notes",
+      "repo": "apps/015-notes",
+      "kind": "repo",
+      "ports": [
+        17818,
+        17819
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "016-calendar",
+      "repo": "apps/016-calendar",
+      "kind": "repo",
+      "ports": [
+        17820
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "017-chat",
+      "repo": "apps/017-chat",
+      "kind": "repo",
+      "ports": [
+        17822,
+        17823
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "018-book-reader",
+      "repo": "apps/018-book-reader",
+      "kind": "repo",
+      "ports": [
+        17824,
+        17825
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "023-realworld",
+      "repo": "apps/023-realworld",
+      "kind": "repo",
+      "ports": [
+        17826,
+        17827
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "030-video-player",
+      "repo": "apps/030-video-player",
+      "kind": "repo",
+      "ports": [
+        17828,
+        17829
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "020-music-player",
+      "repo": "apps/020-music-player",
+      "kind": "repo",
+      "ports": [
+        17830,
+        17831
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "029-photo-gallery",
+      "repo": "apps/029-photo-gallery",
+      "kind": "repo",
+      "ports": [
+        17832,
+        17833
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "031-paint",
+      "repo": "apps/031-paint",
+      "kind": "repo",
+      "ports": [
+        17834
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "025-sys-monitor",
+      "repo": "apps/025-sys-monitor",
+      "kind": "repo",
+      "ports": [
+        17836,
+        17837
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "026-database",
+      "repo": "apps/026-database",
+      "kind": "repo",
+      "ports": [
+        17838
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "027-file-manager",
+      "repo": "apps/027-file-manager",
+      "kind": "repo",
+      "ports": [
+        17840,
+        17841
+      ],
+      "status": "active",
+      "added": "2026-10-03"
     },
     {
       "id": "028-launcher",
       "repo": "apps/028-launcher",
-      "kind": "local",
-      "ports": [4028],
+      "kind": "repo",
+      "ports": [
+        17842
+      ],
       "status": "active",
-      "added": "2026-09-21"
+      "added": "2026-10-03"
     },
     {
-      "id": "039-syslog",
-      "repo": "apps/039-syslog",
-      "kind": "local",
-      "ports": [17800],
+      "id": "036-tetris",
+      "repo": "apps/036-tetris",
+      "kind": "repo",
+      "ports": [
+        17844,
+        17845
+      ],
       "status": "active",
-      "added": "2026-09-23"
+      "added": "2026-10-03"
+    },
+    {
+      "id": "037-klondike",
+      "repo": "apps/037-klondike",
+      "kind": "repo",
+      "ports": [
+        17846,
+        17847
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "038-minesweeper",
+      "repo": "apps/038-minesweeper",
+      "kind": "repo",
+      "ports": [
+        17848
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "024-charts",
+      "repo": "apps/024-charts",
+      "kind": "repo",
+      "ports": [
+        17850
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "auto-term",
+      "repo": "apps/auto-term/app",
+      "kind": "repo",
+      "ports": [
+        17400,
+        17401
+      ],
+      "status": "active",
+      "added": "2026-10-03"
+    },
+    {
+      "id": "os-config",
+      "repo": "apps/os-config/auto",
+      "kind": "repo",
+      "ports": [
+        17700,
+        17701
+      ],
+      "status": "active",
+      "added": "2026-10-03"
     }
   ]
 }
