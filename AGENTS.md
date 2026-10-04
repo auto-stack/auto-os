@@ -47,6 +47,12 @@ apps/ 容器臂按 pac.at 门静默跳过，不炸启动。组内开发需 kanba
 submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）——wt-guard
 扫 reparse point 不拦 gitlink，移除组前 `git submodule deinit` 更干净。
 
+## 2.1 App 日常检出与工作分支（2026-10-04 用户约定）
+
+所有已收编app的使用、计划与修改统一在`auto-os/apps/<目录>`进行。平时detached在AutoOS gitlink记录的最新提交；修改时在同一检出切`v0.6-dev`并同步远端；完成提交/推送、更新并提交父仓gitlink后，显式切回detached。文档与计划提交也更新gitlink。
+
+本条优先于此前app外部worktree/临时clone工作位置示例。Plan与复审纪律保留；同app一个写入者，不改动或切走他人WIP；语言/框架及OS核心仍沿相应worktree规约。操作步骤见[App子模块工作流程](docs/design/strategy/app-submodule-workflow.md)。
+
 ## 3. app 仓结构约定
 
 登记入 `apps.manifest` 的真实 app 仓（examples/ui 归 demo，真实 app

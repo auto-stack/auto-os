@@ -20,3 +20,7 @@
 | 两项共同分期 | [最小交付、应用依赖与容量](strategy/v0.6-foundations-roadmap.md) | 规划建议 2026-10-04 |
 
 本轮没有分配不可见主力机的全局Plan编号；本文注册提案，不修改既有current-state Specs。
+
+## 操作约定
+
+- [App子模块日常工作流程](strategy/app-submodule-workflow.md)：2026-10-04用户确认；apps为工作入口，v0.6-dev修改，提交/更新gitlink后detached。
