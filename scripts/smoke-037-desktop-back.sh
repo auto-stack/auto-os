@@ -25,11 +25,11 @@ PORT="${AUTOUI_MCP_PORT:-9437}"
 UI_DESKTOP="$LANG_ROOT/target/debug/examples/ui_desktop.exe"
 MEDIA_APP="020-music-player"
 
-[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced --example ui_desktop）" >&2; exit 1; }
+[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop）" >&2; exit 1; }
 [ -f "$LANG_ROOT/examples/ui/$MEDIA_APP/src/front/app.at" ] || { echo "载体缺失：$LANG_ROOT/examples/ui/$MEDIA_APP" >&2; exit 1; }
 
 echo "[smoke-037] build ui_desktop ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced --example ui_desktop)
+(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
 
 WORK="$(mktemp -d)"
 DESKTOP_PID=""

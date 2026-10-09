@@ -105,13 +105,24 @@ else {
     # T1 实证教训：cargo 按调用方 CWD 发现 .cargo/config.toml（/STACK:32MB
     # 在 lang 仓 config）——从本仓 cargo run 丢旗标致起动栈溢出。故 lang 侧
     # build（config 生效）+ 本仓 CWD 直接运行 exe。
+    # 媒体引擎（PLAN-617 特性门 + Plan 037 F-R4 债清偿）：VM 桌面 `<video>`
+    # 原生播放 = 构建期 mpv-widget + 运行期 libmpv-2.dll（解析序 AUTO_MPV_LIB
+    # → exe 同目录，不回落系统路径）。DLL 常驻 <伞形父>\tools\mpv\（不入库、
+    # cargo clean 不清），已设 AUTO_MPV_LIB 时不覆盖（显式指定优先）。
+    if (-not $env:AUTO_MPV_LIB) {
+        $mpvDll = Join-Path (Split-Path $OsRoot -Parent) 'tools\mpv\libmpv-2.dll'
+        if (Test-Path $mpvDll) {
+            $env:AUTO_MPV_LIB = $mpvDll
+            Write-Host "[desktop.ps1] AUTO_MPV_LIB=$env:AUTO_MPV_LIB"
+        }
+    }
     if ($DryRun) {
-        Write-Host "[dry-run] cd <lang>; cargo build -p auto-lang --features ui-iced --example ui_desktop"
+        Write-Host "[dry-run] cd <lang>; cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop"
         Write-Host "[dry-run] cd <os-root>; & <lang>/target/debug/examples/ui_desktop.exe $exeArgs"
         return
     }
     Push-Location $LangRoot
-    try { cargo build -p auto-lang --features ui-iced --example ui_desktop }
+    try { cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop }
     finally { Pop-Location }
     $exe = Join-Path $LangRoot 'target\debug\examples\ui_desktop.exe'
     Push-Location $OsRoot   # ../auto-os/apps 兄弟探测自命中（590 boot 实证同口径）

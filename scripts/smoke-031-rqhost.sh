@@ -21,11 +21,11 @@ OS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LANG_ROOT="${AUTO_LANG_ROOT:-$(dirname "$OS_ROOT")/lang-031/auto-lang}"
 AUTO="$LANG_ROOT/target/debug/auto.exe"
 
-[ -f "$AUTO" ] || { echo "auto.exe 缺失：先在 $LANG_ROOT 构建（cargo build -p auto --bin auto）" >&2; exit 1; }
+[ -f "$AUTO" ] || { echo "auto.exe 缺失：先在 $LANG_ROOT 构建（cargo build -p auto --features mpv-widget --bin auto）" >&2; exit 1; }
 [ -f "$LANG_ROOT/examples/ui/003-converter/src/front/app.at" ] || { echo "载体缺失：$LANG_ROOT/examples/ui/003-converter" >&2; exit 1; }
 
 echo "[smoke-031] build auto ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto --bin auto)
+(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto --features mpv-widget --bin auto)
 
 WORK="$(mktemp -d)"
 trap 'kill $DAEMON_PID $APP1_PID $APP2_PID $APPD_PID 2>/dev/null || true; rm -rf "$WORK"' EXIT

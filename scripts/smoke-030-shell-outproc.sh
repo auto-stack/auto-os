@@ -34,11 +34,11 @@ PORT="${AUTOUI_MCP_PORT:-9430}"
 UI_DESKTOP="$LANG_ROOT/target/debug/examples/ui_desktop.exe"
 AUTO_BIN="$LANG_ROOT/target/debug/auto.exe"
 
-[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced --example ui_desktop）" >&2; exit 1; }
-[ -f "$AUTO_BIN" ] || { echo "auto.exe 缺失（壳 outproc spawn 依赖同 exe re-exec 探测）：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced --bin auto）" >&2; exit 1; }
+[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop）" >&2; exit 1; }
+[ -f "$AUTO_BIN" ] || { echo "auto.exe 缺失（壳 outproc spawn 依赖同 exe re-exec 探测）：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop -p auto --bin auto）" >&2; exit 1; }
 
 echo "[smoke-030] build ui_desktop + auto ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced --example ui_desktop -p auto --bin auto)
+(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop -p auto --bin auto)
 
 echo "[smoke-030] launch desktop (acceptance, shell_model=outproc, mcp=:$PORT)"
 cd "$OS_ROOT"

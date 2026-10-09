@@ -98,12 +98,20 @@ else
   # link 旗标在 lang 仓 config 内）——从本仓 CWD cargo run 会丢旗标致主栈
   # 1MB 起动即溢出。故：lang 侧 build（config 生效）+ 本仓 CWD 直接 exec exe
   # （../auto-os/apps 兄弟探测自命中保持）。
+  # 媒体引擎（PLAN-617 特性门 + Plan 037 F-R4 债清偿）：VM 桌面 `<video>`
+  # 原生播放 = 构建期 mpv-widget + 运行期 libmpv-2.dll（解析序 AUTO_MPV_LIB
+  # → exe 同目录，不回落系统路径）。DLL 常驻 <伞形父>/tools/mpv/（不入库、
+  # cargo clean 不清），已设 AUTO_MPV_LIB 时不覆盖（显式指定优先）。
+  if [ -z "${AUTO_MPV_LIB:-}" ] && [ -f "$OS_PARENT/tools/mpv/libmpv-2.dll" ]; then
+    export AUTO_MPV_LIB="$(win_path "$OS_PARENT/tools/mpv/libmpv-2.dll")"
+    echo "[desktop.sh] AUTO_MPV_LIB=$AUTO_MPV_LIB"
+  fi
   if [ "$DRYRUN" = 1 ]; then
-    echo "[dry-run] (cd $LANG_ROOT && cargo build -p auto-lang --features ui-iced --example ui_desktop)"
+    echo "[dry-run] (cd $LANG_ROOT && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)"
     echo "[dry-run] cd $OS_ROOT; exec $LANG_ROOT/target/debug/examples/ui_desktop $ARGS"
     exit 0
   fi
-  (cd "$LANG_ROOT" && cargo build -p auto-lang --features ui-iced --example ui_desktop)
+  (cd "$LANG_ROOT" && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
   cd "$OS_ROOT"
   exec "$LANG_ROOT/target/debug/examples/ui_desktop" $ARGS
 fi

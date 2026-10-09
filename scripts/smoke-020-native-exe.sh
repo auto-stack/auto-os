@@ -29,11 +29,11 @@ APPS_DIR="${SMOKE_APPS_DIR:-$(dirname "$OS_ROOT")/lang-020/scratch020}"
 PORT="${AUTOUI_MCP_PORT:-9437}"
 UI_DESKTOP="$LANG_ROOT/target/debug/examples/ui_desktop.exe"
 
-[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced --example ui_desktop）" >&2; exit 1; }
+[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop）" >&2; exit 1; }
 [ -f "$APPS_DIR/002-counter/pac.at" ] || { echo "载体注册表缺失：$APPS_DIR（002-counter + desktop_exe 声明）" >&2; exit 1; }
 
 echo "[smoke-020] build ui_desktop ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced --example ui_desktop)
+(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
 
 echo "[smoke-020] launch desktop (acceptance, mcp=:$PORT, apps-dir=$APPS_DIR)"
 cd "$OS_ROOT"
