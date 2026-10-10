@@ -103,7 +103,7 @@ docs/design/autoui/virtual-desktop.md、website/public/desktop-showcase/。
   - ledger_refreshed: no-op，经复核无规范增量或受影响投影；未改 ledger。
   - archived: docs/plans/archive/048-readme-product-introduction.md | completion_kind: delivered
   - artifact check: 文档与图片由 Git 直接消费，无需重建或重启生产进程；不适用 auto-lang 代码回归门。
-  - cleanup: pending guarded removal of D:/autostack/.wt/os-048/auto-os and codex/os-048-readme.
+  - cleaned: wt-guard clean（无 reparse point），干净 worktree 且开发提交已是 main 祖先；git worktree remove 与 branch -d 完成，git worktree list 仅 main；空组目录已移除。stage: merge | outcome: pass。
 ## 10. 待澄清事项
 
 无。采用中文默认入口 + README.en.md，保留已有中文入口兼容。
