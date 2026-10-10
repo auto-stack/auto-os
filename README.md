@@ -1,114 +1,186 @@
-# auto-os
+# AutoOS
 
-**AutoOS 产品根 / 伞形组织根（umbrella）**——AutoOS 操作系统及其桌面、
-设置中心、真实应用的组织与集成仓。
+**用 Auto 构建桌面、应用与工作环境。**
 
-> **两轴分离（Plan 579 Stage A，2026-09-07 立项）**：
-> - [`auto-lang`](../auto-lang) = **语言/框架根**——Auto 语言编译器、VM、
->   AutoUI 框架栈（iced/Vue 双端）、examples demo 集。
-> - `auto-os`（本仓）= **产品根**——AutoOS 桌面 shell、真实 app 的伞形
->   组织、集成清单与产品级文档。
->
-> 本仓**不包含** auto-lang 的框架代码；app 仓经 `auto` CLI（来自
-> auto-lang）拉起，跨仓引用一律走解析序（见 AGENTS.md），不建任何
-> junction/symlink。
+中文 · [English](README.en.md)
 
-## 阶段路线（Stage A / B / C）
+AutoOS 是 [Auto](https://github.com/auto-stack/auto-lang) 语言生态的桌面与系统产品。
+它把窗口管理、应用、配置、终端和 AI 工作工具组织在同一个环境中，逐步走向
+**AI + Lang + OS**：让知识、任务与工具形成连贯、可理解、可掌控的工作体验。
 
-| 阶段 | 范围 | 状态 |
-|---|---|---|
-| **Stage A** | 伞形仓骨架（本仓）+ 首个真实 app [auto-kanban](../auto-kanban)（v1 计划板，只读） | 🔄 Plan 579 执行中（2026-09-07） |
-| **Stage B** | 桌面域资产自 auto-lang 搬迁入本仓（[Design 01](docs/design/01-stage-b-desktop-migration.md)） | 🔄 P-1..P-4/P-7 ✅；**P-5 ✅ + P-6 承载批 ✅**（2026-09-08，PLAN-009：§3-a 包装脚本 `scripts/desktop.{ps1,sh}`+V1/V2/V3 实机验收+CI 围栏保活+画廊部署触发端）；随迁七计划本体执行在途（os-003 开工） |
-| **Stage C** | 伞形组合机制升级评估（manifest vs submodule；触发条件 = 出现"CI 钉树构建 OS 镜像"类真实需求） | 未启动 |
+当前主要形态是 **OS over OS**：在已有操作系统中运行一个虚拟桌面，与宿主桌面
+并行，复用宿主的内核、驱动和系统服务。下一阶段将推进基于 Linux 的独立发行版，
+复用同一套桌面与应用架构。完整发行版仍在规划中。
 
-**submodule 裁定（Stage A）**：不使用 git submodule——现有扁平兄弟仓 +
-跨仓 worktree 组 + 解析序约定已覆盖需求；submodule 的 detached-HEAD /
-更新仪式 / 与 wt-guard 的交互风险在真实需求出现前不引入。`apps.manifest`
-是伞形的唯一事实源（虚拟伞形）。
+![AutoOS 浅色虚拟桌面，包含应用图标、任务栏与常驻小组件](docs/images/readme/desktop-light.png)
 
-## 目录结构
+*真实虚拟桌面截图，2026-10-01。截图中的应用内容为演示状态；[截图来源](docs/images/readme/SOURCES.md)。*
 
+## 虚拟桌面
+
+AutoOS 在一个宿主窗口中容纳多个应用窗口，提供统一的桌面体验：
+
+- **窗口与工作区**：聚焦、拖拽、缩放、最小化、切换工作区，以及多窗口布局。
+- **启动与切换**：桌面图标、应用启动器、任务栏与快捷入口。
+- **桌面表面**：深浅主题、壁纸、通知中心和桌面设置。
+- **常驻小组件**：应用通过 `view mini` 提供可交互的小视图，与主窗口共享状态；
+  桌面可为支持的应用孵化会话，再升格为完整窗口。
+
+![AutoOS 深色启动器，展示应用入口与分类](docs/images/readme/launcher-dark.png)
+
+![AutoOS 多窗口工作布局，左侧编辑器、右侧待办与日历](docs/images/readme/productivity-dark.png)
+
+桌面与应用界面由 AutoUI 描述，提供 Vue/Web 和 iced/Desktop 运行路径。
+一致性以布局、交互和主题为目标；各应用的接入范围、平台能力与文本渲染仍有差异。
+
+## 架构
+
+**桌面 Shell 负责窗口语义，宿主负责渲染与合成。** 窗口管理器本身是一个
+AutoUI 特权应用（**WM-as-App**），窗口边框、任务栏、启动器等桌面表面用 Auto
+编写。宿主处理输入、渲染、会话与平台接入，使桌面体验可以随宿主演进而复用。
+
+```mermaid
+flowchart TB
+    apps["系统应用与工作工具"]
+    shell["AutoOS Shell · 窗口 / 工作区 / 任务栏 / 小组件"]
+    ui["AutoUI · 组件 / 状态 / 事件 / 主题"]
+    runtime["AutoLang · VM / 转译 / AppSession / 渲染协议"]
+    host["宿主 · 渲染 / 合成 / 输入 / 平台适配"]
+    current["当前：宿主操作系统中的虚拟桌面"]
+    linux["规划：Linux 原生合成宿主与独立发行版"]
+    services["共享配置 / 应用后端 / AI 服务"]
+    apps --> ui
+    shell --> ui
+    apps <--> services
+    ui --> runtime --> host
+    host --> current
+    host -.-> linux
 ```
-auto-os/
-├── README.md            # 本文件
-├── AGENTS.md            # agent 工作规约（app 仓约定/解析序/wt-guard 纪律）
-├── apps.manifest        # 伞形 app 清单（JSON，唯一事实源；daemon 字段可选）
-├── apps/                # in-repo 桌面 app（Stage B P-5 随迁；含 pac.at 的
-│                        #   子目录 = local app root，P-3 容器探测注册）
-│   ├── 025-sys-monitor/ #   系统监视器（541 终态；tests/desktop_mcp 随目录）
-│   ├── 036-tetris/      #   俄罗斯方块（Plan 005；Vue/VM/Rust 双端）
-│   ├── 028-launcher/    #   桌面启动器（464；注册表型特权 app）
-│   ├── 038-minesweeper/ #   扫雷（games-wave1 基底）
-│   ├── kanban/          #   gitlink → auto-kanban（PLAN-013 首例 submodule，
-│   │                    #   容器臂/manifest 臂 id 去重，内容同源）
-│   └── common/settings/ #   共享 SettingsPopover 组件（ui-gallery 消费）
-├── ui-gallery/          # UI 示例画廊（顶层；收割 auto-lang examples/ui，
-│                        #   解析序 AUTO_GALLERY_APPS → ../auto-lang）
-├── widgets-gallery/     # 组件文档画廊（顶层；框架 docs/schema 管线语料，
-│                        #   auto-lang 侧经 resolve_os_top_dir 解析序消费）
-├── shell/               # shell 四件（P-7 权威真相源；hash-lock 同步契约）
-├── docs/plans/          # auto-plan 范式计划目录（.next-id 自 001 起）
-│   └── autos-desktop-program.md  # 桌面程序台账（P-5 接棒，单一事实源）
-├── docs/design/         # 本仓设计文档（01 = Stage B 迁移定案）
-├── scripts/             # new-plan.sh / shell-pack-sync.py
-└── .autoos/specs.json   # spec ledger（六节，结构对齐 auto-lang 同名文件）
-```
+
+| 层次 | 职责与归属 |
+|---|---|
+| 产品与桌面 | 本仓 `shell/`、桌面应用、画廊、应用集成清单和产品文档 |
+| 语言与框架 | `auto-lang` 的编译器、AutoVM、AutoUI、代码生成、会话和渲染/合成基础设施 |
+| 应用与服务 | 独立项目及本仓应用；按需使用共享配置、终端引擎、AI 服务或自己的后端 |
+| 平台适配 | 当前复用宿主的窗口系统、进程、文件与设备能力；Linux 原生宿主是后续方向 |
+
+**执行方式与显示方式分层。** AutoVM 支撑解释运行与开发迭代，a2r 支撑 Auto →
+Rust 的原生编译路径。应用可按接入方式以子树嵌入或通过 RenderQueue/桌面端点
+连接合成宿主。当前 [apps.manifest](apps.manifest) 的 10 个条目均声明
+`launch: vm`；原生生成与跨进程协议已有基础，但不能据此认定所有应用都已完成原生集成。
+
+**应用按清单组装。** `apps.manifest` 是伞形应用清单，桌面还会发现 `apps/` 中
+带 `pac.at` 的应用。独立仓通常以兄弟检出接入，也可由 submodule 承载（如
+`apps/kanban`）；相同 id 去重，容器中的检出优先。展示名来自应用的
+`pac.at`（`title` / `title_zh`）。有独立后端的应用可声明 daemon 依赖，桌面
+在启动前探测健康状态，并按配置拉起后端、注入连接地址。
+
+详见 [桌面迁移与职责边界](docs/design/01-stage-b-desktop-migration.md)、
+[虚拟桌面架构](https://github.com/auto-stack/auto-lang/blob/master/docs/design/autoui/virtual-desktop.md)
+与 [当前应用启动约定](docs/specs/shell/desktop-app-launch.md)。
 
 ## Apps
 
-伞形登记（详情见 `apps.manifest` + `apps/` 容器探测）：
+桌面既包含系统工具，也接入独立的工作应用。下表对应当前 `apps.manifest`；
+具体功能与成熟度以各项目说明和验证结果为准。
 
-| id | name | repo / 目录 | kind | ports | status |
-|---|---|---|---|---|---|
-| kanban | 通用看板（v1 计划板） | [../auto-kanban](../auto-kanban)（submodule `apps/kanban/`，PLAN-013 首例） | repo | 17100 / 17101 | active (Plan 579) |
-| auto-musk | Auto Musk（Coding Agent） | [../auto-musk](../auto-musk) | repo | 17200 / 17201 | active (2026-09-11；daemon 链 PLAN-013) |
-| jade-garden | Jade Garden（类 Obsidian 知识库） | [../auto-down](../auto-down)`/jade-garden/front/auto` | repo | 17300 / 17301 | active (2026-09-11；daemon 链 PLAN-013) |
-| auto-term | AutoTerm（桌面终端） | [../auto-term](../auto-term)`/app` | repo | 17400 / 17401（端口占位：无 back，引擎进程内） | active (PLAN-013 T7) |
-| 025-sys-monitor | 系统监视器 | `apps/025-sys-monitor/` | local | 4025 / 8025 | active (PLAN-590 随迁) |
-| 028-launcher | 桌面启动器 | `apps/028-launcher/` | local | 4028 | active (PLAN-590 随迁；a2r 化 PLAN-039) |
-| 038-minesweeper | 扫雷 | `apps/038-minesweeper/` | local | 4038 | active (PLAN-590 随迁；a2r 化 PLAN-039) |
-| tetris | 俄罗斯方块 | `apps/036-tetris/` | local | 17500 / 17501 | active (Plan 005；a2r 化 PLAN-039) |
-| 037-klondike | 经典纸牌接龙 | `apps/037-klondike/` | local | 17600 / 17601 | active (PLAN-006；a2r 化 PLAN-039) |
-| 039-syslog | 系统日志（System Log） | `apps/039-syslog/` | local | 17800 | active (PLAN-042；front-only 无 daemon，宿主 syslog 环查看器) |
-| jade-edit | JadeEdit 玉简编辑（AutoDown 编辑器，PLAN-081 单工程双轨 vm+vue） | [../jade-edit](../jade-edit) | repo | 4181（vm 轨桌面直挂） | active (2026-09-25；submodule 收编候选) |
+| 应用 | 用途 | 源码 |
+|---|---|---|
+| Kanban（`kanban`） | 通用看板、计划与任务视图 | [auto-kanban](https://github.com/auto-stack/auto-kanban)；submodule `apps/kanban/` |
+| AutoMusk（`auto-musk`） | Coding Agent、开发与计划工作台 | [auto-musk](https://github.com/auto-stack/auto-musk) |
+| Jade Garden（`jade-garden`） | 知识库、笔记与知识工作 | [auto-down](https://github.com/auto-stack/auto-down)，`jade-garden/front/auto/` |
+| AutoTerm（`auto-term`） | 桌面终端，接入进程内终端引擎 | [auto-term](https://github.com/auto-stack/auto-term)，`app/` |
+| JadeEdit（`jade-edit`） | AutoDown 文档编辑器 | [jade-edit](https://github.com/auto-stack/jade-edit) |
+| Launcher（`028-launcher`） | 桌面应用启动入口 | [apps/028-launcher](apps/028-launcher) |
+| System Log（`039-syslog`） | 查看桌面宿主的系统日志 | [apps/039-syslog](apps/039-syslog) |
+| Tetris（`036-tetris`） | 俄罗斯方块 | [apps/036-tetris](apps/036-tetris) |
+| Klondike（`037-klondike`） | 经典纸牌接龙 | [apps/037-klondike](apps/037-klondike) |
+| Minesweeper（`038-minesweeper`） | 扫雷 | [apps/038-minesweeper](apps/038-minesweeper) |
 
-> 真实 app 独立仓存放（沿 [auto-os-config](../auto-os-config) 先例），
-> examples/ui 归 demo。app 仓结构约定见 AGENTS.md（§3 含 daemon 键 schema；
-> §4 混合形态/submodule 双写纪律）。in-repo `apps/` 为 Stage B 随迁的桌面
-> 域 app（沿 examples 的 30NN/80NN 端口带；升格独立仓时改 17xxx 带）。
-> demo 升格流水线：examples demo 独立为外部仓 → manifest repo 条目 →
-> git submodule 收编 `apps/<id>/`（首个样板 kanban，PLAN-013）。
-> AutoTerm 独立 app 已落地（PLAN-013 T7：`../auto-term/app`，引擎经
-> auto.term.* catalog shim 进程内加载 autoterm_core.dll；部署件用
-> auto-os-config `scripts/deploy-autoterm.sh`）；os-config 内嵌终端页
-> 保留。
+桌面还包括容器发现的 [系统监视器](apps/025-sys-monitor)、
+[UI 画廊](ui-gallery) 与 [组件画廊](widgets-gallery)，并通过启动入口接入
+[设置中心 auto-os-config](https://github.com/auto-stack/auto-os-config)。
+设置中心组织应用、角色、技能与模型等共享配置。
+[AutoShell](https://github.com/auto-stack/auto-shell) 提供结构化命令与 Auto 脚本能力，
+属于相关工具生态，与桌面 Shell、AutoTerm 各有职责。
 
-## 图标资产（PLAN-018）
+画廊中的文件管理、待办、日历、媒体等示例也是应用孵化与框架验证的载体；
+示例出现在桌面或截图中，不等于已成为完整交付的系统应用。
 
-桌面 app 图标的唯一设计源是 `assets/icons.png`（浅）/ `assets/icons_dark.png`
-（深）两张精灵表（7×4=28，浅深同序不同位移）。运行时只吃切片：
+## 下一阶段：Linux 发行版
 
+下一版的重要方向是把 AutoOS 从宿主中的虚拟桌面推进为 **Linux 上的原生桌面与
+独立发行版**：复用 Linux 内核、驱动和必要系统服务，由 AutoOS 提供桌面外壳、
+应用与工作环境。这承接 **Language as OS（LaOS）** 的理念——用 Auto 组织系统
+部件，让运行环境适配不同平台。
+
+已有起点是 **Smithay 合成宿主 Stage 1**：嵌套合成循环、纹理呈现和桌面首帧已
+完成早期验证。它证明宿主接缝可以继续向 Linux 演进，完整 Linux 桌面会话与
+发行版仍需后续建设。
+
+| 工作方向 | 下一阶段需要推进的内容 |
+|---|---|
+| 原生桌面会话 | 在 Linux 合成宿主复用桌面 Shell，完善窗口、输入和显示接入 |
+| 应用与生态兼容 | 完善 AutoUI 原生应用接入，推进 Wayland/X11 客户端的窗口与输入集成 |
+| 系统与服务集成 | 梳理启动、配置、终端、AI 服务和应用后端的 Linux 部署与生命周期 |
+| 发行与维护 | 确定基础系统、依赖与打包方式，逐步形成可复现镜像、安装与升级流程 |
+| 使用质量 | 继续完善桌面交互、应用稳定性和 Web/桌面一致性，验证实际使用场景 |
+
+这是产品路线，具体范围仍需分解为设计和计划；基础发行版、完整镜像与发布日期
+尚未确定。COSMIC 是早期生态参考与探索背景，当前原生宿主路线采用 Smithay。
+OpenHarmony 集成与自有内核属于更长期方向。
+
+参考 [Linux 宿主当前进展](https://github.com/auto-stack/auto-lang/blob/master/docs/specs/auto-cosmic/project.md)
+与 [AutoOS 历史和展望](https://github.com/auto-stack/auto-lang/blob/master/website/zh/articles/autoos-history.md)。
+
+## 开发与启动
+
+本仓是产品集成仓，语言工具链和桌面宿主来自 `auto-lang`。开发时将两仓放在
+同一父目录，也可用 `AUTO_LANG_ROOT` 指定框架检出。准备 Auto CLI、对应轨道的
+构建依赖和所需应用仓；后端、媒体与终端等能力还需各项目的运行依赖。
+
+Windows PowerShell（在本仓根目录）：
+
+```powershell
+# 原生虚拟桌面（iced / VM）
+./scripts/desktop.ps1 -Track iced
+
+# Web 虚拟桌面（Vue，脚本默认轨道）
+./scripts/desktop.ps1 -Track vue
+
+# 只检查依赖路径与启动命令
+./scripts/desktop.ps1 -Track iced -DryRun
 ```
-assets/icons/{light,dark}/<stem>.png   # 切片产物（RGBA，≈152×148）
-assets/icons/mapping.json              # registry id → stem（27 条；browser 预留位不入映射）
-assets/icons/preview.png               # 蒙太奇预览（人眼复核用）
+
+Bash 入口：
+
+```bash
+bash scripts/desktop.sh iced
+bash scripts/desktop.sh vue
+bash scripts/desktop.sh iced --dry-run
 ```
 
-再生成与校验（改设计源后必跑）：
+这些是开发启动入口，Bash 脚本的存在不代表 Linux 发行版已经交付。
+`auto-lang` 定位顺序为 `AUTO_LANG_ROOT` → 兄弟目录 `../auto-lang` →
+`D:/autostack/auto-lang`。不使用 junction/symlink。若需要 Kanban 的本地
+submodule 检出，可在主检出运行 `git submodule update --init apps/kanban`。
 
+## 仓库与文档
+
+```text
+auto-os/
+├── shell/               # AutoUI 桌面表面与窗口管理界面
+├── apps/                # 本仓桌面应用与应用 submodule
+├── apps.manifest        # 伞形应用与启动/后端声明
+├── assets/              # 深浅主题图标及其他桌面资源
+├── ui-gallery/          # UI 示例与应用孵化画廊
+├── widgets-gallery/     # 组件文档画廊
+├── scripts/             # 桌面启动与工程工具
+└── docs/                # 设计、模块规范、计划与截图
 ```
-python scripts/slice_icons.py            # 切片 + 写 mapping + preview + 自校验
-python scripts/slice_icons.py --verify   # 只校验（像素级往返 + mapping 恰等）
-```
 
-运行时链路：桌面 boot 读 mapping 把命中 id 的 `entry.icon` 改写为
-`iconfile:<stem>`，渲染端（iced/vue）按当前主题选 `{light,dark}/<stem>.png`；
-未映射 app 自动落回 lucide（回退链契约见 auto-lang `docs/specs/` icon
-字符串协议族节）。
-
-## 关联
-
-- 框架根：[../auto-lang](../auto-lang)（语言/编译器/VM/AutoUI/examples）
-- 桌面架构：auto-lang `docs/design/autoui/virtual-desktop.md`（Design 23）
-- 桌面程序台账：[docs/plans/autos-desktop-program.md](docs/plans/autos-desktop-program.md)
-  （Stage B P-5 随迁本仓，接棒单一事实源；auto-lang INDEX 留指针行）
+- [设计索引](docs/design/00-intro.md) · [模块规范](docs/specs) · [桌面程序台账](docs/plans/autos-desktop-program.md)
+- [窗口与桌面小组件](docs/specs/shell/dashboard.md) · [桌面图标](docs/specs/shell/showdesk-icons.md) · [壁纸](docs/specs/shell/showdesk-wallpaper.md)
+- [图标生成工具](scripts/slice_icons.py)：修改图标源图后生成切片；`python scripts/slice_icons.py --verify` 校验资产
+- [工程协作规约](AGENTS.md)：auto-plan 流程、跨仓解析与 worktree 安全规则
+- [Auto Lang 网站介绍源码](https://github.com/auto-stack/auto-lang/tree/master/website/zh/autoos) · [Auto Lang v0.5 说明与后续展望](https://github.com/auto-stack/auto-lang/blob/master/website/docs/releases/v0.5.md)
