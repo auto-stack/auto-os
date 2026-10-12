@@ -11,3 +11,25 @@ widgets-gallery/src/front/tests/
 **/target/
 **/tmp/
 __pycache__/
+
+# Machine-local package and graphics caches.
+/.pnpm-store/
+/appdata/local/D3DSCache/
+/appdata/local/NVIDIA/DXCache/
+/appdata/local/NVIDIA/GLCache/
+
+# Auto tooling runtime state and generated indexes.
+**/.auto/
+
+# Generated visual verification output.
+/apps/025-sys-monitor/tests/test-results/
+/apps/025-sys-monitor/tests/vue_*.png
+/apps/037-klondike/tests/screenshots/
+/apps/037-klondike/src/front/tests/screenshots/
+
+# Root-level process output and one-off inspection files.
+/*.err
+/*.out
+/shot_tmp.txt
+/snapshot-rust.json
+/test-list*.txt
