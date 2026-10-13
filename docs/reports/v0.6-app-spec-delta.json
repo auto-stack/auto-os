@@ -1,0 +1,10 @@
+{
+  "planId": "OFFLINE-20261003-APP-INTEGRATION",
+  "planRevision": 1,
+  "paths": {
+    "docs/specs/apps/independent-repositories.md": "16189b1a8d36ff1c8151c7b68a0f1241e98884ab296afd9d526fd0853c330f82",
+    "docs/specs/apps/tetris.md": "da8695b4694800aeb064dc68b5eebc980515bfc590862f102c973a25e327e459",
+    "docs/specs/apps/klondike.md": "eee0f2ffd29e53f67cb3deb6550c9dc409a9c971abd6af5c417a02eacd8f2ab2",
+    "docs/specs/apps/minesweeper.md": "eb527b19822e2d2346b66ca5bd3eaf540f13942d223d013653e208eca75a6c4f"
+  }
+}

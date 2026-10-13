@@ -1,0 +1,360 @@
+{
+  "date": "2026-10-03",
+  "links": {
+    "newProductsVerified": 21,
+    "totalAppSubmodules": 24,
+    "existingAppsVerified": 3,
+    "result": "pass",
+    "apps": [
+      {
+        "repository": "auto-calc",
+        "path": "apps/011-calculator",
+        "commit": "e5247c549db375480f30b9eb1e417ad9b15191a3",
+        "sourceFilesVerified": 9
+      },
+      {
+        "repository": "auto-clock",
+        "path": "apps/012-clock",
+        "commit": "551d05e065eb2f449c643b3fa4fd671a9ec7a307",
+        "sourceFilesVerified": 7
+      },
+      {
+        "repository": "auto-todo",
+        "path": "apps/013-todo",
+        "commit": "bc8391c3b33a9f2ee896a33874f7c458a33d67ca",
+        "sourceFilesVerified": 13
+      },
+      {
+        "repository": "auto-weather",
+        "path": "apps/014-weather",
+        "commit": "6a3f9dc202a31ef45bfb5a219a9994a77e6cab84",
+        "sourceFilesVerified": 6
+      },
+      {
+        "repository": "auto-notes",
+        "path": "apps/015-notes",
+        "commit": "28d5157b7ed8d4f49e55f835bf8a365d2f97a89a",
+        "sourceFilesVerified": 24
+      },
+      {
+        "repository": "auto-calendar",
+        "path": "apps/016-calendar",
+        "commit": "6f4d36d34476adc0656494fb45fca9b7c1b05860",
+        "sourceFilesVerified": 5
+      },
+      {
+        "repository": "auto-chat",
+        "path": "apps/017-chat",
+        "commit": "8df3f33b3bfedc123287d4324b5e67ae5b00a724",
+        "sourceFilesVerified": 17
+      },
+      {
+        "repository": "auto-reader",
+        "path": "apps/018-book-reader",
+        "commit": "25d28c481aa7bcf375f0d21f04e4af7b6f624d58",
+        "sourceFilesVerified": 24
+      },
+      {
+        "repository": "auto-blog",
+        "path": "apps/023-realworld",
+        "commit": "55bd49e54ede0e189a39046cac557fa31ca8c5b4",
+        "sourceFilesVerified": 54
+      },
+      {
+        "repository": "auto-video",
+        "path": "apps/030-video-player",
+        "commit": "b6efa4ef1b052e35d966b26aab17054c86ba5679",
+        "sourceFilesVerified": 35
+      },
+      {
+        "repository": "auto-music",
+        "path": "apps/020-music-player",
+        "commit": "6b73a417a3985f1ce02c998cffb54039443ac822",
+        "sourceFilesVerified": 12
+      },
+      {
+        "repository": "auto-photos",
+        "path": "apps/029-photo-gallery",
+        "commit": "5eec01b873ba5139ed8b50572f646c12c76c0288",
+        "sourceFilesVerified": 27
+      },
+      {
+        "repository": "auto-paint",
+        "path": "apps/031-paint",
+        "commit": "a12bb20073e20a9ca3cc62b995af88cde66a75f7",
+        "sourceFilesVerified": 4
+      },
+      {
+        "repository": "auto-monitor",
+        "path": "apps/025-sys-monitor",
+        "commit": "59f271de220eb4df3f55d0781f28c4ff098a6a4a",
+        "sourceFilesVerified": 15
+      },
+      {
+        "repository": "auto-database",
+        "path": "apps/026-database",
+        "commit": "85fb35dbe675e354614629a4cbb40d6560ce86c0",
+        "sourceFilesVerified": 10
+      },
+      {
+        "repository": "auto-explorer",
+        "path": "apps/027-file-manager",
+        "commit": "19d13edba0b18170241f9b400fdcb092aa86553b",
+        "sourceFilesVerified": 18
+      },
+      {
+        "repository": "auto-launcher",
+        "path": "apps/028-launcher",
+        "commit": "00582cee1bc3a0b1b1e0de91703b6607ab1d6451",
+        "sourceFilesVerified": 8
+      },
+      {
+        "repository": "auto-tetris",
+        "path": "apps/036-tetris",
+        "commit": "9537a62aa01909becba4132aea2108c75009a18f",
+        "sourceFilesVerified": 25
+      },
+      {
+        "repository": "auto-solitaire",
+        "path": "apps/037-klondike",
+        "commit": "b5a2901a5780958ab12d14dccf8fefddb9ab3165",
+        "sourceFilesVerified": 19
+      },
+      {
+        "repository": "auto-minesweeper",
+        "path": "apps/038-minesweeper",
+        "commit": "ae6dcbfd7033bc2ee81c6d11b7162d1c653e9d04",
+        "sourceFilesVerified": 8
+      },
+      {
+        "repository": "auto-charts",
+        "path": "apps/024-charts",
+        "commit": "b1d14690751d89912f3ec0fd271caf48ff58b01a",
+        "sourceFilesVerified": 12
+      }
+    ]
+  },
+  "registry": {
+    "apps": [
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\011-calculator\\src\\front\\app.at",
+        "id": "011-calculator",
+        "repo": "auto-calc",
+        "title": "Calculator"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\012-clock\\src\\front\\app.at",
+        "id": "012-clock",
+        "repo": "auto-clock",
+        "title": "Clock"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\013-todo\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\013-todo\\src\\front\\app.at",
+        "id": "013-todo",
+        "repo": "auto-todo",
+        "title": "Todo"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\014-weather\\src\\front\\app.at",
+        "id": "014-weather",
+        "repo": "auto-weather",
+        "title": "Weather"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\015-notes\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\015-notes\\src\\front\\app.at",
+        "id": "015-notes",
+        "repo": "auto-notes",
+        "title": "Notes"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\016-calendar\\src\\front\\app.at",
+        "id": "016-calendar",
+        "repo": "auto-calendar",
+        "title": "Calendar"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\017-chat\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\017-chat\\src\\front\\app.at",
+        "id": "017-chat",
+        "repo": "auto-chat",
+        "title": "Chat"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\018-book-reader\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\018-book-reader\\src\\front\\app.at",
+        "id": "018-book-reader",
+        "repo": "auto-reader",
+        "title": "Book Reader"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\023-realworld\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\023-realworld\\src\\front\\app.at",
+        "id": "023-realworld",
+        "repo": "auto-blog",
+        "title": "Blog"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\030-video-player\\src\\front\\app.at",
+        "id": "030-video-player",
+        "repo": "auto-video",
+        "title": "Video Player"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\020-music-player\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\020-music-player\\src\\front\\app.at",
+        "id": "020-music-player",
+        "repo": "auto-music",
+        "title": "AutoMusic Player"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\029-photo-gallery\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\029-photo-gallery\\src\\front\\app.at",
+        "id": "029-photo-gallery",
+        "repo": "auto-photos",
+        "title": "Photos"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\031-paint\\src\\front\\app.at",
+        "id": "031-paint",
+        "repo": "auto-paint",
+        "title": "Paint"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\025-sys-monitor\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\025-sys-monitor\\src\\front\\app.at",
+        "id": "025-sys-monitor",
+        "repo": "auto-monitor",
+        "title": "System Monitor"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\026-database\\src\\front\\app.at",
+        "id": "026-database",
+        "repo": "auto-database",
+        "title": "Database Studio"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\027-file-manager\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\027-file-manager\\src\\front\\app.at",
+        "id": "027-file-manager",
+        "repo": "auto-explorer",
+        "title": "File Manager"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\028-launcher\\src\\front\\app.at",
+        "id": "028-launcher",
+        "repo": "auto-launcher",
+        "title": "Launcher"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\036-tetris\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\036-tetris\\src\\front\\app.at",
+        "id": "036-tetris",
+        "repo": "auto-tetris",
+        "title": "俄罗斯方块"
+      },
+      {
+        "backEntry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\037-klondike\\src\\back\\api.at",
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\037-klondike\\src\\front\\app.at",
+        "id": "037-klondike",
+        "repo": "auto-solitaire",
+        "title": "Klondike"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\038-minesweeper\\src\\front\\app.at",
+        "id": "038-minesweeper",
+        "repo": "auto-minesweeper",
+        "title": "Minesweeper"
+      },
+      {
+        "backEntry": null,
+        "desktopVisible": true,
+        "entry": "\\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\\024-charts\\src\\front\\app.at",
+        "id": "024-charts",
+        "repo": "auto-charts",
+        "title": "Charts"
+      }
+    ],
+    "existingAppsAndSystemComponentsVerified": [
+      "kanban",
+      "auto-term",
+      "os-config",
+      "039-syslog",
+      "ui-gallery",
+      "widgets-gallery"
+    ],
+    "method": "Unmodified app_registry.rs and os_paths.rs; storage read stub returns None; no UI launch.",
+    "totalRegistryEntries": 27,
+    "verifiedProductCount": 21
+  },
+  "registryWarnings": "[app-registry] apps.manifest entry `auto-musk` skipped: \\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-musk has no pac.at\n[app-registry] apps.manifest entry `jade-garden` skipped: \\\\?\\D:\\autostack\\.wt\\os-v06-app-import\\auto-down\\jade-garden\\front\\auto has no pac.at\n",
+  "dryRuns": [
+    {
+      "shell": "powershell",
+      "track": "vue",
+      "exitCode": 0,
+      "output": "[desktop.ps1] track=vue  lang=D:\\autostack\\auto-lang  os=D:\\autostack\\.wt\\os-v06-app-import\\auto-os  auto=D:\\autostack\\auto-lang\\target\\debug\\auto.exe\n[desktop.ps1] AUTO_OS_ROOT=D:\\autostack\\.wt\\os-v06-app-import\\auto-os  AUTO_DESKTOP_APPS=D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\n[desktop.ps1] AUTO_DESKTOP_APPS_EXTRA=\n[dry-run] cd <lang>/examples/desktop-host; & auto run --desktop\n",
+      "stderr": ""
+    },
+    {
+      "shell": "bash",
+      "track": "vue",
+      "exitCode": 0,
+      "output": "[desktop.sh] track=vue  lang=/d/autostack/auto-lang  os=/d/autostack/.wt/os-v06-app-import/auto-os  auto=/d/autostack/auto-lang/target/debug/auto.exe\n[desktop.sh] AUTO_OS_ROOT=D:/autostack/.wt/os-v06-app-import/auto-os  AUTO_DESKTOP_APPS=D:/autostack/.wt/os-v06-app-import/auto-os/apps\n[desktop.sh] extra roots via AUTO_OS_ROOT/apps.manifest and galleries\n[dry-run] cd /d/autostack/auto-lang/examples/desktop-host; auto run --desktop\n",
+      "stderr": ""
+    },
+    {
+      "shell": "powershell",
+      "track": "iced",
+      "exitCode": 0,
+      "output": "[desktop.ps1] track=iced  lang=D:\\autostack\\auto-lang  os=D:\\autostack\\.wt\\os-v06-app-import\\auto-os  args=--apps-dir D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\n[desktop.ps1] AUTO_OS_ROOT=D:\\autostack\\.wt\\os-v06-app-import\\auto-os（apps 容器经 CWD=本仓根兄弟探测自命中）\n[dry-run] cd <lang>; cargo build -p auto-lang --features ui-iced --example ui_desktop\n[dry-run] cd <os-root>; & <lang>/target/debug/examples/ui_desktop.exe --apps-dir D:\\autostack\\.wt\\os-v06-app-import\\auto-os\\apps\n",
+      "stderr": ""
+    },
+    {
+      "shell": "bash",
+      "track": "iced",
+      "exitCode": 0,
+      "output": "[desktop.sh] track=iced  lang=/d/autostack/auto-lang  os=/d/autostack/.wt/os-v06-app-import/auto-os  args=--apps-dir D:/autostack/.wt/os-v06-app-import/auto-os/apps\n[desktop.sh] AUTO_OS_ROOT=D:/autostack/.wt/os-v06-app-import/auto-os（apps 容器经 CWD=本仓根兄弟探测自命中）\n[dry-run] (cd /d/autostack/auto-lang && cargo build -p auto-lang --features ui-iced --example ui_desktop)\n[dry-run] cd /d/autostack/.wt/os-v06-app-import/auto-os; exec /d/autostack/auto-lang/target/debug/examples/ui_desktop --apps-dir D:/autostack/.wt/os-v06-app-import/auto-os/apps\n",
+      "stderr": ""
+    }
+  ],
+  "bashSyntax": "pass",
+  "guiRuntime": "not exercised: no Auto CLI or UI desktop binary installed",
+  "probeSources": {
+    "app_registry.rs": "b77b0b241f41ed2e3e0b2feed664a9c08012cd73993c26ce65895adc0bc50a88",
+    "os_paths.rs": "eba14c9eda3cfeca9b5a08b6ccef71365740e8fddeea6f90f12e00f8f9a67446",
+    "main.rs": "7d0c5d19d2cde58828db9a5b46710006bca21178e5831b548843dce4980e0bb9"
+  },
+  "probeSourceCommit": "17292c07e792e80d4e4da5495fc3fc2917e8aa1e",
+  "method": "Actual unchanged app_registry.rs/os_paths.rs; only storage read is stubbed to None; no UI launch."
+}

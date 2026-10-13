@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-04",
+  "stage": "review",
+  "planId": "OFFLINE-20261003-APP-INTEGRATION",
+  "planRevision": 1,
+  "reviewedCommit": "02311c9b80da52dde5c137be5d7ec08f781421fe",
+  "baseCommit": "93c3cb0259c8cfe1644e2b35baff71638be59ec5",
+  "independence": "Same implementation session; verdict reconstructed from committed artifacts and re-run link checks. No separate reviewer claimed.",
+  "specDelta": {
+    "planId": "OFFLINE-20261003-APP-INTEGRATION",
+    "planRevision": 1,
+    "paths": {
+      "docs/specs/apps/independent-repositories.md": "16189b1a8d36ff1c8151c7b68a0f1241e98884ab296afd9d526fd0853c330f82",
+      "docs/specs/apps/tetris.md": "da8695b4694800aeb064dc68b5eebc980515bfc590862f102c973a25e327e459",
+      "docs/specs/apps/klondike.md": "eee0f2ffd29e53f67cb3deb6550c9dc409a9c971abd6af5c417a02eacd8f2ab2",
+      "docs/specs/apps/minesweeper.md": "eb527b19822e2d2346b66ca5bd3eaf540f13942d223d013653e208eca75a6c4f"
+    }
+  },
+  "dependencyRevisions": {
+    "auto-calc": "e5247c549db375480f30b9eb1e417ad9b15191a3",
+    "auto-clock": "551d05e065eb2f449c643b3fa4fd671a9ec7a307",
+    "auto-todo": "bc8391c3b33a9f2ee896a33874f7c458a33d67ca",
+    "auto-weather": "6a3f9dc202a31ef45bfb5a219a9994a77e6cab84",
+    "auto-notes": "28d5157b7ed8d4f49e55f835bf8a365d2f97a89a",
+    "auto-calendar": "6f4d36d34476adc0656494fb45fca9b7c1b05860",
+    "auto-chat": "8df3f33b3bfedc123287d4324b5e67ae5b00a724",
+    "auto-reader": "25d28c481aa7bcf375f0d21f04e4af7b6f624d58",
+    "auto-blog": "55bd49e54ede0e189a39046cac557fa31ca8c5b4",
+    "auto-video": "b6efa4ef1b052e35d966b26aab17054c86ba5679",
+    "auto-music": "6b73a417a3985f1ce02c998cffb54039443ac822",
+    "auto-photos": "5eec01b873ba5139ed8b50572f646c12c76c0288",
+    "auto-paint": "a12bb20073e20a9ca3cc62b995af88cde66a75f7",
+    "auto-monitor": "59f271de220eb4df3f55d0781f28c4ff098a6a4a",
+    "auto-database": "85fb35dbe675e354614629a4cbb40d6560ce86c0",
+    "auto-explorer": "19d13edba0b18170241f9b400fdcb092aa86553b",
+    "auto-launcher": "00582cee1bc3a0b1b1e0de91703b6607ab1d6451",
+    "auto-tetris": "9537a62aa01909becba4132aea2108c75009a18f",
+    "auto-solitaire": "b5a2901a5780958ab12d14dccf8fefddb9ab3165",
+    "auto-minesweeper": "ae6dcbfd7033bc2ee81c6d11b7162d1c653e9d04",
+    "auto-charts": "b1d14690751d89912f3ec0fd271caf48ff58b01a",
+    "auto-term": "7a0d0e8b718fb260641f0d09ada95a7346771cd3",
+    "auto-os-config": "8fe4cdc3a9a7bcc139230fa2c4bd7d79af1a5105",
+    "auto-kanban": "5e0da499dec476b029237b1436856eb90e936ec6"
+  },
+  "acceptanceResults": {
+    "AC-01": {
+      "result": "pass",
+      "evidence": "21 source manifests/README/pac and remotely fetched published commits"
+    },
+    "AC-02": {
+      "result": "pass",
+      "evidence": "Re-run original source SHA256 checks; auxiliary sources retained in references; source repositories unchanged"
+    },
+    "AC-03": {
+      "result": "pass",
+      "evidence": "24 gitlinks/.gitmodules/manifest pairs; HTTPS origins; all pinned commits obtainable"
+    },
+    "AC-04": {
+      "result": "pass",
+      "evidence": "27 actual registry entries, four desktop dry-runs; system log and galleries unchanged"
+    },
+    "AC-05": {
+      "result": "pass",
+      "evidence": "Fresh no-hardlinks OS clone; dependencies initialized from HTTPS; term evidence logs excluded sparsely; clean source composition and main unchanged"
+    }
+  },
+  "reusedEvidence": "Fresh clone and dry-runs test the identical implementation and dependency SHAs; intervening changes contain only documentation/report alignment.",
+  "health": "No Rust crate edits; Git whitespace and Bash syntax checks pass; PowerShell 5 dry-runs pass after encoding fix.",
+  "findings": [
+    "V06-APP-001",
+    "V06-APP-002",
+    "V06-APP-003",
+    "V06-APP-004"
+  ],
+  "outcome": "pass",
+  "next": "consolidate and publish on user-selected v0.6-dev; retain development worktree"
+}

@@ -1,9 +1,13 @@
 # Tetris AutoUI 应用规范
 
+> 2026-10-03 v0.6 组织更新：源码由 [auto-tetris](https://github.com/auto-stack/auto-tetris) 独立维护，
+> AutoOS 同路径为固定版本 submodule；端口与登记见 [组合规范](independent-repositories.md)。
+> 本次迁移验证接线，不重新宣称下述历史业务/GUI 验收已通过。
+
 > **Status**: active
 > **Owner**: auto-os / Plan 005
-> **Revision**: 1
-> **Last updated**: 2026-09-13
+> **Revision**: 2
+> **Last updated**: 2026-10-03
 
 ## 定位与边界
 
@@ -19,16 +23,16 @@ combo/B2B、会话续玩或手写 Vue/JS/Rust 业务替身。
 
 | 模式 | 前端 | 后端 | 部署 | 端口/入口 |
 |---|---|---|---|---|
-| M1 | Vue | Rust | HTTP | `17500` / `17501` |
-| M2 | Vue | VM | HTTP | `17500` / `17501` |
+| M1 | Vue | Rust | HTTP | `17844` / `17845` |
+| M2 | Vue | VM | HTTP | `17844` / `17845` |
 | M3 | VM | VM | merged | 原生 AutoUI |
-| M4 | VM | VM | no-merge HTTP | 原生 AutoUI + `17501` |
-| M5 | VM | Rust | no-merge HTTP | 原生 AutoUI + `17501` |
+| M4 | VM | VM | no-merge HTTP | 原生 AutoUI + `17845` |
+| M5 | VM | Rust | no-merge HTTP | 原生 AutoUI + `17845` |
 | M6 | Rust | Rust | merged | 原生 AutoUI |
-| M7 | Rust | Rust | no-merge HTTP | 原生 AutoUI + `17501` |
+| M7 | Rust | Rust | no-merge HTTP | 原生 AutoUI + `17845` |
 
 Vue 始终通过 HTTP 调用后端；VM 与 Rust 必须分别支持 `merged` 和 `no-merge`。
-Vue 的进程内合并不属于本应用范围。桌面登记 id 为 `tetris`，标题为“俄罗斯方块”，
+Vue 的进程内合并不属于本应用范围。桌面登记 id 为 `036-tetris`，标题为“俄罗斯方块”，
 场景为 `ui`，类别为 `game`，默认深色主题、`indigo` accent、`fit` 窗口。
 
 ## 游戏规则

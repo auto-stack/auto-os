@@ -365,6 +365,16 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "V06-APP-IMPORT",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 应用源码导入",
+          "file": "docs/reports/v0.6-app-import.json",
+          "content": "21 个新产品源码快照、公开远端、依赖及已有 3 项应用 pin。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -835,6 +845,16 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "V06-APP-ORG",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "独立应用仓与 AutoOS 组合",
+          "file": "docs/specs/apps/independent-repositories.md",
+          "content": "固定 24 个应用源码组合；manifest 负责运行注册，gitlink 负责提交 pin。来源恢复与启动路径见规范。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -1630,6 +1650,16 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "V06-APP-CHECK",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 组合验证",
+          "file": "docs/reports/v0.6-app-fresh-clone.json",
+          "content": "源码 hash、固定 pin、依赖/端口、实际注册表、两轨干运行与远端初始化；GUI 未验收。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     },
@@ -2081,6 +2111,16 @@
           "status": "published",
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
+        },
+        {
+          "id": "V06-APP-REVIEW",
+          "created": "2026-10-04",
+          "related": [],
+          "title": "v0.6 应用接线复审",
+          "file": "docs/reports/v0.6-app-review.json",
+          "content": "AC-01–05 pass，绑定提交 02311c9b80da52dde5c137be5d7ec08f781421fe 和冻结规范增量；同会话工件复核。",
+          "status": "published",
+          "last_modified": "2026-10-04"
         }
       ]
     }

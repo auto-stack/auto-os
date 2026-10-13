@@ -14,6 +14,11 @@ AutoOS 是 [Auto](https://github.com/auto-stack/auto-lang) 语言生态的桌面
 
 ![AutoOS 浅色虚拟桌面，包含应用图标、任务栏与常驻小组件](docs/images/readme/desktop-light.png)
 
+**v0.6 应用组合**：`apps.manifest` 承担运行注册，git submodule 固定产品源码版本。
+本仓组合 21 个独立产品仓与 3 个已有应用入口；来源、固定 SHA 和基线范围见
+[`docs/reports/v0.6-app-import.json`](docs/reports/v0.6-app-import.json)。教学 Demo 保留在
+auto-lang，独立产品组合不要求与展示 Demo 一一对应。
+
 *真实虚拟桌面截图，2026-10-01。截图中的应用内容为演示状态；[截图来源](docs/images/readme/SOURCES.md)。*
 
 ## 虚拟桌面
@@ -84,18 +89,72 @@ Rust 的原生编译路径。应用可按接入方式以子树嵌入或通过 Re
 桌面既包含系统工具，也接入独立的工作应用。下表对应当前 `apps.manifest`；
 具体功能与成熟度以各项目说明和验证结果为准。
 
+### 既有与系统应用
+
 | 应用 | 用途 | 源码 |
-|---|---|---|
 | Kanban（`kanban`） | 通用看板、计划与任务视图 | [auto-kanban](https://github.com/auto-stack/auto-kanban)；submodule `apps/kanban/` |
 | AutoMusk（`auto-musk`） | Coding Agent、开发与计划工作台 | [auto-musk](https://github.com/auto-stack/auto-musk) |
 | Jade Garden（`jade-garden`） | 知识库、笔记与知识工作 | [auto-down](https://github.com/auto-stack/auto-down)，`jade-garden/front/auto/` |
 | AutoTerm（`auto-term`） | 桌面终端，接入进程内终端引擎 | [auto-term](https://github.com/auto-stack/auto-term)，`app/` |
 | JadeEdit（`jade-edit`） | AutoDown 文档编辑器 | [jade-edit](https://github.com/auto-stack/jade-edit) |
-| Launcher（`028-launcher`） | 桌面应用启动入口 | [apps/028-launcher](apps/028-launcher) |
 | System Log（`039-syslog`） | 查看桌面宿主的系统日志 | [apps/039-syslog](apps/039-syslog) |
-| Tetris（`036-tetris`） | 俄罗斯方块 | [apps/036-tetris](apps/036-tetris) |
-| Klondike（`037-klondike`） | 经典纸牌接龙 | [apps/037-klondike](apps/037-klondike) |
-| Minesweeper（`038-minesweeper`） | 扫雷 | [apps/038-minesweeper](apps/038-minesweeper) |
+
+### 独立产品仓
+
+独立产品组合（具体 Git SHA、来源快照和旧基线范围见
+[`docs/reports/v0.6-app-import.json`](docs/reports/v0.6-app-import.json)）：
+
+| 应用 | 产品仓 | AutoOS 路径 | 端口 |
+|---|---|---|---|
+| 计算器 | [auto-calc](https://github.com/auto-stack/auto-calc) | `apps/011-calculator` | 17810 |
+| 时钟 | [auto-clock](https://github.com/auto-stack/auto-clock) | `apps/012-clock` | 17812 |
+| 待办 | [auto-todo](https://github.com/auto-stack/auto-todo) | `apps/013-todo` | 17814 / 17815 |
+| 天气 | [auto-weather](https://github.com/auto-stack/auto-weather) | `apps/014-weather` | 17816 |
+| 便笺 | [auto-notes](https://github.com/auto-stack/auto-notes) | `apps/015-notes` | 17818 / 17819 |
+| 日历 | [auto-calendar](https://github.com/auto-stack/auto-calendar) | `apps/016-calendar` | 17820 |
+| 聊天 | [auto-chat](https://github.com/auto-stack/auto-chat) | `apps/017-chat` | 17822 / 17823 |
+| 图书阅读器 | [auto-reader](https://github.com/auto-stack/auto-reader) | `apps/018-book-reader` | 17824 / 17825 |
+| 博客与文章社区 | [auto-blog](https://github.com/auto-stack/auto-blog) | `apps/023-realworld` | 17826 / 17827 |
+| 视频播放器 | [auto-video](https://github.com/auto-stack/auto-video) | `apps/030-video-player` | 17828 / 17829 |
+| 音乐播放器 | [auto-music](https://github.com/auto-stack/auto-music) | `apps/020-music-player` | 17830 / 17831 |
+| 图库与图片查看器 | [auto-photos](https://github.com/auto-stack/auto-photos) | `apps/029-photo-gallery` | 17832 / 17833 |
+| 画板 | [auto-paint](https://github.com/auto-stack/auto-paint) | `apps/031-paint` | 17834 |
+| 系统监视器 | [auto-monitor](https://github.com/auto-stack/auto-monitor) | `apps/025-sys-monitor` | 17836 / 17837 |
+| 数据库管理工具 | [auto-database](https://github.com/auto-stack/auto-database) | `apps/026-database` | 17838 |
+| 文件与资源浏览器 | [auto-explorer](https://github.com/auto-stack/auto-explorer) | `apps/027-file-manager` | 17840 / 17841 |
+| 通用启动器 | [auto-launcher](https://github.com/auto-stack/auto-launcher) | `apps/028-launcher` | 17842 |
+| 俄罗斯方块 | [auto-tetris](https://github.com/auto-stack/auto-tetris) | `apps/036-tetris` | 17844 / 17845 |
+| 纸牌接龙 | [auto-solitaire](https://github.com/auto-stack/auto-solitaire) | `apps/037-klondike` | 17846 / 17847 |
+| 扫雷 | [auto-minesweeper](https://github.com/auto-stack/auto-minesweeper) | `apps/038-minesweeper` | 17848 |
+| 图表工坊 | [auto-charts](https://github.com/auto-stack/auto-charts) | `apps/024-charts` | 17850 |
+
+已有看板、终端、配置分别固定在 `apps/kanban`、`apps/auto-term`、`apps/os-config`。
+终端的实际应用根为 `apps/auto-term/app`，配置为 `apps/os-config/auto`，通过 manifest 保留启动 ID。
+系统日志 `apps/039-syslog` 保留为 OS 内部组件。四大主力 app 沿既有外部接入配置，
+不在此次旧基线导入中迁移或改名；其中旧 Jade 配置仍待完整 v0.5 基线恢复后对齐。
+
+### 检出与验证
+
+```sh
+git clone --branch main --recurse-submodules https://github.com/auto-stack/auto-os.git
+cd auto-os
+python scripts/verify-app-links.py
+```
+
+已有检出使用 `main` 作为日常开发分支，并运行 `git submodule update --init --recursive`。
+不要以 `--remote` 更新代替固定版本初始化；组合更新应先发布产品提交再提交 gitlink。
+产品仓保留 `v0.6-dev` 和 `source-sync` 作为历史引用；新的日常开发统一使用 `main`。
+子模块默认 detached HEAD 是 Git 的正常固定版本检出，修改前先进入对应 app 并快进 `main`，不在 detached HEAD 上留未记录工作。
+
+### 桌面入口
+
+Windows：设置 `AUTO_LANG_ROOT` 为实际 AutoLang 检出，运行 `scripts/desktop.ps1 -Track vue`
+或 `scripts/desktop.ps1 -Track iced`。Git Bash/Linux 使用 `scripts/desktop.sh vue|iced`。
+两轨主根固定为本仓 `apps/`，manifest 提供嵌套应用根及外部应用，画廊保持原入口。
+使用 `-DryRun` / `--dry-run` 可核对路径。不会以 examples/ui 的教学副本优先覆盖产品。
+
+本轮交付仓库/源码组合接线，不表示新产品能力、合并后的全部业务功能或 21 项双端 UI 已验收。
+应用所需后端、媒体库、AutoDown 引擎及原生 exe 的准备方式见各仓 README。
 
 桌面还包括容器发现的 [系统监视器](apps/025-sys-monitor)、
 [UI 画廊](ui-gallery) 与 [组件画廊](widgets-gallery)，并通过启动入口接入
