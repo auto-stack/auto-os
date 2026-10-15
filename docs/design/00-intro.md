@@ -18,7 +18,7 @@
 | 应用通信 / AutoAI | [通信协议](strategy/auto-app-communication-v0.6.md) | Draft RFC 2026-10-04 |
 | 系统级 DevTools | [观察、操作和诊断协议](strategy/system-devtools-v0.6.md) | Draft RFC 2026-10-04 |
 | 两项共同分期 | [最小交付、应用依赖与容量](strategy/v0.6-foundations-roadmap.md) | 规划建议 2026-10-04 |
-| 桌面组织演进 | [DeskBox 参考分析](strategy/desktop-organization-deskbox-reference.md) | 参考分析 2026-10-15（战略候选，待路线裁定） |
+| 桌面组织演进 | [DeskBox 参考分析](strategy/desktop-organization-deskbox-reference.md) | 参考分析 2026-10-15；同日用户裁定：桌面=app 入口组织面+资料盒子（背书实际目录），UI 与 file-manager 共享接缝待 plan 定 |
 
 本轮没有分配不可见主力机的全局Plan编号；本文注册提案，不修改既有current-state Specs。
 
