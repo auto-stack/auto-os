@@ -2,7 +2,7 @@
   "apps": [
     {
       "id": "kanban",
-      "repo": "apps/kanban",
+      "repo": "apps/auto-kanban",
       "kind": "repo",
       "ports": [
         17100,
@@ -56,7 +56,7 @@
     },
     {
       "id": "037-klondike",
-      "repo": "apps/037-klondike",
+      "repo": "apps/auto-solitaire",
       "kind": "repo",
       "ports": [
         17846,
@@ -67,7 +67,7 @@
     },
     {
       "id": "036-tetris",
-      "repo": "apps/036-tetris",
+      "repo": "apps/auto-tetris",
       "kind": "repo",
       "ports": [
         17844,
@@ -78,7 +78,7 @@
     },
     {
       "id": "038-minesweeper",
-      "repo": "apps/038-minesweeper",
+      "repo": "apps/auto-minesweeper",
       "kind": "repo",
       "ports": [
         17848
@@ -88,7 +88,7 @@
     },
     {
       "id": "028-launcher",
-      "repo": "apps/028-launcher",
+      "repo": "apps/auto-launcher",
       "kind": "repo",
       "ports": [
         17842
@@ -98,7 +98,7 @@
     },
     {
       "id": "039-syslog",
-      "repo": "apps/039-syslog",
+      "repo": "apps/auto-syslog",
       "kind": "local",
       "ports": [
         17800
@@ -119,7 +119,7 @@
     },
     {
       "id": "011-calculator",
-      "repo": "apps/011-calculator",
+      "repo": "apps/auto-calc",
       "kind": "repo",
       "ports": [
         17810
@@ -129,7 +129,7 @@
     },
     {
       "id": "012-clock",
-      "repo": "apps/012-clock",
+      "repo": "apps/auto-clock",
       "kind": "repo",
       "ports": [
         17812
@@ -139,7 +139,7 @@
     },
     {
       "id": "013-todo",
-      "repo": "apps/013-todo",
+      "repo": "apps/auto-todo",
       "kind": "repo",
       "ports": [
         17814,
@@ -150,7 +150,7 @@
     },
     {
       "id": "014-weather",
-      "repo": "apps/014-weather",
+      "repo": "apps/auto-weather",
       "kind": "repo",
       "ports": [
         17816
@@ -160,7 +160,7 @@
     },
     {
       "id": "015-notes",
-      "repo": "apps/015-notes",
+      "repo": "apps/auto-notes",
       "kind": "repo",
       "ports": [
         17818,
@@ -171,7 +171,7 @@
     },
     {
       "id": "016-calendar",
-      "repo": "apps/016-calendar",
+      "repo": "apps/auto-calendar",
       "kind": "repo",
       "ports": [
         17820
@@ -181,7 +181,7 @@
     },
     {
       "id": "017-chat",
-      "repo": "apps/017-chat",
+      "repo": "apps/auto-chat",
       "kind": "repo",
       "ports": [
         17822,
@@ -192,7 +192,7 @@
     },
     {
       "id": "018-book-reader",
-      "repo": "apps/018-book-reader",
+      "repo": "apps/auto-reader",
       "kind": "repo",
       "ports": [
         17824,
@@ -203,7 +203,7 @@
     },
     {
       "id": "023-realworld",
-      "repo": "apps/023-realworld",
+      "repo": "apps/auto-blog",
       "kind": "repo",
       "ports": [
         17826,
@@ -214,7 +214,7 @@
     },
     {
       "id": "030-video-player",
-      "repo": "apps/030-video-player",
+      "repo": "apps/auto-video",
       "kind": "repo",
       "ports": [
         17828,
@@ -225,7 +225,7 @@
     },
     {
       "id": "020-music-player",
-      "repo": "apps/020-music-player",
+      "repo": "apps/auto-music",
       "kind": "repo",
       "ports": [
         17830,
@@ -236,7 +236,7 @@
     },
     {
       "id": "029-photo-gallery",
-      "repo": "apps/029-photo-gallery",
+      "repo": "apps/auto-photos",
       "kind": "repo",
       "ports": [
         17832,
@@ -247,7 +247,7 @@
     },
     {
       "id": "031-paint",
-      "repo": "apps/031-paint",
+      "repo": "apps/auto-paint",
       "kind": "repo",
       "ports": [
         17834
@@ -257,7 +257,7 @@
     },
     {
       "id": "025-sys-monitor",
-      "repo": "apps/025-sys-monitor",
+      "repo": "apps/auto-monitor",
       "kind": "repo",
       "ports": [
         17836,
@@ -268,7 +268,7 @@
     },
     {
       "id": "026-database",
-      "repo": "apps/026-database",
+      "repo": "apps/auto-database",
       "kind": "repo",
       "ports": [
         17838
@@ -278,7 +278,7 @@
     },
     {
       "id": "027-file-manager",
-      "repo": "apps/027-file-manager",
+      "repo": "apps/auto-explorer",
       "kind": "repo",
       "ports": [
         17840,
@@ -289,7 +289,7 @@
     },
     {
       "id": "024-charts",
-      "repo": "apps/024-charts",
+      "repo": "apps/auto-charts",
       "kind": "repo",
       "ports": [
         17850
@@ -299,7 +299,7 @@
     },
     {
       "id": "os-config",
-      "repo": "apps/os-config/auto",
+      "repo": "apps/auto-os-config/auto",
       "kind": "repo",
       "ports": [
         17700,

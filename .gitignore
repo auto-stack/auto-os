@@ -22,10 +22,10 @@ __pycache__/
 **/.auto/
 
 # Generated visual verification output.
-/apps/025-sys-monitor/tests/test-results/
-/apps/025-sys-monitor/tests/vue_*.png
-/apps/037-klondike/tests/screenshots/
-/apps/037-klondike/src/front/tests/screenshots/
+/apps/auto-monitor/tests/test-results/
+/apps/auto-monitor/tests/vue_*.png
+/apps/auto-solitaire/tests/screenshots/
+/apps/auto-solitaire/src/front/tests/screenshots/
 
 # Root-level process output and one-off inspection files.
 /*.err

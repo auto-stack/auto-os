@@ -16,7 +16,7 @@ Desktop inject leg (`__syslog_*` host pump + Rebuild) is exercised by the
 desktop-track AC pass (PLAN-042 T-09 evidence), not here.
 
 Usage:
-    cd apps/039-syslog/tests
+    cd apps/auto-syslog/tests
     python desktop_mcp.py
 
 Prerequisites:

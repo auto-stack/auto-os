@@ -86,7 +86,7 @@ completed native desktop integration.
 **Applications are assembled through declarations.** `apps.manifest` is the umbrella
 application manifest; the desktop also discovers apps with `pac.at` under `apps/`.
 Independent repositories usually connect through sibling checkouts and may also be
-carried as submodules, such as `apps/kanban`. Entries are deduplicated by id, with a
+carried as submodules, such as `apps/auto-kanban`. Entries are deduplicated by id, with a
 container checkout taking precedence. Display names come from each app's `pac.at`
 (`title` / `title_zh`). Apps with separate backends can declare daemon dependencies;
 the desktop checks health before launch, starts configured backends, and supplies
@@ -104,19 +104,19 @@ results describe its actual features and maturity.
 
 | Application | Purpose | Source |
 |---|---|---|
-| Kanban (`kanban`) | General boards, plans, and task views | [auto-kanban](https://github.com/auto-stack/auto-kanban); submodule `apps/kanban/` |
+| Kanban (`kanban`) | General boards, plans, and task views | [auto-kanban](https://github.com/auto-stack/auto-kanban); submodule `apps/auto-kanban/` |
 | AutoMusk (`auto-musk`) | Coding Agent and development/planning workspace | [auto-musk](https://github.com/auto-stack/auto-musk) |
 | Jade Garden (`jade-garden`) | Knowledge base, notes, and knowledge work | [auto-down](https://github.com/auto-stack/auto-down), `jade-garden/front/auto/` |
 | AutoTerm (`auto-term`) | Desktop terminal with an in-process terminal engine | [auto-term](https://github.com/auto-stack/auto-term), `app/` |
 | JadeEdit (`jade-edit`) | AutoDown document editor | [jade-edit](https://github.com/auto-stack/jade-edit) |
-| Launcher (`028-launcher`) | Desktop application entry point | [apps/028-launcher](apps/028-launcher) |
-| System Log (`039-syslog`) | Desktop host system log viewer | [apps/039-syslog](apps/039-syslog) |
-| Tetris (`036-tetris`) | Falling-block game | [apps/036-tetris](apps/036-tetris) |
-| Klondike (`037-klondike`) | Classic solitaire | [apps/037-klondike](apps/037-klondike) |
-| Minesweeper (`038-minesweeper`) | Minesweeper game | [apps/038-minesweeper](apps/038-minesweeper) |
+| Launcher (`028-launcher`) | Desktop application entry point | [apps/auto-launcher](apps/auto-launcher) |
+| System Log (`039-syslog`) | Desktop host system log viewer | [apps/auto-syslog](apps/auto-syslog) |
+| Tetris (`036-tetris`) | Falling-block game | [apps/auto-tetris](apps/auto-tetris) |
+| Klondike (`037-klondike`) | Classic solitaire | [apps/auto-solitaire](apps/auto-solitaire) |
+| Minesweeper (`038-minesweeper`) | Minesweeper game | [apps/auto-minesweeper](apps/auto-minesweeper) |
 
 The desktop also includes the container-discovered
-[System Monitor](apps/025-sys-monitor), [UI Gallery](ui-gallery), and
+[System Monitor](apps/auto-monitor), [UI Gallery](ui-gallery), and
 [Widgets Gallery](widgets-gallery). The launch scripts connect the
 [Settings Center, auto-os-config](https://github.com/auto-stack/auto-os-config),
 which organizes shared configuration for applications, roles, skills, and models.
@@ -189,7 +189,7 @@ bash scripts/desktop.sh iced --dry-run
 These are development launch scripts. The Bash entry point does not imply a delivered
 Linux distribution. `auto-lang` is resolved in this order: `AUTO_LANG_ROOT` → sibling
 `../auto-lang` → `D:/autostack/auto-lang`. No junctions or symlinks are used. To check
-out the local Kanban submodule, run `git submodule update --init apps/kanban` in the
+out the local Kanban submodule, run `git submodule update --init apps/auto-kanban` in the
 main checkout.
 
 ## Repository and documentation

@@ -43,7 +43,7 @@
 ## 端口带
 
 17800（front only；无 back 端口）。apps.manifest 行
-`{"id": "039-syslog", "repo": "apps/039-syslog", "kind": "local",
+`{"id": "039-syslog", "repo": "apps/auto-syslog", "kind": "local",
 "ports": [17800], "status": "active"}`（无 daemon 对象）。
 
 ## 验收映射

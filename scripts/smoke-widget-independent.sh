@@ -121,6 +121,7 @@ PROXY_PORT="$(grep -o 'back-proxy lazy-start on "[^"]*" (port [0-9]*)' "$WORK/de
 echo "OK: 后端随孵化供给（proxy :$PROXY_PORT，恰一次）"
 
 sleep 1
+# /apps/020-music-player is the stable API ID, not a filesystem path.
 SCAN="$(curl -s -m 10 "http://127.0.0.1:$PROXY_PORT/apps/020-music-player/api/media/scan")"
 echo "${SCAN:0:160}"
 grep -qF '"entries":[{' <<<"$SCAN" || { echo "FAIL: 020 scan 空" >&2; exit 2; }

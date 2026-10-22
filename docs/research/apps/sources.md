@@ -170,3 +170,7 @@ Readest/Strata 的 README 与依赖清单已按上列 SHA 重读并确认与初�
 
 目录不复制完整第三方 README/源码/截图；保存事实摘要、来源及必要版本定位。专题里的综合方案是研究者建议 D，不能当来源产品已实现的承诺。
 
+
+## PLAN-050 目录迁移注记
+
+上表本地路径保存调研时原始位置；当前应用目录已改为正式产品名，例如 `apps/auto-explorer`。结构化目录的 `current_path` 标记现位置，完整映射见[产品目录命名](../../design/strategy/app-directory-names.md)。核查日期/内容证据没有因改名而重新实测。

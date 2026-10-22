@@ -11,7 +11,7 @@
 
 ## 定位与边界
 
-扫雷（038-minesweeper）是 AutoOS 核心演示与实用游戏之一。应用源码位于 `apps/038-minesweeper`，由纯 `.at` 前端与 Store 实现（零 TS / 零手写 Rust），原生跨 AutoVM 桌面渲染与 Vue Web 渲染。
+扫雷（038-minesweeper）是 AutoOS 核心演示与实用游戏之一。应用源码位于 `apps/auto-minesweeper`，由纯 `.at` 前端与 Store 实现（零 TS / 零手写 Rust），原生跨 AutoVM 桌面渲染与 Vue Web 渲染。
 
 游戏规则完全在前端 `MinesweeperStore` 本地运行，具有 `window: "fit"` 窗口自动收缩特性（Plan 506）。
 

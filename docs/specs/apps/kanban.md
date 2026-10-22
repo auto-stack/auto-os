@@ -1,4 +1,4 @@
-# Spec: apps/kanban — 配置驱动双模式看板（只读计划板 + 手动普通看板）
+# Spec: apps/auto-kanban — 配置驱动双模式看板（只读计划板 + 手动普通看板）
 
 本规范定义 [auto-kanban](../../../auto-kanban)（伞形登记 id: kanban，端口
 17100/17101）的核心契约：模式 = 板 = kind 的双模式架构、泛化 Card 全字段

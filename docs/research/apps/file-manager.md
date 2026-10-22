@@ -24,7 +24,7 @@ Strata 仓库描述中的“The best file manager on Linux”是作者定位，�
 
 ## 与当前 AutoOS 基础的差距
 
-本地可读证据：`apps/027-file-manager/README.md`、`SPEC.md`、`docs/REQUIREMENTS.md` 和 `docs/DESIGN.md`。已有产品方向本来就吸收 Finder/Explorer/Commander/Everything/Directory Opus，不应推倒重来。
+本地可读证据：`apps/auto-explorer/README.md`、`SPEC.md`、`docs/REQUIREMENTS.md` 和 `docs/DESIGN.md`。已有产品方向本来就吸收 Finder/Explorer/Commander/Everything/Directory Opus，不应推倒重来。
 
 | 维度 | 当前文档记载 | 下一步建议 |
 |---|---|---|

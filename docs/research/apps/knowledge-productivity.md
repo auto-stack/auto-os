@@ -50,7 +50,7 @@
 <a id="kanban"></a>
 ## 4. Kanban
 
-**市场**：[Trello](https://trello.com/) 是看板与工作流整合的商业参照；个人卡片与团队权限/审计/自动化的成本不同。已有 `apps/kanban` 应沿原计划增强。
+**市场**：[Trello](https://trello.com/) 是看板与工作流整合的商业参照；个人卡片与团队权限/审计/自动化的成本不同。已有 `apps/auto-kanban` 应沿原计划增强。
 
 **候选**：[WeKan](https://github.com/wekan/wekan) README 定位自托管协作看板，MIT；可借鉴卡片、列表、协作与数据可控性，代价是独立服务和团队运维。[PLANKA](https://github.com/plankanban/planka) 当前 README 自称 open source，但实际 [LICENSE.md](https://github.com/plankanban/planka/blob/master/LICENSE.md) 为 Community License 并区分 Pro/Enterprise；本轮仅列设计参考与许可待审，不作为宽松开源代码来源。
 

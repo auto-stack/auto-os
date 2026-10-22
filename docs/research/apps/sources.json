@@ -1621,19 +1621,22 @@
       "path": "apps/027-file-manager/README.md",
       "supports": "PLAN-001..006 能力与待复审记载",
       "checked_on": "2026-10-22",
-      "evidence": "A-local-document"
+      "evidence": "A-local-document",
+      "current_path": "apps/auto-explorer/README.md"
     },
     {
       "path": "apps/027-file-manager/SPEC.md",
       "supports": "现存契约",
       "checked_on": "2026-10-22",
-      "evidence": "A-local-document"
+      "evidence": "A-local-document",
+      "current_path": "apps/auto-explorer/SPEC.md"
     },
     {
       "path": "apps/027-file-manager/docs/REQUIREMENTS.md",
       "supports": "现有方向及范围外项",
       "checked_on": "2026-10-22",
-      "evidence": "A-local-document"
+      "evidence": "A-local-document",
+      "current_path": "apps/auto-explorer/docs/REQUIREMENTS.md"
     },
     {
       "path": "docs/design/strategy/v0.6-foundations-roadmap.md",
@@ -1736,5 +1739,10 @@
       "result": "403；未据此作新结论",
       "replacement": "Strawberry README 的 MPRIS2 声明"
     }
-  ]
+  ],
+  "path_migration": {
+    "plan": "PLAN-050",
+    "date": "2026-10-22",
+    "note": "local_sources.path records the research-time path; current_path records its renamed location."
+  }
 }

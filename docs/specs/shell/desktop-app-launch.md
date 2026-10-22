@@ -41,3 +41,7 @@
   对齐前后对照）。
 - 回归：缺省（无 launch 字段）行为与旧判定链一致（outproc-native 探测
   语义不变）。
+
+## LD-04 产品目录与启动 ID 分离（PLAN-050）
+
+应用物理目录使用正式产品名（如 `apps/auto-tetris`），manifest `id` 继续是 `036-tetris`。AutoUI 主根扫描、VM/iced 容器展开、Vue 容器展开按容器父级 `apps.manifest` 的 active repo/local 条目的真实目录路径匹配 ID；未匹配或清单损坏时回退目录名。启动 lookup、图标、桌面 pin 和配置仍使用稳定 ID，不能把新目录名作为第二个入口重复注册。空子模块保持跳过。此能力需要包含 PLAN-050 注册表变更的 AutoUI 工具/宿主；更新后重建旧二进制再验证启动。

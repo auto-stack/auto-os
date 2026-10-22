@@ -38,7 +38,7 @@
 非空即拒）。本仓 worktree 组目录布局沿 Plan 529：`.wt/os-<NNN>/auto-os`。
 
 **Submodule 纪律（PLAN-013 起，混合形态）**：本仓 submodule（现
-apps/kanban）在 worktree 中默认不检出（gitlink 空目录）——桌面注册表
+apps/auto-kanban）在 worktree 中默认不检出（gitlink 空目录）——桌面注册表
 apps/ 容器臂按 pac.at 门静默跳过，不炸启动。组内开发需 kanban 时二选一：
 组内补依赖 worktree（`.wt/os-<NNN>/auto-kanban`，manifest 臂兄弟解析命中）
 或 `git submodule update --init`（容器臂命中）。标准桌面入口
@@ -52,6 +52,10 @@ submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）—�
 所有已收编app的使用、计划与修改统一在`auto-os/apps/<目录>`进行。平时detached在AutoOS gitlink记录的最新提交；修改时在同一检出切`main`并同步远端；完成提交/推送、更新并提交父仓gitlink后，显式切回detached。文档与计划提交也更新gitlink。`v0.6-dev`保留为历史分支；新的日常开发目标统一为`main`。
 
 本条优先于此前app外部worktree/临时clone工作位置示例。Plan与复审纪律保留；同app一个写入者，不改动或切走他人WIP；语言/框架及OS核心仍沿相应worktree规约。操作步骤见[App子模块工作流程](docs/design/strategy/app-submodule-workflow.md)。
+
+## 2.2 App 目录命名（PLAN-050，2026-10-22）
+
+`apps/` 下产品目录与产品仓名一致，例如 `apps/auto-notes`、`apps/auto-reader`、`apps/auto-explorer`；禁止继续用 `015-notes` 等 Demo 编号作为物理目录名。内部系统日志为 `apps/auto-syslog`，辅助目录 `common`/`autostack` 不属于产品 app。manifest 的稳定 `id`、pac 工程名/展示名与目录名分开管理；目录改名不重置桌面快捷方式或更换源码 pin。子模块逻辑节名和 `.git/modules` 内部路径可保留历史名，不能因目录外观而搬动 Git 数据。映射与校验见[目录命名](docs/design/strategy/app-directory-names.md)。
 
 ## 3. app 仓结构约定
 
@@ -86,7 +90,7 @@ submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）—�
 
 `apps.manifest` 是伞形的唯一事实源。物理承载自 PLAN-013 起为**混合形态**：
 repo 条目默认虚拟伞形（兄弟检出解析），产品 app 可叠加 git submodule
-物理收编（首个样板 kanban = `apps/kanban`；examples demo 升格为独立仓后
+物理收编（首个样板 kanban = `apps/auto-kanban`；examples demo 升格为独立仓后
 沿此统一管理）——两臂按 id 去重，容器臂（apps/ 检出）先于 manifest 臂
 （兄弟检出），同一 app 双形态并存时容器臂胜、内容同源零行为差。每 app 一行：
 
@@ -98,7 +102,7 @@ repo 条目默认虚拟伞形（兄弟检出解析），产品 app 可叠加 git
 ```
 
 `kind` 字段为 Stage C 预留（`repo` | `subtree` | `submodule`——submodule
-物理形态落 `apps/<id>/` 时 kind 仍记 `repo`，容器臂按目录名展开）。
+物理形态落 `apps/<产品仓名>/` 时 kind 仍记 `repo`，容器臂按 manifest repo 路径匹配稳定 id 后展开）。
 `daemon` 对象可选（schema 见 §3 daemon 键；`bin` 缺席 = 只探不孵；健康
 探针固定 `GET /api/health`）。**manifest 不承载展示名**（PLAN-015：`name`
 键已退役）——App 展示名（英/中）以各 app pac.at 的 `title`/`title_zh` 为

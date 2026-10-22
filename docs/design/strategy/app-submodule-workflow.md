@@ -34,11 +34,11 @@ git merge --ff-only origin/main
 以Notes为例，app已完成并推送后：
 
 ```powershell
-git -C D:/autostack/auto-os/apps/015-notes rev-parse HEAD
-git -C D:/autostack/auto-os diff --submodule=short -- apps/015-notes
-git -C D:/autostack/auto-os commit --only apps/015-notes -m "chore(apps): advance notes submodule"
+git -C D:/autostack/auto-os/apps/auto-notes rev-parse HEAD
+git -C D:/autostack/auto-os diff --submodule=short -- apps/auto-notes
+git -C D:/autostack/auto-os commit --only apps/auto-notes -m "chore(apps): advance notes submodule"
 git -C D:/autostack/auto-os push origin main
-git -C D:/autostack/auto-os/apps/015-notes switch --detach HEAD
+git -C D:/autostack/auto-os/apps/auto-notes switch --detach HEAD
 ```
 
 父仓只提交本次app路径，保留其他app和其他文件的WIP；多个app同批更新可明确列出路径。按实际代码变化验证宿主；纯文档提交不运行cargo测试。
@@ -52,3 +52,7 @@ git -C D:/autostack/auto-os/apps/015-notes switch --detach HEAD
 尚未提交的app保持在工作分支，不因其他app完成而统一detach所有子模块。分支切换、父仓指针、远端状态分别检查；父仓显示`M apps/...`可能是app提交领先固定指针，也可能是内部WIP，不能仅凭一个M决定如何处理。
 
 本约定适用于apps中已收编的仓库；外部四大app的物理迁入仍是单独集成工作，不在本次移动目录或改manifest。既有临时clone只作历史保留，后续操作/文件链接使用实际apps检出。
+
+## 5. 正式产品目录
+
+日常入口现为 `apps/auto-notes`、`apps/auto-kanban`、`apps/auto-os-config` 等产品仓名；目录名与 manifest 稳定 ID 分离。完整映射见[产品目录命名](app-directory-names.md)。原有临时 clone 或已归档计划中的旧路径仅作历史来源，不再作为当前工作入口。

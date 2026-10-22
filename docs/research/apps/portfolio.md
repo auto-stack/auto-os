@@ -20,34 +20,34 @@
 
 | manifest ID / 现有 app 路径 | 建议角色 | 下一版应交付的最小真实闭环 | 竞品研究 |
 |---|---|---|---|
-| `027-file-manager` / `apps/027-file-manager` | 核心 | 定位→预览→批量复制/移动→冲突处理→错误/取消可解释 | [文件](file-manager.md) |
-| `028-launcher` / `apps/028-launcher` | 核心 | 搜索应用/文件/命令→看懂结果→完成动作；失效结果可恢复 | [工具](system-developer.md#launcher) |
-| `015-notes` / `apps/015-notes` | 核心 | 快速捕获文字/附件/来源→重启仍在→检索→导出 | [知识](knowledge-productivity.md#notes) |
-| `018-book-reader` / `apps/018-book-reader` | 核心 | 导入自有 EPUB/PDF→持续阅读→标注→摘录及来源回跳 | [阅读](reader.md) |
+| `027-file-manager` / `apps/auto-explorer` | 核心 | 定位→预览→批量复制/移动→冲突处理→错误/取消可解释 | [文件](file-manager.md) |
+| `028-launcher` / `apps/auto-launcher` | 核心 | 搜索应用/文件/命令→看懂结果→完成动作；失效结果可恢复 | [工具](system-developer.md#launcher) |
+| `015-notes` / `apps/auto-notes` | 核心 | 快速捕获文字/附件/来源→重启仍在→检索→导出 | [知识](knowledge-productivity.md#notes) |
+| `018-book-reader` / `apps/auto-reader` | 核心 | 导入自有 EPUB/PDF→持续阅读→标注→摘录及来源回跳 | [阅读](reader.md) |
 | `auto-term` / `apps/auto-term/app` | 核心 | 可靠终端会话→中文输入/选择复制→退出/重连可理解 | [工具](system-developer.md#terminal-shell) |
-| `os-config` / `apps/os-config/auto` | 核心 | 修改设置→验证生效→错误可见→可还原/导出 | [工具](system-developer.md#system) |
-| `025-sys-monitor` / `apps/025-sys-monitor` | 核心 | 查看真实资源/进程→定位负载；操作前确认对象身份 | [工具](system-developer.md#system) |
-| `039-syslog` / `apps/039-syslog` | 核心内部组件 | 聚合诊断→筛选→关联 app/任务→脱敏导出 | [工具](system-developer.md#system) |
-| `011-calculator` / `apps/011-calculator` | 核心小工具 | 输入表达式→准确结果/单位→历史/复制→解释错误 | [工具](system-developer.md#utilities) |
-| `012-clock` / `apps/012-clock` | 核心小工具 | 计时/闹钟/世界时钟→关闭窗口仍有明确提醒语义 | [工具](system-developer.md#utilities) |
-| `020-music-player` / `apps/020-music-player` | 日用样板 | 本地库→播放队列→切歌/媒体键→恢复队列/进度 | [媒体](media-creative.md#music) |
-| `013-todo` / `apps/013-todo` | 增量 | 收件箱→项目/今日→到期/重复→完成及恢复 | [知识](knowledge-productivity.md#tasks) |
-| `016-calendar` / `apps/016-calendar` | 增量 | 创建事件→跨时区/重复例外→提醒→ICS 往返 | [知识](knowledge-productivity.md#calendar) |
-| `029-photo-gallery` / `apps/029-photo-gallery` | 增量 | 浏览真实目录→大图/EXIF→筛选→不破坏原图的编辑/导出 | [媒体](media-creative.md#photos) |
-| `030-video-player` / `apps/030-video-player` | 增量 | 打开本地片源→字幕/音轨/seek→续播→错误诊断 | [媒体](media-creative.md#video) |
-| `014-weather` / `apps/014-weather` | 增量小工具 | 地点→真实预报/更新时间→缓存及失效说明 | [工具](system-developer.md#utilities) |
-| `kanban` / `apps/kanban` | 专项/工作管理 | 项目→卡片→状态流转→持久化/导出；与 Todo 的关联后续确认 | [知识](knowledge-productivity.md#kanban) |
-| `023-realworld` / `apps/023-realworld` | 专项、保留既有承诺 | 本地草稿→预览→带资源的可迁移导出；远端发布显式操作 | [知识](knowledge-productivity.md#blog) |
+| `os-config` / `apps/auto-os-config/auto` | 核心 | 修改设置→验证生效→错误可见→可还原/导出 | [工具](system-developer.md#system) |
+| `025-sys-monitor` / `apps/auto-monitor` | 核心 | 查看真实资源/进程→定位负载；操作前确认对象身份 | [工具](system-developer.md#system) |
+| `039-syslog` / `apps/auto-syslog` | 核心内部组件 | 聚合诊断→筛选→关联 app/任务→脱敏导出 | [工具](system-developer.md#system) |
+| `011-calculator` / `apps/auto-calc` | 核心小工具 | 输入表达式→准确结果/单位→历史/复制→解释错误 | [工具](system-developer.md#utilities) |
+| `012-clock` / `apps/auto-clock` | 核心小工具 | 计时/闹钟/世界时钟→关闭窗口仍有明确提醒语义 | [工具](system-developer.md#utilities) |
+| `020-music-player` / `apps/auto-music` | 日用样板 | 本地库→播放队列→切歌/媒体键→恢复队列/进度 | [媒体](media-creative.md#music) |
+| `013-todo` / `apps/auto-todo` | 增量 | 收件箱→项目/今日→到期/重复→完成及恢复 | [知识](knowledge-productivity.md#tasks) |
+| `016-calendar` / `apps/auto-calendar` | 增量 | 创建事件→跨时区/重复例外→提醒→ICS 往返 | [知识](knowledge-productivity.md#calendar) |
+| `029-photo-gallery` / `apps/auto-photos` | 增量 | 浏览真实目录→大图/EXIF→筛选→不破坏原图的编辑/导出 | [媒体](media-creative.md#photos) |
+| `030-video-player` / `apps/auto-video` | 增量 | 打开本地片源→字幕/音轨/seek→续播→错误诊断 | [媒体](media-creative.md#video) |
+| `014-weather` / `apps/auto-weather` | 增量小工具 | 地点→真实预报/更新时间→缓存及失效说明 | [工具](system-developer.md#utilities) |
+| `kanban` / `apps/auto-kanban` | 专项/工作管理 | 项目→卡片→状态流转→持久化/导出；与 Todo 的关联后续确认 | [知识](knowledge-productivity.md#kanban) |
+| `023-realworld` / `apps/auto-blog` | 专项、保留既有承诺 | 本地草稿→预览→带资源的可迁移导出；远端发布显式操作 | [知识](knowledge-productivity.md#blog) |
 | `auto-musk` / manifest 外部定位 | 专项 | 一项变更的计划→实现→独立验证→知识沉淀可追溯 | [工具](system-developer.md#flagships) |
 | `jade-garden` / manifest 外部定位 | 专项、基线待对齐 | 已有知识产品方向继续；先确认与 Notes/编辑器的数据职责 | [知识](knowledge-productivity.md#notes) |
 | `jade-edit` / manifest 外部定位 | 专项、基线待对齐 | 本地 README 定位 AutoJade 文档/知识库：可靠写作、链接、检索与恢复 | [工具](system-developer.md#flagships) |
-| `026-database` / `apps/026-database` | 可选开发工具 | 首先 SQLite：只读浏览→SQL→分页→显式事务编辑/导出 | [工具](system-developer.md#data-tools) |
-| `024-charts` / `apps/024-charts` | 可选数据工具 | 导入 CSV→类型校验→图表映射→保存规格/导出 | [工具](system-developer.md#data-tools) |
-| `031-paint` / `apps/031-paint` | 可选创作工具 | 截图/图片→裁剪/标注/撤销→导出副本 | [媒体](media-creative.md#paint) |
-| `017-chat` / `apps/017-chat` | 可选；先定产品身份 | 明确 AI 对话还是人与人通信，再定义真实历史/重试/协议 | [知识](knowledge-productivity.md#chat) |
-| `036-tetris` / `apps/036-tetris` | 可选休闲 | 完整规则、键盘、存档/战绩；维持已有交付 | [工具](system-developer.md#games) |
-| `037-klondike` / `apps/037-klondike` | 可选休闲 | 完整规则、撤销、存档/战绩；维持已有交付 | [工具](system-developer.md#games) |
-| `038-minesweeper` / `apps/038-minesweeper` | 可选休闲 | 完整规则、键盘、难度/战绩；维持已有交付 | [工具](system-developer.md#games) |
+| `026-database` / `apps/auto-database` | 可选开发工具 | 首先 SQLite：只读浏览→SQL→分页→显式事务编辑/导出 | [工具](system-developer.md#data-tools) |
+| `024-charts` / `apps/auto-charts` | 可选数据工具 | 导入 CSV→类型校验→图表映射→保存规格/导出 | [工具](system-developer.md#data-tools) |
+| `031-paint` / `apps/auto-paint` | 可选创作工具 | 截图/图片→裁剪/标注/撤销→导出副本 | [媒体](media-creative.md#paint) |
+| `017-chat` / `apps/auto-chat` | 可选；先定产品身份 | 明确 AI 对话还是人与人通信，再定义真实历史/重试/协议 | [知识](knowledge-productivity.md#chat) |
+| `036-tetris` / `apps/auto-tetris` | 可选休闲 | 完整规则、键盘、存档/战绩；维持已有交付 | [工具](system-developer.md#games) |
+| `037-klondike` / `apps/auto-solitaire` | 可选休闲 | 完整规则、撤销、存档/战绩；维持已有交付 | [工具](system-developer.md#games) |
+| `038-minesweeper` / `apps/auto-minesweeper` | 可选休闲 | 完整规则、键盘、难度/战绩；维持已有交付 | [工具](system-developer.md#games) |
 
 AutoShell 是用户明确的主打方向，但不在这 28 个 manifest ID 中；作为生态/产品能力单列研究，不能把它与桌面 Shell 或 AutoTerm 合并统计。外部定位的日常路径按 AGENTS 的 `apps/` 纪律处理；本表只如实记录现状，不新建检出或迁移仓库。
 

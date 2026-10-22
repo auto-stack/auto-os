@@ -11,7 +11,7 @@
 
 ## 定位与边界
 
-俄罗斯方块是 AutoOS 的单人游戏 app。应用源码位于 `apps/036-tetris`，由同一套
+俄罗斯方块是 AutoOS 的单人游戏 app。应用源码位于 `apps/auto-tetris`，由同一套
 `.at` 前端/Store 与后端 API 生成 Vue、VM/Iced 和 Rust UI 产物。游戏规则在前端
 Store 本地运行；后端只负责最高分读取与保存。每次 Tick、移动、旋转和落块都不得
 访问 HTTP 或磁盘。
