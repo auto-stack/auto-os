@@ -1,0 +1,9 @@
+{
+  "old": "97cbf25ffa8bc33af0eef349c78f0b126c98f17f",
+  "new": "eaea62466f84b7f911b9553026592b726f9c525b",
+  "base": "434a61be218fa3eda0d3bebdaaff4816c159e4ee",
+  "rangeDiff": "1:  97cbf25ff = 1:  eaea62466 fix(ui): preserve application identity across product directory renames\n",
+  "concurrentChanges": [
+    "docs/plans/828-av-function-incremental-session.md"
+  ]
+}

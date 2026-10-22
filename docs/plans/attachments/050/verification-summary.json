@@ -1,0 +1,18 @@
+{
+  "toolsChanged": "161 passed, 9 failed, 1 ignored",
+  "toolsBaseline": "160 passed, 9 failed, 1 ignored",
+  "newFailures": [],
+  "unchangedFailures": [
+    "rust_ui::tests::delivery_bundle_end_to_end",
+    "rust_ui::tests::delivery_foreign_sibling_dirs_preserved",
+    "rust_ui::tests::delivery_gc_preserves_pending_recovery_backup",
+    "rust_ui::tests::delivery_redelivery_failure_preserves_old",
+    "rust_ui::tests::delivery_sidecar_external_path_rejected",
+    "rust_ui::tests::generated_ui_cargo_uses_canonical_double_dependency",
+    "rust_ui::tests::merged_api_client_crud_fallback_for_uncovered_endpoints",
+    "rust_ui::tests::test_shell_pack_lib_freshness",
+    "vue::plan593_index_css_golden_tests::index_css_values_match_p1_baseline"
+  ],
+  "newGenerationTest": "pass; old path reconstruction negative control fails as expected",
+  "lockSha256": "5192d08d502a8f17e277ad8912f5884175659bef642b614e25b394243d1ff091"
+}
