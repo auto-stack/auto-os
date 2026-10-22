@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "case": "initialized submodule moved before reviewed fast-forward",
+  "pinUnchanged": true,
+  "checkoutClean": true,
+  "filesUnchanged": true
+}

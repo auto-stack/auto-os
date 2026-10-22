@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-050
-status: reviewed
+status: archived
 feature_name: app-directory-product-names
 author: [Codex]
 created_at: 2026-10-22
@@ -129,7 +129,7 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 
 ## 9. 复审记录
 
-- r3 子模块追加核对：24 个远端仓与 24 个锁定提交均逐一通过 GitHub 官方 Git 对象查询；工作树提交 24eae3eb34a4025fba59993acdb74eb2f33b6253 补齐 Kanban branch=main，本机配置 URL 已同步。原 24 pin 未变，metadata-only 通过、Python 5/5，其他 5 份 WIP 字节哈希一致。详见[子模块核对](attachments/050/submodule-audit.md)。本次只有配置/说明变化，原语言实现及测试输入未改变；旧语言证据仍只覆盖原范围，AC-07 仍待处理。
+- r3 子模块追加核对：24 个远端仓与 24 个锁定提交均逐一通过 GitHub 官方 Git 对象查询；工作树提交 24eae3eb34a4025fba59993acdb74eb2f33b6253 补齐 Kanban branch=main，本机配置 URL 已同步。原 24 pin 未变，metadata-only 通过、Python 5/5，其他 5 份 WIP 字节哈希一致。详见[子模块核对](../attachments/050/submodule-audit.md)。本次只有配置/说明变化，原语言实现及测试输入未改变；旧语言证据仍只覆盖原范围，AC-07 仍待处理。
 
 - stage: new | revision: 1 | outcome: pass | authorization: 用户本轮直接请求 |
   next: work | changed: T-01..06 / AC-01..07 | scope: 上述目录重命名与必要发现兼容。
@@ -137,9 +137,9 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
   不删除任何仓或worktree，清理需要 wt-guard。
 - r2：由实际消费者追踪补全 Vue 物理根；同范围授权延续，无旧审查 pass 可失效。
 - stage: review | scope: language-code-phase | plan_revision: 2 | code_commit: 97cbf25ffa8bc33af0eef349c78f0b126c98f17f | outcome: pass（定向代码/验收与规范核对）；同一执行会话从冻结diff和测试重建检查，非独立上下文。裸cargo t及最终主检出迁移验证仍pending，不将此阶段pass当全计划已交付。
-- 最终语言工作树提交 eaea62466f84b7f911b9553026592b726f9c525b（原97cb重放，range-diff `=`；仅对齐并发PLAN-828文档）。完整日常门5331执行：5329通过/2剪贴板失败；原始基线同条件串行复现相同2失败。详见[交付前验证](attachments/050/verification.md)。主线目录迁移尚未执行，等待门禁失败处理决定；不称全仓门禁通过。
+- 最终语言工作树提交 eaea62466f84b7f911b9553026592b726f9c525b（原97cb重放，range-diff `=`；仅对齐并发PLAN-828文档）。完整日常门5331执行：5329通过/2剪贴板失败；原始基线同条件串行复现相同2失败。详见[交付前验证](../attachments/050/verification.md)。主线目录迁移尚未执行，等待门禁失败处理决定；不称全仓门禁通过。
 
-## 10. 待澄清事项
+## 10. 用户决定（已落实）
 
 已关闭：用户直接授权记录两项既有剪贴板失败后继续迁移。失败为 `ui::iced::renderer::tests::plan488_clipboard_paste_payload_reads_os_clipboard` 和 `ui_tests::plan802_code_editor_provider::plan802_clipboard::os_clipboard_cut_copy_paste_roundtrip`，问题继续保留，不宣称门禁全绿。目录/ID/源码 pin 方案不变。
 
@@ -151,4 +151,16 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 - AC-03/04/05/06/08 pass；AC-01/02/07 为 merge-owned 主检出实际迁移/后验/收尾，准备与隔离移动验收 pass，最终结果待合入后填写。AC-01/02 阶段归属在 r4 明确为 merge，未删除验收内容。
 - 现定向复验：注册表 28/28，真实 Vue 生成 1/1，三轨入口一致性 1/1，Python 5/5，24 gitlink 元数据通过。测试产生的计时报告在附件保留后，从专属语言工作树恢复其基线，未纳入源码改动。
 - 用户授权例外仅限两个既有剪贴板失败；扩大 UI 工具包的相同 9 项基线失败保留为额外观察，不作为本轮必须全绿的门。新增失败 0。
-- 规范增量与内容哈希见 [冻结规范](attachments/050/spec-delta-r4.md)；实际证据/复用边界见 [最终复审](attachments/050/final-review.md)。下一步 merge。
+- 规范增量与内容哈希见 [冻结规范](../attachments/050/spec-delta-r4.md)；实际证据/复用边界见 [最终复审](../attachments/050/final-review.md)。下一步 merge。
+
+## 12. 合入与归档收据
+
+- stage: merge | plan_revision: 4 | completion_kind: delivered | outcome: cleanup_pending。
+- landed：OS 源码 577594eb631b21a0816876863b7a09a30fd51f55；language 源码 ce055a5194649ad7c6251dbc46d0666bde08cfb6；两仓均 ff-only。后续 ledger-only 提交 OS 66cb7c40e472e3efcde0736b3de3a6bb56943ee5 / language 4858197411dff9294fe3956b0b5092bb2982fd1e，未改变已验证代码。重放 hash 映射/range-diff 等价见合入收据。
+- AC-01/02/07 主线迁移通过：24 个目录旧名消失/新名存在，24 pin 原值保持；Explorer 43 文件逐字节一致，HEAD/clean/detached 保留。OS 其他 5 份 WIP 哈希一致。语言 34 份 WIP 一致，PLAN-828 在并行任务中有一次修改，本次交付 diff 不触及该文件；未覆盖其工作。
+- metadata-only、Python 5/5、Bash/PowerShell × Vue/iced 干运行 4/4 在主检出通过。两项已复现的基线剪贴板失败按用户明确授权非阻塞，不宣称日常门全绿。
+- deposited：七个 canonical Spec 与冻结增量一致；两仓 tracked ledger 在工作树采用 guarded offline projection 后提交/ff，服务端口无可达 writer；有字节备份、Windows 文件锁、六节/schema/条目/file/tags/哈希回读，未触及无关字节，语言 version 65→66。
+- artifacts：CLI 与 UI 工具已重建并安装到主检出，CLI --version 含 ce055a519；原生 MPV 宿主构建出现未改文件中的 libloading 依赖缺失，单列观察。release、web bundle 未生成/重建，未冒称双端 GUI 验收。
+- 批量回归 due-check：最后收据 2026-10-21T06:27:43Z / last_covered_plan_id 817，当前 2026-10-22 不足 48 小时；新合入没有 auto-lang 侧 >817 的 5 倍数 Plan（820/825 尚在途，829 非 5 倍数）；OS-050 不复用语言计划号，因此本轮不到期，不运行 cargo tf。
+- archived：实际位于 docs/plans/archive/050-app-directory-product-names.md；T-01..05 完成（5/6），T-06 剩余仅安全清理本组 OS/lang/只读 AutoDown 工作树、两个已合入临时分支与空组目录。清理前须逐项确认绝对路径/归属/clean/ancestry，fresh wt-guard。
+- 证据：[合入收据](../attachments/050/merge-receipt.json)、[规范投影](../attachments/050/ledger-os-receipt.json)、[语言投影](../attachments/050/ledger-lang-receipt.json)、[已知问题](../../reports/plan050-known-issues.md)。

@@ -1,0 +1,60 @@
+{
+  "channel": "guarded offline projection, no store writer reachable",
+  "workspace": "D:\\autostack\\auto-os",
+  "worktree": "D:\\autostack\\.wt\\os-050\\auto-os",
+  "backup": "D:\\autostack\\auto-os\\docs\\plans\\attachments\\050\\ledger-backups\\auto-os-eab99d5aac67.json",
+  "beforeSha256": "eab99d5aac67617fd736cc8a65976404c27cfa6a6054b8f682e930f4e834894d",
+  "afterSha256": "ed06831c6b6851f89759a6035460a0b864e996f8061612f0de68faa16c24d1ce",
+  "unrelatedBytesPreserved": true,
+  "sixSectionsValidated": true,
+  "fileLock": "Windows exclusive byte-range lock",
+  "versionBefore": null,
+  "versionAfter": null,
+  "items": [
+    {
+      "section": "designs",
+      "id": "P050-D1",
+      "file": "docs/specs/apps/independent-repositories.md"
+    },
+    {
+      "section": "designs",
+      "id": "P043-3",
+      "file": "docs/specs/shell/desktop-app-launch.md"
+    },
+    {
+      "section": "designs",
+      "id": "P050-D3",
+      "file": "docs/specs/apps/syslog-app.md"
+    },
+    {
+      "section": "designs",
+      "id": "P050-D4",
+      "file": "docs/specs/apps/kanban.md"
+    },
+    {
+      "section": "designs",
+      "id": "P005-3",
+      "file": "docs/specs/apps/tetris.md"
+    },
+    {
+      "section": "designs",
+      "id": "P017-design-1",
+      "file": "docs/specs/apps/minesweeper.md"
+    },
+    {
+      "section": "tests",
+      "id": "P050-TESTS",
+      "file": "docs/specs/apps/independent-repositories.md"
+    },
+    {
+      "section": "reviews",
+      "id": "P050-R4",
+      "file": "docs/plans/attachments/050/final-review.md"
+    },
+    {
+      "section": "reports",
+      "id": "P050-MERGE",
+      "file": "docs/plans/attachments/050/merge-receipt.json"
+    }
+  ]
+}

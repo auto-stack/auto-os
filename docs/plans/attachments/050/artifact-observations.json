@@ -1,0 +1,60 @@
+{
+  "artifacts": [
+    {
+      "path": "D:\\autostack\\auto-lang\\target\\debug\\auto.exe",
+      "source": "D:\\autostack\\.wt\\os-050\\auto-lang\\target\\debug\\auto.exe",
+      "sha256": "ab7f5f7da56b72c1f87b981a4b0f2e60c32b156c98752dd418f3e7ca7235e663",
+      "builtFrom": "ce055a5194649ad7c6251dbc46d0666bde08cfb6",
+      "previous": {
+        "exists": true,
+        "modified": "2026-10-21T16:39:54.139427"
+      },
+      "status": "rebuilt_installed"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\target\\debug\\auto-ui-tool.exe",
+      "source": "D:\\autostack\\.wt\\os-050\\auto-lang\\target\\debug\\auto-ui-tool.exe",
+      "sha256": "d4e9f00f111db4b0331956f4a1fce0b6144f0510b3970f898fca55bcf7463df8",
+      "builtFrom": "ce055a5194649ad7c6251dbc46d0666bde08cfb6",
+      "previous": {
+        "exists": true,
+        "modified": "2026-10-21T11:09:16.734075"
+      },
+      "status": "rebuilt_installed"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\target\\debug\\examples\\ui_desktop.exe",
+      "exists": false,
+      "modified": null,
+      "status": "not_rebuilt_observation"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\target\\release\\auto.exe",
+      "exists": false,
+      "modified": null,
+      "status": "not_rebuilt_observation"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\target\\release\\auto-ui-tool.exe",
+      "exists": false,
+      "modified": null,
+      "status": "not_rebuilt_observation"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\examples\\desktop-host\\gen\\front\\vue\\dist",
+      "exists": false,
+      "modified": null,
+      "status": "not_rebuilt_observation"
+    }
+  ],
+  "nativeDesktopBuild": {
+    "command": "cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop",
+    "status": "failed",
+    "cause": "auto-ui-runtime mpv/loader.rs references libloading; runtime Cargo.toml has no libloading dependency",
+    "baselineEvidence": "The runtime Cargo.toml and mpv/loader.rs are unchanged by PLAN-050; git diff 1cb45ea94..485819741 for both paths is empty.",
+    "scope": "additional artifact build observation; not a passed gate or GUI validation"
+  },
+  "processesRestarted": false,
+  "guiValidated": false,
+  "vueBundle": "not generated; Vue desktop is generated on auto run --desktop"
+}

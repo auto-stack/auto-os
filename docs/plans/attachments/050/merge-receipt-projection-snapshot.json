@@ -1,0 +1,43 @@
+{
+  "plan": "PLAN-050",
+  "revision": 4,
+  "status": "landed",
+  "osDeliveryCommit": "577594eb631b21a0816876863b7a09a30fd51f55",
+  "languageDeliveryCommit": "ce055a5194649ad7c6251dbc46d0666bde08cfb6",
+  "directoriesMigrated": 24,
+  "gitlinksUnchanged": 24,
+  "explorerFilesPreserved": 43,
+  "explorerCleanDetached": true,
+  "osOtherWipPreserved": 5,
+  "languageWipUnchanged": 34,
+  "concurrentWipChanges": [
+    "docs/plans/828-av-function-incremental-session.md"
+  ],
+  "deliveryDoesNotTouchConcurrentWip": true,
+  "postLandingPython": "5/5",
+  "postLandingMetadata": "pass/24",
+  "desktopDryRuns": "Bash/PowerShell x Vue/iced = 4/4",
+  "runtimeArtifactStatus": "pending",
+  "ledgerStatus": "pending",
+  "archiveStatus": "pending",
+  "cleanupStatus": "pending",
+  "baselineClipboardFailures": {
+    "status": "recorded_nonblocking_user_authorized",
+    "tests": [
+      "ui::iced::renderer::tests::plan488_clipboard_paste_payload_reads_os_clipboard",
+      "ui_tests::plan802_code_editor_provider::plan802_clipboard::os_clipboard_cut_copy_paste_roundtrip"
+    ]
+  },
+  "languageRebase": {
+    "reviewed": "9cd1520ffca4bec5abd811d394a7f413d71ac1c4",
+    "delivered": "ce055a5194649ad7c6251dbc46d0666bde08cfb6",
+    "rangeDiff": "both commits =",
+    "newBase": "1cb45ea94",
+    "concurrentDelta": "docs/plans/815 and docs/plans/828 only; no code/dependency/test changes"
+  },
+  "osRebase": {
+    "reviewed": "a26d129eb6b0e5ebdded5cb69712bf727585d5af",
+    "delivered": "577594eb631b21a0816876863b7a09a30fd51f55",
+    "rangeDiff": "both commits ="
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "channel": "guarded offline projection, no store writer reachable",
+  "workspace": "D:\\autostack\\auto-lang",
+  "worktree": "D:\\autostack\\.wt\\os-050\\auto-lang",
+  "backup": "D:\\autostack\\auto-os\\docs\\plans\\attachments\\050\\ledger-backups\\auto-lang-894f36c01fc3.json",
+  "beforeSha256": "894f36c01fc3cbd6857dddc758f779d70048933f8ce2c49713ac8f2638bb48e6",
+  "afterSha256": "d519dedbbc1dddb1e772a55e6839473470cd6096421f34a0b9266c302a49e9cd",
+  "unrelatedBytesPreserved": true,
+  "sixSectionsValidated": true,
+  "fileLock": "Windows exclusive byte-range lock",
+  "versionBefore": 65,
+  "versionAfter": 66,
+  "items": [
+    {
+      "section": "designs",
+      "id": "P814-CMP-TYPING",
+      "file": "docs/specs/auto-ui-compiler/project.md"
+    },
+    {
+      "section": "tests",
+      "id": "OS050-TESTS",
+      "file": "docs/specs/auto-ui-compiler/project.md"
+    },
+    {
+      "section": "reviews",
+      "id": "OS050-R4",
+      "file": "../auto-os/docs/plans/attachments/050/final-review.md"
+    },
+    {
+      "section": "reports",
+      "id": "OS050-MERGE",
+      "file": "../auto-os/docs/plans/attachments/050/merge-receipt.json"
+    }
+  ]
+}
