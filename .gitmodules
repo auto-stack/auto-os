@@ -1,6 +1,7 @@
 [submodule "apps/kanban"]
 	path = apps/auto-kanban
 	url = https://github.com/auto-stack/auto-kanban.git
+	branch = main
 [submodule "apps/011-calculator"]
 	path = apps/auto-calc
 	url = https://github.com/auto-stack/auto-calc.git

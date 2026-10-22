@@ -29,7 +29,7 @@
 | `apps/os-config` | `apps/auto-os-config` |
 | `apps/039-syslog` | `apps/auto-syslog` |
 
-`apps/auto-term` 原名已经符合规则；`apps/common` 和 `apps/autostack` 是辅助目录，不作为产品 app 重命名。24 个子模块的 URL、固定 SHA 以及所有端口均保持原值；syslog 仍是父仓内部组件。旧 Demo 编号继续用于稳定 manifest ID，不再用于产品目录。
+`apps/auto-term` 原名已经符合规则；`apps/common` 和 `apps/autostack` 是辅助目录，不作为产品 app 重命名。24 个子模块的 URL、固定 SHA 以及所有端口均保持原值；远端默认分支均为 main，Kanban 补齐 branch = main。syslog 经用户确认仍是父仓内部组件。旧 Demo 编号继续用于稳定 manifest ID，不再用于产品目录。
 
 ## 注册与检出
 
@@ -44,3 +44,7 @@ AutoUI 用相邻 `apps.manifest` 的 active repo/local 路径匹配稳定 ID，�
 未初始化 app 时运行 `python scripts/verify-app-links.py --metadata-only`，只表示组合元数据通过；完整校验仍运行不带参数的命令并要求初始化检出。发布/功能验收继续按各 app 的实际范围完成。改名不更新 app 提交、不强制 detach 他人的在途分支，也不修改源码来源快照。
 
 新 app 的 .gitmodules path 应为 `apps/<远端仓名>`；manifest repo 可指向其中嵌套应用根（例如 `apps/auto-os-config/auto`）。
+
+## 子模块配置核对（2026-10-22）
+
+24 个产品均为真正的 gitlink，对应远端仓库及固定提交逐一可访问；各项显式 branch = main。该分支配置不改变父仓锁定的应用版本，日常检出仍按 gitlink，不自动追最新提交。主检出已同步本地 Kanban 的旧 SSH URL 至受版本管理的 HTTPS URL。
