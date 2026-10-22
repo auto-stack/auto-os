@@ -1,14 +1,14 @@
 ---
 plan_id: PLAN-050
-status: execution_done
+status: reviewed
 feature_name: app-directory-product-names
 author: [Codex]
 created_at: 2026-10-22
 updated_at: 2026-10-22
 plan_revision: 4
-current_step: 4
+current_step: 5
 total_steps: 6
-supersedes_spec_components: [docs/specs/apps/independent-repositories.md, docs/specs/shell/desktop-app-launch.md]
+supersedes_spec_components: [docs/specs/apps/independent-repositories.md, docs/specs/shell/desktop-app-launch.md, docs/specs/apps/syslog-app.md, docs/specs/apps/kanban.md, docs/specs/apps/tetris.md, docs/specs/apps/minesweeper.md, auto-lang/docs/specs/auto-ui-compiler/project.md]
 new_spec_components: []
 touched_goals: []
 ---
@@ -92,7 +92,7 @@ r2 路径追踪补充：Vue generate_desktop_host 的主扫描条目还曾按 st
 | SD-01 | modify | docs/specs/apps/independent-repositories.md | Demo 路径→产品路径；ID 与目录解耦 | 正式产品布局 | AC-01/02 |
 | SD-02 | modify | docs/specs/shell/desktop-app-launch.md | 保留 ID、明确新路径解析 | 启动兼容 | AC-03 |
 | SD-03 | modify | auto-lang docs/specs/auto-ui-compiler/project.md | 加发现映射与回退/复用边界 | 单源实现 | AC-03/04 |
-| SD-04 | modify | syslog/game/Kanban 相关本仓 Spec | 当前物理路径更新 | 引用可达 | AC-01/05 |
+| SD-04 | modify | docs/specs/apps/{syslog-app,kanban,tetris,minesweeper}.md | 当前物理路径更新 | 引用可达 | AC-01/05 |
 
 ## 6. 测试设计
 
@@ -109,8 +109,8 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 
 | ID | owner_stage | observable/verification |
 |---|---|---|
-| AC-01 | work | 24 目录完成新名，旧目录无活动检出；manifest/.gitmodules/gitlink一致，24 pin保持 |
-| AC-02 | work | 已初始化 Explorer 文件内容/HEAD/分支状态不变且新路径 git status clean；其余不强制初始化 |
+| AC-01 | merge | 24 目录完成新名，旧目录无活动检出；manifest/.gitmodules/gitlink一致，24 pin保持 |
+| AC-02 | merge | 已初始化 Explorer 文件内容/HEAD/分支状态不变且新路径 git status clean；其余不强制初始化 |
 | AC-03 | work | 两种发现轨/聚合用原 ID 指向新路径，无重复；无/坏清单有兼容回退，fixture真实执行 |
 | AC-04 | work | scoped Rust/Python/启动 dry-run 检查通过；元数据模式不把缺检出当完整运行验收 |
 | AC-05 | work | 活动源码/脚本/当前规范/研究入口路径同步；历史导入、archive原始引用保留 |
@@ -124,7 +124,7 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 - [x] T-02（work，AC-03）：语言提交 97cbf25ffa8bc33af0eef349c78f0b126c98f17f；注册表 28/28，发现 parity、真实 Vue 生成和旧拼接负面对照通过。Vue/VM 共用容器逻辑，生成器使用物理入口根。
 - [x] T-03（work，AC-01/04）：OS提交 3e24ed1aad4766fbd6031ea239e922015b471b40；24 目录/清单/gitlink完成，24 SHA原值一致；已初始化子模块的 Git 移动/ff 流程隔离 fixture 通过。主检出物理落地及 Explorer 43 文件复核待T-06。
 - [x] T-04（work，AC-04/05）：当前文档/规范/研究资料已更新，metadata-only 组合检查、Python 5/5、研究链接、PowerShell/Bash × Vue/iced dry-run通过；历史导入/归档无变更。UI工具包扩大验证161通过/9失败/1忽略；未改基线160通过/相同9失败/1忽略，新增失败0，见附件汇总。
-- [ ] T-05（review，AC-06）：提交并复核冻结实现；以同会话重建检查明确限制，不伪称独立agent复审。
+- [x] T-05（review，AC-06）：r4 最终复审 pass；绑定 OS a26d129eb6b0e5ebdded5cb69712bf727585d5af / language 9cd1520ffca4bec5abd811d394a7f413d71ac1c4。方法和限制见 final-review.md。
 - [ ] T-06（merge，AC-07）：按实际验证结果落主线/主检出目录，记录证据；无法完成则留明确未完成项，不冒称交付。
 
 ## 9. 复审记录
@@ -142,3 +142,13 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 ## 10. 待澄清事项
 
 已关闭：用户直接授权记录两项既有剪贴板失败后继续迁移。失败为 `ui::iced::renderer::tests::plan488_clipboard_paste_payload_reads_os_clipboard` 和 `ui_tests::plan802_code_editor_provider::plan802_clipboard::os_clipboard_cut_copy_paste_roundtrip`，问题继续保留，不宣称门禁全绿。目录/ID/源码 pin 方案不变。
+
+## 11. 最终复审与合入授权
+
+- stage: review | review_scope: final | plan_revision: 4 | outcome: pass | reviewer: 同一执行会话，非独立上下文；按冻结差异、规范及实际测试证据重建。
+- OS worktree: D:/autostack/.wt/os-050/auto-os，codex/app-directory-product-names，reviewed_commit a26d129eb6b0e5ebdded5cb69712bf727585d5af，base e22f8ea。两条 OS 实现提交 rebase 的 range-diff 均为 `=`。
+- language worktree: D:/autostack/.wt/os-050/auto-lang，codex/os050-app-registry-ids，reviewed_commit 9cd1520ffca4bec5abd811d394a7f413d71ac1c4，base 434a61be；eaea624 之后仅文档归档链接变化，代码/依赖/测试配置不变，复用完整日常门及基线对照；AutoDown c39ac7f9dacdc769fc4a5ad3b98ec896240b28e8。
+- AC-03/04/05/06/08 pass；AC-01/02/07 为 merge-owned 主检出实际迁移/后验/收尾，准备与隔离移动验收 pass，最终结果待合入后填写。AC-01/02 阶段归属在 r4 明确为 merge，未删除验收内容。
+- 现定向复验：注册表 28/28，真实 Vue 生成 1/1，三轨入口一致性 1/1，Python 5/5，24 gitlink 元数据通过。测试产生的计时报告在附件保留后，从专属语言工作树恢复其基线，未纳入源码改动。
+- 用户授权例外仅限两个既有剪贴板失败；扩大 UI 工具包的相同 9 项基线失败保留为额外观察，不作为本轮必须全绿的门。新增失败 0。
+- 规范增量与内容哈希见 [冻结规范](attachments/050/spec-delta-r4.md)；实际证据/复用边界见 [最终复审](attachments/050/final-review.md)。下一步 merge。
