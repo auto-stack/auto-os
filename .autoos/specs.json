@@ -376,7 +376,9 @@
           "status": "published",
           "last_modified": "2026-10-04"
         }
-      ]
+      ,
+{"id": "P050-MERGE", "title": "PLAN-050 目录迁移合入记录", "content": "已线性合入 AutoOS 和 AutoUI 主线。24 个目录完成实际迁移，24 gitlink 原 pin 保持；Explorer 43 文件及 detached 状态保留。逐项复核与归档收尾状态见合入收据；归档计划 docs/plans/archive/050-app-directory-product-names.md。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": null, "file": "docs/plans/attachments/050/merge-receipt.json", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:3ae4e469cd028746a96711d22ecd0800047dcd81ae656cf0e6b5d319827eb371"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032}
+]
     },
     {
       "id": "goals",
@@ -861,18 +863,7 @@
     {
       "id": "designs",
       "items": [
-        {
-          "related": [
-            "PLAN-005"
-          ],
-          "status": "published",
-          "created": "2026-09-14",
-          "last_modified": "2026-09-14",
-          "id": "P005-3",
-          "file": "docs/specs/apps/tetris.md",
-          "title": "PLAN-005 棋盘与状态 UI 契约",
-          "content": "棋盘使用 10×20 严格网格与零圆角单格，active/locked/ghost 分层；next、摘要、控制按钮和 ready/paused/help/confirm/over 统一使用 AutoUI dialog。原生布局避免 nested styled columns 触发栈溢出。"
-        },
+        {"related": ["PLAN-005"], "status": "verified", "created": "2026-09-14", "last_modified": "2026-09-14", "id": "P005-3", "file": "docs/specs/apps/tetris.md", "title": "PLAN-005 棋盘与状态 UI 契约", "content": "棋盘使用 10×20 严格网格与零圆角单格，active/locked/ghost 分层；next、摘要、控制按钮和 ready/paused/help/confirm/over 统一使用 AutoUI dialog。原生布局避免 nested styled columns 触发栈溢出。\n\nPLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "depends_on": [], "priority": null, "assignee": null, "test_file": null, "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:bc45586dbed58d7da6c187464abcf2941449be61898d88c0f5688da00ae59a74"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032},
         {
           "id": "P012-6",
           "title": "SD-04 通知面板关闭模型与锚定 — 右上角紧凑卡（用户裁定）",
@@ -900,18 +891,7 @@
           "title": "SD-01/SD-02 规范增量定稿 — 四名称契约节",
           "content": "SD-01 add：auto-lang/docs/specs/auto-man/project.md §「pac.at 四名称契约（PLAN-015）」——\n四字段语义表 + locale 解析链 + exe_name 白名单（[A-Za-z0-9_-]，非法告警忽略，唯一消费点\nrust_ui::generate_cargo_toml [[bin]]）。SD-02 modify：同节边界段——apps.manifest 不承载展示名。\n反向钉：test_plan015_title_zh_never_enters_cargo_toml（展示名不进 Cargo.toml）。"
         },
-        {
-          "id": "P017-design-1",
-          "file": "docs/specs/apps/minesweeper.md",
-          "status": "stable",
-          "related": [
-            "PLAN-017"
-          ],
-          "created": "2026-09-14",
-          "last_modified": "2026-09-14",
-          "title": "038-minesweeper LCD 仪表板、表情状态机与 Chord 探测 — 设计注记 (SD-02)",
-          "content": "① LCD 数码管与表情交互：mines_str 与 timer_str 统一三位等宽格式化（如 010/000），居中集成 face_icon 表情状态机（ready/playing: 🙂, lost: 😵, won: 😎），重击表情快速复位；② 胶囊分段难度切换器（Segmented Control）：紧凑布局（text-xs px-2.5 py-1）杜绝 9×9 折行；③ Chord 快速探测机制：点击翻开数字格时校验周围插旗数，当 flag_count == cell.adjacent 时自动连带翻开周围未标旗邻居，并串联 Flood Fill 蔓延逻辑。"
-        },
+        {"id": "P017-design-1", "file": "docs/specs/apps/minesweeper.md", "status": "verified", "related": ["PLAN-017"], "created": "2026-09-14", "last_modified": "2026-09-14", "title": "038-minesweeper LCD 仪表板、表情状态机与 Chord 探测 — 设计注记 (SD-02)", "content": "① LCD 数码管与表情交互：mines_str 与 timer_str 统一三位等宽格式化（如 010/000），居中集成 face_icon 表情状态机（ready/playing: 🙂, lost: 😵, won: 😎），重击表情快速复位；② 胶囊分段难度切换器（Segmented Control）：紧凑布局（text-xs px-2.5 py-1）杜绝 9×9 折行；③ Chord 快速探测机制：点击翻开数字格时校验周围插旗数，当 flag_count == cell.adjacent 时自动连带翻开周围未标旗邻居，并串联 Flood Fill 蔓延逻辑。\n\nPLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "depends_on": [], "priority": null, "assignee": null, "test_file": null, "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:0ad567d4fff0008192339a78ae5f45dd780c018d561c17b9339e838a3a8cad5a"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032},
         {
           "id": "P018-3",
           "title": "SD-01/SD-02 规范增量定稿",
@@ -1209,18 +1189,7 @@
           "created": "2026-09-23",
           "last_modified": "2026-09-23"
         },
-        {
-          "related": [
-            "PLAN-043"
-          ],
-          "status": "published",
-          "created": "2026-09-27",
-          "last_modified": "2026-09-27",
-          "id": "P043-3",
-          "file": "docs/specs/shell/desktop-app-launch.md",
-          "title": "PLAN-043 桌面 app 启动方式声明（apps.manifest launch 字段）",
-          "content": "per-app \"launch\":\"vm\"|\"native\"（缺席=旧 desktop_exe 探测向后兼容）；manifest_launch_lookup 单名查表（键=注册表 id，036-tetris 对齐先例）；launch_app 门分派：声明 vm 恒 inproc 解释（产物存在也不附着），native/缺席维持 SHM 像素桥原生链。版本裁定：本版纯 VM 集成（10 条目全 vm），RQHost 下版本。原生形态前置债=a2r 两债（store 数组 push 静默失败/bool 条件位降链）+exe 随桌面协议重建。canonical：docs/specs/shell/desktop-app-launch.md。"
-        },
+        {"related": ["PLAN-043"], "status": "verified", "created": "2026-09-27", "last_modified": "2026-09-27", "id": "P043-3", "file": "docs/specs/shell/desktop-app-launch.md", "title": "PLAN-043 桌面 app 启动方式声明（apps.manifest launch 字段）", "content": "per-app \"launch\":\"vm\"|\"native\"（缺席=旧 desktop_exe 探测向后兼容）；manifest_launch_lookup 单名查表（键=注册表 id，036-tetris 对齐先例）；launch_app 门分派：声明 vm 恒 inproc 解释（产物存在也不附着），native/缺席维持 SHM 像素桥原生链。版本裁定：本版纯 VM 集成（10 条目全 vm），RQHost 下版本。原生形态前置债=a2r 两债（store 数组 push 静默失败/bool 条件位降链）+exe 随桌面协议重建。canonical：docs/specs/shell/desktop-app-launch.md。\n\nPLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "depends_on": [], "priority": null, "assignee": null, "test_file": null, "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:32316db755d035b798f32b85e02525c2d39e6b83ace55a6156078345ca24fe6d"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032},
         {
           "related": [
             "PLAN-043"
@@ -1269,7 +1238,11 @@
           "created": "2026-09-28",
           "last_modified": "2026-09-28"
         }
-      ]
+      ,
+{"id": "P050-D1", "title": "应用产品路径与稳定 ID — apps/independent-repositories.md", "content": "PLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": null, "file": "docs/specs/apps/independent-repositories.md", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:1fd1f626b08ce2d278f17d72183499d295c9d8a62eef56ee731ab8aece5e7450"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032},
+{"id": "P050-D3", "title": "应用产品路径与稳定 ID — apps/syslog-app.md", "content": "PLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": null, "file": "docs/specs/apps/syslog-app.md", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:fa8ad70e5b612520f894ccd7761383e0d9f16322d5fc485c755c6e6389c58757"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032},
+{"id": "P050-D4", "title": "应用产品路径与稳定 ID — apps/kanban.md", "content": "PLAN-050:r4：物理产品目录使用 apps/auto-*，稳定 manifest ID、应用 pin、端口保持；相邻清单按真实路径提供 ID，Vue/VM 共用容器展开。24 个对应远端与固定提交可取回，branch=main；syslog 经用户确认保留内部组件。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": null, "file": "docs/specs/apps/kanban.md", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:cd02f45fa79a7f752d32caad5d4cab6a67d9191b85e260a1a716cede1a39b74c"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032}
+]
     },
     {
       "id": "tests",
@@ -1661,7 +1634,9 @@
           "status": "published",
           "last_modified": "2026-10-04"
         }
-      ]
+      ,
+{"id": "P050-TESTS", "title": "产品目录迁移校验与固定提交保护", "content": "Python 5/5、24 gitlink 元数据、远端仓/固定提交 24/24、主检出 Explorer 43 文件/HEAD/clean/detached、Bash/PowerShell × Vue/iced dry-run 4/4；完整应用检出及 GUI 功能不属于该证据范围。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": "scripts/tests/test_app_links.py", "file": "docs/specs/apps/independent-repositories.md", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:1fd1f626b08ce2d278f17d72183499d295c9d8a62eef56ee731ab8aece5e7450"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032}
+]
     },
     {
       "id": "reviews",
@@ -2122,7 +2097,9 @@
           "status": "published",
           "last_modified": "2026-10-04"
         }
-      ]
+      ,
+{"id": "P050-R4", "title": "PLAN-050 r4 最终复审", "content": "同一执行会话基于冻结源码、实际验收和规范哈希重建，final pass；非独立上下文。重放提交 range-diff 等价；源码、依赖、测试配置未改变。两项基线剪贴板失败的非阻塞处理由用户直接授权。", "status": "verified", "depends_on": [], "related": [], "priority": null, "assignee": null, "test_file": null, "file": "docs/plans/attachments/050/final-review.md", "milestone": null, "module": null, "tags": ["PLAN-050:r4", "source_commit:577594eb631b21a0816876863b7a09a30fd51f55", "archive:docs/plans/archive/050-app-directory-product-names.md", "source_sha256:260c7141b6793e85a5acb83ff0c060958c60b0ad05533ffe4aab97143882a0d9"], "created_at": 1792644032, "modified_at": 1792644032, "completed_at": 1792644032}
+]
     }
   ]
 }
