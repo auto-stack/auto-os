@@ -1,7 +1,7 @@
 {
   "plan": "PLAN-050",
   "revision": 4,
-  "status": "landed",
+  "status": "delivered",
   "osDeliveryCommit": "577594eb631b21a0816876863b7a09a30fd51f55",
   "languageDeliveryCommit": "ce055a5194649ad7c6251dbc46d0666bde08cfb6",
   "directoriesMigrated": 24,
@@ -19,8 +19,8 @@
   "desktopDryRuns": "Bash/PowerShell x Vue/iced = 4/4",
   "runtimeArtifactStatus": "CLI/UI tool rebuilt and installed; native mpv host build failure recorded separately",
   "ledgerStatus": "landed_verified",
-  "archiveStatus": "archived_verified_cleanup_pending",
-  "cleanupStatus": "pending",
+  "archiveStatus": "archived_verified",
+  "cleanupStatus": "cleaned",
   "baselineClipboardFailures": {
     "status": "recorded_nonblocking_user_authorized",
     "tests": [
@@ -46,5 +46,32 @@
   },
   "artifactEvidence": "artifact-observations.json",
   "archivePath": "docs/plans/archive/050-app-directory-product-names.md",
-  "batchRegressionDue": false
+  "batchRegressionDue": false,
+  "outcome": "pass",
+  "completionKind": "delivered",
+  "completedAt": "2026-10-22T04:48:22.496921+00:00",
+  "cleanup": {
+    "worktreesRemoved": [
+      "D:/autostack/.wt/os-050/auto-os",
+      "D:/autostack/.wt/os-050/auto-lang",
+      "D:/autostack/.wt/os-050/auto-down"
+    ],
+    "branchesRemoved": [
+      "codex/app-directory-product-names",
+      "codex/os050-app-registry-ids"
+    ],
+    "emptyGroupRemoved": true,
+    "guards": "all three fresh wt-guard clean",
+    "sourceCommitsLanded": true
+  },
+  "acResults": {
+    "AC-01": "pass",
+    "AC-02": "pass",
+    "AC-03": "pass",
+    "AC-04": "pass",
+    "AC-05": "pass",
+    "AC-06": "pass",
+    "AC-07": "pass",
+    "AC-08": "pass"
+  }
 }

@@ -6,7 +6,7 @@ author: [Codex]
 created_at: 2026-10-22
 updated_at: 2026-10-22
 plan_revision: 4
-current_step: 5
+current_step: 6
 total_steps: 6
 supersedes_spec_components: [docs/specs/apps/independent-repositories.md, docs/specs/shell/desktop-app-launch.md, docs/specs/apps/syslog-app.md, docs/specs/apps/kanban.md, docs/specs/apps/tetris.md, docs/specs/apps/minesweeper.md, auto-lang/docs/specs/auto-ui-compiler/project.md]
 new_spec_components: []
@@ -125,7 +125,7 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 - [x] T-03（work，AC-01/04）：OS提交 3e24ed1aad4766fbd6031ea239e922015b471b40；24 目录/清单/gitlink完成，24 SHA原值一致；已初始化子模块的 Git 移动/ff 流程隔离 fixture 通过。主检出物理落地及 Explorer 43 文件复核待T-06。
 - [x] T-04（work，AC-04/05）：当前文档/规范/研究资料已更新，metadata-only 组合检查、Python 5/5、研究链接、PowerShell/Bash × Vue/iced dry-run通过；历史导入/归档无变更。UI工具包扩大验证161通过/9失败/1忽略；未改基线160通过/相同9失败/1忽略，新增失败0，见附件汇总。
 - [x] T-05（review，AC-06）：r4 最终复审 pass；绑定 OS a26d129eb6b0e5ebdded5cb69712bf727585d5af / language 9cd1520ffca4bec5abd811d394a7f413d71ac1c4。方法和限制见 final-review.md。
-- [ ] T-06（merge，AC-07）：按实际验证结果落主线/主检出目录，记录证据；无法完成则留明确未完成项，不冒称交付。
+- [x] T-06（merge，AC-07）：两仓主线/实际目录后验、ledger、归档及安全清理全部完成；合入及清理收据见附件。
 
 ## 9. 复审记录
 
@@ -155,7 +155,7 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 
 ## 12. 合入与归档收据
 
-- stage: merge | plan_revision: 4 | completion_kind: delivered | outcome: cleanup_pending。
+- stage: merge | plan_revision: 4 | completion_kind: delivered | outcome: pass。
 - landed：OS 源码 577594eb631b21a0816876863b7a09a30fd51f55；language 源码 ce055a5194649ad7c6251dbc46d0666bde08cfb6；两仓均 ff-only。后续 ledger-only 提交 OS 66cb7c40e472e3efcde0736b3de3a6bb56943ee5 / language 4858197411dff9294fe3956b0b5092bb2982fd1e，未改变已验证代码。重放 hash 映射/range-diff 等价见合入收据。
 - AC-01/02/07 主线迁移通过：24 个目录旧名消失/新名存在，24 pin 原值保持；Explorer 43 文件逐字节一致，HEAD/clean/detached 保留。OS 其他 5 份 WIP 哈希一致。语言 34 份 WIP 一致，PLAN-828 在并行任务中有一次修改，本次交付 diff 不触及该文件；未覆盖其工作。
 - metadata-only、Python 5/5、Bash/PowerShell × Vue/iced 干运行 4/4 在主检出通过。两项已复现的基线剪贴板失败按用户明确授权非阻塞，不宣称日常门全绿。
@@ -164,3 +164,10 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 - 批量回归 due-check：最后收据 2026-10-21T06:27:43Z / last_covered_plan_id 817，当前 2026-10-22 不足 48 小时；新合入没有 auto-lang 侧 >817 的 5 倍数 Plan（820/825 尚在途，829 非 5 倍数）；OS-050 不复用语言计划号，因此本轮不到期，不运行 cargo tf。
 - archived：实际位于 docs/plans/archive/050-app-directory-product-names.md；T-01..05 完成（5/6），T-06 剩余仅安全清理本组 OS/lang/只读 AutoDown 工作树、两个已合入临时分支与空组目录。清理前须逐项确认绝对路径/归属/clean/ancestry，fresh wt-guard。
 - 证据：[合入收据](../attachments/050/merge-receipt.json)、[规范投影](../attachments/050/ledger-os-receipt.json)、[语言投影](../attachments/050/ledger-lang-receipt.json)、[已知问题](../../reports/plan050-known-issues.md)。
+
+## 13. 清理完成核验
+
+- cleaned：2026-10-22，三棵专用工作树移除前均 clean；源实现提交已是各自主线祖先；逐项 absolute path 检查与 fresh wt-guard clean 后由 git worktree remove 删除，两个临时分支以 git branch -d 删除，最后仅删除空组目录。
+- 已核对工作树路径/组目录不存在、两个临时 ref 不存在；其他历史 worktree 登记未动。T-01..06 全完成，current_step 6 / total_steps 6；status archived，completion_kind delivered，outcome pass。
+- 最终 canonical 七档哈希与 r4 冻结完全一致；其他 WIP 未纳入本计划提交；两个基线剪贴板问题及原生 MPV 构建观察保留在已知问题报告。
+- 本次为本地主线合入和产物更新，未执行远端推送、GUI 启动或服务重启。
