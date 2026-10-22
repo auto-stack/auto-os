@@ -1,11 +1,11 @@
 ---
 plan_id: PLAN-050
-status: executing
+status: execution_done
 feature_name: app-directory-product-names
 author: [Codex]
 created_at: 2026-10-22
 updated_at: 2026-10-22
-plan_revision: 3
+plan_revision: 4
 current_step: 4
 total_steps: 6
 supersedes_spec_components: [docs/specs/apps/independent-repositories.md, docs/specs/shell/desktop-app-launch.md]
@@ -22,6 +22,8 @@ touched_goals: []
 桌面 ID、pac 展示名/工程名、端口、源码 pin 保持不变；不初始化全部空子模块、不动业务源码。
 
 r3：按用户追加要求核对正式 gitlink、对应远端与配置；补齐 Kanban 的 main 分支并同步本机 URL。用户明确选择系统日志暂时保留内部组件。目录/ID/固定提交范围保持原定方案。
+
+r4 用户明确授权（2026-10-22）：“这两项既有的剪贴板测试失败先记录下来，不阻塞本次迁移。请继续合入目录改名和 submodule 配置更新，完成验证和收尾。”仅豁免下述两个已复现的基线失败，不修改测试、不扩大豁免范围。
 
 ## 1. 目标
 
@@ -113,7 +115,7 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 | AC-04 | work | scoped Rust/Python/启动 dry-run 检查通过；元数据模式不把缺检出当完整运行验收 |
 | AC-05 | work | 活动源码/脚本/当前规范/研究入口路径同步；历史导入、archive原始引用保留 |
 | AC-06 | review | 检查冻结提交、逐 AC 证据和 Spec delta；报告上下文独立性限制 |
-| AC-07 | merge | 语言最终门通过后落主线；OS组合落主线、主检出实际目录迁移；保留其他WIP |
+| AC-07 | merge | 语言最终门记录 5329/5331、仅两项已复现基线剪贴板失败按用户授权非阻塞；其余验收通过后落主线，主检出实际迁移、保留其他WIP；完成 ledger/归档/安全清理 |
 | AC-08 | work | 24 gitlink 与 .gitmodules 一致，对应远端仓库/默认 main/固定 SHA 可访问；补齐 Kanban branch，同步本机 URL；syslog 按用户决定保持 local |
 
 ## 8. 执行步骤
@@ -139,4 +141,4 @@ OS 校验增加 metadata-only 与失效/旧路径反例；验证历史导入报�
 
 ## 10. 待澄清事项
 
-需要用户决定：是否在明确记录两个已复现的基线剪贴板失败后，允许按已通过的定向验证先合入本次迁移；或先修复剪贴板门禁。异步问题已提出，预选或等待不算授权。本轮目录/ID/源码pin设计不需要重新确认。
+已关闭：用户直接授权记录两项既有剪贴板失败后继续迁移。失败为 `ui::iced::renderer::tests::plan488_clipboard_paste_payload_reads_os_clipboard` 和 `ui_tests::plan802_code_editor_provider::plan802_clipboard::os_clipboard_cut_copy_paste_roundtrip`，问题继续保留，不宣称门禁全绿。目录/ID/源码 pin 方案不变。
