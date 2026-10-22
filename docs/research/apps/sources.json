@@ -1,0 +1,1740 @@
+{
+  "schema_version": 1,
+  "title": "AutoOS 应用产品化初期调研来源目录",
+  "checked_on": "2026-10-22",
+  "base_auto_os_head": "2b210066ef6855a5f584b118a020015b4146a3d7",
+  "scope": "公开元数据、README、少量源码/许可抽样；未运行竞品、未测性能，不等于采用或发布合规结论。基线含已有未提交设计/Plan 文档，已保留；不是 clean HEAD 内容快照。",
+  "records": [
+    {
+      "id": "GH-001",
+      "repo": "lgse/strata",
+      "category": "files",
+      "url": "https://github.com/lgse/strata",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "The best file manager on Linux",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2026-08-28T22:41:07Z",
+      "license_api": "MIT",
+      "license_note": "主体 MIT；Cargo 默认 rar feature 包含 UnRAR 依赖，README 明示 non-free，不能将整个发布包笼统称为纯 MIT。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/lgse/strata/809e2f5244b24326a73514b071fe8f4cb530c6c1/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": "809e2f5244b24326a73514b071fe8f4cb530c6c1",
+      "examined_files": [
+        {
+          "path": "Cargo.toml",
+          "url": "https://github.com/lgse/strata/blob/809e2f5244b24326a73514b071fe8f4cb530c6c1/Cargo.toml"
+        },
+        {
+          "path": "docs/preview-sandbox.md",
+          "url": "https://github.com/lgse/strata/blob/809e2f5244b24326a73514b071fe8f4cb530c6c1/docs/preview-sandbox.md"
+        },
+        {
+          "path": "src/services/search.rs",
+          "url": "https://github.com/lgse/strata/blob/809e2f5244b24326a73514b071fe8f4cb530c6c1/src/services/search.rs"
+        },
+        {
+          "path": "src/services/jobs.rs",
+          "url": "https://github.com/lgse/strata/blob/809e2f5244b24326a73514b071fe8f4cb530c6c1/src/services/jobs.rs"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/lgse/strata"
+    },
+    {
+      "id": "GH-002",
+      "repo": "KDE/dolphin",
+      "category": "files",
+      "url": "https://github.com/KDE/dolphin",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "File manager by KDE",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2015-09-18T14:34:34Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/KDE/dolphin"
+    },
+    {
+      "id": "GH-003",
+      "repo": "pop-os/cosmic-files",
+      "category": "files",
+      "url": "https://github.com/pop-os/cosmic-files",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "COSMIC file manager",
+      "primary_language": "Rust",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2024-01-03T20:34:32Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/pop-os/cosmic-files/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/pop-os/cosmic-files"
+    },
+    {
+      "id": "GH-004",
+      "repo": "sxyazi/yazi",
+      "category": "files",
+      "url": "https://github.com/sxyazi/yazi",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "💥 Blazing fast terminal file manager written in Rust, based on async I/O.",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2023-07-08T11:45:55Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/sxyazi/yazi/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/sxyazi/yazi"
+    },
+    {
+      "id": "GH-005",
+      "repo": "readest/readest",
+      "category": "reading",
+      "url": "https://github.com/readest/readest",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "Readest is a modern, feature-rich ebook reader designed for avid readers offering seamless cross-platform access, powerful tools, and an intuitive interface to elevate your reading experience.",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2024-10-12T23:16:55Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/readest/readest/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": "6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e",
+      "examined_files": [
+        {
+          "path": "apps/readest-app/package.json",
+          "url": "https://github.com/readest/readest/blob/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/apps/readest-app/package.json"
+        },
+        {
+          "path": ".gitmodules",
+          "url": "https://github.com/readest/readest/blob/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/.gitmodules"
+        },
+        {
+          "path": "apps/readest-app/src/types/book.ts",
+          "url": "https://github.com/readest/readest/blob/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/apps/readest-app/src/types/book.ts"
+        },
+        {
+          "path": "apps/readest-app/src/types/annotator.ts",
+          "url": "https://github.com/readest/readest/blob/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/apps/readest-app/src/types/annotator.ts"
+        },
+        {
+          "path": "apps/readest-app/src/services/appService.ts",
+          "url": "https://github.com/readest/readest/blob/6b2229ea5fa18ece2d6b90f1ba33c88ae13f4b6e/apps/readest-app/src/services/appService.ts"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/readest/readest"
+    },
+    {
+      "id": "GH-006",
+      "repo": "johnfactotum/foliate",
+      "category": "reading",
+      "url": "https://github.com/johnfactotum/foliate",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Read e-books in style",
+      "primary_language": "JavaScript",
+      "default_branch": "gtk4",
+      "archived": false,
+      "created_at": "2019-05-26T11:16:14Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/johnfactotum/foliate"
+    },
+    {
+      "id": "GH-007",
+      "repo": "koreader/koreader",
+      "category": "reading",
+      "url": "https://github.com/koreader/koreader",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "An ebook reader application supporting PDF, DjVu, EPUB, FB2 and many more formats, running on Cervantes, Kindle, Kobo, PocketBook and Android devices",
+      "primary_language": "Lua",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2013-03-24T13:09:42Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/koreader/koreader"
+    },
+    {
+      "id": "GH-008",
+      "repo": "kovidgoyal/calibre",
+      "category": "reading",
+      "url": "https://github.com/kovidgoyal/calibre",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "The official source code repository for the calibre ebook manager",
+      "primary_language": "Python",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2013-05-28T10:03:23Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/kovidgoyal/calibre"
+    },
+    {
+      "id": "GH-009",
+      "repo": "johnfactotum/foliate-js",
+      "category": "reading",
+      "url": "https://github.com/johnfactotum/foliate-js",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "Render e-books in the browser",
+      "primary_language": "JavaScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2022-10-18T18:45:22Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/johnfactotum/foliate-js/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": "78914aef4466eb960965702401634c2cb348e9b1",
+      "examined_files": [
+        {
+          "path": "view.js",
+          "url": "https://github.com/johnfactotum/foliate-js/blob/78914aef4466eb960965702401634c2cb348e9b1/view.js"
+        },
+        {
+          "path": "epubcfi.js",
+          "url": "https://github.com/johnfactotum/foliate-js/blob/78914aef4466eb960965702401634c2cb348e9b1/epubcfi.js"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/johnfactotum/foliate-js"
+    },
+    {
+      "id": "GH-010",
+      "repo": "laurent22/joplin",
+      "category": "knowledge",
+      "url": "https://github.com/laurent22/joplin",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "Joplin - the privacy-focused note taking app with sync capabilities for Windows, macOS, Linux, Android and iOS.",
+      "primary_language": "TypeScript",
+      "default_branch": "dev",
+      "archived": false,
+      "created_at": "2017-01-16T21:49:41Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读根 LICENSE：默认 AGPL-3.0-or-later，子目录可另有许可；图标/商标另有条件。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/laurent22/joplin/dev/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/laurent22/joplin/blob/dev/LICENSE"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/laurent22/joplin"
+    },
+    {
+      "id": "GH-011",
+      "repo": "logseq/logseq",
+      "category": "knowledge",
+      "url": "https://github.com/logseq/logseq",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "A privacy-first, open-source platform for knowledge management and collaboration. Download link:  http://github.com/logseq/logseq/releases. roadmap: https://logseq.io/p/NX4mc_ggEV",
+      "primary_language": "Clojure",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2020-05-23T00:06:06Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/logseq/logseq"
+    },
+    {
+      "id": "GH-012",
+      "repo": "AppFlowy-IO/AppFlowy",
+      "category": "knowledge",
+      "url": "https://github.com/AppFlowy-IO/AppFlowy",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Bring projects, wikis, and teams together with AI. AppFlowy is the AI collaborative workspace where you achieve more without losing control of your data. The leading open source Notion alternative.",
+      "primary_language": "Dart",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2021-06-16T12:56:48Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/AppFlowy-IO/AppFlowy"
+    },
+    {
+      "id": "GH-013",
+      "repo": "TriliumNext/Trilium",
+      "category": "knowledge",
+      "url": "https://github.com/TriliumNext/Trilium",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Build your personal knowledge base with Trilium Notes",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2017-05-23T00:30:20Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/TriliumNext/Trilium/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/TriliumNext/Trilium"
+    },
+    {
+      "id": "GH-014",
+      "repo": "outline/outline",
+      "category": "knowledge",
+      "url": "https://github.com/outline/outline",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "The fastest knowledge base for growing teams. Beautiful, realtime collaborative, feature packed, and markdown compatible.",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2016-05-22T21:31:47Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读 LICENSE：当前为 Business Source License 1.1，不能归为宽松开源依赖；仅作设计参考，转换日期和版本见原文。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/outline/outline/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "LICENSE",
+          "url": "https://github.com/outline/outline/blob/main/LICENSE"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/outline/outline"
+    },
+    {
+      "id": "GH-015",
+      "repo": "alainm23/planify",
+      "category": "tasks-calendar",
+      "url": "https://github.com/alainm23/planify",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Task manager with Todoist, Nextcloud & CalDAV support designed for GNOME",
+      "primary_language": "Vala",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2018-10-22T16:02:34Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/alainm23/planify/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/alainm23/planify"
+    },
+    {
+      "id": "GH-016",
+      "repo": "nextcloud/calendar",
+      "category": "tasks-calendar",
+      "url": "https://github.com/nextcloud/calendar",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "📆 Calendar app for Nextcloud",
+      "primary_language": "JavaScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2016-09-16T08:03:10Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/nextcloud/calendar/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/nextcloud/calendar"
+    },
+    {
+      "id": "GH-017",
+      "repo": "gnome/gnome-calendar",
+      "category": "tasks-calendar",
+      "url": "https://github.com/GNOME/gnome-calendar",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Read-only mirror of https://gitlab.gnome.org/GNOME/gnome-calendar",
+      "primary_language": "C",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2012-06-02T15:11:45Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/gnome/gnome-calendar"
+    },
+    {
+      "id": "GH-018",
+      "repo": "wekan/wekan",
+      "category": "tasks-calendar",
+      "url": "https://github.com/wekan/wekan",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "FLOSS kanban, built with Meteor. Official Public Support at GitHub issues only. Official Private Pre-Paid Support at https://wekan.fi/commercial-support/ only. Translation PRs to imports/i18n/data/en.i18n.json, other translations at https://app.transifex.com/wekan/wekan . No telemetry.",
+      "primary_language": "JavaScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2014-01-21T01:26:28Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/wekan/wekan/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/wekan/wekan"
+    },
+    {
+      "id": "GH-019",
+      "repo": "plankanban/planka",
+      "category": "tasks-calendar",
+      "url": "https://github.com/plankanban/planka",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "Elegant open source project tracking. Self-hosted Kanban for teams — free Community edition, with PLANKA Pro for organisations.",
+      "primary_language": "JavaScript",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2019-08-30T20:35:36Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读 LICENSE.md：PLANKA Community License 1.1；含商业/Pro 边界，不因 README 自称 open source 就认定 OSI 开源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "LICENSE.md",
+          "url": "https://github.com/plankanban/planka/blob/master/LICENSE.md"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/plankanban/planka"
+    },
+    {
+      "id": "GH-020",
+      "repo": "Flow-Launcher/Flow.Launcher",
+      "category": "launcher",
+      "url": "https://github.com/Flow-Launcher/Flow.Launcher",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": ":mag: Quick file search & app launcher for Windows with community-made plugins",
+      "primary_language": "C#",
+      "default_branch": "dev",
+      "archived": false,
+      "created_at": "2020-04-21T08:12:15Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/Flow-Launcher/Flow.Launcher/dev/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/Flow-Launcher/Flow.Launcher"
+    },
+    {
+      "id": "GH-021",
+      "repo": "albertlauncher/albert",
+      "category": "launcher",
+      "url": "https://github.com/albertlauncher/albert",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "A fast and flexible keyboard launcher",
+      "primary_language": "C++",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2014-07-25T14:08:30Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/albertlauncher/albert"
+    },
+    {
+      "id": "GH-022",
+      "repo": "vicinaehq/vicinae",
+      "category": "launcher",
+      "url": "https://github.com/vicinaehq/vicinae",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A focused launcher for your desktop - native, fast, extensible",
+      "primary_language": "C++",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2025-07-28T03:49:03Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/vicinaehq/vicinae/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/vicinaehq/vicinae"
+    },
+    {
+      "id": "GH-023",
+      "repo": "strawberrymusicplayer/strawberry",
+      "category": "media",
+      "url": "https://github.com/strawberrymusicplayer/strawberry",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": ":strawberry: Strawberry Music Player",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2014-12-29T22:49:19Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/strawberrymusicplayer/strawberry/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/strawberrymusicplayer/strawberry"
+    },
+    {
+      "id": "GH-024",
+      "repo": "navidrome/navidrome",
+      "category": "media",
+      "url": "https://github.com/navidrome/navidrome",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "🎧 Your Personal Streaming Service ",
+      "primary_language": "Go",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2016-02-24T23:25:12Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/navidrome/navidrome/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/navidrome/navidrome"
+    },
+    {
+      "id": "GH-025",
+      "repo": "mpv-player/mpv",
+      "category": "media",
+      "url": "https://github.com/mpv-player/mpv",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "🎥 Command line media player",
+      "primary_language": "C",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2012-10-13T08:08:44Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读 Copyright：默认 GPLv2+，排除 GPL-only 文件的构建可走 LGPLv2.1+；需核对实际构建、文件和依赖。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/mpv-player/mpv/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "Copyright",
+          "url": "https://github.com/mpv-player/mpv/blob/master/Copyright"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/mpv-player/mpv"
+    },
+    {
+      "id": "GH-026",
+      "repo": "videolan/vlc",
+      "category": "media",
+      "url": "https://github.com/videolan/vlc",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "VLC media player - plays everything, runs anywhere. Code here: https://code.videolan.org/videolan/vlc",
+      "primary_language": "C",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2012-01-29T19:30:36Z",
+      "license_api": "GPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/videolan/vlc"
+    },
+    {
+      "id": "GH-027",
+      "repo": "immich-app/immich",
+      "category": "media",
+      "url": "https://github.com/immich-app/immich",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "High performance self-hosted photo and video management solution.",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2022-02-03T15:56:27Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/immich-app/immich/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/immich-app/immich"
+    },
+    {
+      "id": "GH-028",
+      "repo": "nomacs/nomacs",
+      "category": "media",
+      "url": "https://github.com/nomacs/nomacs",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "nomacs is a free image viewer for windows, linux, and mac systems.",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2013-09-04T08:18:41Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/nomacs/nomacs/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/nomacs/nomacs"
+    },
+    {
+      "id": "GH-029",
+      "repo": "KDE/krita",
+      "category": "media",
+      "url": "https://github.com/KDE/krita",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Krita is a free and open source cross-platform application that offers an end-to-end solution for creating digital art files from scratch built on the KDE and Qt frameworks.",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2015-10-09T19:24:19Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/KDE/krita"
+    },
+    {
+      "id": "GH-030",
+      "repo": "excalidraw/excalidraw",
+      "category": "media",
+      "url": "https://github.com/excalidraw/excalidraw",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Virtual whiteboard for sketching hand-drawn like diagrams",
+      "primary_language": "TypeScript",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2020-01-02T01:04:43Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/excalidraw/excalidraw/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/excalidraw/excalidraw"
+    },
+    {
+      "id": "GH-031",
+      "repo": "dbeaver/dbeaver",
+      "category": "developer",
+      "url": "https://github.com/dbeaver/dbeaver",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Free universal database tool and SQL client",
+      "primary_language": "Java",
+      "default_branch": "devel",
+      "archived": false,
+      "created_at": "2015-10-21T08:26:28Z",
+      "license_api": "Apache-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/dbeaver/dbeaver/devel/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/dbeaver/dbeaver"
+    },
+    {
+      "id": "GH-032",
+      "repo": "sqlitebrowser/sqlitebrowser",
+      "category": "developer",
+      "url": "https://github.com/sqlitebrowser/sqlitebrowser",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Official home of the DB Browser for SQLite (DB4S) project. Previously known as \"SQLite Database Browser\" and \"Database Browser for SQLite\". Website at: ",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2014-05-04T01:54:44Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/sqlitebrowser/sqlitebrowser/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/sqlitebrowser/sqlitebrowser"
+    },
+    {
+      "id": "GH-033",
+      "repo": "apache/echarts",
+      "category": "developer",
+      "url": "https://github.com/apache/echarts",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Apache ECharts is a powerful, interactive charting and data visualization library for browser",
+      "primary_language": "TypeScript",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2013-04-03T03:18:59Z",
+      "license_api": "Apache-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/apache/echarts/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/apache/echarts"
+    },
+    {
+      "id": "GH-034",
+      "repo": "vega/vega-lite",
+      "category": "developer",
+      "url": "https://github.com/vega/vega-lite",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A concise grammar of interactive graphics, built on Vega.",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2014-11-20T20:52:04Z",
+      "license_api": "BSD-3-Clause",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/vega/vega-lite/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/vega/vega-lite"
+    },
+    {
+      "id": "GH-035",
+      "repo": "aristocratos/btop",
+      "category": "developer",
+      "url": "https://github.com/aristocratos/btop",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A monitor of resources",
+      "primary_language": "C++",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2021-05-06T18:40:21Z",
+      "license_api": "Apache-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/aristocratos/btop/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/aristocratos/btop"
+    },
+    {
+      "id": "GH-036",
+      "repo": "wezterm/wezterm",
+      "category": "developer",
+      "url": "https://github.com/wezterm/wezterm",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "A GPU-accelerated cross-platform terminal emulator and multiplexer written by @wez and implemented in Rust",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2018-02-07T05:35:46Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读 LICENSE.md：主体 MIT，附带字体有其他许可。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/wezterm/wezterm/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "LICENSE.md",
+          "url": "https://github.com/wezterm/wezterm/blob/main/LICENSE.md"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/wezterm/wezterm"
+    },
+    {
+      "id": "GH-037",
+      "repo": "ghostty-org/ghostty",
+      "category": "developer",
+      "url": "https://github.com/ghostty-org/ghostty",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "👻 Ghostty is a fast, feature-rich, and cross-platform terminal emulator that uses platform-native UI and GPU acceleration.",
+      "primary_language": "Zig",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2022-03-29T17:38:26Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/ghostty-org/ghostty/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/ghostty-org/ghostty"
+    },
+    {
+      "id": "GH-038",
+      "repo": "nushell/nushell",
+      "category": "developer",
+      "url": "https://github.com/nushell/nushell",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A new type of shell",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2019-05-10T16:59:42Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/nushell/nushell/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/nushell/nushell"
+    },
+    {
+      "id": "GH-039",
+      "repo": "fish-shell/fish-shell",
+      "category": "developer",
+      "url": "https://github.com/fish-shell/fish-shell",
+      "checked_on": "2026-10-22",
+      "evidence": "B-source-or-license",
+      "description": "The user-friendly command line shell.",
+      "primary_language": "Rust",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2012-05-10T03:00:55Z",
+      "license_api": "NOASSERTION",
+      "license_note": "已读 COPYING：大部分 GPLv2，包含其他许可；逐组件复核。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/fish-shell/fish-shell/master/README.rst",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [
+        {
+          "path": "COPYING",
+          "url": "https://github.com/fish-shell/fish-shell/blob/master/COPYING"
+        }
+      ],
+      "metadata_url": "https://api.github.com/repos/fish-shell/fish-shell"
+    },
+    {
+      "id": "GH-040",
+      "repo": "PowerShell/PowerShell",
+      "category": "developer",
+      "url": "https://github.com/PowerShell/PowerShell",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "PowerShell for every system!",
+      "primary_language": "C#",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2016-01-13T23:41:35Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/PowerShell/PowerShell/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/PowerShell/PowerShell"
+    },
+    {
+      "id": "GH-041",
+      "repo": "openai/codex",
+      "category": "developer",
+      "url": "https://github.com/openai/codex",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Lightweight coding agent that runs in your terminal",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2025-04-13T05:37:54Z",
+      "license_api": "Apache-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/openai/codex/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/openai/codex"
+    },
+    {
+      "id": "GH-042",
+      "repo": "Aider-AI/aider",
+      "category": "developer",
+      "url": "https://github.com/Aider-AI/aider",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "aider is AI pair programming in your terminal",
+      "primary_language": "Python",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2023-05-09T18:57:49Z",
+      "license_api": "Apache-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/Aider-AI/aider/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/Aider-AI/aider"
+    },
+    {
+      "id": "GH-043",
+      "repo": "zed-industries/zed",
+      "category": "developer",
+      "url": "https://github.com/zed-industries/zed",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Code at the speed of thought – Zed is a high-performance, multiplayer code editor from the creators of Atom and Tree-sitter.",
+      "primary_language": "Rust",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2021-02-20T03:01:06Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/zed-industries/zed/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/zed-industries/zed"
+    },
+    {
+      "id": "GH-044",
+      "repo": "helix-editor/helix",
+      "category": "developer",
+      "url": "https://github.com/helix-editor/helix",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A post-modern modal text editor.",
+      "primary_language": "Rust",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2020-06-01T04:26:56Z",
+      "license_api": "MPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/helix-editor/helix/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/helix-editor/helix"
+    },
+    {
+      "id": "GH-045",
+      "repo": "element-hq/element-web",
+      "category": "communication-publishing",
+      "url": "https://github.com/element-hq/element-web",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A glossy Matrix collaboration client for the web.",
+      "primary_language": "TypeScript",
+      "default_branch": "develop",
+      "archived": false,
+      "created_at": "2015-07-22T05:32:15Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/element-hq/element-web/develop/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/element-hq/element-web"
+    },
+    {
+      "id": "GH-046",
+      "repo": "element-hq/synapse",
+      "category": "communication-publishing",
+      "url": "https://github.com/element-hq/synapse",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Synapse: Matrix homeserver written in Python/Twisted + Rust",
+      "primary_language": "Python",
+      "default_branch": "develop",
+      "archived": false,
+      "created_at": "2023-12-13T14:40:43Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/element-hq/synapse"
+    },
+    {
+      "id": "GH-047",
+      "repo": "TryGhost/Ghost",
+      "category": "communication-publishing",
+      "url": "https://github.com/TryGhost/Ghost",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Independent technology for modern publishing, memberships, subscriptions and newsletters.",
+      "primary_language": "TypeScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2013-05-04T11:09:13Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/TryGhost/Ghost/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/TryGhost/Ghost"
+    },
+    {
+      "id": "GH-048",
+      "repo": "getzola/zola",
+      "category": "communication-publishing",
+      "url": "https://github.com/getzola/zola",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "A fast static site generator in a single binary with everything built-in. https://www.getzola.org",
+      "primary_language": "Rust",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2016-12-06T02:57:25Z",
+      "license_api": "EUPL-1.2",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/getzola/zola/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/getzola/zola"
+    },
+    {
+      "id": "GH-049",
+      "repo": "RSSNext/Folo",
+      "category": "communication-publishing",
+      "url": "https://github.com/RSSNext/Folo",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "🧡 Folo is the AI RSS Reader",
+      "primary_language": "TypeScript",
+      "default_branch": "dev",
+      "archived": false,
+      "created_at": "2024-04-08T03:23:35Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/RSSNext/Folo/dev/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/RSSNext/Folo"
+    },
+    {
+      "id": "GH-050",
+      "repo": "Qalculate/libqalculate",
+      "category": "utilities",
+      "url": "https://github.com/Qalculate/libqalculate",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Qalculate! library and CLI",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2016-06-02T07:45:31Z",
+      "license_api": "GPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/Qalculate/libqalculate/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/Qalculate/libqalculate"
+    },
+    {
+      "id": "GH-051",
+      "repo": "GNOME/gnome-clocks",
+      "category": "utilities",
+      "url": "https://github.com/GNOME/gnome-clocks",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Read-only mirror of https://gitlab.gnome.org/GNOME/gnome-clocks",
+      "primary_language": "Vala",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2013-08-13T10:25:29Z",
+      "license_api": "GPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/GNOME/gnome-clocks/master/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/GNOME/gnome-clocks"
+    },
+    {
+      "id": "GH-052",
+      "repo": "GNOME/gnome-weather",
+      "category": "utilities",
+      "url": "https://github.com/GNOME/gnome-weather",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Read-only mirror of https://gitlab.gnome.org/GNOME/gnome-weather",
+      "primary_language": "JavaScript",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2013-08-15T14:45:03Z",
+      "license_api": "GPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/GNOME/gnome-weather/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/GNOME/gnome-weather"
+    },
+    {
+      "id": "GH-053",
+      "repo": "GNOME/gnome-mines",
+      "category": "utilities",
+      "url": "https://github.com/GNOME/gnome-mines",
+      "checked_on": "2026-10-22",
+      "evidence": "A-readme",
+      "description": "Read-only mirror of https://gitlab.gnome.org/GNOME/gnome-mines",
+      "primary_language": "Vala",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2013-08-17T19:39:21Z",
+      "license_api": "GPL-3.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": {
+        "url": "https://raw.githubusercontent.com/GNOME/gnome-mines/main/README.md",
+        "reviewed": true
+      },
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/GNOME/gnome-mines"
+    },
+    {
+      "id": "GH-054",
+      "repo": "GNOME/aisleriot",
+      "category": "utilities",
+      "url": "https://github.com/GNOME/aisleriot",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Read-only mirror of https://gitlab.gnome.org/GNOME/aisleriot",
+      "primary_language": "Scheme",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2012-06-10T11:26:19Z",
+      "license_api": "CC0-1.0",
+      "license_note": "GitHub 聚合元数据报 CC0-1.0；COPYING 未取到，不能当游戏代码/图形资源的统一许可，待逐文件复核。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/GNOME/aisleriot"
+    },
+    {
+      "id": "GH-055",
+      "repo": "gabrielecirulli/2048",
+      "category": "utilities",
+      "url": "https://github.com/gabrielecirulli/2048",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "The source code for 2048 ",
+      "primary_language": "JavaScript",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2014-03-05T16:03:26Z",
+      "license_api": "MIT",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/gabrielecirulli/2048"
+    },
+    {
+      "id": "GH-056",
+      "repo": "qBittorrent/qBittorrent",
+      "category": "extensions",
+      "url": "https://github.com/qbittorrent/qBittorrent",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "qBittorrent BitTorrent client",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2012-02-04T09:37:46Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/qBittorrent/qBittorrent"
+    },
+    {
+      "id": "GH-057",
+      "repo": "aria2/aria2",
+      "category": "extensions",
+      "url": "https://github.com/aria2/aria2",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "aria2 is a lightweight multi-protocol & multi-source, cross platform download utility operated in command-line. It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.",
+      "primary_language": "C++",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2010-11-27T09:41:48Z",
+      "license_api": "GPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/aria2/aria2"
+    },
+    {
+      "id": "GH-058",
+      "repo": "keepassxreboot/keepassxc",
+      "category": "extensions",
+      "url": "https://github.com/keepassxreboot/keepassxc",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "KeePassXC is a cross-platform community-driven port of the Windows application “KeePass Password Safe”.",
+      "primary_language": "C++",
+      "default_branch": "develop",
+      "archived": false,
+      "created_at": "2016-02-28T15:52:40Z",
+      "license_api": "NOASSERTION",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/keepassxreboot/keepassxc"
+    },
+    {
+      "id": "GH-059",
+      "repo": "syncthing/syncthing",
+      "category": "extensions",
+      "url": "https://github.com/syncthing/syncthing",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Open Source Continuous File Synchronization",
+      "primary_language": "Go",
+      "default_branch": "main",
+      "archived": false,
+      "created_at": "2013-11-26T09:48:21Z",
+      "license_api": "MPL-2.0",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/syncthing/syncthing"
+    },
+    {
+      "id": "GH-060",
+      "repo": "restic/restic",
+      "category": "extensions",
+      "url": "https://github.com/restic/restic",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Fast, secure, efficient backup program",
+      "primary_language": "Go",
+      "default_branch": "master",
+      "archived": false,
+      "created_at": "2014-04-27T14:07:58Z",
+      "license_api": "BSD-2-Clause",
+      "license_note": "仅核对仓库级元数据；使用前核对固定版本 LICENSE、第三方组件与资源。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/restic/restic"
+    },
+    {
+      "id": "GH-061",
+      "repo": "ciderapp/Cider",
+      "category": "negative-example",
+      "url": "https://github.com/ciderapp/Cider",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "🎵  Source code for Cider 1",
+      "primary_language": "JavaScript",
+      "default_branch": "main",
+      "archived": true,
+      "created_at": "2021-11-19T15:45:44Z",
+      "license_api": "AGPL-3.0",
+      "license_note": "当前仓为已归档 Cider 1；不作为活跃音乐播放器主参考。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/ciderapp/Cider"
+    },
+    {
+      "id": "GH-062",
+      "repo": "matrix-org/synapse",
+      "category": "negative-example",
+      "url": "https://github.com/matrix-org/synapse",
+      "checked_on": "2026-10-22",
+      "evidence": "A-metadata-only",
+      "description": "Synapse: Matrix homeserver written in Python/Twisted.",
+      "primary_language": "Python",
+      "default_branch": "develop",
+      "archived": true,
+      "created_at": "2014-08-11T15:51:42Z",
+      "license_api": "Apache-2.0",
+      "license_note": "旧仓已归档；本轮改用 element-hq/synapse。",
+      "readme": null,
+      "sampled_commit": null,
+      "examined_files": [],
+      "metadata_url": "https://api.github.com/repos/matrix-org/synapse"
+    }
+  ],
+  "official_sources": [
+    {
+      "id": "WEB-01",
+      "title": "Dolphin 产品页",
+      "url": "https://apps.kde.org/dolphin/",
+      "supports": "文件管理成熟产品定位与功能",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-02",
+      "title": "Raycast",
+      "url": "https://www.raycast.com/",
+      "supports": "商业命令面板/扩展/动作参考",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-03",
+      "title": "Obsidian",
+      "url": "https://obsidian.md/",
+      "supports": "本地知识工作产品定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-04",
+      "title": "Todoist",
+      "url": "https://www.todoist.com/",
+      "supports": "任务捕获/Today/Upcoming 产品流程",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-05",
+      "title": "Notion",
+      "url": "https://www.notion.com/product",
+      "supports": "协作工作区市场定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-06",
+      "title": "Trello",
+      "url": "https://trello.com/",
+      "supports": "看板与整合产品定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-07",
+      "title": "Apple Books",
+      "url": "https://www.apple.com/apple-books/",
+      "supports": "内容消费/阅读听书产品定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-08",
+      "title": "Google Photos",
+      "url": "https://www.google.com/photos/about/",
+      "supports": "照片组织/编辑/备份定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-09",
+      "title": "VS Code",
+      "url": "https://code.visualstudio.com/",
+      "supports": "编辑工具生态定位；产品二进制与源码许可区分",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-10",
+      "title": "TablePlus",
+      "url": "https://tableplus.com/",
+      "supports": "商业原生数据库工具定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-11",
+      "title": "Datawrapper",
+      "url": "https://www.datawrapper.de/",
+      "supports": "从数据到图表与导出的产品定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-12",
+      "title": "Firefox",
+      "url": "https://www.firefox.com/en-US/",
+      "supports": "外部浏览器集成候选",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-13",
+      "title": "LibreOffice",
+      "url": "https://www.libreoffice.org/",
+      "supports": "外部办公套件集成候选",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-14",
+      "title": "LibreOffice licenses",
+      "url": "https://www.libreoffice.org/licenses/",
+      "supports": "主体与组件许可边界",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-15",
+      "title": "Thunderbird",
+      "url": "https://www.thunderbird.net/en-US/",
+      "supports": "外部邮件/日历/联系人候选",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-16",
+      "title": "Vikunja",
+      "url": "https://vikunja.io/",
+      "supports": "自托管/列表/看板/甘特及 AGPL 声明；GitHub 初查路径失败后改官网",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-17",
+      "title": "Open-Meteo API",
+      "url": "https://open-meteo.com/en/docs",
+      "supports": "天气数据 provider；使用条款采用前另审",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-18",
+      "title": "XDG Desktop Portal",
+      "url": "https://flatpak.github.io/xdg-desktop-portal/docs/",
+      "supports": "Linux 系统接缝",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-19",
+      "title": "mpv JSON IPC",
+      "url": "https://mpv.io/manual/stable/#json-ipc",
+      "supports": "媒体控制候选；嵌入表面需探针",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-20",
+      "title": "RFC 5545",
+      "url": "https://www.rfc-editor.org/info/rfc5545/",
+      "supports": "iCalendar 标准入口；相关更新另查",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-21",
+      "title": "SQLite FTS5",
+      "url": "https://www.sqlite.org/fts5.html",
+      "supports": "全文索引候选；中文未实测",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-22",
+      "title": "Krita",
+      "url": "https://krita.org/en/",
+      "supports": "专业绘画范围对照",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-23",
+      "title": "Apps for GNOME",
+      "url": "https://apps.gnome.org/",
+      "supports": "轻量系统应用分工参照",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-24",
+      "title": "qBittorrent",
+      "url": "https://www.qbittorrent.org/",
+      "supports": "下载客户端与 Qt/libtorrent 定位",
+      "checked_on": "2026-10-22",
+      "evidence": "A-official-page"
+    },
+    {
+      "id": "WEB-25",
+      "title": "Spotify",
+      "url": "https://open.spotify.com/",
+      "supports": "无可读正文；仅候选定位，不展开功能结论",
+      "checked_on": "2026-10-22",
+      "evidence": "unreadable-body"
+    }
+  ],
+  "local_sources": [
+    {
+      "path": "apps.manifest",
+      "supports": "28 条 active 登记；不等于成熟度",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": ".gitmodules",
+      "supports": "仓库/子模块来源",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "README.md",
+      "supports": "产品定位与现有入口；部分计数过时",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/specs/apps/independent-repositories.md",
+      "supports": "来源、路径、职责与 Notes AutoDown 依赖",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/reports/v0.6-app-import.json",
+      "supports": "产品导入来源/pin；不是运行验收",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "apps/027-file-manager/README.md",
+      "supports": "PLAN-001..006 能力与待复审记载",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "apps/027-file-manager/SPEC.md",
+      "supports": "现存契约",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "apps/027-file-manager/docs/REQUIREMENTS.md",
+      "supports": "现有方向及范围外项",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/design/strategy/v0.6-foundations-roadmap.md",
+      "supports": "已有主线与小闭环范围",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/design/strategy/auto-app-communication-v0.6.md",
+      "supports": "领域调用与公共协议",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/design/02-local-app-communication-f01.md",
+      "supports": "F01 草案，尚未实施",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/design/strategy/system-devtools-v0.6.md",
+      "supports": "诊断/观察边界",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "docs/design/strategy/app-submodule-workflow.md",
+      "supports": "日常修改与 gitlink 纪律",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "D:/autostack/jade-edit/README.md",
+      "supports": "AutoJade 文档与知识库定位；只读文档",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "D:/autostack/auto-down/jade-garden/README.md",
+      "supports": "知识编辑器 Web/VM 定位；只读文档",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "D:/autostack/auto-down/autodown/packages/engine/ARCHITECTURE.md",
+      "supports": "AutoDown parser/render/editor 分层；只读文档",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    },
+    {
+      "path": "D:/autostack/auto-edit/specs/auto-edit/README.md",
+      "supports": "代码/文本编辑接缝；只读文档",
+      "checked_on": "2026-10-22",
+      "evidence": "A-local-document"
+    }
+  ],
+  "lookup_corrections": [
+    {
+      "attempt": "cosmic-utils/cosmic-files",
+      "result": "404",
+      "replacement": "pop-os/cosmic-files"
+    },
+    {
+      "attempt": "clementine-player/strawberry",
+      "result": "404",
+      "replacement": "strawberrymusicplayer/strawberry"
+    },
+    {
+      "attempt": "vikunja/vikunja",
+      "result": "404",
+      "replacement": "https://vikunja.io/"
+    },
+    {
+      "attempt": "zadam/trilium",
+      "result": "未取得可用元数据",
+      "replacement": "TriliumNext/Trilium"
+    },
+    {
+      "attempt": "freeCodeCamp/2048",
+      "result": "404",
+      "replacement": "gabrielecirulli/2048"
+    },
+    {
+      "attempt": "sgt-puzzles/sgt-puzzles",
+      "result": "404，未采用",
+      "replacement": null
+    },
+    {
+      "attempt": "GNOME/aisleriot/COPYING",
+      "result": "404，许可待逐文件核对",
+      "replacement": null
+    },
+    {
+      "attempt": "fish-shell/fish-shell/README.md",
+      "result": "404",
+      "replacement": "fish-shell/fish-shell/README.rst"
+    },
+    {
+      "attempt": "https://www.freedesktop.org/wiki/Specifications/mpris-spec/",
+      "result": "403；未据此作新结论",
+      "replacement": "Strawberry README 的 MPRIS2 声明"
+    }
+  ]
+}
