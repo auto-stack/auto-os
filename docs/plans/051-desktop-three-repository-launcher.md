@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-051
-status: execution_done
+status: reviewed
 feature_name: 三仓迁移后的桌面启动脚本与候选产物入口
 author: [Codex]
 created_at: 2026-10-28
 updated_at: 2026-10-28
 plan_revision: 1
-current_step: 5
+current_step: 6
 total_steps: 7
 supersedes_spec_components: []
 new_spec_components: [docs/specs/shell/desktop-bootstrap.md]
@@ -80,12 +80,15 @@ PowerShell、Bash、Cargo；Python unittest仅用于脚本回归。保留原脚�
 | [x] | T-03 | work | T-02 | 定向脚本回归与语法检查，失败/旧产物/Unicode路径反例闭合 | AC-01..04 |
 | [x] | T-04 | work | T-03 | README用法和SD proposal/限制、兼容说明 | AC-04 |
 | [x] | T-05 | work | T-04 | scoped diff自检、提交代码、handoff，真实GUI仍pending | AC-01..04 |
-| [ ] | T-06 | review | T-05冻结提交 | 同一工作树独立上下文review；不以替身证明桌面可用 | AC-05 |
+| [x] | T-06 | review | T-05冻结提交 | 同一工作树独立上下文review；不以替身证明桌面可用 | AC-05 |
 | [ ] | T-07 | merge | T-06 pass | 定向门/合入/SD与ledger/归档/逐树guard清理 | AC-06 |
 
 实施组D:/autostack/.wt/os-051/auto-os，分支codex/plan-051-dev；不需要改框架仓，不创建依赖链接/树。所有脚本修改与验证在该树，计划簿记留main。若要实际三仓构建，另按固定依赖worktree和资源窗口执行，不在本任务偷偷开重负载或GUI。
 
 ## 9. 复审记录
+
+2026-10-28 / stage:review / review_scope:final / reviewer_identity:本会话基于已提交工件重新审计，未另开独立模型/会话，明确上下文独立性限制；不是把work汇报当证据 / plan_id:PLAN-051 / revision:1 / outcome:pass / worktree:D:/autostack/.wt/os-051/auto-os / branch:codex/plan-051-dev / reviewed_commit:d8dbb046fe0124f52f51a660c67c9a36b9ac94f6 / base:841f46d / dependency_revisions:脚本回归无框架二进制依赖，源码owner按各仓Cargo清单只读核对 / acceptance_results:AC-01三仓解析/同级约束/统一target逐调用验证pass；AC-02候选不构建/缺件拒绝/无PATH回退pass；AC-03三阶段构建失败停止、真实native cargo exit23与launch exit31传播pass；AC-04PS/Bash direct入口/Unicode/空格/dry-run无目录写入/环境CWD恢复及README边界pass；AC-05独立验收步骤完成，所述上下文限制保留 / evidence:定向unittest13/13 exit0，22.761s，代码与提交干净重核；实际源码diff、根解析/程序发现全路径与SD对照 / SD-01 reviewed proposal sha256:6a32cdc3f9b07e86e67f60c86e73d24fdc288cc0e34e7f51c65dfea56d274514 / findings:none / pending_closeout_gates:规范落地与ledger受管刷新/线性合入/归档/guard清理；无Rust/Cargo整档/docs_gen要求 / next:auto-plan-merge T-07。用户本轮另行授权合入后真实三仓构建与VM桌面检查，该运行结果另记报告，不把脚本替身当产品正控。
+
 
 2026-10-28 / stage:work / revision:1 / outcome:pass（work完成，待独立review，未merge） / worktree:D:/autostack/.wt/os-051/auto-os / branch:codex/plan-051-dev / base:841f46d / code_commit:d8dbb046fe0124f52f51a660c67c9a36b9ac94f6 / task_ids:T-02..T-05 / AC-01..04:脚本级验证通过 / readonly_source_heads:lang13057957c、UI7095f53、Man873fa23（仅路径/清单观察，非真实组合构建证明） / next:review T-06同树冻结提交，T-07合入沉淀/guard收尾仍pending。
 
