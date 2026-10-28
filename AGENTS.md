@@ -18,6 +18,13 @@
   designs/tests/reviews；结构对齐 auto-lang 同名文件）。
 - app 仓内的工作（新功能/修复）也走 plan 流程：跨仓计划的 plan 文件放
   主导仓（通常是本仓或对应 app 仓），并在两仓 README/计划中互链。
+- **本仓域计划的登记归属（PLAN-876 起，2026-10-28 用户裁定）**：凡以本仓为主
+  改面的计划（桌面入口/宿主、`shell/`、`apps/` 与 apps.manifest、AutoOS 装配与
+  发行）**一律在本仓 `docs/plans/` 取号登记**（`scripts/new-plan.sh`，独立
+  `.next-id`；债与验证台账同理走本仓 `docs/plans/KNOWN-DEBT-AND-RISKS.md`）。
+  auto-lang 侧只保留指针行，不再承接本仓域的 plan 正文。跨仓计划的正文放
+  **主改面所在仓**，另一仓在其计划/README 留指针与验收分工——PLAN-876 是最后
+  一份"入口迁移"形态的跨仓计划（正文在 auto-lang），此后的桌面域计划以本仓为准。
 
 ## 2. 跨仓解析序（红线：永不建 junction/symlink）
 
