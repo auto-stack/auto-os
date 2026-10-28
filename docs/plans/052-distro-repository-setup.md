@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-052
-status: executing
+status: execution_done
 feature_name: auto-os-distro 仓库改名与远端备份
 author: [codex]
 created_at: 2026-10-29
 updated_at: 2026-10-29
 plan_revision: 1
-current_step: 0
+current_step: 4
 total_steps: 6
 supersedes_spec_components: []
 new_spec_components: []
@@ -85,10 +85,10 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 
 | 完成 | ID | owner_stage | 依赖 | 操作与验证 | AC |
 |---|---|---|---|---|---|
-| [ ] | T-01 | work | 无 | 备份并改名主仓/原工作树，修复指针；比较 refs、HEAD、状态与进度哈希 | AC-01、AC-04 |
-| [ ] | T-02 | work | T-01 | 独立工作树编写仓库说明与阶段管理建议，提交文档，不合并 M1 实现 | AC-03 |
-| [ ] | T-03 | work | T-02 | 建私有 GitHub 远端，推送指定 refs；通过 API 与 ls-remote 核验 | AC-02、AC-04 |
-| [ ] | T-04 | work | T-03 | 更新本计划证据与恢复入口，核对其他 WIP 不变并交接 review | AC-01～AC-04 |
+| [x] | T-01 | work | 无 | 备份并改名主仓/原工作树，修复指针；比较 refs、HEAD、状态与进度哈希 | AC-01、AC-04 |
+| [x] | T-02 | work | T-01 | 独立工作树编写仓库说明与阶段管理建议，提交文档，不合并 M1 实现 | AC-03 |
+| [x] | T-03 | work | T-02 | 建私有 GitHub 远端，推送指定 refs；通过 API 与 ls-remote 核验 | AC-02、AC-04 |
+| [x] | T-04 | work | T-03 | 更新本计划证据与恢复入口，核对其他 WIP 不变并交接 review | AC-01～AC-04 |
 | [ ] | T-05 | review | T-04 | 独立复核行政改名/发布边界与文档 | AC-05 |
 | [ ] | T-06 | merge | T-05 pass | 合入本次说明文档并归档计划；旧 M1 安装计划继续独立跟踪 | AC-06 |
 
@@ -102,3 +102,17 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 
 - 最终品牌 Aunix/Autonix 暂不裁定，不影响仓库名。
 - 四阶段边界与 Auto 配置能力并行节奏待产品决策，不阻止本次改名和远端备份。
+
+### work 完成记录
+
+- 用户授权范围已执行：本地仓库与 M1 工作树改名为 auto-os-distro，远端 https://github.com/auto-stack/auto-os-distro 已创建（private=true）。
+- 目录改名前后 main/plan-001-dev refs 与未提交 ISO 进度文件哈希一致。修复 .git 反向指针后，两个原工作树可解析；git fsck --connectivity-only 返回 0。
+- 改名前恢复 bundle：E:/AutoOS/logs/REPO-SETUP-052/before-rename.bundle，verify 返回 0；SHA-256 BDBB05DA9CAC06A85D05405567232E774329BB2D00FA5C26A237746503AA5FE7。未提交进度另存同目录 001-progress-before-rename.md，SHA-256 801F841CA367C264FE2BBFD0D315E26D004E94586EFC2497AAB4F236B6DF667B。恢复/改名明细位于 rename-receipt.json（本地证据，不入 Git）。
+- main 单独提交原 ISO Plan 的验证进度为 6e7d07516489f883c656fc328b8edb9c8f52220a；构建实现 plan-001-dev 保持 79e1435598b0367481919e1a7486d83e599ee358。
+- 本次实施树：D:/autostack/.wt/os-052/auto-os-distro；branch plan-052-repo-setup；文档提交 ceb502213c1613445f4cc6af5db029f5c1cad5cb。README/ROADMAP 明确主线当前仍是旧基线，构建应检出 preview 标签，安装验收待完成；阶段治理与品牌均标 proposed。
+- git push 显式推送上述 3 个分支与 m1-nix-cosmic-preview；ls-remote 返回相同 SHA，annotated tag 对象 b46f74e97da27c285bbf36b5cb947196f429dbe1，peeled commit=79e1435。
+- 首次 SSH 推送被本机已有 ProxyCommand 的 shell 兼容问题阻止；改用本机已缓存 HTTPS 凭据成功推送，未改全局 SSH 设置、未输出或落盘凭据。
+- 已核查发布 trees 无 ISO/VMDK/VMEM/log/raw attachment，常见私钥/GitHub token 模式扫描无命中；大型资产保持 E:/AutoOS/artifacts/logs/vms 原目录。
+- 文档草稿 PR：https://github.com/auto-stack/auto-os-distro/pull/1（draft，3 files，89 additions，base 6e7d075，head ceb5022）。尚未独立 review/merge，本次备份不连带合并 M1 实现。
+- AutoOS main 原有 3 个修改文档、未跟踪 049 计划/设计/附件保持原状，本次仅新增/更新 052 计划与 .next-id。
+- next: review（T-05）；T-06 待独立复审通过后处理。不把仓库整理当作 M2/M3/M4 已实施或最终产品发布。
