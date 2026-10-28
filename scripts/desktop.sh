@@ -1,107 +1,110 @@
 #!/usr/bin/env bash
-# scripts/desktop.sh — Stage B §3-a 桌面薄包装（PLAN-009 T1，bash 版，语义同 desktop.ps1）
-#
-# 用法：./scripts/desktop.sh [vue|iced] [--fullscreen] [--dry-run]
-#   vue（缺省）  CWD=<lang>/examples/desktop-host；auto run --desktop
-#                （注入 AUTO_OS_ROOT + AUTO_DESKTOP_APPS=<os>/apps）
-#   iced         CWD=<本仓根>；cargo run ui_desktop（../auto-os/apps 兄弟探测自命中）
-#
-# 解析序（本仓 AGENTS §2）：$AUTO_LANG_ROOT → 兄弟 ../auto-lang → D:/autostack/auto-lang
-set -euo pipefail
-
-# 本仓根（脚本位于 <os>/scripts/；DESKTOP_OS_ROOT env 可显式覆盖——指向
-# 另一伞形检出/主检出用，缺省=脚本所在仓根）。
-OS_ROOT="${DESKTOP_OS_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-OS_PARENT="$(dirname "$OS_ROOT")"
-
-TRACK="vue"
-FULLSCREEN=0
-DRYRUN=0
-for a in "$@"; do
-  case "$a" in
-    vue|iced) TRACK="$a" ;;
-    --fullscreen) FULLSCREEN=1 ;;
-    --dry-run) DRYRUN=1 ;;
-    *) echo "unknown arg: $a（支持 vue|iced --fullscreen --dry-run）" >&2; exit 2 ;;
-  esac
-done
-
-lang_probe() { [ -d "$1/crates/auto-lang" ] && [ -d "$1/examples/desktop-host" ]; }
-
-LANG_ROOT=""
-for c in "${AUTO_LANG_ROOT:-}" "$OS_PARENT/auto-lang" "D:/autostack/auto-lang"; do
-  if [ -n "$c" ] && lang_probe "$c"; then LANG_ROOT="$(cd "$c" && pwd)"; break; fi
-done
-if [ -z "$LANG_ROOT" ]; then
-  echo "auto-lang 未解析（解析序：AUTO_LANG_ROOT env → 兄弟 auto-lang → D:/autostack/auto-lang）" >&2
-  exit 1
-fi
-
-# 复审补：Git-Bash 导出 `/d/...` 风格路径对 Windows 进程 is_dir() 必假
-# （extra roots/manifest 臂被静默丢弃）——注入 Windows 进程的 env 一律经
-# cygpath -m 转 `D:/...` 混合风格（非 bash 环境原样透传）。
-win_path() {
-  if command -v cygpath >/dev/null 2>&1; then
-    cygpath -m "$1"
-  elif [[ "$OSTYPE" == msys* || "$OSTYPE" == cygwin* ]] && [[ "$1" =~ ^/([a-zA-Z])(/.*)$ ]]; then
-    printf '%s:%s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
-  else
-    printf '%s\n' "$1"
-  fi
+# Source group: lang/ui/man -> one target. Candidate mode: explicit binaries only.
+desktop_fail() { printf '%s\n' "desktop: $1" >&2; exit "${2:-1}"; }
+desktop_win_path() {
+  if command -v cygpath >/dev/null 2>&1; then cygpath -am "$1";
+  elif [[ "$1" = /* ]]; then printf '%s\n' "$1";
+  else printf '%s/%s\n' "$PWD" "$1"; fi
 }
-export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"   # manifest 聚合 env 臂（P-3：设置即权威；storage 固定行与主检出 5a04e40 同步行归一）
-  # PLAN-018 rev2：桌面 VM storage 固定到确定性 per-user 文件（原按 CWD 哈希
-  # 散落 tempdir——换目录即换库，桌面快捷方式等 shell storage 无法预置）。
-  export AUTO_VM_STORAGE_FILE="$(win_path "$HOME/.config/autoos/desktop-storage.json")"
-
-if [ "$TRACK" = "vue" ]; then
-  AUTO_CLI=""
-  command -v auto >/dev/null 2>&1 && AUTO_CLI="$(command -v auto)"
-  for c in "$LANG_ROOT/target/release/auto" "$LANG_ROOT/target/release/auto.exe" \
-           "$LANG_ROOT/target/debug/auto" "$LANG_ROOT/target/debug/auto.exe"; do
-    [ -z "$AUTO_CLI" ] && [ -f "$c" ] && AUTO_CLI="$c"
+desktop_source_root() {
+  local explicit="$1" env_name="$2" repo="$3" parent="$4" probe="$5" override choice
+  override="${explicit:-${!env_name:-}}"
+  if [[ -n "$override" ]]; then
+    [[ -f "$override/$probe" ]] || desktop_fail "$repo root invalid (parameter/$env_name): $override"
+    (cd "$override" && pwd); return
+  fi
+  for choice in "$parent/$repo" "D:/autostack/$repo"; do
+    if [[ -f "$choice/$probe" ]]; then (cd "$choice" && pwd); return; fi
   done
-  if [ -z "$AUTO_CLI" ] && [ "$DRYRUN" != 1 ]; then
-    echo "auto CLI 未找到：请先在 auto-lang 构建（cargo build -p auto）或加入 PATH" >&2
-    exit 1
+  desktop_fail "$repo root not found (OS sibling -> main checkout)"
+}
+desktop_cargo() {
+  local root="$1" target="$2"; shift 2
+  (cd "$root" && export CARGO_TARGET_DIR="$(desktop_win_path "$target")" && cargo "$@")
+}
+desktop_program() { "$@"; }
+
+desktop_main() (
+  set -euo pipefail
+  local track=vue fullscreen=0 dry_run=0 lang_root='' ui_root='' man_root='' build_root='' candidate_dir=''
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      vue|iced) track="$1"; shift ;;
+      --fullscreen) fullscreen=1; shift ;;
+      --dry-run) dry_run=1; shift ;;
+      --lang-root|--ui-root|--man-root|--build-root|--candidate-dir)
+        [[ $# -ge 2 && -n "$2" ]] || desktop_fail "missing value for $1" 2
+        case "$1" in
+          --lang-root) lang_root="$2";; --ui-root) ui_root="$2";; --man-root) man_root="$2";;
+          --build-root) build_root="$2";; --candidate-dir) candidate_dir="$2";;
+        esac
+        shift 2 ;;
+      *) desktop_fail "unknown argument: $1 (vue|iced --fullscreen --dry-run --lang-root/--ui-root/--man-root/--build-root/--candidate-dir PATH)" 2 ;;
+    esac
+  done
+  local script_dir os parent mode target='' bin desktop suffix=''
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  os="${DESKTOP_OS_ROOT:-$script_dir/..}"
+  os="$(cd "$os" && pwd)" || desktop_fail "invalid DESKTOP_OS_ROOT: $os"
+  parent="$(dirname "$os")"
+  [[ -z "$candidate_dir" || -z "$build_root" ]] || desktop_fail 'CandidateDir and BuildRoot are mutually exclusive'
+  case "${OSTYPE:-}" in msys*|cygwin*|win32*) suffix='.exe';; esac
+  mode=source
+  if [[ -n "$candidate_dir" ]]; then
+    mode=candidate; bin="$(desktop_win_path "$candidate_dir")"; desktop="$bin/ui_desktop$suffix"
+    if [[ "$track" = vue ]]; then
+      lang_root="$(desktop_source_root "$lang_root" AUTO_LANG_ROOT auto-lang "$parent" crates/auto-lang/Cargo.toml)" || exit $?
+    fi
+  else
+    lang_root="$(desktop_source_root "$lang_root" AUTO_LANG_ROOT auto-lang "$parent" crates/auto-lang/Cargo.toml)" || exit $?
+    ui_root="$(desktop_source_root "$ui_root" AUTO_UI_ROOT auto-ui "$parent" crates/auto-ui-tools/Cargo.toml)" || exit $?
+    man_root="$(desktop_source_root "$man_root" AUTO_MAN_ROOT auto-man "$parent" crates/auto/Cargo.toml)" || exit $?
+    [[ "$(basename "$lang_root")" = auto-lang && "$(basename "$ui_root")" = auto-ui && "$(basename "$man_root")" = auto-man ]] || desktop_fail 'source roots must keep auto-lang/auto-ui/auto-man sibling directory names'
+    [[ "$(dirname "$lang_root")" = "$(dirname "$ui_root")" && "$(dirname "$lang_root")" = "$(dirname "$man_root")" ]] || desktop_fail 'source roots must be a sibling lang/ui/man group (Cargo path dependencies)'
+    build_root="${build_root:-${AUTO_DESKTOP_BUILD_ROOT:-$os/.auto/desktop-runtime}}"
+    target="$(desktop_win_path "$build_root")/target"; bin="$target/debug"; desktop="$bin/examples/ui_desktop$suffix"
+    export AUTO_LANG_ROOT="$(desktop_win_path "$lang_root")" AUTO_UI_ROOT="$(desktop_win_path "$ui_root")" AUTO_MAN_ROOT="$(desktop_win_path "$man_root")"
   fi
-  # v0.6: products are primary; manifest preserves nested app IDs and galleries.
-  [ -z "$AUTO_CLI" ] && AUTO_CLI="$LANG_ROOT/target/debug/auto.exe"
-  unset AUTO_DESKTOP_APPS_EXTRA
-  export AUTO_DESKTOP_APPS="$(win_path "$OS_ROOT/apps")"
-  export AUTO_OS_ROOT="$(win_path "$OS_ROOT")"
-  # PLAN-018 rev2：桌面 VM storage 固定到确定性 per-user 文件（原按 CWD 哈希
-  # 散落 tempdir——换目录即换库，桌面快捷方式等 shell storage 无法预置）。
-  export AUTO_VM_STORAGE_FILE="$(win_path "$HOME/.config/autoos/desktop-storage.json")"
-  echo "[desktop.sh] track=vue  lang=$LANG_ROOT  os=$OS_ROOT  auto=$AUTO_CLI"
-  echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT  AUTO_DESKTOP_APPS=$AUTO_DESKTOP_APPS"
-  echo "[desktop.sh] extra roots via AUTO_OS_ROOT/apps.manifest and galleries"
-  if [ "$DRYRUN" = 1 ]; then echo "[dry-run] cd $LANG_ROOT/examples/desktop-host; auto run --desktop"; exit 0; fi
-  cd "$LANG_ROOT/examples/desktop-host"
-  exec "$AUTO_CLI" run --desktop
-else
-  ARGS=(--apps-dir "$(win_path "$OS_ROOT/apps")")
-  [ "$FULLSCREEN" = 1 ] && ARGS+=(--fullscreen)
-  echo "[desktop.sh] track=iced  lang=$LANG_ROOT  os=$OS_ROOT  args=${ARGS[*]}"
-  echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT（apps 容器经 CWD=本仓根兄弟探测自命中）"
-  # T1 实证教训：cargo 按**调用方 CWD** 发现 .cargo/config.toml（/STACK:32MB
-  # link 旗标在 lang 仓 config 内）——从本仓 CWD cargo run 会丢旗标致主栈
-  # 1MB 起动即溢出。故：lang 侧 build（config 生效）+ 本仓 CWD 直接 exec exe
-  # （../auto-os/apps 兄弟探测自命中保持）。
-  # 媒体引擎（PLAN-617 特性门 + Plan 037 F-R4 债清偿）：VM 桌面 `<video>`
-  # 原生播放 = 构建期 mpv-widget + 运行期 libmpv-2.dll（解析序 AUTO_MPV_LIB
-  # → exe 同目录，不回落系统路径）。DLL 常驻 <伞形父>/tools/mpv/（不入库、
-  # cargo clean 不清），已设 AUTO_MPV_LIB 时不覆盖（显式指定优先）。
-  if [ -z "${AUTO_MPV_LIB:-}" ] && [ -f "$OS_PARENT/tools/mpv/libmpv-2.dll" ]; then
-    export AUTO_MPV_LIB="$(win_path "$OS_PARENT/tools/mpv/libmpv-2.dll")"
-    echo "[desktop.sh] AUTO_MPV_LIB=$AUTO_MPV_LIB"
+  if [[ "$track" = vue && ! -d "$lang_root/examples/desktop-host" ]]; then desktop_fail 'Vue desktop requires the language examples/desktop-host project'; fi
+  local cli="$bin/auto$suffix" tool="$bin/auto-ui-tool$suffix" file
+  export AUTO_UI_TOOL_BIN="$tool" AUTO_OS_ROOT="$(desktop_win_path "$os")"
+  export AUTO_DESKTOP_RQHOST="${AUTO_DESKTOP_RQHOST:-1}"
+  if [[ -z "${AUTO_MPV_LIB:-}" && -f "$parent/tools/mpv/libmpv-2.dll" ]]; then export AUTO_MPV_LIB="$(desktop_win_path "$parent/tools/mpv/libmpv-2.dll")"; fi
+  # Keep the prior shell desktop storage location; never overwrite explicit isolation.
+  export AUTO_VM_STORAGE_FILE="${AUTO_VM_STORAGE_FILE:-$(desktop_win_path "$HOME/.config/autoos/desktop-storage.json")}"
+  if [[ "$track" = vue ]]; then unset AUTO_DESKTOP_APPS_EXTRA; export AUTO_DESKTOP_APPS="$(desktop_win_path "$os/apps")"; fi
+  printf '[desktop] mode=%s track=%s os=%s\n' "$mode" "$track" "$os"
+  printf '[desktop] lang=%s ui=%s man=%s\n' "$lang_root" "$ui_root" "$man_root"
+  printf '[desktop] auto=%s tool=%s desktop=%s\n' "$cli" "$tool" "$desktop"
+  desktop_build() {
+    local root="$1"; shift
+    printf '[desktop] cwd=%s target=%s cargo' "$root" "$target"; printf ' %q' "$@"; printf '\n'
+    if [[ "$dry_run" != 1 ]]; then
+      if desktop_cargo "$root" "$target" "$@"; then :;
+      else local code=$?; desktop_fail "cargo failed in $root (exit $code); desktop will not launch" "$code"; fi
+    fi
+  }
+  if [[ "$mode" = source ]]; then
+    local -a cli_args=(build --locked -p auto --bin auto) tool_args=(build --locked -p auto-ui-tools --bin auto-ui-tool)
+    if [[ "$track" = iced ]]; then cli_args+=(--features mpv-widget); tool_args+=(--features auto-ui-runtime/mpv-widget); fi
+    desktop_build "$man_root" "${cli_args[@]}"
+    desktop_build "$ui_root" "${tool_args[@]}"
+    if [[ "$track" = iced ]]; then desktop_build "$lang_root" build --locked -p auto-lang --features ui-iced,mpv-widget --example ui_desktop; fi
   fi
-  if [ "$DRYRUN" = 1 ]; then
-    echo "[dry-run] (cd $LANG_ROOT && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)"
-    echo "[dry-run] cd $OS_ROOT; exec $LANG_ROOT/target/debug/examples/ui_desktop ${ARGS[*]}"
-    exit 0
+  if [[ "$dry_run" != 1 ]]; then
+    for file in "$cli" "$tool"; do [[ -f "$file" ]] || desktop_fail "required desktop artifact missing: $file"; done
+    if [[ "$track" = iced ]]; then [[ -f "$desktop" ]] || desktop_fail "required desktop artifact missing: $desktop"; fi
   fi
-  (cd "$LANG_ROOT" && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
-  cd "$OS_ROOT"
-  exec "$LANG_ROOT/target/debug/examples/ui_desktop" "${ARGS[@]}"
-fi
+  local cwd executable
+  local -a arguments
+  if [[ "$track" = iced ]]; then
+    cwd="$os"; executable="$desktop"; arguments=(--apps-dir "$(desktop_win_path "$os/apps")")
+    [[ "$fullscreen" = 0 ]] || arguments+=(--fullscreen)
+  else cwd="$lang_root/examples/desktop-host"; executable="$cli"; arguments=(run --desktop); fi
+  printf '[desktop] cwd=%s run=%s' "$cwd" "$executable"; printf ' %q' "${arguments[@]}"; printf '\n'
+  [[ "$dry_run" != 1 ]] || exit 0
+  cd "$cwd"
+  desktop_program "$executable" "${arguments[@]}"
+)
+
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then desktop_main "$@"; fi

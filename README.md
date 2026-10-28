@@ -194,9 +194,10 @@ OpenHarmony 集成与自有内核属于更长期方向。
 
 ## 开发与启动
 
-本仓是产品集成仓，语言工具链和桌面宿主来自 `auto-lang`。开发时将两仓放在
-同一父目录，也可用 `AUTO_LANG_ROOT` 指定框架检出。准备 Auto CLI、对应轨道的
-构建依赖和所需应用仓；后端、媒体与终端等能力还需各项目的运行依赖。
+本仓是产品集成仓。语言SDK与桌面入口载体在 `auto-lang`，UI实现/工具在
+`auto-ui`，CLI在 `auto-man`。源码开发时将这三仓按原目录名放在同一父目录，
+再准备对应特性的依赖（例如 `auto-down`）和应用仓；后端、媒体与终端等能力
+仍需各项目的运行依赖。脚本不会从PATH或语言仓旧target选择CLI。
 
 Windows PowerShell（在本仓根目录）：
 
@@ -218,6 +219,34 @@ bash scripts/desktop.sh iced
 bash scripts/desktop.sh vue
 bash scripts/desktop.sh iced --dry-run
 ```
+
+源码模式默认从Man/UI（iced再加语言宿主）依次构建，使用各仓自己的Cargo
+配置和 `--locked`，统一输出到 `<OS根>/.auto/desktop-runtime/target`。
+构建失败立即停止，成功后缺少所需exe也拒绝启动，不运行旧target中的程序。
+`-BuildRoot` / `--build-root`（或 `AUTO_DESKTOP_BUILD_ROOT`）可指定专用输出根；
+`-LangRoot/-UiRoot/-ManRoot`（Bash对应 `--lang-root/--ui-root/--man-root`）
+优先于 `AUTO_LANG_ROOT/AUTO_UI_ROOT/AUTO_MAN_ROOT`，再找OS兄弟、主检出。
+显式错误根立即报错；源码三仓必须同级且保留仓目录名，以符合Cargo相对依赖。
+
+已有一组构建产物时可跳过构建：
+
+```powershell
+./scripts/desktop.ps1 -Track iced -CandidateDir D:/autostack/.verify/desktop/bin
+```
+
+```bash
+bash scripts/desktop.sh iced --candidate-dir D:/autostack/.verify/desktop/bin
+```
+
+候选目录平铺 `ui_desktop.exe`、`auto.exe`、`auto-ui-tool.exe`（非Windows去掉
+`.exe`）；iced不要求源码检出，Vue仍需语言仓 `examples/desktop-host` 项目，
+且只要求auto和tool。CandidateDir与BuildRoot互斥。脚本显式把
+`AUTO_UI_TOOL_BIN`指向本轮工具；统一邻接布局使rqhost/进程外shell的CLI查找
+命中同组auto。`-DryRun`同样支持候选模式，只打印，不创建目录/构建/启动。
+
+候选模式只选择可执行文件，不生成安装包、核验三仓版本或补齐资源；使用者
+须提供匹配版本和完整运行资源。脚本测试通过也不代表真实桌面首帧或app交互
+已验收。显式mpv配置保持；退出时恢复调用者环境与目录，不修改系统PATH。
 
 这些是开发启动入口，Bash 脚本的存在不代表 Linux 发行版已经交付。
 `auto-lang` 定位顺序为 `AUTO_LANG_ROOT` → 兄弟目录 `../auto-lang` →
