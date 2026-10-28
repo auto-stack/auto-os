@@ -87,6 +87,8 @@ PowerShell、Bash、Cargo；Python unittest仅用于脚本回归。保留原脚�
 
 ## 9. 复审记录
 
+2026-10-28 / post-delivery runtime check / 已按用户额外授权真实构建三仓并启动桌面，桌面及独立 VM 计算器均实测2+3=5；独立工具Windows主栈缺陷在auto-ui 5a89bfd修复并复测。视频解析与Music/Photos扫描404仍open，不能宣称所有应用通过。详见[真实运行报告](../attachments/051/runtime-check.md)及KNOWN-DEBT-AND-RISKS；原脚本合同保持archived 7/7，不重新打开。原始运行证据只在本地验证目录保留。
+
 2026-10-28 / stage:merge / checkpoint:cleaned / outcome:pass / T-07完成，7/7。OS唯一开发树fresh wt-guard clean后git worktree remove成功，codex/plan-051-dev已合并分支删除，空os-051组移除；无该Plan Rust target/pdb需回收。主检出他方docs WIP保留未改。用户额外运行验证另记，不重新打开已归档脚本合同。
 
 2026-10-28 / stage:merge / PLAN-051:r1 / completion_kind:delivered / checkpoint:archived（cleaned待下一步真实执行） / prepared:reviewed d8dbb046fe0124f52f51a660c67c9a36b9ac94f6与SD-01冻结；rebase d8dbb04→8b6ae21，range-diff精确等价；脚本/测试三文件逐字节未变，13测试证据复用 / landed:main ff-only→3088dea1db735c294ec9a6fe22f5b3522ee82209 / canonical:docs/specs/shell/desktop-bootstrap.md及README入口已读回 / ledger_refreshed:guarded offline projection（无本会话store工具或已知本地store监听），原ledger可解析、六节保留；新增P051-DESKTOP-BOOTSTRAP/P051-REVIEW-R1/P051-MERGE-R1/P051-LAUNCHER-REGRESSION四项，source/file/tags齐，原条目和其他字段逐字节未扰动；原文档无version字段，不伪造版本；backup=D:/autostack/.verify/os-051-20261028/ledger-before.json / gates:doc/语法/diff检查通过，无Rust整档或docs_gen；非用户运行验证已通过声明 / next:fresh guard后清理唯一OS开发树、更新T-07完成，随后按用户额外授权实际构建并启动VM桌面。

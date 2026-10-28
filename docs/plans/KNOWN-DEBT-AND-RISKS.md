@@ -1,5 +1,13 @@
 # Known debt and verification limits
 
+## Plan 051 合入后真实 VM 检查（2026-10-28）
+
+- **OS051-RUN-VIDEO（open）**：迁后三仓构建并启动桌面成功，但 `030-video-player` 在 `apps/auto-video/src/front/playlist.at:124:8` 报 undefined variable，阻止该应用构建。尚未定位导入/样式解析原因，也未与旧组合对照；不可直接认定迁移回归。闭合需定位原因并验证实际视频入口与媒体交互。
+- **OS051-RUN-MEDIA（open）**：Music `/api/media/scan`、Photos `/api/photos/scan` 的 back proxy 返回 404 no-route；空媒体视图不能充当扫描成功。闭合需核对后端路由/调用契约并完成真实有内容的扫描验证；尚未与旧组合对照。
+- **OS051-RUN-STACK（closed）**：真实独立 `auto run -r vm` 暴露 UI 工具 Windows 主栈 1 MiB 导致 `0xc00000fd`；auto-ui `5a89bfd` 加入工具 owner 的 64 MiB 主栈链接策略，普通 Cargo 重建及 PE 检查通过，相同入口真实按钮运算 `2+3=5`。桌面内计算器也通过；不代表所有 app 通过。
+
+输入提交、命令、产物/截图 hash、证据路径与范围见 [051 实测收据](attachments/051/runtime-check.md)。原始证据仅本地保留。
+
 
 ## v0.6 应用独立化（2026-10-04）
 
