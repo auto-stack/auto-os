@@ -62,11 +62,13 @@ submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）—�
 `-SelfTest` 用临时仓验证检测器本身；`-OsRoot` 可体检另一检出。桌面 boot 的
 `[desktop-health] apps_empty=` / `skip=no_pac_at:` 是同源运行期面。
 
-## 2.1 App 日常检出与工作分支（2026-10-13 用户更新）
+## 2.1 App 开发 clone 与组合子模块（2026-10-29 用户更新）
 
-所有已收编app的使用、计划与修改统一在`auto-os/apps/<目录>`进行。平时detached在AutoOS gitlink记录的最新提交；修改时在同一检出切`main`并同步远端；完成提交/推送、更新并提交父仓gitlink后，显式切回detached。文档与计划提交也更新gitlink。`v0.6-dev`保留为历史分支；新的日常开发目标统一为`main`。
+app 的计划、编辑与开发统一使用 `D:/autostack/<产品仓名>` 的独立 Git clone，在 `main` 上同步与提交；已有 clone 直接复用，缺少时从对应远端建立真实 clone，禁止以 junction/symlink 或共享 Git 数据的目录替代。`auto-os/apps/<产品仓名>` 保留为 AutoOS 的组合检出，平时 detached 在父仓 gitlink 记录的提交，不作为默认开发目录。
 
-本条优先于此前app外部worktree/临时clone工作位置示例。Plan与复审纪律保留；同app一个写入者，不改动或切走他人WIP；语言/框架及OS核心仍沿相应worktree规约。操作步骤见[App子模块工作流程](docs/design/strategy/app-submodule-workflow.md)。
+完成 app 的提交、验证与 push 后，再在干净且无人写入的对应子模块 fetch 并 detached 到已交付提交，更新、验证和提交/推送 AutoOS gitlink。文档与计划提交也遵守此流程；仅补建 clone 不自动升级组合 pin。`.gitmodules` 的远端 URL 保持实际产品仓，不改成本地 clone 路径；`branch = main` 不取代 gitlink 的固定版本。
+
+本条是用户对 2026-10-13“在 apps/ 内开发”约定的明确替代，也覆盖旧 Plan 中固化的 apps/ 开发路径。Plan 与复审纪律保留，同一 app 一个写入者，执行与复审顺序使用同一独立 clone，不改动或切走他人 WIP；旧计划在继续维护时修正路径与跨仓链接。`v0.6-dev` 只保留历史，语言/框架及 OS 核心仍沿相应 worktree 规约。操作步骤与本地清单见[App 子模块工作流程](docs/design/strategy/app-submodule-workflow.md)。
 
 ## 2.2 App 目录命名（PLAN-050，2026-10-22）
 
