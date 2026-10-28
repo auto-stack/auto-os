@@ -21,9 +21,9 @@
   `[AUTO-USE-DIAG] P-15 use 模块 '{ package' 解析失败`（`use { package "official"
   ... }` 形态）。属语言侧 `use` 语法/plan 664 解析线，本计划不修；闭合需在 auto-lang
   侧定位后回填本行。
-- **OS876-DOC-SWEEP（open，app 仓）**：`apps/auto-syslog/README.md` 仍写旧入口
-  旧 auto-lang example 入口命令。该文件在子模块内，
-  auto-os 不能代提交；需在 app 仓改并推进 pin。
+- **OS876-DOC-SWEEP（closed，2026-10-28）**：`apps/auto-syslog/README.md` 旧入口命令
+  已改（该文件实为 auto-os 仓内跟踪文件，`kind: local`，非子模块）；`ui_desktop boot`
+  叙述同步改为 desktop host。全仓当前面 `--example ui_desktop` 引用 = 0。
 
 ## Plan 051 合入后真实 VM 检查（2026-10-28）
 

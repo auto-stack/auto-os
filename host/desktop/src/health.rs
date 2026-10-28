@@ -108,15 +108,13 @@ pub fn snapshot(apps_dir: &Path, apps_dir_src: &'static str) -> Snapshot {
         })
         .collect();
 
-    // manifest 落点面：repo 条目 + 其 pac.at 在场性（注册表跳过原因）。
+    // manifest 落点面（REV2/F-876-R2-01）：**直读 apps.manifest**——registry 的
+    // `manifest_repo_roots` 会在返回前把"缺 pac.at"的条目过滤掉，用它做统计源
+    // 会让 `skip` 结构性恒 0、并让合法 id 在 known 集里缺席。
     let manifest_parent = apps_dir.parent().unwrap_or(apps_dir).to_path_buf();
-    let manifest_roots = app_registry::resolve_os_manifest_root(&manifest_parent)
-        .map(|root| app_registry::manifest_repo_roots(&root))
-        .unwrap_or_default();
-    let skip_no_pac = manifest_roots
-        .iter()
-        .filter(|(_, root)| !root.join("pac.at").is_file())
-        .count();
+    let (skip_no_pac, manifest_known) = app_registry::resolve_os_manifest_root(&manifest_parent)
+        .map(|root| manifest_state(&root))
+        .unwrap_or((0, HashSet::new()));
 
     let apps_empty = count_empty_app_dirs(apps_dir);
     let shell = auto_ui_runtime::ui::shell::resolve_shell_pack_dir();
@@ -129,7 +127,7 @@ pub fn snapshot(apps_dir: &Path, apps_dir_src: &'static str) -> Snapshot {
     };
     let storage = std::env::var_os("AUTO_VM_STORAGE_FILE").map(PathBuf::from);
     let mut known: HashSet<String> = entries.iter().map(|e| e.id.clone()).collect();
-    known.extend(manifest_roots.iter().map(|(id, _)| id.clone()));
+    known.extend(manifest_known);
     let orphan_icons = auto_lang_core::vm::ffi::stdlib::storage_host_read("shell.desktop.icons")
         .map(|icons| orphan_ids(&icons, &known).len())
         .unwrap_or(0);
@@ -160,8 +158,51 @@ pub fn report(apps_dir: &Path, apps_dir_src: &'static str) {
     }
 }
 
-/// 空壳 app 目录：存在但无 `pac.at`，且除 `.git` 外没有内容。
+/// 直读 `apps.manifest`：返回（缺 `pac.at` 的 active repo 条目数，全部 active id）。
 ///
+/// 刻意不用 `app_registry::manifest_repo_roots`——它在返回前就把缺 `pac.at`
+/// 的条目过滤掉了；把它当统计源会让 `skip` 结构性恒 0，并让 known 集缺 id
+/// （REV2/F-876-R2-01 实证）。
+fn manifest_state(manifest_root: &Path) -> (usize, HashSet<String>) {
+    let Ok(raw) = std::fs::read_to_string(manifest_root.join("apps.manifest")) else {
+        return (0, HashSet::new());
+    };
+    let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&raw) else {
+        return (0, HashSet::new());
+    };
+    let mut skip = 0usize;
+    let mut known = HashSet::new();
+    for app in parsed
+        .get("apps")
+        .and_then(|a| a.as_array())
+        .into_iter()
+        .flatten()
+    {
+        let Some(id) = app.get("id").and_then(|i| i.as_str()) else {
+            continue;
+        };
+        if app
+            .get("status")
+            .and_then(|s| s.as_str())
+            .unwrap_or("active")
+            != "active"
+        {
+            continue;
+        }
+        known.insert(id.to_string());
+        if app.get("kind").and_then(|k| k.as_str()).unwrap_or("repo") != "repo" {
+            continue; // local 形态由容器展开，不算 skip
+        }
+        if let Some(repo) = app.get("repo").and_then(|r| r.as_str()) {
+            if !manifest_root.join(repo).join("pac.at").is_file() {
+                skip += 1;
+            }
+        }
+    }
+    (skip, known)
+}
+
+/// 空壳 app 目录：存在但无 `pac.at`，且除 `.git` 外没有内容。///
 /// 这正是"子模块未初始化"与"工作区被清空"两种现场的共同签名；有 `src/` 之类
 /// 内容的非 app 目录（如 `common/`）不会被计入。
 fn count_empty_app_dirs(apps_dir: &Path) -> usize {
@@ -304,6 +345,32 @@ mod tests {
             hints.iter().any(|h| h.contains("git submodule update --init --recursive")),
             "空壳目录要提示子模块初始化：{hints:?}"
         );
+    }
+
+    /// REV2（F-876-R2-01）：`skip` 必须反映**非零**真实缺口——直读 manifest，
+    /// 不受 registry 的 pac.at 过滤影响；known 集含全部 active id。
+    #[test]
+    fn manifest_state_counts_missing_pac_at() {
+        let root = tmpdir("manifest");
+        std::fs::create_dir_all(root.join("apps/present")).unwrap();
+        std::fs::write(root.join("apps/present/pac.at"), "name: \"p\"").unwrap();
+        std::fs::create_dir_all(root.join("apps/missing")).unwrap();
+        let manifest = r#"{
+          "apps": [
+            {"id": "present-app", "repo": "apps/present", "kind": "repo", "status": "active"},
+            {"id": "missing-app", "repo": "apps/missing", "kind": "repo", "status": "active"},
+            {"id": "local-app", "repo": "apps/none", "kind": "local", "status": "active"},
+            {"id": "gone-app", "repo": "apps/gone", "kind": "repo", "status": "retired"}
+          ]
+        }"#;
+        std::fs::write(root.join("apps.manifest"), manifest).unwrap();
+        let (skip, known) = manifest_state(&root);
+        assert_eq!(skip, 1, "只有 active repo 且缺 pac.at 的条目计入 skip");
+        assert!(known.contains("present-app"));
+        assert!(known.contains("missing-app"), "缺 pac.at 也要进 known（否则误判 orphan）");
+        assert!(known.contains("local-app"));
+        assert!(!known.contains("gone-app"), "非 active 不入 known");
+        std::fs::remove_dir_all(&root).ok();
     }
 
     /// REV2（F-876-R-02）：manifest 落点也算已知——子模块未初始化时不得把

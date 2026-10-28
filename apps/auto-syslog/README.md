@@ -7,7 +7,7 @@ tail 视图。普通注册表虚拟窗（非 overlay 槽）；窗开 = 宿主 Se
 
 ## 三层采集（宿主侧）
 
-1. **log crate trap**（`HostLogger`，ui_desktop boot 安装）：error/warn/info
+1. **log crate trap**（`HostLogger`，desktop host boot 安装）：error/warn/info
    入环，source=`host`；
 2. **诊断家族双写**（`syslog!` 宏）：renderer/back_provision/shell-pack 等
    eprintln 载重站点——环 + stderr 文件双层（归档层不退役）；
@@ -17,8 +17,9 @@ tail 视图。普通注册表虚拟窗（非 overlay 槽）；窗开 = 宿主 Se
 ## 运行
 
 ```sh
-# 桌面轨（注册表可见「系统日志」，launch 开窗）
-cargo run -p auto-lang --features ui-iced --example ui_desktop -- --apps-dir <auto-os>/apps
+# 桌面轨（注册表可见「系统日志」，launch 开窗；PLAN-876 起入口在 auto-os）
+cd <auto-os> && cargo build -p os-desktop --bin ui-desktop
+target/debug/ui-desktop.exe --apps-dir <auto-os>/apps
 
 # vue 调试轨（独立模式，mock 数据自证）
 cd apps/039-syslog && auto run

@@ -17,5 +17,8 @@ auto-ui-runtime = { path = "../../../auto-ui/crates/auto-ui-runtime", default-fe
 # VM/存储 API（set_ui_host_install_hook、storage_host_read）。
 # 刻意**不**依赖 `auto-lang`：桌面宿主不需要编译器层。
 auto-lang-core = { path = "../../../auto-lang/crates/auto-lang-core" }
+# apps.manifest 直读（PLAN-876 REV2：manifest_repo_roots 会滤掉缺 pac.at 的条目，
+# 不能作为 skip 统计的数据源）。
+serde_json = "1"
 
 [dev-dependencies]
