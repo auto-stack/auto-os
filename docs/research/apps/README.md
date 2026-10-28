@@ -6,6 +6,8 @@
 
 当前会话先分类并优先补齐 B 类基础能力；A 类可以优先考虑 Linux 支持，后续增强另开会话讨论。基础能力通过后，Linux 与增强可并行。前期[Linux/产品分期建议](linux-mvp-priorities.md)保留作背景，不替代本次基本能力判定。
 
+执行入口：[B类应用基本能力总跟踪表](../../plans/b-apps-basic-capabilities.md)。Notes/Reader/Blog复用原计划，另六个app各有新draft；A类统一等待auto-os-distro的Nix＋COSMIC基础完成。
+
 ## 先读结论
 
 现行工作次序以基础能力盘点为准。以下产品组合、竞品和增强路线是前期研究，不表示已经达到基本可用，也不作为本会话新增功能清单。

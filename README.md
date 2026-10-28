@@ -270,6 +270,7 @@ auto-os/
 ```
 
 - [设计索引](docs/design/00-intro.md) · [模块规范](docs/specs) · [桌面程序台账](docs/plans/autos-desktop-program.md)
+- [B类应用基本能力总跟踪表](docs/plans/b-apps-basic-capabilities.md)：九个应用的独立计划、基础门及 A 类等待 Nix＋COSMIC 的共同前置
 - [应用产品化调研资料库](docs/research/apps/README.md)：下一版应用组合、竞品与开源实现、设计取舍和实现路线（初期研究，2026-10-22）
 - [窗口与桌面小组件](docs/specs/shell/dashboard.md) · [桌面图标](docs/specs/shell/showdesk-icons.md) · [壁纸](docs/specs/shell/showdesk-wallpaper.md)
 - [图标生成工具](scripts/slice_icons.py)：修改图标源图后生成切片；`python scripts/slice_icons.py --verify` 校验资产

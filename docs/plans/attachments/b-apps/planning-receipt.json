@@ -1,0 +1,130 @@
+{
+  "created_on": "2026-10-29",
+  "stage": "new",
+  "scope": "programme tracker + six draft Plans; no application implementation",
+  "new_plans": [
+    {
+      "repo": "auto-todo",
+      "number": "001",
+      "plan_id": "TODO-001",
+      "path": "apps/auto-todo/docs/plans/001-durable-todos.md",
+      "spec_path": "docs/specs/todo/basic-capabilities.md",
+      "ready": true,
+      "decisions": "无必须先向用户确认的产品身份问题；技术可行性与资源边界由 T-01 冻结，缺口保持具名阻塞。",
+      "plan_revision": 1,
+      "sha256": "483c4b3e63a109005cee304c8bf8d561de933145541c6d0086b8673d054dd237"
+    },
+    {
+      "repo": "auto-calendar",
+      "number": "001",
+      "plan_id": "CALENDAR-001",
+      "path": "apps/auto-calendar/docs/plans/001-local-events.md",
+      "spec_path": "docs/specs/calendar/basic-capabilities.md",
+      "ready": true,
+      "decisions": "无必须先向用户确认的产品身份问题；技术可行性与资源边界由 T-01 冻结，缺口保持具名阻塞。",
+      "plan_revision": 1,
+      "sha256": "ff74e99572085b77156145c7fabc120e49b031dd0da0c9da1e15ede26126f7cb"
+    },
+    {
+      "repo": "auto-paint",
+      "number": "001",
+      "plan_id": "PAINT-001",
+      "path": "apps/auto-paint/docs/plans/001-reliable-pixel-paint.md",
+      "spec_path": "docs/specs/paint/basic-capabilities.md",
+      "ready": true,
+      "decisions": "无必须先向用户确认的产品身份问题；技术可行性与资源边界由 T-01 冻结，缺口保持具名阻塞。",
+      "plan_revision": 1,
+      "sha256": "229ff5b067abf11930f537c0f997f2519b677ec707646f7636b97711a302842b"
+    },
+    {
+      "repo": "auto-database",
+      "number": "001",
+      "plan_id": "DATABASE-001",
+      "path": "apps/auto-database/docs/plans/001-real-sqlite-browser.md",
+      "spec_path": "docs/specs/database/basic-capabilities.md",
+      "ready": true,
+      "decisions": "无必须先向用户确认的产品身份问题；技术可行性与资源边界由 T-01 冻结，缺口保持具名阻塞。",
+      "plan_revision": 1,
+      "sha256": "1d78d1f79c8501a318d8780ea07de9b6955d62c4354f2755bc8e11aa93ee7159"
+    },
+    {
+      "repo": "auto-charts",
+      "number": "001",
+      "plan_id": "CHARTS-001",
+      "path": "apps/auto-charts/docs/plans/001-data-to-chart.md",
+      "spec_path": "docs/specs/charts/basic-capabilities.md",
+      "ready": true,
+      "decisions": "无必须先向用户确认的产品身份问题；技术可行性与资源边界由 T-01 冻结，缺口保持具名阻塞。",
+      "plan_revision": 1,
+      "sha256": "84537848860d3fac0d9ade456e93a81b5b017723b09a748ca155a10f971e9421"
+    },
+    {
+      "repo": "auto-chat",
+      "number": "001",
+      "plan_id": "CHAT-001",
+      "path": "apps/auto-chat/docs/plans/001-real-conversations.md",
+      "spec_path": "docs/specs/chat/basic-capabilities.md",
+      "ready": true,
+      "decisions": "用户2026-10-29已确认人与人聊天，沿用联系人界面。T-01调查真实通道/身份/最小连接profile；不再等待产品定位。",
+      "plan_revision": 2,
+      "sha256": "5e4c1e85a7b8c3db3dbb8dd8d61907d5e7e4739ab632ad7980e84b7305800715"
+    }
+  ],
+  "reused_plan_hashes": {
+    "apps/auto-notes/docs/plans/001-durable-inbox.md": "e13fffaac730aef3de0f50a504581481b059189cf5f8bfd912a3e7768f413408",
+    "apps/auto-reader/docs/plans/001-real-library.md": "27ee1866eb1fa7c8e296eacc6fcce0ce56954de2c8570a7e57dc3866a6e53af7",
+    "apps/auto-blog/docs/plans/001-durable-drafts.md": "a4637d942a290da98df14aa991e71afcf0970afb268cae4f6dfb0af1caa6b21b"
+  },
+  "counts": {
+    "manifest_entries": 28,
+    "unique_products": 27,
+    "A_waiting_distro": 18,
+    "B": 9,
+    "new_plans": 6,
+    "reused_plans": 3
+  },
+  "linux_gate": "WAIT_DISTRO_M1: auto-os-distro Nix + COSMIC foundation complete",
+  "validation": {
+    "outcome": "pass",
+    "scope": "documentation and draft handoff only; application capabilities not tested",
+    "checks": [
+      "3 reused Plans and 11 pre-existing WIP files retain exact SHA256",
+      "6 unique drafting Plans (five r1, Chat r2): 0/7 tasks, 6 stage-owned ACs, 0..10 sections, proposed Spec delta, source hashes, valid links; source unchanged from baseline",
+      "9 B main Plan links, 18 unique A WAIT_DISTRO_M1 rows, AutoJade deduplicated, tracker links resolve"
+    ]
+  },
+  "submodule_delivery": "six app main commits verified remotely; parent commit and explicit detach pending",
+  "source_commits": {
+    "auto-todo": {
+      "commit": "a8c78880b16e96242b55da65799b12398d77ea45",
+      "remote_main_verified": true,
+      "documentation_only": true
+    },
+    "auto-calendar": {
+      "commit": "611d1e5e1933a519db8cf82824aab4427c5a4424",
+      "remote_main_verified": true,
+      "documentation_only": true
+    },
+    "auto-paint": {
+      "commit": "0901c657337b33dfd1ca0d87d860947d83ed98c4",
+      "remote_main_verified": true,
+      "documentation_only": true
+    },
+    "auto-database": {
+      "commit": "fda99313674c4e57ab2953ae84c597b3480900f3",
+      "remote_main_verified": true,
+      "documentation_only": true
+    },
+    "auto-charts": {
+      "commit": "b3973f0694e3fc4a83aa33671fb3d3c1b067fc54",
+      "remote_main_verified": true,
+      "documentation_only": true
+    },
+    "auto-chat": {
+      "commit": "b2597f21dd6bc9fff87ecf589c877f771b722b75",
+      "remote_main_verified": true,
+      "documentation_only": true
+    }
+  },
+  "chat_decision": "confirmed_human_to_human_keep_contacts_ui; CHAT-001 revision 2"
+}
