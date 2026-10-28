@@ -149,10 +149,13 @@ app iframe 嵌入列 Stage C 候选（依据与验证见 auto-lang PLAN-586 复�
 
 桌面**没有**统一 `auto desktop` 子命令，实为两条入口：
 
-1. **iced/VM 轨**（验收宿主示例）：
-   `cargo run -p auto-lang --features ui-iced --example ui_desktop [-- --fullscreen --apps-dir <path>]`
-   （`crates/auto-lang/examples/ui_desktop.rs`；默认注册表目录 = 编译期
-   `CARGO_MANIFEST_DIR` 锚定框架仓 `examples/ui`，`ui_desktop.rs:17-24`）。
+1. **iced/VM 轨**（本仓一等宿主，PLAN-876 起）：
+   `cd <auto-os> && cargo build -p os-desktop --bin ui-desktop` →
+   `target/debug/ui-desktop.exe [--fullscreen --apps-dir <path>]`
+   （`host/desktop/`；apps 缺省 = `AUTO_OS_ROOT/apps → CWD/apps → 仓根/apps`）。
+   <sub>历史（2026-09-07 实测）：该入口当时是 auto-lang 的 example
+   `cargo run -p auto-lang ... example ui_desktop`（旧 example 形态，已删），
+   `crates/auto-lang/examples/ui_desktop.rs` 已随 PLAN-876 删除。</sub>
 2. **Vue 轨**：`auto run --desktop`（`crates/auto-man/src/vue.rs` 注入
    `AUTO_DESKTOP=1`；注册表目录经 `AUTO_DESKTOP_APPS` env 覆盖 / 默认
    `<root>/examples/ui`，`vue.rs:5480` `desktop_apps_dir`；extra 单 app 根经
@@ -228,8 +231,9 @@ P2/P3 为 Stage B **硬前置**（框架仓改动，Category B 作用域），P7
 
 ### P3 清障二：桌面注册表指向仓外（三源聚合）
 
-- **现状锚点**：① iced 轨 `crates/auto-lang/examples/ui_desktop.rs:17-37`
-  ——默认注册表目录编译期锚定框架仓 `examples/ui`（`--apps-dir` 可覆盖）；
+- **现状锚点（PLAN-876 后）**：① iced 轨 `host/desktop/src/main.rs`
+  ——apps 目录缺省 `AUTO_OS_ROOT/apps → CWD/apps → 仓根/apps`（`--apps-dir` 可覆盖；
+  旧锚点 `crates/auto-lang/examples/ui_desktop.rs:17-37` 已随入口迁移删除）；
   ② Vue 轨 `crates/auto-man/src/vue.rs:5480` `desktop_apps_dir`
   （`AUTO_DESKTOP_APPS` env 覆盖 / 默认 `<root>/examples/ui`）+ `:5512`
   `desktop_extra_app_roots`（`AUTO_DESKTOP_APPS_EXTRA` 路径表 / 默认兄弟探测

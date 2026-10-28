@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-051
-status: reviewed
+status: archived
 feature_name: 三仓迁移后的桌面启动脚本与候选产物入口
 author: [Codex]
 created_at: 2026-10-28
 updated_at: 2026-10-28
 plan_revision: 1
-current_step: 6
+current_step: 7
 total_steps: 7
 supersedes_spec_components: []
 new_spec_components: [docs/specs/shell/desktop-bootstrap.md]
@@ -81,11 +81,18 @@ PowerShell、Bash、Cargo；Python unittest仅用于脚本回归。保留原脚�
 | [x] | T-04 | work | T-03 | README用法和SD proposal/限制、兼容说明 | AC-04 |
 | [x] | T-05 | work | T-04 | scoped diff自检、提交代码、handoff，真实GUI仍pending | AC-01..04 |
 | [x] | T-06 | review | T-05冻结提交 | 同一工作树独立上下文review；不以替身证明桌面可用 | AC-05 |
-| [ ] | T-07 | merge | T-06 pass | 定向门/合入/SD与ledger/归档/逐树guard清理 | AC-06 |
+| [x] | T-07 | merge | T-06 pass | 定向门/合入/SD与ledger/归档/逐树guard清理 | AC-06 |
 
 实施组D:/autostack/.wt/os-051/auto-os，分支codex/plan-051-dev；不需要改框架仓，不创建依赖链接/树。所有脚本修改与验证在该树，计划簿记留main。若要实际三仓构建，另按固定依赖worktree和资源窗口执行，不在本任务偷偷开重负载或GUI。
 
 ## 9. 复审记录
+
+2026-10-28 / post-delivery runtime check / 已按用户额外授权真实构建三仓并启动桌面，桌面及独立 VM 计算器均实测2+3=5；独立工具Windows主栈缺陷在auto-ui 5a89bfd修复并复测。视频解析与Music/Photos扫描404仍open，不能宣称所有应用通过。详见[真实运行报告](../attachments/051/runtime-check.md)及KNOWN-DEBT-AND-RISKS；原脚本合同保持archived 7/7，不重新打开。原始运行证据只在本地验证目录保留。
+
+2026-10-28 / stage:merge / checkpoint:cleaned / outcome:pass / T-07完成，7/7。OS唯一开发树fresh wt-guard clean后git worktree remove成功，codex/plan-051-dev已合并分支删除，空os-051组移除；无该Plan Rust target/pdb需回收。主检出他方docs WIP保留未改。用户额外运行验证另记，不重新打开已归档脚本合同。
+
+2026-10-28 / stage:merge / PLAN-051:r1 / completion_kind:delivered / checkpoint:archived（cleaned待下一步真实执行） / prepared:reviewed d8dbb046fe0124f52f51a660c67c9a36b9ac94f6与SD-01冻结；rebase d8dbb04→8b6ae21，range-diff精确等价；脚本/测试三文件逐字节未变，13测试证据复用 / landed:main ff-only→3088dea1db735c294ec9a6fe22f5b3522ee82209 / canonical:docs/specs/shell/desktop-bootstrap.md及README入口已读回 / ledger_refreshed:guarded offline projection（无本会话store工具或已知本地store监听），原ledger可解析、六节保留；新增P051-DESKTOP-BOOTSTRAP/P051-REVIEW-R1/P051-MERGE-R1/P051-LAUNCHER-REGRESSION四项，source/file/tags齐，原条目和其他字段逐字节未扰动；原文档无version字段，不伪造版本；backup=D:/autostack/.verify/os-051-20261028/ledger-before.json / gates:doc/语法/diff检查通过，无Rust整档或docs_gen；非用户运行验证已通过声明 / next:fresh guard后清理唯一OS开发树、更新T-07完成，随后按用户额外授权实际构建并启动VM桌面。
+
 
 2026-10-28 / stage:review / review_scope:final / reviewer_identity:本会话基于已提交工件重新审计，未另开独立模型/会话，明确上下文独立性限制；不是把work汇报当证据 / plan_id:PLAN-051 / revision:1 / outcome:pass / worktree:D:/autostack/.wt/os-051/auto-os / branch:codex/plan-051-dev / reviewed_commit:d8dbb046fe0124f52f51a660c67c9a36b9ac94f6 / base:841f46d / dependency_revisions:脚本回归无框架二进制依赖，源码owner按各仓Cargo清单只读核对 / acceptance_results:AC-01三仓解析/同级约束/统一target逐调用验证pass；AC-02候选不构建/缺件拒绝/无PATH回退pass；AC-03三阶段构建失败停止、真实native cargo exit23与launch exit31传播pass；AC-04PS/Bash direct入口/Unicode/空格/dry-run无目录写入/环境CWD恢复及README边界pass；AC-05独立验收步骤完成，所述上下文限制保留 / evidence:定向unittest13/13 exit0，22.761s，代码与提交干净重核；实际源码diff、根解析/程序发现全路径与SD对照 / SD-01 reviewed proposal sha256:6a32cdc3f9b07e86e67f60c86e73d24fdc288cc0e34e7f51c65dfea56d274514 / findings:none / pending_closeout_gates:规范落地与ledger受管刷新/线性合入/归档/guard清理；无Rust/Cargo整档/docs_gen要求 / next:auto-plan-merge T-07。用户本轮另行授权合入后真实三仓构建与VM桌面检查，该运行结果另记报告，不把脚本替身当产品正控。
 
@@ -94,7 +101,7 @@ PowerShell、Bash、Cargo；Python unittest仅用于脚本回归。保留原脚�
 
 验证：`python -m unittest discover -s scripts/tests -p test_desktop_launcher.py -v` exit0，13/13、17.885s，PS/Bash均执行，包括直接public入口dry-run和native cargo exit23、三构建阶段exit17与残留旧exe、缺件、不命中PATH、空格中文、候选不需源、覆盖序、环境/CWD恢复、启动exit31。首次测试发现PS null环境恢复变为空字符串，改为null时删除Env项后反例及同族通过。PowerShell Language.Parser零错误、`bash -n scripts/desktop.sh` exit0、`git diff --check` exit0。设置DESKTOP_OS_ROOT=主OS根后，两脚本真实目录dry-run均选Man/UI/lang且共同target，无目录写入或外部构建。
 
-SD-01草案见[spec-delta.md](attachments/051/spec-delta.md)，README已解释新owner/候选入口与限制；原始替身trace在测试临时目录生命周期内，仅控制调度，不充当产品正控。永久测试即复跑入口。`scripts/desktop.ps1` sha256 `eb6d0ac62a6c9828991ab47fe45e8ac7c9a390908017ed96161f6bd91254d12c`；`scripts/desktop.sh` sha256 `aa051130f14978373e34590c261ea5735d93ca340251658a45f8fb30b795ff37`；`scripts/tests/test_desktop_launcher.py` sha256 `2eefaf64fb829ebd2cd32b20c0d79c550cd69c736ea982352bb31b929b21f3f0`。
+SD-01草案见[spec-delta.md](../attachments/051/spec-delta.md)，README已解释新owner/候选入口与限制；原始替身trace在测试临时目录生命周期内，仅控制调度，不充当产品正控。永久测试即复跑入口。`scripts/desktop.ps1` sha256 `eb6d0ac62a6c9828991ab47fe45e8ac7c9a390908017ed96161f6bd91254d12c`；`scripts/desktop.sh` sha256 `aa051130f14978373e34590c261ea5735d93ca340251658a45f8fb30b795ff37`；`scripts/tests/test_desktop_launcher.py` sha256 `2eefaf64fb829ebd2cd32b20c0d79c550cd69c736ea982352bb31b929b21f3f0`。
 
 剩余边界：没有运行真实Cargo build/整档/docs_gen/GUI；匹配版本、资源完整性、桌面首帧和app交互仍需接入实测，不计为本Plan已验证。无产品Rust/协议改动，无远端写入，OS主检出他方docs WIP未触碰。当前代码工作树干净，保留供独立review，不清理、不自行合入。
 
