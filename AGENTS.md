@@ -54,6 +54,14 @@ apps/ 容器臂按 pac.at 门静默跳过，不炸启动。组内开发需 kanba
 submodule 检出内容（git 数据在 `.git/modules/` 保留，可恢复）——wt-guard
 扫 reparse point 不拦 gitlink，移除组前 `git submodule deinit` 更干净。
 
+**子模块健康闸门（PLAN-876 phase，OS876-SUBMODULE）**：2026-10-28 实机走查发现
+24 个 app 子模块工作树曾被清空（只剩 `.git` + 索引成批 `D `），桌面注册表从
+30 条缩到 4 条、小组件 `faces=0`。启动桌面或合入前跑
+`pwsh -File scripts/check-app-submodules.ps1`（Git Bash/CI 用同名 `.sh`）：
+①未初始化/指针不匹配、②批量暂存删除签名、③manifest active repo 条目缺 `pac.at`。
+`-SelfTest` 用临时仓验证检测器本身；`-OsRoot` 可体检另一检出。桌面 boot 的
+`[desktop-health] apps_empty=` / `skip=no_pac_at:` 是同源运行期面。
+
 ## 2.1 App 日常检出与工作分支（2026-10-13 用户更新）
 
 所有已收编app的使用、计划与修改统一在`auto-os/apps/<目录>`进行。平时detached在AutoOS gitlink记录的最新提交；修改时在同一检出切`main`并同步远端；完成提交/推送、更新并提交父仓gitlink后，显式切回detached。文档与计划提交也更新gitlink。`v0.6-dev`保留为历史分支；新的日常开发目标统一为`main`。

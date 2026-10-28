@@ -2,17 +2,27 @@
 
 ## PLAN-876 桌面入口迁移（2026-10-28，本仓首次按新归属登记）
 
-- **OS876-APP-EXE（open）**：`028-launcher` / `036-tetris` / `037-klondike` /
-  `038-minesweeper` 在 `pac.at` 声明 `desktop_exe:`，但 clone 不携带产物（各仓 README
-  明写 `auto build -r rust` 生成），故无法原生启动。现网按 PLAN-876 语义**降级解释态**
-  并在 boot 自检打 `declared_exe_missing=` 与建议；清偿 = 逐 app `auto build -r rust`
-  出产物，或在 `apps.manifest` 对它们显式 `"launch": "vm"` 定版（二选一需产品裁定）。
-- **OS876-SUBMODULE（open）**：2026-10-28 走查发现 24 个 app 子模块工作区被清空
-  （只剩 `.git` + 索引成批 `deleted`），导致注册表缩到 9 条、小组件 `faces=0`。已按
-  "取证 → `git reset --hard HEAD` → 5 个残留目录移备份 → `git submodule update
-  --init --recursive`" 恢复（证据 `auto-lang/tmp/autoos-apps-state-20261028-152823.txt`，
-  备份 `D:\autostack\tmp\auto-os-apps-stale-20261028-152844`）。健康面 `apps_empty`
-  只做检测、不自动修复；**清空根因未知**，闭合需定位是哪条流程/脚本造成。
+- **OS876-APP-EXE（closed，2026-10-28 phase）**：`028-launcher` / `036-tetris` /
+  `037-klondike` / `038-minesweeper` 在 `pac.at` 声明 `desktop_exe:`，但 clone 不携带
+  产物（各仓 README 明写 `auto build -r rust` 生成）。**裁定：四者在 `apps.manifest`
+  显式 `"launch": "vm"`**（解释态定版，双击可开）；desktop-health 的
+  `declared_exe_missing` 现排除 `launch:"vm"` 条目（单测
+  `vm_launch_is_not_reported_as_missing_artifact`）。出产物后删掉该字段即回到原生，
+  无需改代码。
+- **OS876-SUBMODULE（closed-with-cause + guard，2026-10-28 phase）**：24 个 app
+  子模块工作树曾被清空（只剩 `.git` + 索引成批 `D `），致注册表 30→4、`faces=0`。
+  已恢复（取证 `auto-lang/tmp/autoos-apps-state-20261028-152823.txt`、备份
+  `D:\autostack\tmp\auto-os-apps-stale-20261028-152844`）。**根因（证据重建）**：
+  2026-10-22 产品目录改名（`57b2910`，24 个 gitlink 改名）后，`.git/modules/apps/`
+  仍留旧名模块（`011-calculator`…）且其 `config.worktree` 指向新路径；改名后的
+  重新登记/半程 checkout 让索引保留条目而工作树未落盘——即"索引满、文件空"的
+  批量 `D ` 签名（模块 reflog 仅 `clone` + 本次恢复的 `reset`，无正常检出记录）。
+  5 个无 `.git` 的残留目录（10-13 时间戳）是同批迁移未清完的另一形态。
+  **守门**：新增 `scripts/check-app-submodules.{ps1,sh}`（三面检测：未初始化/指针
+  不匹配、批量暂存删除、manifest active repo 缺 pac.at；`-SelfTest` 自证），并在
+  `AGENTS.md` §2 submodule 纪律登记；运行期面为 `[desktop-health] apps_empty= /
+  skip=no_pac_at:`。残留观察：旧名模块目录仍在 `.git/modules/apps/`（不影响运行，
+  未清理以保全 git 数据）。
 - **OS876-TERM-TICK（open，跨计划）**：`auto-term` 重启后 `handler_App_Tick` 持续报
   `RuntimeError("future_all/race: empty or invalid future list")`（crash ip=0x22da）。
   auto-lang `docs/plans/KNOWN-DEBT-AND-RISKS.md` 的 P723-D1 是同一现象的旧记录；

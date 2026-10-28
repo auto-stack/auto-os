@@ -100,21 +100,28 @@ pub fn snapshot(apps_dir: &Path, apps_dir_src: &'static str) -> Snapshot {
         &app_registry::ScanOptions::default(),
     );
     let desktop_visible = entries.iter().filter(|e| e.desktop_visible).count();
-    let declared_exe_missing: Vec<String> = entries
-        .iter()
-        .filter_map(|e| {
-            let decl = e.desktop_exe.as_deref()?;
-            (!e.app_root().join(decl).is_file()).then(|| e.id.clone())
-        })
-        .collect();
+    // （declared_exe_missing 需等 manifest 的 vm 集算出后再定，见下。）
 
     // manifest 落点面（REV2/F-876-R2-01）：**直读 apps.manifest**——registry 的
     // `manifest_repo_roots` 会在返回前把"缺 pac.at"的条目过滤掉，用它做统计源
     // 会让 `skip` 结构性恒 0、并让合法 id 在 known 集里缺席。
     let manifest_parent = apps_dir.parent().unwrap_or(apps_dir).to_path_buf();
-    let (skip_no_pac, manifest_known) = app_registry::resolve_os_manifest_root(&manifest_parent)
+    let ManifestState {
+        skip_no_pac,
+        known: manifest_known,
+        vm_launch,
+    } = app_registry::resolve_os_manifest_root(&manifest_parent)
         .map(|root| manifest_state(&root))
-        .unwrap_or((0, HashSet::new()));
+        .unwrap_or_default();
+    // `launch:"vm"` 的应用是**显式解释态**（不是缺产物），不进 missing 提示。
+    let declared_exe_missing: Vec<String> = entries
+        .iter()
+        .filter(|e| !vm_launch.contains(e.id.as_str()))
+        .filter_map(|e| {
+            let decl = e.desktop_exe.as_deref()?;
+            (!e.app_root().join(decl).is_file()).then(|| e.id.clone())
+        })
+        .collect();
 
     let apps_empty = count_empty_app_dirs(apps_dir);
     let shell = auto_ui_runtime::ui::shell::resolve_shell_pack_dir();
@@ -160,18 +167,31 @@ pub fn report(apps_dir: &Path, apps_dir_src: &'static str) {
 
 /// 直读 `apps.manifest`：返回（缺 `pac.at` 的 active repo 条目数，全部 active id）。
 ///
+#[derive(Debug, Default, PartialEq, Eq)]
+struct ManifestState {
+    /// active repo 条目里缺 `pac.at` 的数量。
+    skip_no_pac: usize,
+    /// 全部 active id（orphan 判据用）。
+    known: HashSet<String>,
+    /// `launch:"vm"` 的 active id（显式解释态，不算缺产物）。
+    vm_launch: HashSet<String>,
+}
+
+/// 直读 `apps.manifest` 的摘要。
+///
 /// 刻意不用 `app_registry::manifest_repo_roots`——它在返回前就把缺 `pac.at`
 /// 的条目过滤掉了；把它当统计源会让 `skip` 结构性恒 0，并让 known 集缺 id
 /// （REV2/F-876-R2-01 实证）。
-fn manifest_state(manifest_root: &Path) -> (usize, HashSet<String>) {
+fn manifest_state(manifest_root: &Path) -> ManifestState {
     let Ok(raw) = std::fs::read_to_string(manifest_root.join("apps.manifest")) else {
-        return (0, HashSet::new());
+        return ManifestState::default();
     };
     let Ok(parsed) = serde_json::from_str::<serde_json::Value>(&raw) else {
-        return (0, HashSet::new());
+        return ManifestState::default();
     };
     let mut skip = 0usize;
     let mut known = HashSet::new();
+    let mut vm_launch = HashSet::new();
     for app in parsed
         .get("apps")
         .and_then(|a| a.as_array())
@@ -190,6 +210,10 @@ fn manifest_state(manifest_root: &Path) -> (usize, HashSet<String>) {
             continue;
         }
         known.insert(id.to_string());
+        // `launch:"vm"` = 显式解释态（不因声明了 desktop_exe 而算缺产物）。
+        if app.get("launch").and_then(|l| l.as_str()) == Some("vm") {
+            vm_launch.insert(id.to_string());
+        }
         if app.get("kind").and_then(|k| k.as_str()).unwrap_or("repo") != "repo" {
             continue; // local 形态由容器展开，不算 skip
         }
@@ -199,7 +223,11 @@ fn manifest_state(manifest_root: &Path) -> (usize, HashSet<String>) {
             }
         }
     }
-    (skip, known)
+    ManifestState {
+        skip_no_pac: skip,
+        known,
+        vm_launch,
+    }
 }
 
 /// 空壳 app 目录：存在但无 `pac.at`，且除 `.git` 外没有内容。///
@@ -364,12 +392,35 @@ mod tests {
           ]
         }"#;
         std::fs::write(root.join("apps.manifest"), manifest).unwrap();
-        let (skip, known) = manifest_state(&root);
-        assert_eq!(skip, 1, "只有 active repo 且缺 pac.at 的条目计入 skip");
-        assert!(known.contains("present-app"));
-        assert!(known.contains("missing-app"), "缺 pac.at 也要进 known（否则误判 orphan）");
-        assert!(known.contains("local-app"));
-        assert!(!known.contains("gone-app"), "非 active 不入 known");
+        let state = manifest_state(&root);
+        assert_eq!(state.skip_no_pac, 1, "只有 active repo 且缺 pac.at 的条目计入 skip");
+        assert!(state.known.contains("present-app"));
+        assert!(state.known.contains("missing-app"), "缺 pac.at 也要进 known（否则误判 orphan）");
+        assert!(state.known.contains("local-app"));
+        assert!(!state.known.contains("gone-app"), "非 active 不入 known");
+        std::fs::remove_dir_all(&root).ok();
+    }
+
+    /// OS876-APP-EXE（phase 追加，2026-10-28）：`launch:"vm"` 是**显式解释态**，
+    /// 即使声明了 `desktop_exe` 且产物缺失，也不得进 `declared_exe_missing`
+    /// （否则 health 会一直提示"去 auto build"，与实际启动行为矛盾）。
+    #[test]
+    fn vm_launch_is_not_reported_as_missing_artifact() {
+        let root = tmpdir("vm-launch");
+        std::fs::create_dir_all(root.join("apps/vm-app")).unwrap();
+        std::fs::write(root.join("apps/vm-app/pac.at"), "name: \"vm\"").unwrap();
+        std::fs::create_dir_all(root.join("apps/native-app")).unwrap();
+        std::fs::write(root.join("apps/native-app/pac.at"), "name: \"n\"").unwrap();
+        let manifest = r#"{
+          "apps": [
+            {"id": "vm-app", "repo": "apps/vm-app", "kind": "repo", "status": "active", "launch": "vm"},
+            {"id": "native-app", "repo": "apps/native-app", "kind": "repo", "status": "active"}
+          ]
+        }"#;
+        std::fs::write(root.join("apps.manifest"), manifest).unwrap();
+        let state = manifest_state(&root);
+        assert!(state.vm_launch.contains("vm-app"));
+        assert!(!state.vm_launch.contains("native-app"));
         std::fs::remove_dir_all(&root).ok();
     }
 
