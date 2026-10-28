@@ -590,7 +590,8 @@
       "Existing clone HEAD/branches/WIP preserved; AutoOS pre-existing WIP hashes preserved",
       "Six app revisions preserve functional tasks, AC-01..05 and Spec deltas; source/tests/pac.at unchanged",
       "Non-target submodule HEAD/branch/WIP unchanged; .gitmodules and apps.manifest SHA256 unchanged",
-      "Six source revision commits pushed and remotely verified; integration checkouts clean/detached"
+      "Six source revision commits pushed and remotely verified; integration checkouts clean/detached",
+      "After parent push: six committed gitlinks equal app delivery commits and both local checkouts; pre-existing AutoOS WIP preserved"
     ],
     "submodule_health": {
       "outcome": "pass",
@@ -599,5 +600,7 @@
       "command": "pwsh -NoProfile -File scripts/check-app-submodules.ps1"
     }
   },
-  "parent_delivery": "pending combination commit"
+  "parent_delivery": "complete: app documentation revisions pushed, AutoOS gitlinks committed and pushed; development clones remain on main; six integration submodules clean/detached",
+  "parent_combination_commit": "0e1fb42b04276fdb17b994a09b8459bc10891942",
+  "parent_remote_verified": true
 }
