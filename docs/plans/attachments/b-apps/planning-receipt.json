@@ -90,41 +90,97 @@
     "checks": [
       "3 reused Plans and 11 pre-existing WIP files retain exact SHA256",
       "6 unique drafting Plans (five r1, Chat r2): 0/7 tasks, 6 stage-owned ACs, 0..10 sections, proposed Spec delta, source hashes, valid links; source unchanged from baseline",
-      "9 B main Plan links, 18 unique A WAIT_DISTRO_M1 rows, AutoJade deduplicated, tracker links resolve"
+      "9 B main Plan links, 18 unique A WAIT_DISTRO_M1 rows, AutoJade deduplicated, tracker links resolve",
+      "Post-delivery: six remote main commits equal parent pins, clean explicit detached checkouts; reused Plans and preserved WIP unchanged"
     ]
   },
-  "submodule_delivery": "six app main commits verified remotely; parent commit and explicit detach pending",
+  "submodule_delivery": "complete: six app commits pushed; parent gitlinks committed and pushed; all six app checkouts explicitly detached at those pins",
   "source_commits": {
     "auto-todo": {
       "commit": "a8c78880b16e96242b55da65799b12398d77ea45",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-durable-todos.md"
+      ],
+      "plan_blob_oid": "ba43e99f55a394e97fb8b0f8481498482467182a"
     },
     "auto-calendar": {
       "commit": "611d1e5e1933a519db8cf82824aab4427c5a4424",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-local-events.md"
+      ],
+      "plan_blob_oid": "8ab7b947fd426488c947509a19fd2b61a3731e95"
     },
     "auto-paint": {
       "commit": "0901c657337b33dfd1ca0d87d860947d83ed98c4",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-reliable-pixel-paint.md"
+      ],
+      "plan_blob_oid": "fe0c79c81a4a90e90172524dd4c08ed9e9144228"
     },
     "auto-database": {
       "commit": "fda99313674c4e57ab2953ae84c597b3480900f3",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-real-sqlite-browser.md"
+      ],
+      "plan_blob_oid": "28d6c9b4c487ab65c8bde037f54fd4f4a10546fa"
     },
     "auto-charts": {
       "commit": "b3973f0694e3fc4a83aa33671fb3d3c1b067fc54",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-data-to-chart.md"
+      ],
+      "plan_blob_oid": "f4ba18e1e4673904caac51ad35afa688d95478fb"
     },
     "auto-chat": {
       "commit": "b2597f21dd6bc9fff87ecf589c877f771b722b75",
       "remote_main_verified": true,
-      "documentation_only": true
+      "documentation_only": true,
+      "parent_pin_verified": true,
+      "detached_verified": true,
+      "changed_paths": [
+        "README.md",
+        "docs/plans/.next-id",
+        "docs/plans/001-real-conversations.md"
+      ],
+      "plan_blob_oid": "98339ae739d126635a52728ae88517e4ae962ab1"
     }
   },
-  "chat_decision": "confirmed_human_to_human_keep_contacts_ui; CHAT-001 revision 2"
+  "chat_decision": "confirmed_human_to_human_keep_contacts_ui; CHAT-001 revision 2",
+  "parent_combination_commit": "0ebdbba74bfc7e45061733bc109d1c019a923ccf",
+  "parent_combination_remote_verified": true,
+  "submodule_health": {
+    "outcome": "pass",
+    "command": "pwsh -NoProfile -File scripts/check-app-submodules.ps1",
+    "output": "[app-submodules] manifest_repo_entries=27 missing_pac_at=0\n[app-submodules] healthy"
+  }
 }
