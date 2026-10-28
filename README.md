@@ -248,6 +248,8 @@ bash scripts/desktop.sh iced --candidate-dir D:/autostack/.verify/desktop/bin
 须提供匹配版本和完整运行资源。脚本测试通过也不代表真实桌面首帧或app交互
 已验收。显式mpv配置保持；退出时恢复调用者环境与目录，不修改系统PATH。
 
+启动合同见[desktop-bootstrap](docs/specs/shell/desktop-bootstrap.md)。
+
 这些是开发启动入口，Bash 脚本的存在不代表 Linux 发行版已经交付。
 `auto-lang` 定位顺序为 `AUTO_LANG_ROOT` → 兄弟目录 `../auto-lang` →
 `D:/autostack/auto-lang`。不使用 junction/symlink。若需要 Kanban 的本地
