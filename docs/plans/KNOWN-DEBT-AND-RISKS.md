@@ -23,7 +23,7 @@
   侧定位后回填本行。
 - **OS876-DOC-SWEEP（closed，2026-10-28）**：`apps/auto-syslog/README.md` 旧入口命令
   已改（该文件实为 auto-os 仓内跟踪文件，`kind: local`，非子模块）；`ui_desktop boot`
-  叙述同步改为 desktop host。全仓当前面 `--example ui_desktop` 引用 = 0。
+  叙述同步改为 desktop host。全仓当前面已不含旧 example 形态入口命令（引用 = 0）。
 
 ## Plan 051 合入后真实 VM 检查（2026-10-28）
 
