@@ -1,0 +1,837 @@
+{
+  "assessed_on": "2026-10-29",
+  "auto_os_head": "584dc008904fd2488ff01a4103a91289ac80ce41",
+  "scope": "28 manifest apps; AutoShell and AutoEdit separately listed",
+  "method": "read-only code/Spec/Plan and existing evidence audit; no GUI, runtime functional tests, app edits or pin updates",
+  "groups": {
+    "A": "已有真实基本实现，可优先考虑 Linux；属于候选排序而非本轮实机通过证书",
+    "B": "必要功能缺失/已知正确性缺口/基础验收尚未闭合，先形成基本应用"
+  },
+  "counts": {
+    "A": 19,
+    "B": 9
+  },
+  "health_gate": {
+    "command": "pwsh -NoProfile -File scripts/check-app-submodules.ps1",
+    "exit_code": 0,
+    "result": "healthy; manifest_repo_entries=27, missing_pac_at=0",
+    "coverage": "checkout/registration health only, not app functionality"
+  },
+  "apps": [
+    {
+      "id": "kanban",
+      "name": "AutoKanban",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "配置数据源→扫描真实计划→按状态查看卡片/进度",
+      "observed_implementation": "已有真实计划扫描与配置驱动的只读看板",
+      "boundary_or_gap": "当前定位是只读计划板，不要求拖拽写回才能算基本可用",
+      "next_step": "保留只读边界，优先验证 Linux 数据源解析/刷新",
+      "evidence": [
+        {
+          "file": "apps/auto-kanban/README.md",
+          "line": 4,
+          "sha256": "4fe9d080f3170e467b8bc310ef46c5cd7eb731eb0e4927549d9792209463337c"
+        },
+        {
+          "file": "apps/auto-kanban/src/back/lang_plans.at",
+          "line": 1,
+          "sha256": "454a882db440b8fd1c860bbf982324f1ef1f50856a7ad8cd784c4386738479b7"
+        }
+      ],
+      "manifest_repo": "apps/auto-kanban",
+      "repository_head": "5e0da499dec476b029237b1436856eb90e936ec6",
+      "source_root": "apps/auto-kanban",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "auto-musk",
+      "name": "AutoMusk",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "打开项目→真实对话/调用工具→保留会话与计划产物",
+      "observed_implementation": "已有项目、聊天、工具执行和 Plan/Spec 工作流实现",
+      "boundary_or_gap": "依赖 AI 服务、配置与工具链；本轮未重新验证全流程",
+      "next_step": "进入 Linux 兼容性候选队列，不在本会话扩展新工作流",
+      "evidence": [
+        {
+          "file": "../auto-musk/README.md",
+          "line": 1,
+          "sha256": "0a229129663770fbea696ad398df2147c0394dc732b52c49a7a9465e81b02a70"
+        },
+        {
+          "file": "../auto-musk/backend/crates/musk/src/tools.rs",
+          "line": 1,
+          "sha256": "96aef6fbda11222f9b0f8e1836121efcf380c95b5d75e099217f3c40a5a454d4"
+        }
+      ],
+      "manifest_repo": "../auto-musk",
+      "repository_head": "25a8aace96547a380ce0f1f34324f584664e614f",
+      "source_root": "../auto-musk",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "jade-garden",
+      "name": "Jade Garden",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "打开本地知识库→编辑/保存→重开→检索与链接",
+      "observed_implementation": "已有实际文件读写与 Web/桌面知识编辑路径",
+      "boundary_or_gap": "README 记载双后端 e2e；本轮未重跑，发行冻结另验",
+      "next_step": "优先核 Linux 文件/字体/编辑接缝",
+      "evidence": [
+        {
+          "file": "../auto-down/jade-garden/README.md",
+          "line": 1,
+          "sha256": "9bad8ccac973ca4637585806b374bc8d680019153badb2430dc552d84ab07c7b"
+        },
+        {
+          "file": "../auto-down/jade-garden/back/server/src/wiki.rs",
+          "line": 53,
+          "sha256": "9fe1207412d493e4b3333c1c8e7eebd882c38ea5de60406f9cb26739745cf54b"
+        }
+      ],
+      "manifest_repo": "../auto-down/jade-garden/front/auto",
+      "repository_head": "c3464d0a0d36e4f8a7988b0c0c26448fc52361b4",
+      "source_root": "../auto-down",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "auto-term",
+      "name": "AutoTerm",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "运行真实 shell→输入/输出→复制/resize/中断→退出",
+      "observed_implementation": "已有 PTY/终端引擎、Auto 前端及会话 API",
+      "boundary_or_gap": "已有支持声明以 Windows 为准；Unix 代码路径不等于 Linux 已验收",
+      "next_step": "优先做 Linux PTY、引擎加载与输入生命周期验证",
+      "evidence": [
+        {
+          "file": "apps/auto-term/README.md",
+          "line": 1,
+          "sha256": "2f09fb7a06cc58d2bcb75de9f25b6c99fc1260fe9936a4be12a43f8d1fffb76c"
+        },
+        {
+          "file": "apps/auto-term/app/term.rs",
+          "line": 1,
+          "sha256": "0065c58acb9caaa04d7f407bbf955a1dcd90738be32587940b1625029299fb4a"
+        },
+        {
+          "file": "apps/auto-term/app/src/back/db.at",
+          "line": 1,
+          "sha256": "702b4afce11f3bbf72206d20883007879b7d40ea3c02196ac3a69c0099e903d6"
+        }
+      ],
+      "manifest_repo": "apps/auto-term/app",
+      "repository_head": "7a0d0e8b718fb260641f0d09ada95a7346771cd3",
+      "source_root": "apps/auto-term",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "037-klondike",
+      "name": "AutoSolitaire",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "发牌→合法移动→撤销/胜负→重新开始",
+      "observed_implementation": "已有接龙规则与真实游戏状态机",
+      "boundary_or_gap": "发行包与平台输入仍需验；不以新玩法为前置",
+      "next_step": "优先 Linux 输入/布局/游戏闭环验证",
+      "evidence": [
+        {
+          "file": "apps/auto-solitaire/src/front/klondike_store.at",
+          "line": 1,
+          "sha256": "d42d1d8bed67fc7ffe06d76355957e29ef0e3147f5cc8534488f02ff69226f6a"
+        },
+        {
+          "file": "apps/auto-solitaire/tests/desktop_mcp.py",
+          "line": 1,
+          "sha256": "5a8e00eff03725b6e3f73c328b2201908b2bcecb2e8dad3035a2f62c840fd16b"
+        }
+      ],
+      "manifest_repo": "apps/auto-solitaire",
+      "repository_head": "91192ef593cb25377a2d089542e6f040507231a9",
+      "source_root": "apps/auto-solitaire",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "036-tetris",
+      "name": "AutoTetris",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "开始→移动/旋转/消行→结束→重新开始",
+      "observed_implementation": "已有规则/计时循环与最高分保存实现",
+      "boundary_or_gap": "历史脚本不等于本轮通过；平台计时/输入另验",
+      "next_step": "优先 Linux 计时与输入验证",
+      "evidence": [
+        {
+          "file": "apps/auto-tetris/src/front/tetris_store.at",
+          "line": 1,
+          "sha256": "53987d68fdc77981c1fbf4d7cc93e905a90d3e6930e5e29befa5019ce0e3ccae"
+        },
+        {
+          "file": "apps/auto-tetris/src/back/db.at",
+          "line": 60,
+          "sha256": "c5ec3fcd9ffc9a6be883361daadc3ea1ff01401e09ea0e9f99c3a19bb0c04614"
+        }
+      ],
+      "manifest_repo": "apps/auto-tetris",
+      "repository_head": "06b2e67f2117084853271cf194e67cc47be6b3c5",
+      "source_root": "apps/auto-tetris",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "038-minesweeper",
+      "name": "AutoMinesweeper",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "新局→翻格/标记/展开→胜负→重开",
+      "observed_implementation": "已有布雷、邻雷计数、展开和胜负逻辑",
+      "boundary_or_gap": "不要求新增联网排行榜或关卡才能基本可用",
+      "next_step": "优先 Linux 输入与布局验证",
+      "evidence": [
+        {
+          "file": "apps/auto-minesweeper/src/front/minesweeper_store.at",
+          "line": 1,
+          "sha256": "12b3fa7a2dcb344520a2a92da47abd112ba2cef9891771690a9116f648314daa"
+        },
+        {
+          "file": "docs/specs/apps/minesweeper.md",
+          "line": 1,
+          "sha256": "0ad567d4fff0008192339a78ae5f45dd780c018d561c17b9339e838a3a8cad5a"
+        }
+      ],
+      "manifest_repo": "apps/auto-minesweeper",
+      "repository_head": "ae6dcbfd7033bc2ee81c6d11b7162d1c653e9d04",
+      "source_root": "apps/auto-minesweeper",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "028-launcher",
+      "name": "AutoLauncher",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "搜索真实已注册应用→选中→执行启动/打开",
+      "observed_implementation": "宿主覆盖注册列表并消费 desktop 命令；有实际搜索/动作路径",
+      "boundary_or_gap": "独立模式显式 mock，判定仅限桌面宿主应用启动器；尚非完整独立全盘搜索工具",
+      "next_step": "先用当前宿主抽验真实启动，再做 Linux 注册/唤起适配",
+      "evidence": [
+        {
+          "file": "apps/auto-launcher/src/front/app.at",
+          "line": 1349,
+          "sha256": "a2ec5762adc010fbd0468e2a3138ea70fcc2a2807dbee6bc712d3b9948341e85"
+        },
+        {
+          "file": "apps/auto-launcher/docs/plans/001-query-provider-core.md",
+          "line": 461,
+          "sha256": "3863d35f408c625a4d67a890b9ae3e2319bbfb5577da30dc826e0554ecaf1ef0"
+        }
+      ],
+      "manifest_repo": "apps/auto-launcher",
+      "repository_head": "df207283536ff943e2e574dc886c4cb8594cce13",
+      "source_root": "apps/auto-launcher",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "039-syslog",
+      "name": "AutoSyslog",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "接收真实宿主/app日志→筛选/暂停→查看与复制",
+      "observed_implementation": "宿主写入 __syslog_*，app 消费并过滤",
+      "boundary_or_gap": "独立 Vue 模式是 mock；基本能力仅按桌面宿主日志查看器判定",
+      "next_step": "优先 Linux 宿主日志接入",
+      "evidence": [
+        {
+          "file": "apps/auto-syslog/README.md",
+          "line": 1,
+          "sha256": "053abeb0a705b41ba41d17913408c36e6d0d08dd61dc55dab7936f9066281429"
+        },
+        {
+          "file": "../auto-ui/crates/auto-ui-runtime/src/ui/iced/renderer.rs",
+          "line": 12877,
+          "sha256": "b5e8ae6d0a9553a6e3fd6ef896bfac5d0f228c3b254c5f80370717d7ecad8528"
+        }
+      ],
+      "manifest_repo": "apps/auto-syslog",
+      "repository_head": "584dc008904fd2488ff01a4103a91289ac80ce41",
+      "source_root": ".",
+      "tracked_dirty_paths": [
+        "docs/design/00-intro.md",
+        "docs/design/strategy/auto-app-communication-v0.6.md",
+        "docs/design/strategy/v0.6-foundations-roadmap.md",
+        "docs/research/apps/README.md",
+        "docs/research/apps/linux-mvp-priorities.md",
+        "docs/research/apps/methodology.md",
+        "docs/research/apps/reader.md",
+        "docs/research/apps/sources.json",
+        "docs/research/apps/sources.md"
+      ],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "jade-edit",
+      "name": "AutoJade（jade-edit）",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "打开真实文档→编辑/保存→重开→本地知识导航",
+      "observed_implementation": "已有文件/文档编辑及基础读写验收记录",
+      "boundary_or_gap": "RELEASE 仍 preparation_only，功能已有不等于独立安装包/正式发布已完成",
+      "next_step": "优先核 Linux 编辑、目录与依赖；发布门另列",
+      "evidence": [
+        {
+          "file": "../jade-edit/src/back/wsys.at",
+          "line": 1,
+          "sha256": "05329c7ea12b4d5ce5f3578be1ba874406485453cecc8bc185bd57a53b2cc7a7"
+        },
+        {
+          "file": "../jade-edit/docs/RELEASE.md",
+          "line": 19,
+          "sha256": "0eb305db3b2750fd47160f4e17f61aa42f46d66856e8921354ea0715b84df622"
+        }
+      ],
+      "manifest_repo": "../jade-edit",
+      "repository_head": "5fb1e9e28e5a7e379317b7dffb400bad6c94606d",
+      "source_root": "../jade-edit",
+      "tracked_dirty_paths": [
+        "docs/analysis/2026-09-30-delivery-roadmap.md"
+      ],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "011-calculator",
+      "name": "AutoCalc",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "输入表达式→按优先级运算→显示结果或真实错误",
+      "observed_implementation": "已有表达式求值、科学/程序员运算实现",
+      "boundary_or_gap": "不以新单位库或更多模式为基础门",
+      "next_step": "优先 Linux 键盘/数值结果回归",
+      "evidence": [
+        {
+          "file": "apps/auto-calc/src/front/app.at",
+          "line": 10,
+          "sha256": "e1aa30a8cd11c1379e9933a5feee521970b8a04ce274e976c402b1a3e35a6cec"
+        },
+        {
+          "file": "apps/auto-calc/tests/acceptance.atd",
+          "line": 1,
+          "sha256": "252c40e438aaf74c9fc42e77135296610c653c5e72a8c2d7f5c82b321c7697bd"
+        }
+      ],
+      "manifest_repo": "apps/auto-calc",
+      "repository_head": "e5247c549db375480f30b9eb1e417ad9b15191a3",
+      "source_root": "apps/auto-calc",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "012-clock",
+      "name": "AutoClock",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "真实时间显示、可启动/暂停/归零的秒表及前台倒计时",
+      "observed_implementation": "使用 Time.now_sec，真实 Tick 计时及闹钟列表存储",
+      "boundary_or_gap": "固定世界时区偏移；闹钟仅窗口内 Tick/横幅，不能宣称关窗后台可靠提醒。A 仅覆盖基础时钟/前台计时",
+      "next_step": "优先 Linux 基础计时；后台闹钟需单列必要能力验收",
+      "evidence": [
+        {
+          "file": "apps/auto-clock/src/front/app.at",
+          "line": 484,
+          "sha256": "3d6b98d6ce34efb45eeab7b8e7b8cadca6eeedd9379103e7b5ce32986b819b98"
+        },
+        {
+          "file": "apps/auto-clock/tests/desktop_mcp.py",
+          "line": 1,
+          "sha256": "6d203a54d7f4ef5d786429685e2fdf68da2019bb1d94a2c6afb4dd5e07d00ccb"
+        }
+      ],
+      "manifest_repo": "apps/auto-clock",
+      "repository_head": "551d05e065eb2f449c643b3fa4fd671a9ec7a307",
+      "source_root": "apps/auto-clock",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "013-todo",
+      "name": "AutoTodo",
+      "group": "B",
+      "subtype": "partial_missing_persistence",
+      "minimum_basic_capability": "创建/编辑/完成/删除真实任务→保存→重启恢复",
+      "observed_implementation": "已有 CRUD，但 db.at 明确内存列表与 seed 初始化",
+      "boundary_or_gap": "任务重启丢失；缺持久化与失败回执，尚不足以做日用任务应用",
+      "next_step": "首批补持久化、重启恢复和写入失败反馈",
+      "evidence": [
+        {
+          "file": "apps/auto-todo/src/back/db.at",
+          "line": 2,
+          "sha256": "c4a7687db12dbd68ac93f5663d8628834181a89912b80dd5a97c7fa37221c02a"
+        },
+        {
+          "file": "apps/auto-todo/src/back/api.at",
+          "line": 1,
+          "sha256": "0238b47e4e87e5823ed5549b4bb3339b9a50406a23dac3f3b4c3f18a13901321"
+        }
+      ],
+      "manifest_repo": "apps/auto-todo",
+      "repository_head": "bc8391c3b33a9f2ee896a33874f7c458a33d67ca",
+      "source_root": "apps/auto-todo",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "014-weather",
+      "name": "AutoWeather",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "选择地点→真实预报/刷新→来源/时间和失败状态明确",
+      "observed_implementation": "后端实际请求 Open-Meteo/QWeather，城市与设置写文件",
+      "boundary_or_gap": "仍有显式演示降级；演示数据不能算实时取数成功。A 只指已有真实 API 路径",
+      "next_step": "优先 Linux 网络/凭据/目录验证，实测成功取数后标支持",
+      "evidence": [
+        {
+          "file": "apps/auto-weather/src/back/api.at",
+          "line": 1293,
+          "sha256": "589272049d78e5af94d67fc93885cee7ec97c8769fe3765e4068544ff3061021"
+        },
+        {
+          "file": "apps/auto-weather/src/front/app.at",
+          "line": 123,
+          "sha256": "3bdc626eeed1352068e11cf29d665919b5b87cbac6c84f9bcfc2ef7fe955ef5e"
+        }
+      ],
+      "manifest_repo": "apps/auto-weather",
+      "repository_head": "1626a4a16ccf4de717bc92e27b60a9184b8198f2",
+      "source_root": "apps/auto-weather",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "015-notes",
+      "name": "AutoNotes",
+      "group": "B",
+      "subtype": "implemented_pending_final_verification",
+      "minimum_basic_capability": "录入→真实保存→重启回读→检索/删除恢复，保存失败不丢编辑",
+      "observed_implementation": "已有真实仓储、恢复和 UI；NOTES-001 r8 execution_done，35/35 work tasks",
+      "boundary_or_gap": "AC-01–05 仍要求绑定修订的最终复审；不能仅凭 execution_done 判已基本可用",
+      "next_step": "先完成现有 001 的最终核验；通过即可升 A，不重做 UI",
+      "evidence": [
+        {
+          "file": "apps/auto-notes/docs/plans/001-durable-inbox.md",
+          "line": 33,
+          "sha256": "e13fffaac730aef3de0f50a504581481b059189cf5f8bfd912a3e7768f413408"
+        },
+        {
+          "file": "apps/auto-notes/src/back/repository.at",
+          "line": 1,
+          "sha256": "46c68475ff447d49b65478d0147d903378032ea876275f4d6b8f6cd1664b5dd4"
+        }
+      ],
+      "manifest_repo": "apps/auto-notes",
+      "repository_head": "1391bd7eb2f6b3b08e9841d30b25125e47ced058",
+      "source_root": "apps/auto-notes",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "016-calendar",
+      "name": "AutoCalendar",
+      "group": "B",
+      "subtype": "ui_demo",
+      "minimum_basic_capability": "真实今日/月视图→创建/编辑/删除事件→保存重开",
+      "observed_implementation": "目前只有月份导航和日期选择",
+      "boundary_or_gap": "today 固定 2026-06-17；无事件模型/事件持久化",
+      "next_step": "先接真实日期并补本地事件 CRUD 与恢复",
+      "evidence": [
+        {
+          "file": "apps/auto-calendar/src/front/calendar_store.at",
+          "line": 33,
+          "sha256": "c3b3ded5d4f04e7cb7b019440992e2c87197b8959ce4e5c93d1f8ff6e702e200"
+        },
+        {
+          "file": "apps/auto-calendar/src/front/app.at",
+          "line": 1,
+          "sha256": "ed759e5aaf11825292f9ead8fcdd023b7960d3efe8d54d1fdd5355233784c5f4"
+        }
+      ],
+      "manifest_repo": "apps/auto-calendar",
+      "repository_head": "6f4d36d34476adc0656494fb45fca9b7c1b05860",
+      "source_root": "apps/auto-calendar",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "017-chat",
+      "name": "AutoChat",
+      "group": "B",
+      "subtype": "protocol_and_ui_demo",
+      "minimum_basic_capability": "明确 AI 或人际聊天→真实发送/回复→会话隔离→历史恢复",
+      "observed_implementation": "有消息 API/SSE 演示，但联系人和消息为内存种子，bot_reply 固定文本",
+      "boundary_or_gap": "既不证明实际 AI 调用，也不证明真实多人通信；重启无可靠历史",
+      "next_step": "先确定基本产品身份，再接真实通道与会话存储；不把加密/联邦等增强加入本轮",
+      "evidence": [
+        {
+          "file": "apps/auto-chat/src/back/db.at",
+          "line": 1,
+          "sha256": "decfdb2533f491df3308a4395b665eac81d730d4ba84e12e275330b36cc75deb"
+        },
+        {
+          "file": "apps/auto-chat/src/back/db.at",
+          "line": 61,
+          "sha256": "decfdb2533f491df3308a4395b665eac81d730d4ba84e12e275330b36cc75deb"
+        }
+      ],
+      "manifest_repo": "apps/auto-chat",
+      "repository_head": "8df3f33b3bfedc123287d4324b5e67ae5b00a724",
+      "source_root": "apps/auto-chat",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "018-book-reader",
+      "name": "AutoReader",
+      "group": "B",
+      "subtype": "real_implementation_basic_contract_blocked",
+      "minimum_basic_capability": "一种明确支持格式的真实导入→正文/目录→保存位置→重开续读",
+      "observed_implementation": "已有 TXT/Markdown 书库、导入和恢复实现",
+      "boundary_or_gap": "READER-001 r7 最终裁决 blocked，基础合同仍有具名框架缺项；不能称完整 EPUB/PDF 阅读器",
+      "next_step": "沿现有 001 关闭基础阻塞并验收；本轮不追加 Readest 全功能复刻",
+      "evidence": [
+        {
+          "file": "apps/auto-reader/docs/plans/001-real-library.md",
+          "line": 25,
+          "sha256": "27ee1866eb1fa7c8e296eacc6fcce0ce56954de2c8570a7e57dc3866a6e53af7"
+        },
+        {
+          "file": "apps/auto-reader/docs/specs/reader/real-library.md",
+          "line": 1,
+          "sha256": "1056bb63bdea66b56874b982ec1693c87f3ae84de1ceb793b28ed2b9bd426c13"
+        }
+      ],
+      "manifest_repo": "apps/auto-reader",
+      "repository_head": "29b5decf878ec2cdca5c6a39575e872a4597121d",
+      "source_root": "apps/auto-reader",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "023-realworld",
+      "name": "AutoBlog",
+      "group": "B",
+      "subtype": "real_implementation_known_basic_failures",
+      "minimum_basic_capability": "本地创作→保存→重启恢复→继续编辑；保存失败不假报成功",
+      "observed_implementation": "已有作者模式、真实草稿仓储与 UI",
+      "boundary_or_gap": "当前 001 r6 复审有输入丢失、恢复/迁移及虚假 saved 等未闭合项，旧 merge pass 已被后续复审取代",
+      "next_step": "沿现有 001 修复基本草稿正确性；预览/完整发布包仍按既有后续合同，不在本轮扩围",
+      "evidence": [
+        {
+          "file": "apps/auto-blog/docs/plans/001-durable-drafts.md",
+          "line": 461,
+          "sha256": "a4637d942a290da98df14aa991e71afcf0970afb268cae4f6dfb0af1caa6b21b"
+        },
+        {
+          "file": "apps/auto-blog/src/back/drafts.at",
+          "line": 1,
+          "sha256": "0012e06b554888131bfe4616732a22a6434fe261bc57c112dfaf7cdcded6114e"
+        }
+      ],
+      "manifest_repo": "apps/auto-blog",
+      "repository_head": "08da63359c4f8d147c0c10f2c774d6feaad79425",
+      "source_root": "apps/auto-blog",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "030-video-player",
+      "name": "AutoVideo",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "从真实媒体目录选择文件→画面/声音→暂停/seek/音量→错误反馈",
+      "observed_implementation": "已真实扫描及受控 video；Spec 记录 Vue 播放闭环",
+      "boundary_or_gap": "不同后端解码依赖有条件，VM 本地选文件会降级；A 不等于原生/Linux 视频已验收",
+      "next_step": "优先核当前端最小播放，再验证 Linux 原生解码/画面/音频",
+      "evidence": [
+        {
+          "file": "apps/auto-video/src/front/player_store.at",
+          "line": 1,
+          "sha256": "e5eb6f41f3353a0d12fc32c0d1d66020fe964bf15c6d1a1af182ca6a0f2803a6"
+        },
+        {
+          "file": "apps/auto-video/src/front/viewport.at",
+          "line": 1,
+          "sha256": "38bd6f6901b93dfa5672633f9b99cb884696b362e7c7133a5d4f7f2ed0ef3b1e"
+        },
+        {
+          "file": "apps/auto-video/SPEC.md",
+          "line": 1,
+          "sha256": "5d7d60f76a1032c655ac7661b035da9dffda76d657a10e39ae5d8f0af17843e2"
+        }
+      ],
+      "manifest_repo": "apps/auto-video",
+      "repository_head": "b6efa4ef1b052e35d966b26aab17054c86ba5679",
+      "source_root": "apps/auto-video",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "020-music-player",
+      "name": "AutoMusic",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "真实本地媒体→选曲→播放/暂停/进度/音量→切曲/错误",
+      "observed_implementation": "真实 /api/media/scan 数据和受控媒体状态，并非静态歌单",
+      "boundary_or_gap": "基本播放成立不表示已有完整音乐库、媒体键或跨重启续播；本轮不增加这些增强",
+      "next_step": "保留现有播放基础，优先验证 Linux 音频链",
+      "evidence": [
+        {
+          "file": "apps/auto-music/src/front/player_store.at",
+          "line": 102,
+          "sha256": "ed6dbe0fe44a77c00b0b8190d3b78bc20160b1fffaf3109884bc380818252fb5"
+        },
+        {
+          "file": "apps/auto-music/src/front/viewport.at",
+          "line": 1,
+          "sha256": "e6504407f6d8f0f42a11de28fdc7ed57194f5be3b90ff089443defcca6980267"
+        }
+      ],
+      "manifest_repo": "apps/auto-music",
+      "repository_head": "6b73a417a3985f1ce02c998cffb54039443ac822",
+      "source_root": "apps/auto-music",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "029-photo-gallery",
+      "name": "AutoPhotos",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "浏览用户真实图片目录→缩略图→大图/前后切换",
+      "observed_implementation": "扫描/缩略图/原图真实服务与目录浏览、收藏存储",
+      "boundary_or_gap": "A 是基础看图，不代表照片管理/编辑器已实现；尚无独立完整测试套件证明所有功能",
+      "next_step": "优先 Linux 路径与图像/HTTP资源验证",
+      "evidence": [
+        {
+          "file": "apps/auto-photos/src/front/app.at",
+          "line": 4,
+          "sha256": "6e4124e01f56df969881837e23e09f702e157f75b661e56d463f3375633bcc91"
+        },
+        {
+          "file": "apps/auto-photos/pac.at",
+          "line": 1,
+          "sha256": "99203661f71552569371cec59aec290bdd0a3159c9716ebd003416f0ec355c91"
+        },
+        {
+          "file": "../auto-ui/crates/auto-ui-runtime/src/back_proxy.rs",
+          "line": 1,
+          "sha256": "5bbd64b69fa79d62cc6fade89d13e1998a53beea01b6dd070cbfc3b4ac626320"
+        }
+      ],
+      "manifest_repo": "apps/auto-photos",
+      "repository_head": "5eec01b873ba5139ed8b50572f646c12c76c0288",
+      "source_root": "apps/auto-photos",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "031-paint",
+      "name": "AutoPaint",
+      "group": "B",
+      "subtype": "partial_narrow_tool_with_basic_restore_gap",
+      "minimum_basic_capability": "绘制一张作品→撤销→可靠保存/重开→可导出使用",
+      "observed_implementation": "已有真实 16×16 像素格铅笔/橡皮/填充/吸色和 storage 存取",
+      "boundary_or_gap": "未达到通用画图工具；现有 SPEC 登记全同色快照 Redo/Load 塌缩，且未见图片文件导出闭环",
+      "next_step": "先明确像素画板最小范围，修存取/撤销正确性并做文件输出，不扩专业画布",
+      "evidence": [
+        {
+          "file": "apps/auto-paint/SPEC.md",
+          "line": 39,
+          "sha256": "7d19c7764428c1ffd61e060e9ffda851c3b4ed61dbfca73c7943bb08c8838810"
+        },
+        {
+          "file": "apps/auto-paint/src/front/app.at",
+          "line": 450,
+          "sha256": "5ff7495d2e6e6b2ffe0f3779635c5378775abc084f5837ef0a54ed5b9d953c97"
+        }
+      ],
+      "manifest_repo": "apps/auto-paint",
+      "repository_head": "a12bb20073e20a9ca3cc62b995af88cde66a75f7",
+      "source_root": "apps/auto-paint",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "025-sys-monitor",
+      "name": "AutoMonitor",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "查看真实 CPU/内存/进程，刷新并定位占用",
+      "observed_implementation": "后端实际调用 sys.cpu_usage/processes/disks 等",
+      "boundary_or_gap": "A 先以只读监视器判定；结束进程的身份/权限安全另验",
+      "next_step": "优先 Linux 系统采样与刷新验证",
+      "evidence": [
+        {
+          "file": "apps/auto-monitor/src/back/api.at",
+          "line": 48,
+          "sha256": "3db4324bb4f7a472cc7939ddd6d9b321e9be05c2e713c4a91fc949cda5501634"
+        },
+        {
+          "file": "apps/auto-monitor/SPEC.md",
+          "line": 1,
+          "sha256": "fe855741b9340fee363dfe61e22ed36119cb0268b36e1ff177ef08772dc65494"
+        }
+      ],
+      "manifest_repo": "apps/auto-monitor",
+      "repository_head": "59f271de220eb4df3f55d0781f28c4ff098a6a4a",
+      "source_root": "apps/auto-monitor",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "026-database",
+      "name": "AutoDatabase",
+      "group": "B",
+      "subtype": "ui_and_data_demo",
+      "minimum_basic_capability": "打开用户 SQLite→真实表/SQL→真实结果/错误；写操作若开放须真实事务",
+      "observed_implementation": "界面具备对象树/结果表，但 RunSql 按字符串返回预置列表",
+      "boundary_or_gap": "CommitTx/RollbackTx 仅清计数和改提示，无 SQLite 连接/事务",
+      "next_step": "先做真实 SQLite 连接与读查询，事务按钮必须真实或明确不提供",
+      "evidence": [
+        {
+          "file": "apps/auto-database/src/front/app.at",
+          "line": 748,
+          "sha256": "b08c79c9f6ed794a19b51303435518d20cc84c1e4cf8c3266e0bbc29d113e365"
+        },
+        {
+          "file": "apps/auto-database/src/front/app.at",
+          "line": 856,
+          "sha256": "b08c79c9f6ed794a19b51303435518d20cc84c1e4cf8c3266e0bbc29d113e365"
+        }
+      ],
+      "manifest_repo": "apps/auto-database",
+      "repository_head": "85fb35dbe675e354614629a4cbb40d6560ce86c0",
+      "source_root": "apps/auto-database",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "027-file-manager",
+      "name": "AutoExplorer",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "浏览真实目录→新建/改名/复制/移动/删除→冲突/取消反馈",
+      "observed_implementation": "已有真实文件服务和批量操作/搜索/预览实现",
+      "boundary_or_gap": "README 001–006 统一复审未在本轮重跑；启动模式和大目录边界要复核",
+      "next_step": "先抽验当前核心文件任务，再验证 Linux 文件语义",
+      "evidence": [
+        {
+          "file": "apps/auto-explorer/src/front/app.at",
+          "line": 1,
+          "sha256": "950a9131f992030f788a4dd1921a005813d90f3f1bede727597ba829e2f6c7bb"
+        },
+        {
+          "file": "apps/auto-explorer/src/back/api.at",
+          "line": 1,
+          "sha256": "8ca3f91e4544a54daf4d3a23e2f2109145bd8550939424b4324db34aab2be31a"
+        },
+        {
+          "file": "apps/auto-explorer/README.md",
+          "line": 1,
+          "sha256": "fc024cea2d9157e44a950b83ed52bea9eddc7200083f5e23f70990ec02a5632b"
+        }
+      ],
+      "manifest_repo": "apps/auto-explorer",
+      "repository_head": "59a99b9f42896728aa32a7ff3e38fa08261c7d18",
+      "source_root": "apps/auto-explorer",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "024-charts",
+      "name": "AutoCharts",
+      "group": "B",
+      "subtype": "component_demo",
+      "minimum_basic_capability": "导入用户数据→选一种图表→正确呈现→保存/导出结果",
+      "observed_implementation": "已有真正图表渲染与切换，但数据是内嵌 monthly/seed 与模拟 Tick",
+      "boundary_or_gap": "缺用户数据输入、图表规格保存和结果导出，是图表组件演示",
+      "next_step": "先补一个 CSV→图表→导出的最小闭环",
+      "evidence": [
+        {
+          "file": "apps/auto-charts/src/front/app.at",
+          "line": 37,
+          "sha256": "6c62b74bc5eaddada9945efd427ac9329f28c20d2eba4e0e845264fd2a7ea857"
+        },
+        {
+          "file": "apps/auto-charts/SPEC.md",
+          "line": 1,
+          "sha256": "70fcbbe64d1639de58b45efdc945c1f6d9b30f864086e4096cfb3334e3f2127a"
+        }
+      ],
+      "manifest_repo": "apps/auto-charts",
+      "repository_head": "b1d14690751d89912f3ec0fd271caf48ff58b01a",
+      "source_root": "apps/auto-charts",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    },
+    {
+      "id": "os-config",
+      "name": "AutoOS Config",
+      "group": "A",
+      "subtype": "",
+      "minimum_basic_capability": "读取实际应用配置→修改→持久生效→失败可见/恢复",
+      "observed_implementation": "已有统一配置服务与实际配置编辑前后端",
+      "boundary_or_gap": "现有应用配置中心不等于 Linux 网络/电源/音频控制面板",
+      "next_step": "优先 Linux 配置目录与 daemon/权限验证",
+      "evidence": [
+        {
+          "file": "apps/auto-os-config/README.md",
+          "line": 1,
+          "sha256": "e6725cc7aefbc6575b3f81bbc3ab82b42bd7ac82df768a4a9c837c9a35a674b9"
+        },
+        {
+          "file": "apps/auto-os-config/auto/src/back/api.at",
+          "line": 1,
+          "sha256": "a4da321a32b6c60ba7d296565152acf1510653f7779aeda9b7d82244ecf4d7b1"
+        },
+        {
+          "file": "apps/auto-os-config/auto/src/front/desktop_store.at",
+          "line": 1,
+          "sha256": "94728777d31db51da009b3aff33dc9061ee4f2c05dac7682e44e36cf326a6cfd"
+        }
+      ],
+      "manifest_repo": "apps/auto-os-config/auto",
+      "repository_head": "8fe4cdc3a9a7bcc139230fa2c4bd7d79af1a5105",
+      "source_root": "apps/auto-os-config",
+      "tracked_dirty_paths": [],
+      "functional_tests_run_this_audit": false
+    }
+  ],
+  "additional_ecosystem_apps": [
+    {
+      "name": "AutoShell / ASH",
+      "group": "A_candidate",
+      "registered": false,
+      "observed": "已有实际 shell、结构化管道与外部命令执行；Linux 支持按当前实测范围另验",
+      "evidence": [
+        "../auto-shell/README.md"
+      ]
+    },
+    {
+      "name": "AutoEdit",
+      "group": "A_candidate",
+      "registered": false,
+      "observed": "实际应用入口在 specs/auto-edit；已有真实文件编辑/保存与会话代码，未在 apps.manifest 登记",
+      "evidence": [
+        "../auto-edit/specs/auto-edit/README.md",
+        "../auto-edit/specs/auto-edit/src/front/editor_store.at"
+      ]
+    }
+  ],
+  "policy": "先界定并达到基本必要能力；通过后 Linux 支持与后续增强可并行。扩展完善留独立会话。"
+}
