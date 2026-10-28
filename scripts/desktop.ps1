@@ -1,12 +1,14 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 # scripts/desktop.ps1 — Stage B §3-a 桌面薄包装（PLAN-009 T1，auto-os Design 01 §3 选项 a）
 #
 # 解析序定位 auto-lang，注入 env 调既有两条桌面入口——框架仓零改动：
 #   - vue 轨（缺省）：CWD=<lang>/examples/desktop-host，`auto run --desktop`
 #     （注入 AUTO_OS_ROOT + AUTO_DESKTOP_APPS=<os>/apps——desktop-host
 #     manifest/galleries 通过 AUTO_OS_ROOT 聚合；产品源码优先，不扫描教学 demo）
-#   - iced 轨：CWD=<本仓根>，cargo run ui_desktop（`../auto-os/apps` 兄弟探测
-#     自命中——CWD 在本仓根时 `..`/auto-os 解析回本仓，P-3 容器探测无需 env）
+#   - iced 轨：CWD=<本仓根>，cargo build -p os-desktop --bin ui-desktop
+#     （`../auto-os/apps` 兄弟探测自命中——CWD 在本仓根时 `..`/auto-os 解析回
+#     本仓，P-3 容器探测无需 env；PLAN-876 起入口本仓一等 bin，不再借
+#     auto-lang 的 example）
 #
 # 解析序（沿本仓 AGENTS §2）：$AUTO_LANG_ROOT → 兄弟 ../auto-lang → 主检出
 # D:/autostack/auto-lang。用法：
@@ -86,8 +88,8 @@ else {
     Write-Host "[desktop.ps1] track=iced  lang=$LangRoot  os=$OsRoot  args=$exeArgs"
     Write-Host "[desktop.ps1] AUTO_OS_ROOT=$($env:AUTO_OS_ROOT)（apps 容器经 CWD=本仓根兄弟探测自命中）"
     # T1 实证教训：cargo 按调用方 CWD 发现 .cargo/config.toml（/STACK:32MB
-    # 在 lang 仓 config）——从本仓 cargo run 丢旗标致起动栈溢出。故 lang 侧
-    # build（config 生效）+ 本仓 CWD 直接运行 exe。
+    # 在**本仓** config 内，PLAN-876 T-01 随入口迁移）——从别处 CWD cargo run
+    # 会丢旗标致起动栈溢出。故本仓 build（config 生效）+ 本仓 CWD 直接运行 exe。
     # 媒体引擎（PLAN-617 特性门 + Plan 037 F-R4 债清偿）：VM 桌面 `<video>`
     # 原生播放 = 构建期 mpv-widget + 运行期 libmpv-2.dll（解析序 AUTO_MPV_LIB
     # → exe 同目录，不回落系统路径）。DLL 常驻 <伞形父>\tools\mpv\（不入库、
@@ -100,14 +102,14 @@ else {
         }
     }
     if ($DryRun) {
-        Write-Host "[dry-run] cd <lang>; cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop"
-        Write-Host "[dry-run] cd <os-root>; & <lang>/target/debug/examples/ui_desktop.exe $exeArgs"
+        Write-Host "[dry-run] cd <os-root>; cargo build -p os-desktop --bin ui-desktop"
+        Write-Host "[dry-run] cd <os-root>; & <os-root>/target/debug/ui-desktop.exe $exeArgs"
         return
     }
-    Push-Location $LangRoot
-    try { cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop }
+    Push-Location $OsRoot
+    try { cargo build -p os-desktop --bin ui-desktop }
     finally { Pop-Location }
-    $exe = Join-Path $LangRoot 'target\debug\examples\ui_desktop.exe'
+    $exe = Join-Path $OsRoot 'target\debug\ui-desktop.exe'
     Push-Location $OsRoot   # ../auto-os/apps 兄弟探测自命中（590 boot 实证同口径）
     try { & $exe @exeArgs }
     finally { Pop-Location }

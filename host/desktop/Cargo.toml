@@ -1,0 +1,21 @@
+[package]
+name = "os-desktop"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "AutoOS 桌面宿主（iced/VM 轨）：虚拟桌面 + shell + 注册表启动"
+
+# PLAN-876 T-02：入口自 auto-lang `examples/ui_desktop.rs` 迁入。
+# bin 名 `ui-desktop` → 产物 `ui-desktop.exe`（与既有口头入口一致）。
+[[bin]]
+name = "ui-desktop"
+path = "src/main.rs"
+
+[dependencies]
+# 渲染/会话/投影/桌面协议的实现方（auto-ui 独立仓）。
+auto-ui-runtime = { path = "../../../auto-ui/crates/auto-ui-runtime", default-features = false, features = ["ui-iced", "mpv-widget"] }
+# VM/存储 API（set_ui_host_install_hook、storage_host_read）。
+# 刻意**不**依赖 `auto-lang`：桌面宿主不需要编译器层。
+auto-lang-core = { path = "../../../auto-lang/crates/auto-lang-core" }
+
+[dev-dependencies]

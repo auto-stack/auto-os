@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = ["host/desktop"]
+
+# PLAN-876 T-01：AutoOS 首个根 workspace——桌面入口（host/desktop）归本仓。
+# 各 app 的 `rust-workspace/` 是 a2r 生成物（自带 workspace/lock），不并入此树；
+# 本 workspace 只承载 OS 宿主。
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"

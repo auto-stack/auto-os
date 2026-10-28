@@ -4,7 +4,7 @@
 # 用法：./scripts/desktop.sh [vue|iced] [--fullscreen] [--dry-run]
 #   vue（缺省）  CWD=<lang>/examples/desktop-host；auto run --desktop
 #                （注入 AUTO_OS_ROOT + AUTO_DESKTOP_APPS=<os>/apps）
-#   iced         CWD=<本仓根>；cargo run ui_desktop（../auto-os/apps 兄弟探测自命中）
+#   iced         CWD=<本仓根>；cargo build -p os-desktop --bin ui-desktop（../auto-os/apps 兄弟探测自命中）
 #
 # 解析序（本仓 AGENTS §2）：$AUTO_LANG_ROOT → 兄弟 ../auto-lang → D:/autostack/auto-lang
 set -euo pipefail
@@ -85,9 +85,9 @@ else
   echo "[desktop.sh] track=iced  lang=$LANG_ROOT  os=$OS_ROOT  args=${ARGS[*]}"
   echo "[desktop.sh] AUTO_OS_ROOT=$AUTO_OS_ROOT（apps 容器经 CWD=本仓根兄弟探测自命中）"
   # T1 实证教训：cargo 按**调用方 CWD** 发现 .cargo/config.toml（/STACK:32MB
-  # link 旗标在 lang 仓 config 内）——从本仓 CWD cargo run 会丢旗标致主栈
-  # 1MB 起动即溢出。故：lang 侧 build（config 生效）+ 本仓 CWD 直接 exec exe
-  # （../auto-os/apps 兄弟探测自命中保持）。
+  # link 旗标在本仓 config 内，PLAN-876 T-01 随入口迁移）——从别处 CWD 构建
+  # 会丢旗标致主栈 1MB 起动即溢出。故：本仓 build（config 生效）+ 本仓 CWD
+  # 直接 exec exe（../auto-os/apps 兄弟探测自命中保持）。
   # 媒体引擎（PLAN-617 特性门 + Plan 037 F-R4 债清偿）：VM 桌面 `<video>`
   # 原生播放 = 构建期 mpv-widget + 运行期 libmpv-2.dll（解析序 AUTO_MPV_LIB
   # → exe 同目录，不回落系统路径）。DLL 常驻 <伞形父>/tools/mpv/（不入库、
@@ -97,11 +97,11 @@ else
     echo "[desktop.sh] AUTO_MPV_LIB=$AUTO_MPV_LIB"
   fi
   if [ "$DRYRUN" = 1 ]; then
-    echo "[dry-run] (cd $LANG_ROOT && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)"
-    echo "[dry-run] cd $OS_ROOT; exec $LANG_ROOT/target/debug/examples/ui_desktop ${ARGS[*]}"
+    echo "[dry-run] (cd $OS_ROOT && cargo build -p os-desktop --bin ui-desktop)"
+    echo "[dry-run] cd $OS_ROOT; exec $OS_ROOT/target/debug/ui-desktop ${ARGS[*]}"
     exit 0
   fi
-  (cd "$LANG_ROOT" && cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
+  (cd "$OS_ROOT" && cargo build -p os-desktop --bin ui-desktop)
   cd "$OS_ROOT"
-  exec "$LANG_ROOT/target/debug/examples/ui_desktop" "${ARGS[@]}"
+  exec "$OS_ROOT/target/debug/ui-desktop" "${ARGS[@]}"
 fi

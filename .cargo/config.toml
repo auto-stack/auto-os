@@ -1,0 +1,11 @@
+# PLAN-876 T-01：桌面宿主的链接配置随入口迁移。
+#
+# `/STACK` 是移植自 auto-lang 的实证参数：VM 解释态渲染复杂视图树在默认 8MB
+# 栈上会起动即溢出（auto-os/scripts/desktop.ps1 的注释记录了"从本仓 cargo run
+# 丢旗标致起动栈溢出"的教训）。链接器与 jobs 沿用本机既有约定。
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
+rustflags = ["-C", "link-arg=/STACK:33554432"]
+
+[build]
+jobs = 12

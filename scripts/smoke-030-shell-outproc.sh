@@ -31,14 +31,15 @@ OS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # 两级解析 .wt/lang-030/auto-lang）。
 LANG_ROOT="${AUTO_LANG_ROOT:-$(dirname "$(dirname "$OS_ROOT")")/lang-030/auto-lang}"
 PORT="${AUTOUI_MCP_PORT:-9430}"
-UI_DESKTOP="$LANG_ROOT/target/debug/examples/ui_desktop.exe"
+UI_DESKTOP="$OS_ROOT/target/debug/ui-desktop.exe"
 AUTO_BIN="$LANG_ROOT/target/debug/auto.exe"
 
-[ -f "$UI_DESKTOP" ] || { echo "ui_desktop 缺失：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop）" >&2; exit 1; }
-[ -f "$AUTO_BIN" ] || { echo "auto.exe 缺失（壳 outproc spawn 依赖同 exe re-exec 探测）：先在 $LANG_ROOT 构建（cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop -p auto --bin auto）" >&2; exit 1; }
+[ -f "$UI_DESKTOP" ] || { echo "ui-desktop 缺失：先在 $OS_ROOT 构建（cargo build -p os-desktop --bin ui-desktop）" >&2; exit 1; }
+[ -f "$AUTO_BIN" ] || { echo "auto.exe 缺失（壳 outproc spawn 依赖同 exe re-exec 探测）：先在 $LANG_ROOT 构建（cargo build -p auto --bin auto）" >&2; exit 1; }
 
-echo "[smoke-030] build ui_desktop + auto ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop -p auto --bin auto)
+echo "[smoke-030] build ui-desktop ($OS_ROOT) + auto ($LANG_ROOT)"
+(cd "$OS_ROOT" && CARGO_INCREMENTAL=0 cargo build -p os-desktop --bin ui-desktop)
+(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto --bin auto)
 
 echo "[smoke-030] launch desktop (acceptance, shell_model=outproc, mcp=:$PORT)"
 cd "$OS_ROOT"

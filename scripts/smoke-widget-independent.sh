@@ -24,9 +24,9 @@ for c in "${AUTO_LANG_ROOT:-}" "$(dirname "$OS_ROOT")/auto-lang" "D:/autostack/a
 done
 [ -n "$LANG_ROOT" ] || { echo "auto-lang 未解析" >&2; exit 1; }
 
-echo "[smoke-widget] build ui_desktop ($LANG_ROOT)"
-(cd "$LANG_ROOT" && CARGO_INCREMENTAL=0 cargo build -p auto-lang --features ui-iced,mpv-widget --example ui_desktop)
-UI_DESKTOP="$LANG_ROOT/target/debug/examples/ui_desktop.exe"
+echo "[smoke-widget] build ui-desktop ($OS_ROOT)"
+(cd "$OS_ROOT" && CARGO_INCREMENTAL=0 cargo build -p os-desktop --bin ui-desktop)
+UI_DESKTOP="$OS_ROOT/target/debug/ui-desktop.exe"
 
 WORK="$(mktemp -d)"
 DESKTOP_PID=""
