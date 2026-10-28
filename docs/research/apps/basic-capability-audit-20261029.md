@@ -1,13 +1,17 @@
 # 应用基本能力盘点：哪些可优先 Linux 化，哪些先补成应用
 
-日期：2026-10-29。范围：apps.manifest 全部 28 个入口；另列 AutoShell / AutoEdit，不混入登记数量。
+日期：2026-10-29。范围：apps.manifest 的 28 个登记入口，按产品去重后为 27 个应用；另列 AutoShell / AutoEdit，不混入登记数量。
 
 ## 结论
 
-- **A：19 个已有真实基本功能实现，可优先进入 Linux 兼容性候选队列。** 先保留现有基本任务，不在本会话扩展功能。
+- **A：18 个已有真实基本功能实现，可优先进入 Linux 兼容性候选队列。** 先保留现有基本任务，不在本会话扩展功能。
 - **B：9 个应先完成基本应用。** 其中 4 个为界面/协议/组件演示（Calendar、Chat、Database、Charts），4 个为已有部分真实功能但基础缺口未闭合（Todo、Paint、Reader、Blog），1 个为实现已申报完成、待最终核验（Notes）。B 不等于都要从零重写。
 
 先达到每个 app 的基础必要能力；达到后，Linux 支持与后续增强可以并行。增强与竞品综合设计另开会话；本轮只分类和确定基础补齐清单。
+
+## 产品去重修正
+
+用户于 2026-10-29 明确：Jade Garden 是 AutoJade 的旧名，两者是同一应用。manifest 当前保留 `jade-garden` 与 `jade-edit` 两条接入记录，盘点按一个 AutoJade 统计。因此登记入口仍为 28 条，独立产品为 27 个：A 类 18 个，B 类 9 个。两个位置的源码证据在 JSON 中保留，不能合并推导所有形态/版本都已通过；本次不擅自删除入口、移动仓库或合并数据。
 
 ## 判定口径与证据边界
 
@@ -15,7 +19,7 @@
 
 本次读取应用源码、Spec、计划和已有证据记录，没有启动应用或重跑功能套件。因此 A 表示代码与现有记录支持已有基础实现，**不是本轮保证全部后端、全部功能和发行包均已验收**。后续移植前应运行该 app 的现有平台基线。B 中的明确实现缺口有直接源码证据；已知失败不因界面可打开而降为扩展需求。
 
-已实际运行子模块健康闸门：exit 0 / healthy，27 个 active repo 条目缺 pac.at 为 0。该检查只证明组合/检出健康，不证明 28 个应用可用。源码 pin、选读文件哈希、具体行号和 WIP 快照见 [结构化盘点](basic-capability-audit-20261029.json)。没有切换 app 分支、修改 app、更新 pin 或更改他人 WIP。
+已实际运行子模块健康闸门：exit 0 / healthy，27 个 active repo 条目缺 pac.at 为 0。该检查只证明组合/检出健康，不证明 27 个去重产品可用。源码 pin、选读文件哈希、具体行号和 WIP 快照见 [结构化盘点](basic-capability-audit-20261029.json)。没有切换 app 分支、修改 app、更新 pin 或更改他人 WIP。
 
 ## A：已有基本实现，优先考虑 Linux
 
@@ -23,14 +27,13 @@
 |---|---|---|---|
 | AutoKanban | 已有真实计划扫描与配置驱动的只读看板 | 当前定位是只读计划板，不要求拖拽写回才能算基本可用 | [README.md](../../../apps/auto-kanban/README.md) / [lang_plans.at](../../../apps/auto-kanban/src/back/lang_plans.at) |
 | AutoMusk | 已有项目、聊天、工具执行和 Plan/Spec 工作流实现 | 依赖 AI 服务、配置与工具链；本轮未重新验证全流程 | [README.md](../../../../auto-musk/README.md) / [tools.rs](../../../../auto-musk/backend/crates/musk/src/tools.rs) |
-| Jade Garden | 已有实际文件读写与 Web/桌面知识编辑路径 | README 记载双后端 e2e；本轮未重跑，发行冻结另验 | [README.md](../../../../auto-down/jade-garden/README.md) / [wiki.rs](../../../../auto-down/jade-garden/back/server/src/wiki.rs) |
 | AutoTerm | 已有 PTY/终端引擎、Auto 前端及会话 API | 已有支持声明以 Windows 为准；Unix 代码路径不等于 Linux 已验收 | [README.md](../../../apps/auto-term/README.md) / [term.rs](../../../apps/auto-term/app/term.rs) |
 | AutoSolitaire | 已有接龙规则与真实游戏状态机 | 发行包与平台输入仍需验；不以新玩法为前置 | [klondike_store.at](../../../apps/auto-solitaire/src/front/klondike_store.at) / [desktop_mcp.py](../../../apps/auto-solitaire/tests/desktop_mcp.py) |
 | AutoTetris | 已有规则/计时循环与最高分保存实现 | 历史脚本不等于本轮通过；平台计时/输入另验 | [tetris_store.at](../../../apps/auto-tetris/src/front/tetris_store.at) / [db.at](../../../apps/auto-tetris/src/back/db.at) |
 | AutoMinesweeper | 已有布雷、邻雷计数、展开和胜负逻辑 | 不要求新增联网排行榜或关卡才能基本可用 | [minesweeper_store.at](../../../apps/auto-minesweeper/src/front/minesweeper_store.at) / [minesweeper.md](../../specs/apps/minesweeper.md) |
 | AutoLauncher | 宿主覆盖注册列表并消费 desktop 命令；有实际搜索/动作路径 | 独立模式显式 mock，判定仅限桌面宿主应用启动器；尚非完整独立全盘搜索工具 | [app.at](../../../apps/auto-launcher/src/front/app.at) / [001-query-provider-core.md](../../../apps/auto-launcher/docs/plans/001-query-provider-core.md) |
 | AutoSyslog | 宿主写入 __syslog_*，app 消费并过滤 | 独立 Vue 模式是 mock；基本能力仅按桌面宿主日志查看器判定 | [README.md](../../../apps/auto-syslog/README.md) / [renderer.rs](../../../../auto-ui/crates/auto-ui-runtime/src/ui/iced/renderer.rs) |
-| AutoJade（jade-edit） | 已有文件/文档编辑及基础读写验收记录 | RELEASE 仍 preparation_only，功能已有不等于独立安装包/正式发布已完成 | [wsys.at](../../../../jade-edit/src/back/wsys.at) / [RELEASE.md](../../../../jade-edit/docs/RELEASE.md) |
+| AutoJade（旧称 Jade Garden） | 已有文件/文档编辑及基础读写验收记录；两个名字属于同一应用 | RELEASE 仍 preparation_only，功能已有不等于独立安装包/正式发布已完成 | [wsys.at](../../../../jade-edit/src/back/wsys.at) / [RELEASE.md](../../../../jade-edit/docs/RELEASE.md) |
 | AutoCalc | 已有表达式求值、科学/程序员运算实现 | 不以新单位库或更多模式为基础门 | [app.at](../../../apps/auto-calc/src/front/app.at) / [acceptance.atd](../../../apps/auto-calc/tests/acceptance.atd) |
 | AutoClock | 使用 Time.now_sec，真实 Tick 计时及闹钟列表存储 | 固定世界时区偏移；闹钟仅窗口内 Tick/横幅，不能宣称关窗后台可靠提醒。A 仅覆盖基础时钟/前台计时 | [app.at](../../../apps/auto-clock/src/front/app.at) / [desktop_mcp.py](../../../apps/auto-clock/tests/desktop_mcp.py) |
 | AutoWeather | 后端实际请求 Open-Meteo/QWeather，城市与设置写文件 | 仍有显式演示降级；演示数据不能算实时取数成功。A 只指已有真实 API 路径 | [api.at](../../../apps/auto-weather/src/back/api.at) / [app.at](../../../apps/auto-weather/src/front/app.at) |

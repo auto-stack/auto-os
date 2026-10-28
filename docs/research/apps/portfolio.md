@@ -18,6 +18,8 @@
 
 ## 3. 全部 28 个注册入口的去向
 
+2026-10-29 用户纠正：Jade Garden 为 AutoJade 的旧名。下表保留两条 manifest 接入事实，但产品只计一个；当前共 27 个去重产品，基本能力分类见[盘点](basic-capability-audit-20261029.md)。
+
 交付角色：**核心**=下一版日用基础；**增量**=在基础上扩大场景；**专项**=保留既有产品主线；**可选**=继续保留，按需安装/成熟度展示。顺序不是取消已有范围的授权。
 
 | manifest ID / 现有 app 路径 | 建议角色 | 下一版应交付的最小真实闭环 | 竞品研究 |
@@ -41,7 +43,7 @@
 | `kanban` / `apps/auto-kanban` | 专项/工作管理 | 项目→卡片→状态流转→持久化/导出；与 Todo 的关联后续确认 | [知识](knowledge-productivity.md#kanban) |
 | `023-realworld` / `apps/auto-blog` | 专项、保留既有承诺 | 本地草稿→预览→带资源的可迁移导出；远端发布显式操作 | [知识](knowledge-productivity.md#blog) |
 | `auto-musk` / manifest 外部定位 | 专项 | 一项变更的计划→实现→独立验证→知识沉淀可追溯 | [工具](system-developer.md#flagships) |
-| `jade-garden` / manifest 外部定位 | 专项、基线待对齐 | 已有知识产品方向继续；先确认与 Notes/编辑器的数据职责 | [知识](knowledge-productivity.md#notes) |
+| `jade-garden` / manifest 外部定位 | AutoJade 的旧名入口，非独立产品 | 与 jade-edit 归同一 AutoJade；保留接入事实，历史位置/数据兼容另核 | [知识](knowledge-productivity.md#notes) |
 | `jade-edit` / manifest 外部定位 | 专项、基线待对齐 | 本地 README 定位 AutoJade 文档/知识库：可靠写作、链接、检索与恢复 | [工具](system-developer.md#flagships) |
 | `026-database` / `apps/auto-database` | 可选开发工具 | 首先 SQLite：只读浏览→SQL→分页→显式事务编辑/导出 | [工具](system-developer.md#data-tools) |
 | `024-charts` / `apps/auto-charts` | 可选数据工具 | 导入 CSV→类型校验→图表映射→保存规格/导出 | [工具](system-developer.md#data-tools) |

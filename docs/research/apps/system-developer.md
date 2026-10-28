@@ -35,13 +35,13 @@
 **实现路线与门**：先审计 `apps/auto-term` 既有引擎与会话，避免为追热门替换已验证内核。单独比较 libghostty/既有引擎的嵌入、许可、平台覆盖与维护成本。验证交互程序、全屏 TUI、ANSI/颜色、中文与 emoji、长输出/背压、Ctrl+C、子进程退出/孤儿清理；ASH 验证结构化类型往返、错误/取消、路径/编码与外部命令互通。两者性能与数据正确性分别报告。
 
 <a id="flagships"></a>
-## 3. Musk、AutoEdit、AutoJade/Jade Garden
+## 3. Musk、AutoEdit、AutoJade（旧称 Jade Garden）
 
 **市场**：代码编辑、AI 编程执行、文档知识库相互协作，但不是同一应用。[VS Code](https://code.visualstudio.com/) 是编辑/扩展生态参考，产品分发许可与源码需区分；[Zed](https://github.com/zed-industries/zed) README 描述高性能多人编辑，仓库聚合许可不能当统一 MIT；[Helix](https://github.com/helix-editor/helix)（MPL-2.0 元数据）提供多选区、LSP、Tree-sitter 的可组合编辑参照。[Codex CLI](https://github.com/openai/codex) 与 [Aider](https://github.com/Aider-AI/aider)（均 Apache-2.0 元数据）是 Agent 的公开实现参照，不能据开源 CLI 推导相关托管产品全部开源。
 
 **本地事实**：`D:/autostack/auto-edit/specs/auto-edit/README.md` 记载多 tab、动作/快捷键、打开保存/脏文档、原生编辑接缝及框架限制；`D:/autostack/jade-edit/README.md` 定位 AutoJade 文档与本地知识库；`D:/autostack/auto-down/jade-garden/README.md` 记载基于 AutoDown 的知识编辑器及 Web/VM 两种形态。上述是只读定位，不按这些物理兄弟路径启动新开发，不迁移或切换他人 WIP。
 
-**设计组合**：AutoEdit 专注可靠代码/文本编辑、语言诊断和运行；Musk 承担变更计划、执行、验证与沉淀；AutoJade/Jade Garden 承担文档与知识关系。先核对两个 Jade 方向的职责/兼容/迁移策略，保留现有身份，不因名称混杂随意重命名。Notes 为快速捕获面而非再造完整编辑器。
+**设计组合**：AutoEdit 专注可靠代码/文本编辑、语言诊断和运行；Musk 承担变更计划、执行、验证与沉淀；AutoJade 承担文档与知识关系，Jade Garden 是其旧名（2026-10-29 用户确认），只计一个产品。两个历史接入位置的兼容/迁移仍需核对，本次不修改入口或数据。Notes 为快速捕获面而非再造完整编辑器。
 
 **Musk 的进入空间**：已有 [README](https://github.com/auto-stack/auto-musk) 强调 Plan+Spec、分阶段工作和可见验证，比复制一个聊天面板更有价值。Aider 的仓库上下文/Git 操作、Codex CLI 的本地 Agent 工程边界可继续深读；本轮尚未做算法/执行可靠性比较。下一步应比较同一小变更的补丁正确率、恢复能力、成本与人参与次数，而非比较支持多少模型。
 

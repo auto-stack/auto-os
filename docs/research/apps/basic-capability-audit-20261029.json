@@ -1,14 +1,14 @@
 {
   "assessed_on": "2026-10-29",
   "auto_os_head": "584dc008904fd2488ff01a4103a91289ac80ce41",
-  "scope": "28 manifest apps; AutoShell and AutoEdit separately listed",
+  "scope": "28 manifest registration entries representing 27 distinct products; AutoShell and AutoEdit separately listed",
   "method": "read-only code/Spec/Plan and existing evidence audit; no GUI, runtime functional tests, app edits or pin updates",
   "groups": {
     "A": "已有真实基本实现，可优先考虑 Linux；属于候选排序而非本轮实机通过证书",
     "B": "必要功能缺失/已知正确性缺口/基础验收尚未闭合，先形成基本应用"
   },
   "counts": {
-    "A": 19,
+    "A": 18,
     "B": 9
   },
   "health_gate": {
@@ -43,7 +43,8 @@
       "repository_head": "5e0da499dec476b029237b1436856eb90e936ec6",
       "source_root": "apps/auto-kanban",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "kanban"
     },
     {
       "id": "auto-musk",
@@ -70,11 +71,12 @@
       "repository_head": "25a8aace96547a380ce0f1f34324f584664e614f",
       "source_root": "../auto-musk",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "auto-musk"
     },
     {
       "id": "jade-garden",
-      "name": "Jade Garden",
+      "name": "AutoJade",
       "group": "A",
       "subtype": "",
       "minimum_basic_capability": "打开本地知识库→编辑/保存→重开→检索与链接",
@@ -97,7 +99,12 @@
       "repository_head": "c3464d0a0d36e4f8a7988b0c0c26448fc52361b4",
       "source_root": "../auto-down",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "autojade",
+      "observed_name": "Jade Garden",
+      "same_product_as": [
+        "jade-edit"
+      ]
     },
     {
       "id": "auto-term",
@@ -129,7 +136,8 @@
       "repository_head": "7a0d0e8b718fb260641f0d09ada95a7346771cd3",
       "source_root": "apps/auto-term",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "auto-term"
     },
     {
       "id": "037-klondike",
@@ -156,7 +164,8 @@
       "repository_head": "91192ef593cb25377a2d089542e6f040507231a9",
       "source_root": "apps/auto-solitaire",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "037-klondike"
     },
     {
       "id": "036-tetris",
@@ -183,7 +192,8 @@
       "repository_head": "06b2e67f2117084853271cf194e67cc47be6b3c5",
       "source_root": "apps/auto-tetris",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "036-tetris"
     },
     {
       "id": "038-minesweeper",
@@ -210,7 +220,8 @@
       "repository_head": "ae6dcbfd7033bc2ee81c6d11b7162d1c653e9d04",
       "source_root": "apps/auto-minesweeper",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "038-minesweeper"
     },
     {
       "id": "028-launcher",
@@ -237,7 +248,8 @@
       "repository_head": "df207283536ff943e2e574dc886c4cb8594cce13",
       "source_root": "apps/auto-launcher",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "028-launcher"
     },
     {
       "id": "039-syslog",
@@ -274,11 +286,12 @@
         "docs/research/apps/sources.json",
         "docs/research/apps/sources.md"
       ],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "039-syslog"
     },
     {
       "id": "jade-edit",
-      "name": "AutoJade（jade-edit）",
+      "name": "AutoJade",
       "group": "A",
       "subtype": "",
       "minimum_basic_capability": "打开真实文档→编辑/保存→重开→本地知识导航",
@@ -303,7 +316,12 @@
       "tracked_dirty_paths": [
         "docs/analysis/2026-09-30-delivery-roadmap.md"
       ],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "autojade",
+      "observed_name": "AutoJade（jade-edit）",
+      "same_product_as": [
+        "jade-garden"
+      ]
     },
     {
       "id": "011-calculator",
@@ -330,7 +348,8 @@
       "repository_head": "e5247c549db375480f30b9eb1e417ad9b15191a3",
       "source_root": "apps/auto-calc",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "011-calculator"
     },
     {
       "id": "012-clock",
@@ -357,7 +376,8 @@
       "repository_head": "551d05e065eb2f449c643b3fa4fd671a9ec7a307",
       "source_root": "apps/auto-clock",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "012-clock"
     },
     {
       "id": "013-todo",
@@ -384,7 +404,8 @@
       "repository_head": "bc8391c3b33a9f2ee896a33874f7c458a33d67ca",
       "source_root": "apps/auto-todo",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "013-todo"
     },
     {
       "id": "014-weather",
@@ -411,7 +432,8 @@
       "repository_head": "1626a4a16ccf4de717bc92e27b60a9184b8198f2",
       "source_root": "apps/auto-weather",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "014-weather"
     },
     {
       "id": "015-notes",
@@ -438,7 +460,8 @@
       "repository_head": "1391bd7eb2f6b3b08e9841d30b25125e47ced058",
       "source_root": "apps/auto-notes",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "015-notes"
     },
     {
       "id": "016-calendar",
@@ -465,7 +488,8 @@
       "repository_head": "6f4d36d34476adc0656494fb45fca9b7c1b05860",
       "source_root": "apps/auto-calendar",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "016-calendar"
     },
     {
       "id": "017-chat",
@@ -492,7 +516,8 @@
       "repository_head": "8df3f33b3bfedc123287d4324b5e67ae5b00a724",
       "source_root": "apps/auto-chat",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "017-chat"
     },
     {
       "id": "018-book-reader",
@@ -519,7 +544,8 @@
       "repository_head": "29b5decf878ec2cdca5c6a39575e872a4597121d",
       "source_root": "apps/auto-reader",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "018-book-reader"
     },
     {
       "id": "023-realworld",
@@ -546,7 +572,8 @@
       "repository_head": "08da63359c4f8d147c0c10f2c774d6feaad79425",
       "source_root": "apps/auto-blog",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "023-realworld"
     },
     {
       "id": "030-video-player",
@@ -578,7 +605,8 @@
       "repository_head": "b6efa4ef1b052e35d966b26aab17054c86ba5679",
       "source_root": "apps/auto-video",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "030-video-player"
     },
     {
       "id": "020-music-player",
@@ -605,7 +633,8 @@
       "repository_head": "6b73a417a3985f1ce02c998cffb54039443ac822",
       "source_root": "apps/auto-music",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "020-music-player"
     },
     {
       "id": "029-photo-gallery",
@@ -637,7 +666,8 @@
       "repository_head": "5eec01b873ba5139ed8b50572f646c12c76c0288",
       "source_root": "apps/auto-photos",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "029-photo-gallery"
     },
     {
       "id": "031-paint",
@@ -664,7 +694,8 @@
       "repository_head": "a12bb20073e20a9ca3cc62b995af88cde66a75f7",
       "source_root": "apps/auto-paint",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "031-paint"
     },
     {
       "id": "025-sys-monitor",
@@ -691,7 +722,8 @@
       "repository_head": "59f271de220eb4df3f55d0781f28c4ff098a6a4a",
       "source_root": "apps/auto-monitor",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "025-sys-monitor"
     },
     {
       "id": "026-database",
@@ -718,7 +750,8 @@
       "repository_head": "85fb35dbe675e354614629a4cbb40d6560ce86c0",
       "source_root": "apps/auto-database",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "026-database"
     },
     {
       "id": "027-file-manager",
@@ -750,7 +783,8 @@
       "repository_head": "59a99b9f42896728aa32a7ff3e38fa08261c7d18",
       "source_root": "apps/auto-explorer",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "027-file-manager"
     },
     {
       "id": "024-charts",
@@ -777,7 +811,8 @@
       "repository_head": "b1d14690751d89912f3ec0fd271caf48ff58b01a",
       "source_root": "apps/auto-charts",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "024-charts"
     },
     {
       "id": "os-config",
@@ -809,7 +844,8 @@
       "repository_head": "8fe4cdc3a9a7bcc139230fa2c4bd7d79af1a5105",
       "source_root": "apps/auto-os-config",
       "tracked_dirty_paths": [],
-      "functional_tests_run_this_audit": false
+      "functional_tests_run_this_audit": false,
+      "product_id": "os-config"
     }
   ],
   "additional_ecosystem_apps": [
@@ -833,5 +869,243 @@
       ]
     }
   ],
-  "policy": "先界定并达到基本必要能力；通过后 Linux 支持与后续增强可并行。扩展完善留独立会话。"
+  "policy": "先界定并达到基本必要能力；通过后 Linux 支持与后续增强可并行。扩展完善留独立会话。",
+  "manifest_entry_counts": {
+    "A": 19,
+    "B": 9
+  },
+  "manifest_entry_total": 28,
+  "product_total": 27,
+  "products": [
+    {
+      "product_id": "kanban",
+      "name": "AutoKanban",
+      "group": "A",
+      "manifest_ids": [
+        "kanban"
+      ]
+    },
+    {
+      "product_id": "auto-musk",
+      "name": "AutoMusk",
+      "group": "A",
+      "manifest_ids": [
+        "auto-musk"
+      ]
+    },
+    {
+      "product_id": "autojade",
+      "name": "AutoJade",
+      "group": "A",
+      "manifest_ids": [
+        "jade-garden",
+        "jade-edit"
+      ]
+    },
+    {
+      "product_id": "auto-term",
+      "name": "AutoTerm",
+      "group": "A",
+      "manifest_ids": [
+        "auto-term"
+      ]
+    },
+    {
+      "product_id": "037-klondike",
+      "name": "AutoSolitaire",
+      "group": "A",
+      "manifest_ids": [
+        "037-klondike"
+      ]
+    },
+    {
+      "product_id": "036-tetris",
+      "name": "AutoTetris",
+      "group": "A",
+      "manifest_ids": [
+        "036-tetris"
+      ]
+    },
+    {
+      "product_id": "038-minesweeper",
+      "name": "AutoMinesweeper",
+      "group": "A",
+      "manifest_ids": [
+        "038-minesweeper"
+      ]
+    },
+    {
+      "product_id": "028-launcher",
+      "name": "AutoLauncher",
+      "group": "A",
+      "manifest_ids": [
+        "028-launcher"
+      ]
+    },
+    {
+      "product_id": "039-syslog",
+      "name": "AutoSyslog",
+      "group": "A",
+      "manifest_ids": [
+        "039-syslog"
+      ]
+    },
+    {
+      "product_id": "011-calculator",
+      "name": "AutoCalc",
+      "group": "A",
+      "manifest_ids": [
+        "011-calculator"
+      ]
+    },
+    {
+      "product_id": "012-clock",
+      "name": "AutoClock",
+      "group": "A",
+      "manifest_ids": [
+        "012-clock"
+      ]
+    },
+    {
+      "product_id": "013-todo",
+      "name": "AutoTodo",
+      "group": "B",
+      "manifest_ids": [
+        "013-todo"
+      ]
+    },
+    {
+      "product_id": "014-weather",
+      "name": "AutoWeather",
+      "group": "A",
+      "manifest_ids": [
+        "014-weather"
+      ]
+    },
+    {
+      "product_id": "015-notes",
+      "name": "AutoNotes",
+      "group": "B",
+      "manifest_ids": [
+        "015-notes"
+      ]
+    },
+    {
+      "product_id": "016-calendar",
+      "name": "AutoCalendar",
+      "group": "B",
+      "manifest_ids": [
+        "016-calendar"
+      ]
+    },
+    {
+      "product_id": "017-chat",
+      "name": "AutoChat",
+      "group": "B",
+      "manifest_ids": [
+        "017-chat"
+      ]
+    },
+    {
+      "product_id": "018-book-reader",
+      "name": "AutoReader",
+      "group": "B",
+      "manifest_ids": [
+        "018-book-reader"
+      ]
+    },
+    {
+      "product_id": "023-realworld",
+      "name": "AutoBlog",
+      "group": "B",
+      "manifest_ids": [
+        "023-realworld"
+      ]
+    },
+    {
+      "product_id": "030-video-player",
+      "name": "AutoVideo",
+      "group": "A",
+      "manifest_ids": [
+        "030-video-player"
+      ]
+    },
+    {
+      "product_id": "020-music-player",
+      "name": "AutoMusic",
+      "group": "A",
+      "manifest_ids": [
+        "020-music-player"
+      ]
+    },
+    {
+      "product_id": "029-photo-gallery",
+      "name": "AutoPhotos",
+      "group": "A",
+      "manifest_ids": [
+        "029-photo-gallery"
+      ]
+    },
+    {
+      "product_id": "031-paint",
+      "name": "AutoPaint",
+      "group": "B",
+      "manifest_ids": [
+        "031-paint"
+      ]
+    },
+    {
+      "product_id": "025-sys-monitor",
+      "name": "AutoMonitor",
+      "group": "A",
+      "manifest_ids": [
+        "025-sys-monitor"
+      ]
+    },
+    {
+      "product_id": "026-database",
+      "name": "AutoDatabase",
+      "group": "B",
+      "manifest_ids": [
+        "026-database"
+      ]
+    },
+    {
+      "product_id": "027-file-manager",
+      "name": "AutoExplorer",
+      "group": "A",
+      "manifest_ids": [
+        "027-file-manager"
+      ]
+    },
+    {
+      "product_id": "024-charts",
+      "name": "AutoCharts",
+      "group": "B",
+      "manifest_ids": [
+        "024-charts"
+      ]
+    },
+    {
+      "product_id": "os-config",
+      "name": "AutoOS Config",
+      "group": "A",
+      "manifest_ids": [
+        "os-config"
+      ]
+    }
+  ],
+  "identity_corrections": [
+    {
+      "confirmed_on": "2026-10-29",
+      "authority": "user clarification in this conversation",
+      "product": "AutoJade",
+      "former_name": "Jade Garden",
+      "manifest_ids": [
+        "jade-garden",
+        "jade-edit"
+      ],
+      "effect": "Count as one product; retain both registration/source observations. No manifest or repository migration performed."
+    }
+  ]
 }

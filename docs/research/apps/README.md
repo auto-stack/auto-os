@@ -2,7 +2,7 @@
 
 初版：2026-10-22。状态：初期研究与范围建议，供下一阶段设计/Plan 使用；不是已冻结路线、实现验收或发版承诺。
 
-2026-10-29 当前工作：[应用基础能力盘点](basic-capability-audit-20261029.md)。按用户明确的两层要求，先分“已有基本实现 / 先补基本应用”：28 个登记入口中 A 类 19 个、B 类 9 个；Notes 属实现已申报完成但待最终核验，不当作纯 UI demo。源码、范围限制和固定快照见[结构化盘点](basic-capability-audit-20261029.json)。
+2026-10-29 当前工作：[应用基础能力盘点](basic-capability-audit-20261029.md)。按用户明确的两层要求，先分“已有基本实现 / 先补基本应用”：28 个登记入口按产品去重后为 27 个应用，A 类 18 个、B 类 9 个（Jade Garden 为 AutoJade 旧名，只计一个）；Notes 属实现已申报完成但待最终核验，不当作纯 UI demo。源码、范围限制和固定快照见[结构化盘点](basic-capability-audit-20261029.json)。
 
 当前会话先分类并优先补齐 B 类基础能力；A 类可以优先考虑 Linux 支持，后续增强另开会话讨论。基础能力通过后，Linux 与增强可并行。前期[Linux/产品分期建议](linux-mvp-priorities.md)保留作背景，不替代本次基本能力判定。
 
@@ -22,7 +22,7 @@
 
 | 文件 | 回答的问题 |
 |---|---|
-| [基础能力两类盘点](basic-capability-audit-20261029.md) / [证据快照](basic-capability-audit-20261029.json) | 哪 19 个已有基本实现，哪 9 个先补基本应用？各自最低合格线、源码证据和缺口是什么？ |
+| [基础能力两类盘点](basic-capability-audit-20261029.md) / [证据快照](basic-capability-audit-20261029.json) | 哪 18 个已有基本实现，哪 9 个先补基本应用？各自最低合格线、源码证据和缺口是什么？ |
 | [基本可用与 Linux 首批排序](linux-mvp-priorities.md) | 哪四个应用先做？28 个入口如何分批？Linux 哪些风险应提前验证？ |
 | [应用组合与优先级](portfolio.md) | 当前 28 个注册入口如何处置？下一版自研什么、集成什么、分几批？ |
 | [文件管理器](file-manager.md) | Strata / Dolphin / COSMIC Files / Yazi：哪些设计值得吸收，如何接入现有 Explorer？ |

@@ -17,7 +17,7 @@
 
 **建议设计**：Notes 做统一收件箱：文字/链接/图片/附件带来源进入，快速搜索、少量标签、Markdown/资源目录导出；重型文档、知识关系与长篇编辑由 AutoJade 等既有产品承接。先明确对象身份、编辑归属与导出格式，再讨论是否共用数据库。
 
-本地只读 `D:/autostack/jade-edit/README.md` 已确认：产品名 AutoJade，定位 AutoDown `.ad` 文档与本地知识库，已有链接/反链、搜索、标签、文件组织、草稿恢复等文档记载；它明确与面向代码/文本的 AutoEdit 区分。manifest 的 `jade-garden` 又是另一个旧定位，不能因名称接近就合并数据。上述是文档事实，未做运行复验。
+本地只读 `D:/autostack/jade-edit/README.md` 已确认：产品名 AutoJade，定位 AutoDown `.ad` 文档与本地知识库，已有链接/反链、搜索、标签、文件组织、草稿恢复等文档记载；它明确与面向代码/文本的 AutoEdit 区分。用户于 2026-10-29 确认 `jade-garden` 是 AutoJade 的旧名，属于同一应用；manifest 两条历史入口只计一个产品。两份检出的代码/数据兼容仍需核对，产品同一性不等于已经执行数据合并。上述是文档事实，未做运行复验。
 
 **实现候选**：Notes 的 AutoDown 依赖在[独立应用 Spec](../../specs/apps/independent-repositories.md)已有记录，先复核现存引擎、schema 与 pin，再决定是否补 SQLite 索引。文件或数据库只指定一个真值来源，全文索引可重建。捕获以幂等 request ID + 持久回执落地；附件先完整落盘再提交记录；退出重启后可查询。跨 app 通信沿现有 F0/F1/F2 设计，不在 Notes 单独发明 broker/权限体系。
 
