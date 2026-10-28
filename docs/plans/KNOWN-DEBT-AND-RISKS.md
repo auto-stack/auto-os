@@ -9,6 +9,10 @@
   `declared_exe_missing` 现排除 `launch:"vm"` 条目（单测
   `vm_launch_is_not_reported_as_missing_artifact`）。出产物后删掉该字段即回到原生，
   无需改代码。
+  **验收（main `1cf6b9f`）**：boot `registry=30 desktop_visible=29 skip=no_pac_at:0
+  declared_exe_missing=- apps_empty=0 orphan_icons=0`；MCP `launch 038-minesweeper`
+  → `[session] launch_app(inproc)`，窗口正常（截图 `tmp/autoui-screenshot-1793181690813.png`）；
+  `cargo test -p os-desktop` = 7 passed（含 vm 过滤单测）。
 - **OS876-SUBMODULE（closed-with-cause + guard，2026-10-28 phase）**：24 个 app
   子模块工作树曾被清空（只剩 `.git` + 索引成批 `D `），致注册表 30→4、`faces=0`。
   已恢复（取证 `auto-lang/tmp/autoos-apps-state-20261028-152823.txt`、备份
