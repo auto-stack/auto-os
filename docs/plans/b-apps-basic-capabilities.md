@@ -1,16 +1,16 @@
 # B类应用基本能力补齐：总跟踪表
 
-更新：2026-10-29（Blog后续004及框架前置已起草；Todo已交付）。性质：跨应用项目总表，**不是覆盖九个应用的巨型执行Plan**，不占用AutoOS/应用计划号，不复制子计划的任务状态。实施、修复、复审与交付以各应用独立计划为准。
+更新：2026-10-29（Reader 001归档状态同步，003优先、002分期；本轮只修订计划）。性质：跨应用项目总表，**不是覆盖九个应用的巨型执行Plan**，不占用AutoOS/应用计划号，不复制子计划的任务状态。实施、修复、复审与交付以各应用独立计划为准。
 
 ## 当前范围与两路安排
 
-产品统计沿[基础能力盘点](../research/apps/basic-capability-audit-20261029.md)：28个manifest登记入口，去重为27个应用。AutoJade旧称Jade Garden，两条历史入口只算一个产品。初始盘点A类18个、B类9个；本表已有证据将Todo升A，故现登记为A类19个、待闭合B类8个（Notes/Calendar的组合登记仍待各自交付流程）；AutoShell/AutoEdit为登记外生态补表。
+产品统计沿[基础能力盘点](../research/apps/basic-capability-audit-20261029.md)：28个manifest登记入口，去重为27个应用。AutoJade旧称Jade Garden，两条历史入口只算一个产品。初始盘点A类18个、B类9个；本表按Todo与Reader 001已归档交付证据及组合版本登记升A，故现登记为A类20个、待闭合B类7个（Notes/Calendar的组合登记仍待各自交付流程）；AutoShell/AutoEdit为登记外生态补表。
 
 - **A路：Linux支持目前暂停启动**。统一状态 `WAIT_DISTRO_M1`，等待 [auto-os-distro](https://github.com/auto-stack/auto-os-distro) 完成第一阶段 **Nix＋COSMIC基础**。本表不启动Linux应用适配或以Windows结果代替Linux验收。
 - **B路：现在准备基本能力补齐**。Notes、Reader复用原001；Blog保留已归档001，并以004补齐Rust/原生VM运行验收，关联语言885/UI003；其他应用按各自当前证据接续。已有交付与draft分别记账，不把源码存在当作基本功能已通过。
 - 基础能力通过后，Linux与后续增强可以分路进行；本会话不展开长期增强、全量竞品复刻或新的产品大改版。
 
-## 原B类主表（9个应用；Todo已升A，其余8个待闭合）
+## 原B类主表（9个应用；Todo/Reader基础已交付升A，其余7个待闭合）
 
 “就绪”只表示可以接续对应阶段，不表示自动执行。状态取自当前Plan；后续更新本表须保留实际证据，禁止仅改总表就升A。
 
@@ -20,7 +20,7 @@
 | 2 | Todo | 任务CRUD、持久化、重启恢复和失败反馈 | [TODO-001](../../apps/auto-todo/docs/plans/archived/001-durable-todos.md)（新） | **已交付（证据地标A）** / r2 archived；SQLite 单写者仓储+失败回执，verify_basic vue 39/39、vm 33/33（交付构建），终审 pass 绑 92b08bc，pin bbf2f65d480；next=组合集成验证随装配进行 | 空库不播种demo、单写者/损坏/写失败不可假成功均已按合同验收；Linux仍等待发行版门 |
 | 3 | Calendar | 真实今日、单次事件CRUD、保存与重开 | [CALENDAR-001本地归档](D:/autostack/auto-calendar/docs/plans/archived/001-local-events.md)（复用） | 已归档/复审75ee52e通过，app main已推；等待AutoOS组合pin与登记，未在本轮升A | 本轮不改其源码/计划/pin；原有单次事件/墙钟时间模型，不含重复/提醒/同步 |
 | 4 | Paint | 16×16作品编辑、可靠撤销/保存重开、导出图像 | [PAINT-001](../../apps/auto-paint/docs/plans/001-reliable-pixel-paint.md)（新） | drafting / r2；next=T-01恢复/输出探针 | 修P553-D1，全同色不可SKIP；首版SVG输出，不加专业画布 |
-| 5 | Reader | 现有真实导入、阅读、位置恢复合同完成 | [READER-001](../../apps/auto-reader/docs/plans/001-real-library.md)（复用） | executing / r7；按原计划关闭前置并重验 | 当前终审blocked；F-12目标滚入pane、真实大文本/VM等原必需项不能用债务关闭；不追加EPUB/PDF全功能 |
+| 5 | Reader | 001真实TXT/Markdown书库与内容锚点恢复已交付；EPUB/增强另计 | [001归档](../../apps/auto-reader/docs/plans/archive/001-real-library.md)；[003 r3](../../apps/auto-reader/docs/plans/003-epub-reflow.md)；[002 r3](../../apps/auto-reader/docs/plans/002-reading-annotations.md) | **A类（001基础口径）**：archived/r9、32/32，最终复审055a5a6与main landing已有记录；后续优先003 T-00，002-A再做本地增强，002-B等Notes接收；003/002未实施 | 003仅依001及本计划具名能力门，不等完整002；高亮恢复转002-A，本地A不等Notes。当前已验VM HTTP组合，Rust/原生导入入口既有边界仍按实际范围；Linux WAIT_DISTRO_M1 |
 | 6 | Blog | 001本地草稿合同＋真实Rust服务与原生VM窗口验收 | [BLOG-004](../../apps/auto-blog/docs/plans/004-dual-runtime-acceptance.md)（后续）；[001历史](../../apps/auto-blog/docs/plans/archived/001-durable-drafts.md) | **B类：基础功能已实现，双端门待补齐**；004 drafting/r2，next=T-01有界诊断；001保持archived | 前置[auto-lang/885](D:/autostack/auto-lang/docs/plans/885-blog-generated-rust-backend-parity.md)与[auto-ui/003](D:/autostack/auto-ui/docs/plans/003-blog-native-vm-run-and-acceptance.md)均仅draft；必须消费实际交付并跑Blog默认Rust/Vue及原生VM任务，不能用VM HTTP替代；不含写作增强/Linux |
 | 7 | Database | 打开真实SQLite、schema、只读SQL与真实错误 | [DATABASE-001](../../apps/auto-database/docs/plans/001-real-sqlite-browser.md)（新） | drafting / r2；next=T-01 SQLite全路径探针 | 禁止打开失败回退内存冒充连接；只读能力和动态结果未证实前不做假SQL；写按钮不可装可用 |
 | 8 | Charts | CSV用户数据→柱图→保存重开→独立SVG输出 | [CHARTS-001](../../apps/auto-charts/docs/plans/001-data-to-chart.md)（新） | drafting / r2；next=T-01输入/几何/输出探针 | 真实CSV和数值，不能split逗号冒充解析；不含实时仪表盘 |
@@ -36,13 +36,14 @@
 4. 完成后以交付提交、验收结果/链接和日期更新本表及基础盘点，将该app由B升A；升级只依据既定基础合同，不额外捆绑未来增强。
 5. 新升A的Linux工作仍服从 `WAIT_DISTRO_M1`。本表状态不是独立于Plan的第二套工作流，不因某项出阻塞就把其他app标为整体阻塞。
 
-## A类 Linux 前置（19个去重应用，含已升A的Todo）
+## A类 Linux 前置（20个去重应用，含已升A的Todo/Reader）
 
 解除条件：发行仓提供其第一阶段Nix＋COSMIC基础完成的版本化验收回执，注明可用于应用验证的源码/产物版本与首验环境；届时再准备各应用Linux任务。仅建好仓库、放出ISO文件或完成[OS PLAN-052建仓](052-distro-repository-setup.md)不等于该基础已完成。当前按用户明确决定保持等待，不推断已可开工。
 
 | 应用 | 当前状态 | 共同前置 |
 |---|---|---|
 | AutoTodo | WAIT_DISTRO_M1；001已交付，未启动Linux适配 | auto-os-distro：Nix＋COSMIC基础完成 |
+| AutoReader | WAIT_DISTRO_M1；001基础已交付，EPUB/增强未实施 | auto-os-distro：Nix＋COSMIC基础完成 |
 | AutoKanban | WAIT_DISTRO_M1；未启动Linux适配 | auto-os-distro：Nix＋COSMIC基础完成 |
 | AutoMusk | WAIT_DISTRO_M1；未启动Linux适配 | auto-os-distro：Nix＋COSMIC基础完成 |
 | AutoJade | WAIT_DISTRO_M1；未启动Linux适配 | auto-os-distro：Nix＋COSMIC基础完成 |
@@ -69,7 +70,7 @@ AutoShell/AutoEdit虽不在上述登记数量内，其Linux工作也等待相同
 - 总表在AutoOS；每个app的Plan在其独立仓 `docs/plans/`，开发入口为 `D:/autostack/<产品仓名>/docs/plans/`，AutoOS的 `apps/<产品仓名>/docs/plans/` 仅保留固定版本副本，各仓独立取号。六个新计划均为本仓001，后续号源记录在各自 `docs/plans/.next-id`；不会占用OS/语言的全局号。
 - 依2026-10-29用户新约定，app计划/编辑/实现使用 `D:/autostack/<产品仓名>` 独立clone的main，单app单写者；先提交/推送app，再更新对应组合子模块及父仓gitlink。子模块保持detached，开发clone留在main，不建junction/symlink。旧计划的apps/开发路径按新约定替代，Notes/Reader在途WIP保留。见[clone清单](../design/strategy/app-development-clones.md)。
 - 框架/OS核心缺口在主改面仓独立立项并遵守worktree纪律。Plan里列的能力探针先于依赖实现，不预先声称其已经可用。当前三仓工具链定位沿既有解析序。
-- Notes/Reader/Blog现有Plan原文、修订、勾选和历史记录不修改；复用入口已在主表记录，不能重建另一个“基本版001”绕开旧失败。
+- Notes/Reader/Blog的001历史按原合同保留，不因增强需求重开或重建“基本版001”绕开旧失败；活动计划按最新用户授权修订。本轮仅将Reader002/003修订r3，001归档原文/勾选/证据不变。
 
 ## 本次建表交付与验证
 
@@ -91,3 +92,13 @@ AutoShell/AutoEdit虽不在上述登记数量内，其Linux工作也等待相同
 auto-web等待语言884及后续UI/Man结构包完整交付后，才重新评估建仓与迁移；此时点不是自动实施授权。完整交付沿拆分路线U(N)口径，后续结构包尚未编号，也不是Blog的auto-ui/003。决策详见[拆分路线图§11](D:/autostack/auto-lang/docs/plans/reports/v06-extraction-execution-roadmap.md#11-auto-web建仓与迁移的评估门2026-10-29用户决定)。
 
 BLOG-004、auto-lang/885与auto-ui/003继续按原合同补齐Rust后端和原生VM运行/验收；auto-web建仓、迁移及整个结构里程碑均不增加为其前置。共享文件/接口按实际交集协调，本次不改Plan合同、任务或验收门，不将Blog提前升A。
+
+## Reader排程与归档同步（2026-10-29）
+
+[Reader roadmap](../../apps/auto-reader/docs/roadmap-v0.6.md)现明确 `001 → 003 → 002-A → 002-B`。001保持archive/r9、32/32，复审055a5a6绑定268c7d4，源/测试至本轮文档基线无差异；此处登记已有交付证据，不是本轮新跑实现验收。003 r3直接依赖001，二进制/ZIP/XML、最小内容/图像/位置、安全资源预算及真实UI导入能力由其T-00调查，缺项转实际owner最小前置；不等完整002、Notes或auto-web。
+
+002 r3的A阶段做本地阅读增强/书签高亮注释/准确回访/Markdown导出，可独立phase review/交付，不等Notes；B在A交付与NOTES-002真实接收可消费后才做联动、离线待发与耐久幂等回执。A过门不等于002整Plan完成；原003高亮恢复要求已迁入002-A，未撤销或冒称实现。
+
+本轮不修改001、业务源码、canonical Spec、ledger或已有在途截图，不取新号、不实现、构建或启动GUI。app文档先推送，再按精确交付SHA更新AutoOS子模块并跑健康门；Reader基础升A不意味着EPUB、Notes联动、Rust后端或Linux全支持。Linux仍等待发行版Nix＋COSMIC基础，组合登记不重开001。
+
+Reader本轮文档交付提交：`fa6185ebd1e35229ae496ef1e07afa2b157c7d74`；其中业务源码/测试/pac、001归档和现实现Spec/ledger均未修改，已有001交付随app主分支推送及组合pin登记。文档结构/链接/依赖与源hash检查通过；本轮未执行应用功能验收。
