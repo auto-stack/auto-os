@@ -24,7 +24,7 @@
 | 6 | Blog | 001本地草稿合同＋真实Rust服务与原生VM窗口验收 | [BLOG-004](../../apps/auto-blog/docs/plans/004-dual-runtime-acceptance.md)（后续）；[001历史](../../apps/auto-blog/docs/plans/archived/001-durable-drafts.md) | **B类：基础功能已实现，双端门待补齐**；004 drafting/r2，next=T-01有界诊断；001保持archived | 前置[auto-lang/885](D:/autostack/auto-lang/docs/plans/885-blog-generated-rust-backend-parity.md)与[auto-ui/003](D:/autostack/auto-ui/docs/plans/003-blog-native-vm-run-and-acceptance.md)均仅draft；必须消费实际交付并跑Blog默认Rust/Vue及原生VM任务，不能用VM HTTP替代；不含写作增强/Linux |
 | 7 | Database | 打开真实SQLite、schema、只读SQL与真实错误 | [DATABASE-001](../../apps/auto-database/docs/plans/001-real-sqlite-browser.md)（新） | drafting / r2；next=T-01 SQLite全路径探针 | 禁止打开失败回退内存冒充连接；只读能力和动态结果未证实前不做假SQL；写按钮不可装可用 |
 | 8 | Charts | CSV用户数据→柱图→保存重开→独立SVG输出 | [CHARTS-001](../../apps/auto-charts/docs/plans/001-data-to-chart.md)（新） | drafting / r2；next=T-01输入/几何/输出探针 | 真实CSV和数值，不能split逗号冒充解析；不含实时仪表盘 |
-| 9 | Chat | 人与人真实收发、会话隔离和历史恢复 | [CHAT-001](../../apps/auto-chat/docs/plans/001-real-conversations.md)（新） | drafting / r3；next=T-01真实人际通道探针 | 用户已确认人与人聊天、沿用联系人界面；先验证通道/身份，首版不做AI客户端 |
+| 9 | Chat | 人与人真实收发、会话隔离和历史恢复 | [CHAT-001](../../apps/auto-chat/docs/plans/001-real-conversations.md)（新） | A / 已交付 2026-10-29；[CHAT-001 r3](../../apps/auto-chat/docs/plans/archived/001-real-conversations.md) 已实现并通过双轨验收（Vue Playwright 8/8 + VM AutoUI MCP 4/4）+ 独立复审探针 | 用户已确认人与人聊天、沿用联系人界面；先验证通道/身份，首版不做AI客户端 |
 
 顺序是建议调度，不是强制串行依赖：Notes/Calendar组合收尾、其余app能力探针等互不依赖；Todo已交付，Reader框架阻塞、Blog框架前置或Chat通道调查不拖住其他应用。一个app一个写入者，不擅自启动并行agent/会话。
 
