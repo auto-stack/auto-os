@@ -1,6 +1,6 @@
 # B类应用基本能力补齐：总跟踪表
 
-更新：2026-10-29。性质：跨应用项目总表，**不是覆盖九个应用的巨型执行Plan**，不占用AutoOS/应用计划号，不复制子计划的任务状态。实施、修复、复审与交付以各应用独立计划为准。
+更新：2026-10-29（Todo 已交付）。性质：跨应用项目总表，**不是覆盖九个应用的巨型执行Plan**，不占用AutoOS/应用计划号，不复制子计划的任务状态。实施、修复、复审与交付以各应用独立计划为准。
 
 ## 当前范围与两路安排
 
@@ -17,7 +17,7 @@
 | 顺序 | 应用 | 基本合格线 | 独立计划 | 当前状态 / 下一步 | 前置或边界 |
 |---|---|---|---|---|---|
 | 1 | Notes | 真保存、重开、冲突/失败恢复，满足原AC-01–05 | [NOTES-001](../../apps/auto-notes/docs/plans/001-durable-inbox.md)（复用） | execution_done / r8，work 35/35；接最终复审，不重做主体 | final review必须绑定实际修订/提交和真实双端证据；本轮未复审 |
-| 2 | Todo | 任务CRUD、持久化、重启恢复和失败反馈 | [TODO-001](../../apps/auto-todo/docs/plans/001-durable-todos.md)（新） | drafting / r2；next=T-01能力探针 | 空库不播种demo；单写者/损坏/写失败不可假成功 |
+| 2 | Todo | 任务CRUD、持久化、重启恢复和失败反馈 | [TODO-001](../../apps/auto-todo/docs/plans/archived/001-durable-todos.md)（新） | **已交付（证据地标A）** / r2 archived；SQLite 单写者仓储+失败回执，verify_basic vue 39/39、vm 33/33（交付构建），终审 pass 绑 92b08bc，pin bbf2f65d480；next=组合集成验证随装配进行 | 空库不播种demo、单写者/损坏/写失败不可假成功均已按合同验收；Linux仍等待发行版门 |
 | 3 | Calendar | 真实今日、单次事件CRUD、保存与重开 | [CALENDAR-001](../../apps/auto-calendar/docs/plans/001-local-events.md)（新） | drafting / r2；next=T-01日期/存储探针 | 不含重复/同步/提醒；日期和本地时区语义先冻结 |
 | 4 | Paint | 16×16作品编辑、可靠撤销/保存重开、导出图像 | [PAINT-001](../../apps/auto-paint/docs/plans/001-reliable-pixel-paint.md)（新） | drafting / r2；next=T-01恢复/输出探针 | 修P553-D1，全同色不可SKIP；首版SVG输出，不加专业画布 |
 | 5 | Reader | 现有真实导入、阅读、位置恢复合同完成 | [READER-001](../../apps/auto-reader/docs/plans/001-real-library.md)（复用） | executing / r7；按原计划关闭前置并重验 | 当前终审blocked；F-12目标滚入pane、真实大文本/VM等原必需项不能用债务关闭；不追加EPUB/PDF全功能 |
