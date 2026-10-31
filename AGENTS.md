@@ -14,8 +14,7 @@
   （在 main 主检出运行；`.next-id` 自 001 起）。
 - Plan 状态机：`drafting → executing → execution_done → reviewed → archived`
   （终态；归档目录 `docs/plans/archive/`）。
-- spec ledger：`.autoos/specs.json`（六节：reports/goals/architecture/
-  designs/tests/reviews；结构对齐 auto-lang 同名文件）。
+- Spec 单源：docs/specs 下 AutoDown 文档；分类/关系/历史由应用生成。`.autoos/specs.json` 仅保留为只读旧数据来源，agent/merge 不再写 JSON、手工补索引或为配额制造条目（auto-musk PLAN-107）。迁移对账见 docs/specs/history/legacy-ledger/README.md，旧状态不替代真实复审/落地。
 - app 仓内的工作（新功能/修复）也走 plan 流程：跨仓计划的 plan 文件放
   主导仓（通常是本仓或对应 app 仓），并在两仓 README/计划中互链。
 - **本仓域计划的登记归属（PLAN-876 起，2026-10-28 用户裁定）**：凡以本仓为主
