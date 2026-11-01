@@ -1,5 +1,7 @@
 # B类应用基本能力补齐：总跟踪表
 
+> 2026-11-01补充：首轮升类数量及旧条目保留为当时的组合登记快照；当前后续调度见文末“其余五个原B类应用的独立运行后续计划”。应用计划push不自动更新AutoOS组合版本。
+
 更新：2026-10-29（Reader 001归档状态同步，003优先、002分期；本轮只修订计划）。性质：跨应用项目总表，**不是覆盖九个应用的巨型执行Plan**，不占用AutoOS/应用计划号，不复制子计划的任务状态。实施、修复、复审与交付以各应用独立计划为准。
 
 ## 当前范围与两路安排
@@ -103,3 +105,21 @@ BLOG-004、auto-lang/885与auto-ui/003继续按原合同补齐Rust后端和原�
 本轮不修改001、业务源码、canonical Spec、ledger或已有在途截图，不取新号、不实现、构建或启动GUI。app文档先推送，再按精确交付SHA更新AutoOS子模块并跑健康门；Reader基础升A不意味着EPUB、Notes联动、Rust后端或Linux全支持。Linux仍等待发行版Nix＋COSMIC基础，组合登记不重开001。
 
 Reader本轮文档交付提交：`fa6185ebd1e35229ae496ef1e07afa2b157c7d74`；其中业务源码/测试/pac、001归档和现实现Spec/ledger均未修改，已有001交付随app主分支推送及组合pin登记。文档结构/链接/依赖与源hash检查通过；本轮未执行应用功能验收。
+
+## 2026-11-01：其余五个原B类应用的独立运行后续计划
+
+本轮只安排五个独立app仓的后续计划、README/roadmap与文档push，不实现、不更新apps/子模块、manifest或.gitmodules。复用001与现有框架/测试，确有缺项才经T-00提实际owner最小前置。
+
+| 应用 | 后续计划 | 范围/当前状态 |
+|---|---|---|
+| Notes | [NOTES-004](D:/autostack/auto-notes/docs/plans/004-standalone-native-editing.md) | drafting/r1、0/8；独立启动与原生编辑恢复验收，尚未实施 |
+| Todo | [TODO-002](D:/autostack/auto-todo/docs/plans/002-standalone-process-isolation.md) | drafting/r1、0/7；独立启动、进程隔离与双端回归，尚未实施 |
+| Calendar | [CALENDAR-002](D:/autostack/auto-calendar/docs/plans/002-recovery-revision-and-deletion.md) | drafting/r1、0/8；恢复后版本凭据与删除保全，尚未实施 |
+| Paint | [PAINT-002](D:/autostack/auto-paint/docs/plans/002-standalone-project-and-svg.md) | drafting/r1、0/7；独立运行、跨重启工程与SVG验收，尚未实施 |
+| Database | [DATABASE-002](D:/autostack/auto-database/docs/plans/002-standalone-native-user-flow.md) | drafting/r1、0/8；原生真实操作与独立运行验收，尚未实施 |
+
+建议先推进Calendar恢复可靠性、Database真实原生操作与Notes当前工具运行门；Todo/Paint是较小的运行/回归收口，不强加新功能。各app互不以对方整份计划完成为前置，一app一写入者，不自动启动多agent或新会话。
+
+Notes的002/003原有增强/知识交接合同保留，004复用001先补独立运行。Reader已改为覆盖Readest的新目标，之后由[规划 AutoReader 下一步](thread://01a1964c-8973-7421-beb3-062a3cf05f51?hostId=local)单独跟踪，本会话只读该上下文，不改Reader设计/计划/路线。Blog上游问题沿原计划继续；Chat/Charts沿各自会话推进，本轮不重新裁决或改写其交付状态。
+
+本轮总表新增的是应用计划指针，不是OS组合升级或Linux开工许可。统一AutoOS集成计划待各app单独运行/验收完成后再安排；Linux仍WAIT_DISTRO_M1。旧Spec/归档/证据和他人WIP保持。
