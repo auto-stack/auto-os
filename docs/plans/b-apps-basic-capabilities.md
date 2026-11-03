@@ -123,3 +123,12 @@ Reader本轮文档交付提交：`fa6185ebd1e35229ae496ef1e07afa2b157c7d74`；�
 Notes的002/003原有增强/知识交接合同保留，004复用001先补独立运行。Reader已改为覆盖Readest的新目标，之后由[规划 AutoReader 下一步](thread://01a1964c-8973-7421-beb3-062a3cf05f51?hostId=local)单独跟踪，本会话只读该上下文，不改Reader设计/计划/路线。Blog上游问题沿原计划继续；Chat/Charts沿各自会话推进，本轮不重新裁决或改写其交付状态。
 
 本轮总表新增的是应用计划指针，不是OS组合升级或Linux开工许可。统一AutoOS集成计划待各app单独运行/验收完成后再安排；Linux仍WAIT_DISTRO_M1。旧Spec/归档/证据和他人WIP保持。
+
+
+## 2026-11-03：交付核对与下一轮统一集成
+
+最新事实见[交付核对报告](reports/20261103-basic-app-delivery-audit.md)：Notes004、Calendar002、Paint002、Chat002、Charts002已有归档/交付记录；Chat计数7/9需owner按真实回执对账。Todo002仍drafting/0/7；Database002 work完成6/8、最终review/merge未做且8个提交未push；Blog005仍dev门上游阻塞。本轮不把它们改成已交付，不创建新编号绕过原合同，也不推送未审Database历史。
+
+下一轮按“原计划收尾 → 共用运行身份/版本冻结 → 统一候选组合/两桌面真实任务 → 复审/主组合交付”推进。[OS PLAN-054：八个基础应用统一组合与桌面任务验收](054-basic-apps-unified-assembly.md)已起草（drafting/r1、0/10）：T-00只读准备可先行，T-01全部交付门和SDK兼容满足后才允许升级8个候选pin。本轮只文档/报告，不更新任何子模块。
+
+Reader继续由[规划 AutoReader 下一步](thread://01a1964c-8973-7421-beb3-062a3cf05f51?hostId=local)按Readest新目标单独跟踪（最新Reader007等UI029交付），不在054范围。Linux仍WAIT_DISTRO_M1，本地distro001仍5/10，无M1完成回执。053主题/计算器在途内容不接管；本轮只为054取新号，不改其正文。
