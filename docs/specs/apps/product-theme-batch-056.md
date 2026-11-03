@@ -28,7 +28,7 @@ discovery（env → AUTO_UI_ROOT workspace → exe 邻接）实际解析到主�
 | 031-paint / auto-paint | `c49ef41` | 静态 dark（原 pac `theme:"dark"` 承接） | desktop_mcp 31/31 | —（canvas 像素 hex 真值内容域） |
 | 026-database / auto-database | `280ddac` | 静态 light | verify_basic 59/59 | 55/55 |
 | 024-charts / auto-charts | `64c9db5` | 静态 light | verify_basic 43/43 | 14/14 |
-| 023-realworld / auto-blog | **未接入——具名阻点** | — | — | — |
+| 023-realworld / auto-blog | `beaae49`（接管停滞 blog-005 窗完成，见下） | 静态 light（路由壳无 dark_mode 位） | dual vue-rust 8/14 + native-vm 9/14——**失败集与基线 84a5514 逐场景一致**（A/B 同轮工具链；既存 works.rs CJK panic 级联+已保存断言=blog 产品线既有面非本包回归） | —（dual 双 profile 即其门） |
 
 ## 包身份与消费语义
 
@@ -52,10 +52,12 @@ discovery（env → AUTO_UI_ROOT workspace → exe 邻接）实际解析到主�
 
 ## 具名未闭面（交 final review 裁定）
 
-1. **auto-blog 未接入**：blog-005 在途（他方写窗，其 T-04 blocked on
-   auto-ui emission prerequisite）——§5.1 单写窗纪律禁止本包并行写入。
-   owner: blog-005 session；closure: 该写窗释放后按本批同构接入
-   （vendor/themes + dep + use + design 腿 + 原门复跑）。批次归档以 8/8 为分母。
+1. **auto-blog 接入完成（原具名阻点闭合）**：blog-005 窗口自 10-31 停滞
+   （clone 干净已 push、无未交 WIP、owner 缺席），经目标裁决授权接管后按
+   本批同构接入（`43ef2a9` adoption + SD-03 `beaae49`，已 push）。接入为
+   纯增量（vendor/themes + pac dep + app.at use/design + README/SD-03），
+   与 blog-005 的 vue-dev-rust 前置面正交；其计划文件未动，恢复时
+   fast-forward 即可。归档分母 8/8 闭合。
 2. **OS 组合 pin**：等 auto-os/PLAN-054 交付其审定的业务版本后，以本批候选
    （或其后代）fetch/detach 同 SHA 更新 gitlink（§5.3/T-05 冻结裁定）。
 3. 拒绝后无间隔成功提交的立即活体重投偶发不生效（053 合同命名恢复路径为
