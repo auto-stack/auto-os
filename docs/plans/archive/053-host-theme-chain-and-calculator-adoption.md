@@ -6,7 +6,7 @@ author: [Codex]
 created_at: 2026-11-02
 updated_at: 2026-11-03
 plan_revision: 1
-current_step: 7
+current_step: 10
 total_steps: 10
 supersedes_spec_components: [docs/specs/shell/showdesk-ux-polish.md]
 new_spec_components: [docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/calculator-theme-adoption.md]
@@ -235,3 +235,7 @@ stage: merge | plan_id: PLAN-053 | plan_revision: r1 | round: 7 | outcome: block
 2026-11-03 / stage:merge(回合8) / auto-os/PLAN-053 r1 / outcome:pass(ui landing 完成——用户授权 stash 协议) / **§10.2/UI-landing 处置记录**：ui landing 阻塞经 AskUserQuestion 获用户明确授权「stash 协议」。执行实录：①WIP 快照（status 全列表 + dynamic_build diff sha `6cc0491c40dba366`、70 行）；②带标签 stash -u（"PLAN-053 ui landing transit (user-authorized 2026-11-03)"）；③**ff-only landing：auto-ui master `fa01bd79` → `6f4bcfae`**（SD-04 + theme_policy.rs + 协议帧 17/18 + 采纳者语义 + 零装载采纳全量落地）；④立即 stash pop——零冲突；⑤共存校验：`arm_standalone_follow` 在位（count=1）+ 他方 hunks 逐行同集（排序比对空差）；diff sha 差异（6cc0…→0cb9…）纯系基线漂移（新 HEAD 含我方插入），他方 hunks 内容零损。他会话 WIP 完整恢复于新 master 之上。**交付链闭合**：os main = `31e0a93` + pin `123364d`（pushed origin 3f777db..123364d）；auto-ui master = `6f4bcfae`（本地 landing；push 属 auto-ui 仓节奏——master 推送由宿主仓常规流程处理，本收据记录 landed 状态）；calc origin/main = `3159a0f`。**stale-artifact 观察（landing≠deployment）**：用户桌面二进制以下次 `scripts/desktop.sh` 构建为准生效；运行中桌面实例（如有）为旧代码；组树内构建产物随 worktree 清理消亡。**G-1 hold 终态**：AC-06 真实事件腿 pending——owner user/merge、closure 获授权真实事件窗口；已写入 SD-05（canonical os main）与本归档页；交付声明不含 AC-06 完整。**G-2 终态**：闭环条件已入 SD-01 outproc 节 + KNOWN-DEBT-AND-RISKS 条目。archive + cleanup 见后续收据。
 
 stage: merge | plan_id: PLAN-053 | plan_revision: r1 | round: 8 | outcome: pass(ui landed; user-authorized stash protocol, WIP restored verified) | delivery: os main 31e0a93+123364d (pushed) / auto-ui master 6f4bcfae (landed) / calc origin 3159a0f (pushed) | next: archive
+
+2026-11-03 / stage:merge(回合9 终) / auto-os/PLAN-053 r1 / outcome:pass(archived+cleaned——merge pass) / **archived**：本页 `docs/plans/archive/053-host-theme-chain-and-calculator-adoption.md`（git add 首次入版本控制——UAT-K13 口径）、status: archived、current_step 10/10（T-08 review、T-09/T-10 merge 收据齐）；G-2 DEBT 条目落 `docs/plans/KNOWN-DEBT-AND-RISKS.md`（OS053-OUTPROC-CARRIER）；bookkeeping `d9de141` 推送 origin（123364d..d9de141）。**cleaned**：六 worktree wt-guard 全 clean 后移除（auto-os 子模块 deinit 后移除；auto-man 构建期 lock 漂移还原后移除；lang/web/down 直移），双 plan 分支删除（os codex/plan-053-host-theme @31e0a93-landed、ui codex/plan-053-host-theme-ui @6f4bcfae-landed），os-053 组目录删除；`plan-artifacts/plan-053` scope 全删（342K，证据已折入本页 §9 回合1-9 收据），registry `.retention/policy.json` 刷新——**具名 hold 登记：AC-06 真实事件腿（owner user/merge、closure 获授权窗口）**。**stale-artifact 观察**（landing≠deployment）：用户桌面二进制以下次 `scripts/desktop.sh` 构建为准生效（os main 已含全部交付）；运行中桌面实例（如有）为旧代码；auto-ui master 本地 landed（gitee 推送随 auto-ui 仓常规节奏）。**最终交付声明**：宿主主题链（策略/持久化/双通道/协议帧/采纳者语义/standalone 跟随/官方包消费）全量交付并实证；AC-06 真实腿为唯一具名 hold（按 §10.2 合同形态），其余 AC-01..05/07/08 pass、AC-09 本收据闭。
+
+stage: merge | plan_id: PLAN-053 | plan_revision: r1 | round: 9 | outcome: pass | archived: docs/plans/archive/053-host-theme-chain-and-calculator-adoption.md | cleaned: 六树+组目录+双分支+plan-artifacts scope+registry(hold 记录) | delivery: os main d9de141 (pushed) / auto-ui master 6f4bcfae (landed local) / calc origin 3159a0f (pushed) | next: done
