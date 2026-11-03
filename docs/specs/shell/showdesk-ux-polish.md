@@ -110,6 +110,12 @@
   撤则 face/缩略/pager 走快照缓存滞留旧主题（F-R1 实录）。
 - **面板暗色位单点同步**：宿主帧泵值变才写面板 `__dash_dark`（面板
   玻璃底双分支消费；refresh 无条件回写兜底懒挂载）。
+- **family 策略链同一契约（PLAN-053 SD-02）**：`set_theme_policy` 动词与
+  config 外写携带策略组差异两条路径同样走 `invalidate_all` + 全 App
+  `view_dirty`（策略效果臂与外写差异臂共用）；有主题 scope 的采纳者经
+  031 宿主端口换肤（失败整帧保旧），legacy 组件沿 `dark_mode` 回写；
+  采纳者 `dark_mode` 由已提交策略派生 mode 驱动，legacy 翻转不越权。
+  详见 [host-theme-policy-and-delivery](host-theme-policy-and-delivery.md)。
 
 ## P041 通知面板时效（PLAN-041 SD-05）
 
