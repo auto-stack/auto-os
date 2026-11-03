@@ -9,10 +9,15 @@
 ## 批次范围与候选（冻结源）
 
 os-056 冻结工具链：组树 detached（auto-man `2bbd954`、auto-lang `2f558fc9`、
-auto-ui `3c46104b`、auto-web `3de5524`、auto-down `7c4d5cb`）；二进制
-`auto.exe` sha256 `5858593b…c81f68` + 会话子进程 `auto-ui-tool.exe`
-`3493e746…41b005`（**配套工具宿主是会话子进程真身，缺 053 机制的旧版会使
-standalone 跟随臂永不武装——验证前必须核验两二进制**）。
+auto-ui `3c46104b`、auto-web `3de5524`、auto-down `7c4d5cb`）；`auto.exe`
+sha256 `5858593b…cc81f68`（组树构建）；**会话子进程 = `auto-ui-tool.exe`
+（`--internal-vm-exec`），缺 053 机制的旧版会使 standalone 跟随臂永不武装
+——验证/部署前必须核验两二进制**。各门/探针每运行实际工具身份：门与探针
+env 以 `AUTO_UI_ROOT=D:/autostack/auto-ui`（主检出）驱动工作区生成，tool
+discovery（env → AUTO_UI_ROOT workspace → exe 邻接）实际解析到主检出构建
+`auto-ui-tool.exe 0abe93fb`（2026-11-03 13:32，053 落地 `6f4bcfae` 之祖先
+——机制在场，评审员已核谱系）；组树另构建 `3493e746…ebab0b05` 同源。
+后续运行如需钉定，应记录每运行实际工具 sha256（发现序无专用钉定 env）。
 
 | 稳定ID / 仓 | work 候选（main，未 push——push 归 merge 节奏） | design 默认腿 | VM 轨原门（冻结工具链复跑） | vue 轨 |
 |---|---|---|---|---|
@@ -54,4 +59,5 @@ standalone 跟随臂永不武装——验证前必须核验两二进制**）。
 2. **OS 组合 pin**：等 auto-os/PLAN-054 交付其审定的业务版本后，以本批候选
    （或其后代）fetch/detach 同 SHA 更新 gitlink（§5.3/T-05 冻结裁定）。
 3. 拒绝后无间隔成功提交的立即活体重投偶发不生效（053 合同命名恢复路径为
-   "重开或重连"，重开腿双产品全过）——host 侧行为注记，非产品消费面缺陷。
+   "重开或重连"，重开腿双产品全过）——host 侧行为注记，非产品消费面缺陷；
+   merge landing 时已随本批消费面增补节提示宿主页（053 owner）知悉。
