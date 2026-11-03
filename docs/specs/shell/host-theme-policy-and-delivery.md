@@ -4,6 +4,24 @@
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
 > P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
 
+## 产品批次消费面（PLAN-056 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-056 为其**实际消费者扩展
+批次**（七个生产力/内容产品 + blog 待其写窗，登记与逐产品合同见
+[../apps/product-theme-batch-056.md](../apps/product-theme-batch-056.md)）：
+
+- 产品经固定 `vendor/themes` 快照 + `dep themes` + `use themes.themes: Auto`
+  （031 合同）消费；pac `theme` 键缺省 = follow 宿主，原显式键退役。
+- **standalone 跟随臂实证约束**：会话子进程 = `auto-ui-tool.exe`
+  （`--internal-vm-exec`），hosted 钩子路径的 arm 依赖**配套工具宿主二进制
+  含 053 机制**——验证/部署前必须核验两二进制（旧工具宿主 = 跟随臂永不
+  武装，全部 family 候选具名拒绝，仅 legacy 链生效）。
+- 生成工作区一致性：产品 `auto run` 再生成 back workspace 时，组树工具链
+  需 `AUTO_LANG_ROOT`/`AUTO_WEB_ROOT` 指主检出，否则混入组树路径触发
+  `links` 冲突（消费侧运行事实，非策略语义变更）。
+- V-04 包源消费腿（tampered 全不可用具名拒绝+design 默认保底 / 第二有效根
+  验证后照常驱动）在 calendar 实证，机制全体产品同源（per-file sha256）。
+
 ## 策略模型（SD-01）
 
 桌面单源配置（`~/.config/autoos/apps/desktop/config.at`，env
