@@ -114,81 +114,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     result.map(|_| ())
 }
 
-/// PLAN-053 T-02：宿主主题包目录装载（运行时策略核心的 catalog 真源注入）。
-/// 解析序：`AUTOOS_THEME_PACKAGE_DIR` env（显式覆盖——测试/第二根场景）→
-/// `AUTO_UI_ROOT/packages/themes`（desktop.sh source 模式恒设）→ 兄弟
-/// `<parent>/auto-ui/packages/themes`。校验失败 = 注入 None（family 链
-/// 具名拒绝，legacy 链不受影响），不回退未校验目录。
+/// PLAN-053 T-02：宿主主题包目录装载——单一实现收敛到运行时
+/// `theme_policy::init_catalog_from_discovery`（解析序/校验/digest/families
+/// 与 standalone 跟随腿同源；宿主只打日志）。
 fn init_theme_policy_catalog() {
-    use auto_ui_runtime::ui::theme_policy::{ThemeFamilyInfo, ThemePackageCatalog};
-    let mut candidates: Vec<PathBuf> = Vec::new();
-    if let Ok(dir) = std::env::var("AUTOOS_THEME_PACKAGE_DIR") {
-        if !dir.trim().is_empty() {
-            candidates.push(PathBuf::from(dir));
-        }
-    }
-    if let Ok(root) = std::env::var("AUTO_UI_ROOT") {
-        if !root.trim().is_empty() {
-            candidates.push(PathBuf::from(root).join("packages").join("themes"));
-        }
-    }
-    if let Ok(cwd) = std::env::current_dir() {
-        candidates.push(cwd.join("../auto-ui/packages/themes"));
-    }
-    for dir in candidates {
-        let verified = match auto_ui_tools::theme_package::verify_official_theme_package(&dir) {
-            Ok(v) => v,
-            Err(_) => continue,
-        };
-        let digest =
-            match auto_ui_tools::theme_package::theme_package_content_digest(&dir) {
-                Ok(d) => d,
-                Err(_) => continue,
-            };
-        // family 缺省 mode 从 manifest 读（校验后的能力表只带 modes）。
-        let manifest_families = std::fs::read_to_string(dir.join("theme-package.json"))
-            .ok()
-            .and_then(|text| serde_json::from_str::<serde_json::Value>(&text).ok())
-            .and_then(|v| v.get("families").and_then(|f| f.as_array()).cloned())
-            .unwrap_or_default();
-        let families: Vec<ThemeFamilyInfo> = manifest_families
-            .iter()
-            .filter_map(|f| {
-                let name = f.get("name")?.as_str()?.to_string();
-                let modes = verified.families.get(&name)?;
-                Some(ThemeFamilyInfo {
-                    name,
-                    modes: modes.clone(),
-                    default: f
-                        .get("default")
-                        .and_then(|d| d.as_str())
-                        .unwrap_or("light")
-                        .to_string(),
-                })
-            })
-            .collect();
-        eprintln!(
-            "[ui-desktop] theme package: {} v{} families={} digest={}..{} root={}",
-            verified.package,
-            verified.version,
-            families.len(),
-            &digest[..8.min(digest.len())],
-            &digest[digest.len().saturating_sub(8)..],
-            dir.display()
-        );
-        auto_ui_runtime::ui::theme_policy::init_catalog(Some(ThemePackageCatalog {
-            owner: verified.owner,
-            package: verified.package,
-            version: verified.version,
-            digest,
-            families,
-        }));
-        return;
-    }
-    eprintln!(
-        "[ui-desktop] theme package 未找到/校验失败（AUTOOS_THEME_PACKAGE_DIR/AUTO_UI_ROOT/兄弟 auto-ui 均未命中）——family 链降级"
-    );
-    auto_ui_runtime::ui::theme_policy::init_catalog(None);
+    let diag = auto_ui_runtime::ui::theme_policy::init_catalog_from_discovery();
+    eprintln!("[ui-desktop] {diag}");
 }
 
 fn install_traces(fullscreen: bool, apps_dir: &std::path::Path) {
