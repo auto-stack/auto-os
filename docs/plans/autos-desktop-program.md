@@ -12,6 +12,27 @@
 > {028-launcher, 025-sys-monitor, 038-minesweeper, common/settings} +
 > 顶层 {ui-gallery, widgets-gallery}（经 P-3 容器探测/解析序定位注册与消费）。
 
+## 2026-11-03主题路线接续
+
+- [053归档](archive/053-host-theme-chain-and-calculator-adoption.md)：宿主主题链与calc交付；真实系统事件G-1 hold与真实outproc载体G-2仍按归档/Spec具名，不冒全闭。
+- [055正式计划](055-clock-theme-and-host-evidence-closure.md)：drafting r1、0/11；真实auto-clock正式包接入、四tab业务保持、系统事件及真实载体闭环；接UI036正式渠道，当前只立约、暂不实施。真实系统设置窗口到执行该腿时申请，不因立项获准修改。
+- [UI037业务示例](../../../auto-ui/docs/plans/037-business-examples-theme-migration.md)和[UI038专用支持核验](../../../auto-ui/docs/plans/038-specialized-examples-theme-readiness.md)各持示例域合同；教学012不是auto-clock，彼此不整项等待。054继续八产品组合，本批不改那八个pin。
+
+## 2026-11-03全部实际产品主题迁移（独立于教学Demo）
+
+清单与来源见[Design03](../design/03-product-theme-rollout.md)。本轮28个active入口逐项对账：053/calc已交1、055/clock已有合同1、新增六批26；不漏外部Musk/Jade和local syslog，不把Demo通过折算产品通过。所有新增计划drafting r1、0/9，暂不实施。
+
+| 唯一合同 | 完整产品范围 | 启动/交接 |
+|---|---|---|
+| [056](056-productivity-products-theme-adoption.md) | Notes/Todo/Calendar/Paint/Database/Chat/Blog/Charts八产品 | 接036正式发行；产品接已交付业务源，最终OS pin/主题组合等054先交付，不互相回退 |
+| [057](057-desktop-utilities-theme-adoption.md) | Weather/Launcher/Monitor/Explorer/os-config/syslog六入口 | 接036；设置沿053唯一policy；原在途计划按实际source释放写窗，syslog保持local |
+| [058](058-media-products-theme-adoption.md) | Music/Video/Photos三产品 | 接036与真实媒体基线；不等Reader或教学UI038 |
+| [059](059-reader-product-theme-adoption.md) | Reader正式阅读产品 | 接036及READER-007正式阅读表面/Locator来源，不借在途WIP/旧教学页 |
+| [060](060-desktop-games-theme-adoption.md) | Solitaire/Tetris/Minesweeper三产品 | 接036，保真实规则/输入/内容身份，不等AG全线 |
+| [061](061-external-workspaces-theme-adoption.md) | Kanban/Musk/Jade Garden/Term/jade-edit五产品 | 接036；外部/嵌套根固定真实source，不伪造pin；所需outproc能力才等055正式交付 |
+
+教学UI037/038单独持合同，不作为上述产品迁移来源或统一前置；真实OS系统主题事件只由055按其窗口许可验证，不成为所有inproc迁移门。本轮未改apps.manifest/任何产品pin或源，没有运行桌面/测试。
+
 ## 目标
 
 一套窗口管理代码（WM 是 AutoUI App），在 Win/Mac 上是单 OS 窗口的虚拟桌面，

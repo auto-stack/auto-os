@@ -1,0 +1,120 @@
+{
+  "date": "2026-10-16",
+  "plan": "auto-os/PLAN-049",
+  "revision": 1,
+  "authorization": "draft design and plan only; no implementation/worktree/agents/runtime tests",
+  "auto_os_head": "2b210066ef6855a5f584b118a020015b4146a3d7",
+  "auto_lang_head": "90d58cc85993e71791e49d83d43d8aef6fc00f67",
+  "allocation": {
+    "maximum_before": 48,
+    "allocated": 49,
+    "next_after": "050",
+    "method": "named mutex + exclusive .allocation.lock + repository new-plan.sh + uniqueness recheck"
+  },
+  "source_note": "Working-checkout hashes; RFC/index include this drafting cross-reference update; not a claim of committed implementation.",
+  "spec_gaps": [
+    "auto-os docs/specs/overview.md/project.md/goals.md absent",
+    "No current general application communication module",
+    "Notes submodule docs not available in this inspection"
+  ],
+  "inputs": [
+    {
+      "path": "D:\\autostack\\auto-os\\AGENTS.md",
+      "sha256": "f2a7b2a1fa5dd6e974ca9a4c9b7c0e355ce7e0e840291bf0ba29cb3ffeb80be3"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\README.md",
+      "sha256": "88f1f90b30efa136be810d01b26c1fc3d4998fa8b4ba15de34af7e88a8621756"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\design\\00-intro.md",
+      "sha256": "13622adc83c3c1e0ff25c50cce0603809d1a66df84494dca3e8f10ef56cc523e"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\design\\strategy\\auto-app-communication-v0.6.md",
+      "sha256": "0881765e5e7f03997e19fac3882cd577a1b5a785462d61706ecf497236ca2880"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\design\\strategy\\v0.6-foundations-roadmap.md",
+      "sha256": "b395316edd9b7ec29ca7ecfb95f21b8e3a11e059c599f9ea814c48edd4975765"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\design\\strategy\\system-devtools-v0.6.md",
+      "sha256": "37eb30811d57edf71edf9f6adcd30b14478c22fcaad0f66391da2f1a3fcbe889"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\specs\\apps\\independent-repositories.md",
+      "sha256": "16189b1a8d36ff1c8151c7b68a0f1241e98884ab296afd9d526fd0853c330f82"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\specs\\shell\\desktop-app-launch.md",
+      "sha256": "e40d283f6f5c1de1e6a78af73d3613416f70d159f67214fe6531b190cdc9e54c"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\specs\\shell\\state-files.md",
+      "sha256": "8ba3f7667bdeb86fdaf3fa7b22a00af98cc8b51c9cdf2ac17aebe7128a41ce15"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\scripts\\new-plan.sh",
+      "sha256": "63943d254689ebace79a095a05e998a7b5a57eb80ca661c11511e845c12f540b"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\scripts\\smoke-037-desktop-back.sh",
+      "sha256": "892a54ad7c8c8b9576dcd7db056ffed8598a0d9209c80f4bd16ee72dd104f5a6"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\AGENTS.md",
+      "sha256": "b804e03ffa284f6b3fcc93e55889384be12ba9d9b42cf270d294bb77f5a6acc5"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\docs\\specs\\overview.md",
+      "sha256": "47378c3fa1ed57ed4ea85a1b90923509fca6a3300989facff8c77a4974f69645"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\docs\\design\\strategy\\system-foundations-v06.md",
+      "sha256": "20a81b138ea36b3db2937bb08ce21b5709bd885d76494ad0dcc62cbfe94fd701"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\docs\\design\\37-v06-modularization-and-repo-boundaries.md",
+      "sha256": "04fca690fdd930798047a44d82a4c31b04aa91a5c490b78d59b15d66c78e9f24"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\crates\\auto-lang\\src\\vm\\task_system.rs",
+      "sha256": "619c5ff42226acac53258b3af1ca3c97cc2c74d2b4ed0c58d772e56351eda09d"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\crates\\auto-lang\\src\\ui\\desktop_protocol\\transport.rs",
+      "sha256": "14cf2c806fd5c7240a6d1166e81b71a24d5ef493a142642f8196521ffb2f3823"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\crates\\auto-lang\\src\\ui\\desktop_protocol\\broker.rs",
+      "sha256": "2eacef0b46a3fd3737be582f762970c5986348ec065bcc9bc05315ccdc3974b4"
+    },
+    {
+      "path": "D:\\autostack\\auto-lang\\experimental\\ac-core\\src\\link.rs",
+      "sha256": "5e7f6af700143ef909c45a03c457afd81b62b31d20e34459c012d0028c612d6d"
+    },
+    {
+      "path": "D:\\autostack\\auto-ai\\crates\\auto-ai-daemon\\Cargo.toml",
+      "sha256": "1450697d235f7365267b08ce162a4ea2c677ba557ad4c8e76d6141144c1d927e"
+    },
+    {
+      "path": "C:\\Users\\zhaop\\.codex\\skills\\auto-plan-new\\SKILL.md",
+      "sha256": "af91050145c6e602621e9cd0cb433995e72c48a8a5f63594fcd0220ae86b19d7"
+    },
+    {
+      "path": "C:\\Users\\zhaop\\.codex\\skills\\auto-plan-new\\references\\verification-contract.md",
+      "sha256": "22570b252d0e0e9ef06e04c1e2fb02e07a78a7c0b3ee1650ad4b041334f4d218"
+    }
+  ],
+  "drafts": [
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\design\\02-local-app-communication-f01.md",
+      "sha256": "ae73f8559b6b8e2a931e10aa5c3fc317b1cdff6e07465eba783e86ed242ea934"
+    },
+    {
+      "path": "D:\\autostack\\auto-os\\docs\\plans\\049-local-communication-f01.md",
+      "sha256": "5f0ee9186eac0eb7da360bb6ec47781d4ef708718b9efaaa0b53ba377f95fe13"
+    }
+  ]
+}

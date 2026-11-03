@@ -66,3 +66,11 @@ Hello `theme-policy/1` caps、零装载 adopt、`theme_pushed_rev` 判定），
 `plan-artifacts/plan-053` probe-t05 四腿重测（该 scope 已按 delete-at-
 merge 删除；重测脚本逻辑见 PLAN-053 归档页 §9 回合2 记录）。owner：
 宿主主题域后继计划。
+
+## 2026-11-03 主题后继认领（只立约，未关闭）
+
+[PLAN-055](055-clock-theme-and-host-evidence-closure.md) drafting r1、0/11认领053的G-1真实OS事件hold与OS053-OUTPROC-CARRIER（G-2）闭环；真实clock为第二产品/载体候选，T-01先有界核验现生成→adopt/broker可行性，036正式渠道随后消费。协议单测/standalone config轮询不代真实载体；系统设置仍须执行到该腿时获具体窗口许可。当前未实测/修复、两项不标closed，不释放原持有。054八产品装配不承担该主题工作。
+
+## THEME-PRODUCT-ROLLOUT（2026-11-03，仅立约）
+
+manifest 28实际入口的主题差额现全量登记在[Design03](../design/03-product-theme-rollout.md)：053/calc已有限交付、055/clock待做；余26分056生产力八、057工具六、058媒体三、059Reader一、060游戏三、061外部五。新计划均drafting0/9，未实施，不标closed。Musk/Jade等外部入口与syslog local保留分母；多产品clone领先OS pin且Reader/jade-edit有WIP，不能用旧pin/Demo覆盖。056最终pin等054交付再叠主题，Reader等007正式表面；其他批次无此全局前置。036仍在实施/复审修复，完整交付后再消费其新发行渠道；仅所需outproc腿接055，G-1/G-2仍归055，不释放原持有。

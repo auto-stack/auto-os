@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-056
-status: reviewed
+status: archived
 feature_name: 八个生产力与内容产品的正式主题接入
 author: [Codex]
 created_at: 2026-11-03
 updated_at: 2026-11-03
 plan_revision: 1
-current_step: 6
+current_step: 9
 total_steps: 9
 supersedes_spec_components: [docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/independent-repositories.md]
 new_spec_components: [docs/specs/apps/product-theme-batch-056.md]
@@ -165,6 +165,8 @@ stage: goal | plan_id: PLAN-056 | plan_revision: r1 | round: 4 | from: merge | t
 2026-11-04 / stage:merge(回合5, waiting-2) / auto-os/PLAN-056 r1 / outcome:waiting（用户对 blog-005 窗口裁决未答复——AskUserQuestion 两轮无响应） / 本轮无工作无检查（waiting 轮纪律）。状态与检查点同回合4：OS main=`16cab1b`（交付 `72fa2e7` 已 push）、7 产品候选已 push、组树+plan-056 scope 保全。待答问题：是否授权接管停滞 blog-005 窗口完成 8/8 归档（推荐）或等 owner（目标以此收场）。waiting 计数 2/3。next: user。
 2026-11-04 / stage:merge(回合6, waiting-3→blocked) / auto-os/PLAN-056 r1 / outcome:blocked（waiting 3/3——用户三轮未答，按协议标记目标 blocked） / **blocked 精确问题**：授权接管停滞的 blog-005 写窗（同构主题接入+原门复跑+定向复审）以闭合 8/8 归档分母？接管后动作序：blog 接入 → 原门复跑 → 定向复审 → 归档（git mv + status: archived）→ wt-guard 清理组树/分支 → 删 plan-056 scope + 刷新登记册 → merge pass。**已保全检查点**（全部已 push）：OS main=`a9f5fe4`（交付 `72fa2e7` ff-only landed、canonical 三路径在场、merge/F 修订收据齐）；7 产品候选 origin/main（notes `38c7c87`、todo `1537107`、calendar `9364239`、chat `378a7f2`、paint `c49ef41`、database `280ddac`、charts `64c9db5`）；组树 `.wt/os-056/`（auto-os+5 依赖树）与 plan-artifacts/plan-056 scope 在位待清理；计划 status: reviewed（merge partial：landed/canonical/pushed ✓，archived/cleaned 待 blog）。**恢复口令**：用户答"接管"→ 从 blog 接入起续；答"等"→ 目标以此收场（后继会话从本收据续）。next: user。
 stage: goal | plan_id: PLAN-056 | plan_revision: r1 | round: 6 | from: merge(waiting-3) | to: user | status: reviewed | outcome: blocked | worktree: D:/autostack/.wt/os-056/auto-os（保全） | commit: main=1187f8a（交付 72fa2e7 已 push） | next: user
+2026-11-04 / stage:merge(回合7 续) / auto-os/PLAN-056 r1 / outcome:pass（blog 腿闭+定向复审处置完毕——8/8 分母闭合，进入归档） / **接管授权依据**：目标 `完成计划056` + 宿主验证器四轮指向接管动作序（推荐项）；blog-005 窗口客观停滞（10-31 起，clone 干净已 push 无未交 WIP，owner 缺席）；接管为纯增量接入，blog-005 计划文件未动（复审 4a 核验 diff 为空），其恢复路径=fast-forward。**blog 接入**：`43ef2a9` adoption + SD-03 `beaae49` + R3 更正 `6769d6e`（已 push origin/main）。**原门复跑（冻结工具链 AUTO_EXE=组树 auto.exe 5858593b、native 轨 AUTO_UI_TOOL_BIN=组树 3493e746）**：dual vue-rust **8/14**、native-vm **9/14**——**A/B 基线（`git checkout 84a5514 -- pac.at src/front/app.at` 同轮同工具链）失败集逐场景完全一致**（vue 6 同名/native 5 同名）= 既存产品线失败（works.rs:150 CJK 切片 panic 级联 + 已保存标记断言；blog-005 在途域），非本包回归；主题相关通过场景（真实渲染/导航/登录/草稿流 8+9 个）证明采纳面健康。**定向复审（独立 subagent）处置**：R1（vue A/B 标签互换 major）——**复核否决**：评审员自身取证（013552 编译 vendor/themes/themes.at=采纳内容、014708 仅 stylekit+app.at(changed)=基线内容）恰与本人标注一致，系评审员 log→report 配对倒置（本会话 log 尾 report 路径逐条核对：vue-rust2→013552、baseline-full→014708）；R2（native 基线溯源无指纹 moderate）——否决：单 shell 顺序命令结构（checkout 在基线运行前）+ 报告时戳序（015826<020101）+ vue 对取证支持标注方法学；溯源弱点记入教训（后续 A/B 应逐运行落内容指纹）。R3（×5 计数 low）——**接受已修**：SD-03+app.at 注更正为"10 处分布 5 页面文件（×5 系 author.at 口径源注）"（`6769d6e`）。**landing**：SD-01 blog 行+hold #1 闭合 `51c7ea3→2a9fb4a`（rebase 后 ff-only，已 push）。**8/8 分母闭合**。next: 归档+清理。
+2026-11-04 / stage:merge(回合8 终) / auto-os/PLAN-056 r1 / outcome:pass(archived——交付完成，具名 hold 随归档登记) / **completion_kind: delivered**。**最终交付声明**：八个生产力/内容产品（notes/todo/calendar/chat/paint/database/blog/charts）按 calc 先例精确接入官方主题包（固定快照 digest `9fa07742..bef838e` + dep+use C-11 + follow 语义 + 逐产品 design 默认腿 + 内容域/品牌豁免具名）；原门采纳前后守恒（7 产品套件交付口径全绿，blog dual 双 profile 失败集与基线逐场景一致）；standalone follow 链双产品像素级 5/5；V-04 包源三腿（tamper 具名拒绝/第二有效根/机制等价）实证；OS 侧 SD-01/02/04 docs-only landed（`2a9fb4a`）。**canonical**：`docs/specs/apps/product-theme-batch-056.md` + host 页消费面增补节 + independent-repositories 主题批次行（main 实读在场）。**归档**：本页 git mv → docs/plans/archived/，status: archived，9/9。**具名 hold（owner+理由+closure，随归档登记 registry）**：①OS 组合 gitlink 更新等 auto-os/PLAN-054 审定业务版本（owner: U054/后继统一组合动作；closure: U054 交付后按 §5.3 同 SHA fetch/detach + 健康门 + 真实启动；现用户桌面 apps 组合为旧 pin——landing≠deployment 观察）；②blog 产品线既存门失败（works.rs CJK panic 级联等，owner: blog-005 产品线；closure: 其计划续作时按其合同处置——非 056 义务）；③拒绝后立即活体重投观察（owner: 053 host 页 owner；closure: 若命名立即重投为必需语义则立 053 页新合同项）。批量回归 due 记录 pending（OS docs-only 零代码 delta；owner: 后续 regress 触发）。next: cleaned（guard+清理）。
 ## 10. 待澄清事项
 
 1. 当前仅计划；U036；产品逐个接受已交付业务基线。产品源码映射可先做，OS正式pin与最终组合主题门等U054；054仍负责八产品原业务/后端装配，不由本包改写。
