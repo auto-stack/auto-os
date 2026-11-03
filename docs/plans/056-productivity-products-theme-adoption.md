@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-056
-status: executing
+status: execution_done
 feature_name: 八个生产力与内容产品的正式主题接入
 author: [Codex]
 created_at: 2026-11-03
