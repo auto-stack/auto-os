@@ -712,6 +712,7 @@ impl ConnTask {
                     }
                 }
                 let mut w = w.lock().await;
+                self.log.event("forward", &[("route", route_id.as_str())]);
                 if let Err(e) = send_message(&mut *w, &Message::CallToProvider(pcall)).await {
                     drop(w);
                     self.log.event(

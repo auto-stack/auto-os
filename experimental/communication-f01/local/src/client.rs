@@ -106,15 +106,14 @@ impl CommClient {
 
     async fn request(&self, key: PendingKey, msg: Message) -> Result<Message, CommError> {
         let (tx, rx) = oneshot::channel();
-        if self
-            .inner
-            .pending
-            .lock()
-            .unwrap()
-            .insert(key.clone(), tx)
-            .is_some()
         {
-            return Err(CommError::schema("correlation key already active"));
+            let mut pending = self.inner.pending.lock().unwrap();
+            if pending.contains_key(&key) {
+                // never displace an in-flight correlation: the duplicate is
+                // rejected client-side and the original stays resolvable
+                return Err(CommError::schema("correlation key already active"));
+            }
+            pending.insert(key, tx);
         }
         {
             let mut w = self.inner.write.lock().await;
@@ -264,6 +263,7 @@ fn spawn_read_loop(inner: Arc<ClientInner>, mut r: tokio::io::ReadHalf<NamedPipe
                         let _ = tx.map(|tx| tx.send(Ok(msg)));
                     }
                 }
+                // clean EOF or read error: fail all pending below
                 _ => break,
             }
         }
