@@ -325,3 +325,50 @@ pub fn new_op() -> String {
 pub fn disp(p: &Path) -> String {
     p.to_string_lossy().to_string()
 }
+
+/// Async barrier/endpoint/provider-ready waits for use inside join!.
+pub async fn wait_barrier_async(
+    run_dir: &Path,
+    operation_id: &str,
+    deadline: Instant,
+) -> std::io::Result<String> {
+    let dir = support::barrier_dir(run_dir);
+    let p = dir.join(format!("barrier-{operation_id}.json"));
+    #[derive(serde::Deserialize)]
+    struct Marker {
+        barrier: String,
+    }
+    loop {
+        if Instant::now() >= deadline {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "barrier wait",
+            ));
+        }
+        if let Ok(bytes) = std::fs::read(&p) {
+            if let Ok(m) = serde_json::from_slice::<Marker>(&bytes) {
+                return Ok(m.barrier);
+            }
+        }
+        tokio::time::sleep(Duration::from_millis(25)).await;
+    }
+}
+
+pub async fn wait_provider_ready_async(
+    run_dir: &Path,
+    deadline: Instant,
+) -> std::io::Result<support::ProviderReady> {
+    let p = support::provider_ready_file(run_dir);
+    loop {
+        if Instant::now() >= deadline {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "provider-ready wait",
+            ));
+        }
+        if let Ok(v) = support::read_json::<support::ProviderReady>(&p) {
+            return Ok(v);
+        }
+        tokio::time::sleep(Duration::from_millis(25)).await;
+    }
+}
