@@ -330,6 +330,30 @@ pub fn pipe_dacl_sids(handle: HANDLE) -> Result<Vec<String>, std::io::Error> {
     }
 }
 
+/// Query the PIPE_REJECT_REMOTE_CLIENTS state bit of a pipe handle
+/// (V-05 evidence: the flag is set on the real object, not just requested).
+pub fn pipe_rejects_remote(handle: HANDLE) -> std::io::Result<bool> {
+    unsafe {
+        use windows_sys::Win32::System::Pipes::GetNamedPipeInfo;
+        let mut flags: u32 = 0;
+        let mut out_size: u32 = 0;
+        let mut in_size: u32 = 0;
+        let mut max_instances: u32 = 0;
+        if GetNamedPipeInfo(
+            handle,
+            &mut flags,
+            &mut out_size,
+            &mut in_size,
+            &mut max_instances,
+        ) == 0
+        {
+            return Err(last_os_error());
+        }
+        // PIPE_REJECT_REMOTE_CLIENTS (0x8); 0 means PIPE_ACCEPT_REMOTE_CLIENTS
+        Ok(flags & PIPE_REJECT_REMOTE_CLIENTS != 0)
+    }
+}
+
 /// Convenience wrapper: raw `HANDLE` -> `HANDLE`-based DACL probe for tests
 /// that hold a raw server handle before wrapping.
 pub fn pipe_dacl_sids_raw(handle: isize) -> Result<Vec<String>, std::io::Error> {

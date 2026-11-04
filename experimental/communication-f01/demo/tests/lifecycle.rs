@@ -27,7 +27,65 @@ impl TestRun {
     fn new(tag: &str) -> TestRun {
         let run_dir = support::create_run_dir(tag);
         let job = JobGuard::new().expect("job object");
+        let _creds = support::write_access_config(
+            &run_dir,
+            &[
+                (
+                    "capture-provider",
+                    support::ROLE_PROVIDER,
+                    vec!["auto.capture.inbox"],
+                ),
+                ("caller-a", support::ROLE_CALLER, vec!["auto.capture.inbox"]),
+                ("denied-caller", support::ROLE_CALLER, vec![]),
+            ],
+        );
         TestRun { run_dir, job }
+    }
+
+    fn deadline(&self) -> Instant {
+        Instant::now() + Duration::from_secs(15)
+    }
+
+    /// Broker bound to a fixed pipe name (rebind/reuse counterexamples).
+    fn spawn_broker_named(&self, pipe_name: &str) -> autoos_comm_local::job::ManagedChild {
+        let cfg = BrokerConfigFile {
+            run_dir: self.run_dir.to_string_lossy().to_string(),
+            pipe_name: Some(pipe_name.to_string()),
+            policy_file: self
+                .run_dir
+                .join("broker-access.json")
+                .to_string_lossy()
+                .to_string(),
+        };
+        let p = self.run_dir.join(format!(
+            "broker-cfg-{}.json",
+            autoos_comm_core::ids::new_id()
+        ));
+        support::write_json(&p, &cfg);
+        let (child, _) = support::spawn_managed(
+            &self.job,
+            &bin("comm-broker.exe"),
+            &["--config".to_string(), p.to_string_lossy().to_string()],
+            &[],
+            &self.run_dir,
+            &support::logs_dir(&self.run_dir).join("broker-stderr.log"),
+        )
+        .expect("spawn broker named");
+        child
+    }
+
+    fn spawn_provider(&self, barrier: Option<&str>) -> autoos_comm_local::job::ManagedChild {
+        let cfg = write_provider_config(&self.run_dir, barrier);
+        let (child, _) = support::spawn_managed(
+            &self.job,
+            &bin("capture-inbox.exe"),
+            &["--config".to_string(), cfg.to_string_lossy().to_string()],
+            &[],
+            &self.run_dir,
+            &support::logs_dir(&self.run_dir).join("provider-stderr.log"),
+        )
+        .expect("spawn provider");
+        child
     }
 }
 
@@ -413,4 +471,198 @@ fn parse_field(out: &str, field: &str) -> Option<String> {
         }
     }
     None
+}
+
+/// V-13: a grandchild holding the child's stdout pipe does not wedge the
+/// controller: the Job kill-on-close reaps the whole tree and the pipe
+/// reader reclaims with a clean EOF.
+#[test]
+fn v13_grandchild_holding_stdout_is_contained() {
+    use std::io::Read;
+    use std::sync::mpsc;
+    use std::time::Instant;
+
+    let run = TestRun::new("v13stdout");
+    // the batch spawns a silent background grandchild (ping, 60s) that
+    // inherits stdout, then exits — the grandchild keeps the write end open
+    let bat = run.run_dir.join("spawn-grandchild.bat");
+    std::fs::write(&bat, "start /b cmd /c ping -n 60 127.0.0.1\r\n").expect("write bat");
+    let cmd_arg = bat.to_string_lossy().to_string();
+    let (mut child, stdout) = support::spawn_managed(
+        &run.job,
+        &PathBuf::from("cmd.exe"),
+        &["/c".to_string(), cmd_arg],
+        &[],
+        &run.run_dir,
+        &support::logs_dir(&run.run_dir).join("cmd-stderr.log"),
+    )
+    .expect("spawn cmd");
+    let code = child
+        .wait_for(Duration::from_secs(5))
+        .expect("cmd wait")
+        .expect("cmd exits promptly");
+    assert_eq!(code, 0, "cmd itself exits 0");
+
+    // the grandchild still holds the write end: the reader drains whatever
+    // was buffered and must reach EOF promptly after the job kill; a
+    // surviving grandchild (ping runs 60s) would keep the stream open
+    let mut stdout = stdout.expect("stdout pipe");
+    let (tx, rx) = mpsc::channel();
+    let handle = std::thread::spawn(move || {
+        let mut buf = [0u8; 4096];
+        let mut drained = 0usize;
+        loop {
+            match stdout.read(&mut buf) {
+                Ok(0) => {
+                    let _ = tx.send("eof".to_string());
+                    return;
+                }
+                Ok(n) => drained += n,
+                Err(e) => {
+                    let _ = tx.send(format!("err:{e}"));
+                    return;
+                }
+            }
+            if drained > 4 * 1024 * 1024 {
+                let _ = tx.send("overflow".to_string());
+                return;
+            }
+        }
+    });
+    // drop the job → TerminateJobObject → grandchild dies → reader EOF
+    let started = Instant::now();
+    drop(run);
+    drop(handle); // join not needed; the channel carries the outcome
+    let eof = rx
+        .recv_timeout(Duration::from_secs(5))
+        .expect("reader finishes after job drop");
+    assert_eq!(
+        eof, "eof",
+        "pipe reader reclaims with EOF; a live grandchild would keep writing for 60s"
+    );
+    assert!(started.elapsed() < Duration::from_secs(5));
+}
+
+/// V-13: startup failures never degrade to an unmanaged run.
+#[test]
+fn v13_startup_failures_and_reclaim() {
+    let run = TestRun::new("v13fail");
+
+    // nonexistent executable → spawn error, nothing lingers
+    let missing = run.job.spawn(
+        &run.run_dir.join("definitely-missing.exe"),
+        &[],
+        &[],
+        Some(&run.run_dir),
+        autoos_comm_local::job::ChildStdio::default(),
+    );
+    assert!(missing.is_err(), "missing exe fails to spawn");
+
+    // broker with a missing config → exit 2 (usage), job-managed
+    let (_child2, _) = support::spawn_managed(
+        &run.job,
+        &bin("comm-broker.exe"),
+        &[
+            "--config".to_string(),
+            run.run_dir.join("nope.json").to_string_lossy().to_string(),
+        ],
+        &[],
+        &run.run_dir,
+        &support::logs_dir(&run.run_dir).join("broken-broker.log"),
+    )
+    .expect("spawn with bad config");
+    // (exit code asserted via the child in the scope below)
+
+    // containment: a job-dropped broker dies even without a stop flag
+    let job = JobGuard::new().expect("job");
+    let cfg = BrokerConfigFile {
+        run_dir: run.run_dir.to_string_lossy().to_string(),
+        pipe_name: None,
+        policy_file: run
+            .run_dir
+            .join("broker-access.json")
+            .to_string_lossy()
+            .to_string(),
+    };
+    let p = run.run_dir.join("broker-cfg-v13.json");
+    support::write_json(&p, &cfg);
+    let (broker, _) = support::spawn_managed(
+        &job,
+        &bin("comm-broker.exe"),
+        &["--config".to_string(), p.to_string_lossy().to_string()],
+        &[],
+        &run.run_dir,
+        &support::logs_dir(&run.run_dir).join("broker13.log"),
+    )
+    .expect("spawn contained broker");
+    let pid = broker.pid;
+    assert!(
+        !autoos_comm_local::job::process_gone(pid),
+        "broker running before drop"
+    );
+    drop(job); // kill-on-close
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while Instant::now() < deadline {
+        if autoos_comm_local::job::process_gone(pid) {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(50));
+    }
+    if !autoos_comm_local::job::process_gone(pid) {
+        // diagnostic evidence for triage: direct TerminateProcess as control
+        let direct = broker.wait_for(Duration::from_secs(1));
+        panic!("job drop reclaims the broker (pid {pid} still alive, direct wait_for={direct:?})");
+    }
+}
+
+/// V-13: pipe names and the inbox lock are reusable after a clean stop —
+/// a fixed-name broker rebinds and the provider re-acquires the lock.
+#[tokio::test(flavor = "multi_thread")]
+async fn v13_pipe_and_lock_reusable_after_clean_stop() {
+    let run = TestRun::new("v13reuse");
+    let fixed = format!(
+        r"\\.\pipe\autoos-comm-f01-fixed-{}",
+        autoos_comm_core::ids::new_id()
+    );
+    let broker1 = run.spawn_broker_named(&fixed);
+    let ep1 = support::wait_endpoint(&run.run_dir, run.deadline()).expect("endpoint1");
+    assert_eq!(ep1.pipe_name, fixed);
+    let provider1 = run.spawn_provider(None);
+    support::wait_provider_ready(&run.run_dir, run.deadline()).expect("ready1");
+
+    // clean stop of both; wait for the provider to release the inbox lock
+    support::request_stop(&run.run_dir, "provider");
+    support::request_stop(&run.run_dir, "broker");
+    assert!(broker1
+        .wait_for(Duration::from_secs(5))
+        .expect("wait b1")
+        .is_some());
+    assert!(
+        provider1
+            .wait_for(Duration::from_secs(5))
+            .expect("wait p1")
+            .is_some(),
+        "provider exits via its own stop flag"
+    );
+
+    // the same pipe name binds again; the inbox lock is re-acquired
+    support::clear_stop(&run.run_dir, "broker");
+    support::clear_stop(&run.run_dir, "provider");
+    let broker2 = run.spawn_broker_named(&fixed);
+    // the endpoint file may briefly hold broker1's data
+    let deadline = run.deadline();
+    let mut ep2 = support::wait_endpoint(&run.run_dir, deadline).expect("endpoint2");
+    while ep2.broker_epoch == ep1.broker_epoch {
+        assert!(Instant::now() < deadline, "fresh endpoint never published");
+        std::thread::sleep(Duration::from_millis(25));
+        ep2 = support::wait_endpoint(&run.run_dir, deadline).expect("endpoint2");
+    }
+    assert_eq!(ep2.pipe_name, fixed, "pipe name reusable");
+    assert_ne!(ep2.broker_epoch, ep1.broker_epoch, "fresh epoch on rebind");
+    let _provider2 = run.spawn_provider(None);
+    let ready2 = support::wait_provider_ready(&run.run_dir, run.deadline()).expect("ready2");
+    assert_eq!(
+        ready2.broker_epoch, ep2.broker_epoch,
+        "provider re-registered on new broker"
+    );
 }

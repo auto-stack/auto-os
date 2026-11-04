@@ -84,6 +84,34 @@ impl TestRun {
         child
     }
 
+    /// Broker bound to a fixed pipe name (rebind/reuse counterexamples).
+    pub fn spawn_broker_named(&self, pipe_name: &str) -> ManagedChild {
+        let cfg = BrokerConfigFile {
+            run_dir: self.run_dir.to_string_lossy().to_string(),
+            pipe_name: Some(pipe_name.to_string()),
+            policy_file: self
+                .run_dir
+                .join("broker-access.json")
+                .to_string_lossy()
+                .to_string(),
+        };
+        let p = self.run_dir.join(format!(
+            "broker-cfg-{}.json",
+            autoos_comm_core::ids::new_id()
+        ));
+        support::write_json(&p, &cfg);
+        let (child, _) = support::spawn_managed(
+            &self.job,
+            &bin("comm-broker.exe"),
+            &["--config".to_string(), p.to_string_lossy().to_string()],
+            &[],
+            &self.run_dir,
+            &support::logs_dir(&self.run_dir).join("broker-stderr.log"),
+        )
+        .expect("spawn broker named");
+        child
+    }
+
     pub fn spawn_provider(&self, barrier: Option<&str>) -> ManagedChild {
         let cfg = ProviderServiceConfig {
             run_dir: self.run_dir.to_string_lossy().to_string(),

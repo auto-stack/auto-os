@@ -15,7 +15,7 @@ use windows_sys::Win32::Foundation::{CloseHandle, GetLastError, HANDLE, WAIT_OBJ
 use windows_sys::Win32::Security::SECURITY_ATTRIBUTES;
 use windows_sys::Win32::System::JobObjects::{
     AssignProcessToJobObject, CreateJobObjectW, JobObjectExtendedLimitInformation,
-    SetInformationJobObject, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+    SetInformationJobObject, TerminateJobObject, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
     JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
 };
 use windows_sys::Win32::System::Threading::{
@@ -233,17 +233,69 @@ fn push_quoted(out: &mut Vec<u16>, s: &str) {
     out.push('"' as u16);
 }
 
+/// Terminate every process currently in the job: direct PID enumeration
+/// first (robust under nested/sandboxed jobs), TerminateJobObject as the
+/// catch-all.
+pub fn terminate_job(job: HANDLE) {
+    const PROCESS_TERMINATE: u32 = 0x0001;
+    unsafe {
+        use windows_sys::Win32::System::JobObjects::{
+            JobObjectBasicProcessIdList, QueryInformationJobObject,
+        };
+        // 8 header bytes + up to 64 ULONG_PTR pids
+        let mut buf = [0u8; 16 + 64 * std::mem::size_of::<usize>()];
+        let ok = QueryInformationJobObject(
+            job,
+            JobObjectBasicProcessIdList,
+            buf.as_mut_ptr() as *const _ as *mut c_void,
+            buf.len() as u32,
+            std::ptr::null_mut(),
+        );
+        if ok != 0 {
+            let in_list = u32::from_le_bytes([buf[4], buf[5], buf[6], buf[7]]) as usize;
+            for i in 0..in_list.min(64) {
+                let off = 8 + i * std::mem::size_of::<usize>();
+                let pid = usize::from_le_bytes(buf[off..off + 8].try_into().unwrap());
+                if pid == 0 {
+                    continue;
+                }
+                let h = windows_sys::Win32::System::Threading::OpenProcess(
+                    PROCESS_TERMINATE,
+                    0,
+                    pid as u32,
+                );
+                if !h.is_null() {
+                    TerminateProcess(h, 1);
+                    CloseHandle(h);
+                }
+            }
+        }
+        TerminateJobObject(job, 0);
+    }
+}
+
+impl Drop for JobGuard {
+    fn drop(&mut self) {
+        unsafe {
+            terminate_job(self.job);
+            CloseHandle(self.job); // kill-on-close as the final safety net
+        }
+    }
+}
+
 /// True if the process `pid` no longer exists (used for reclaim checks).
 pub fn process_gone(pid: u32) -> bool {
+    const SYNCHRONIZE: u32 = 0x0010_0000; // standard access right (winnt.h)
     use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_QUERY_LIMITED_INFORMATION};
     unsafe {
-        let h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid);
+        // SYNCHRONIZE is required for WaitForSingleObject on the handle
+        let h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE, 0, pid);
         if h.is_null() {
             return true;
         }
         let wait = WaitForSingleObject(h, 0);
         CloseHandle(h);
-        wait == WAIT_OBJECT_0 // exited (signal-able) => gone for containment checks
+        wait == WAIT_OBJECT_0 // signaled => exited
     }
 }
 
