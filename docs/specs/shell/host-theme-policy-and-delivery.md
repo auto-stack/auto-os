@@ -4,6 +4,31 @@
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
 > P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
 
+## 产品批次消费面（PLAN-059 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-059 为第四实际消费者批次
+（Reader 阅读产品：018-book-reader，登记见
+[../apps/product-theme-batch-059.md](../apps/product-theme-batch-059.md)）：
+
+- reader 同 056–058 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；pac `theme` 键缺省 = follow，产品历来无
+  theme 键）。App 级 `design { theme: "Auto" }` + `dark_mode` 位派生
+  mode（独立默认 light = 产品原纯浅色语义）。
+- **阅读表面经产品正式引擎端口消费（本批新增消费形态）**：宿主/模式
+  不直染出版物内容——阅读引擎配色（sepia/dark）经 READER-007 命令端口
+  （`/api/reader/command` `op:"settings"`）按"显式书级选择 > 应用模式
+  派生"接入；`window.__reader.appliedSettings.theme` 为端口读回 oracle。
+  内容域（正文/图片/封面/批注语义色）归产品/引擎 owner 豁免。
+- **vue 轨 design 投影门控缺口（本批具名修复，owner=auto-ui）**：
+  `design { theme }` 运行时注入此前被 `has_accent_color ||
+  has_theme_name` 静默截断——无 accent 产品（本批 reader、056 todo 同形）
+  vue 轨官方包不上身；056–058 像素 oracle 均为 VM 轨，该缺陷未被此前
+  批次门覆盖。修复（auto-ui 组树 `ui_gen/vue/script.rs` 门控扩三臂
+  design.theme 臂）后 reader vue 轨像素/读回七腿全绿；056 todo 的 vue
+  轨像素门从未执行的事实由本页注记，不追溯其验收结论。
+- **OS056-REAPPLY-NOTE 边界确认**：本批恢复路径按合同命名"重开"实测
+  通过（腿 FR）；live 外写翻转臂滞留维持 053 owner 注记，非本批回归。
+
 ## 产品批次消费面（PLAN-058 增补）
 
 本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-058 为第三实际消费者批次

@@ -56,6 +56,13 @@ Status: v0.6 development baseline; product paths updated 2026-10-22 (PLAN-050).
   （fetch/detach 同 SHA + 健康门 + 实际启动后提交），无 054 全局前置；
   video 两项具名预存红（media 能力臂后端生成、冻结线子模块导入解析）
   owner=auto-lang，关闭条件与 A/B 证据见批次页；阶段计数仅按实际验收。
+- **主题批次（PLAN-059）**：reader（018-book-reader）阅读产品独立仓候选
+  （SHA 于 T-05 回填），同 056–058 消费形态接入官方主题包；阅读表面经
+  READER-007 正式引擎端口按"显式书级选择 > 应用模式派生"接入（详见
+  [product-theme-batch-059](product-theme-batch-059.md)）。本批 OS 组合
+  gitlink 按本批自身门更新（fetch/detach 同 SHA + 健康门 + 实际启动后
+  提交），无 054 全局前置；vue 轨 design 投影门控缺口具名修复
+  owner=auto-ui（证据见批次页）；阶段计数仅按实际验收。
 - apps.manifest 使用 kind=repo，repo 指实际子模块应用根；.gitmodules 与 160000 gitlink 同一提交维护。
 - 21 个新产品的物理目录使用正式产品仓名（如 `apps/auto-notes`）；原主来源 ID 继续保留桌面身份、图标与引用。新产品端口在 17810–17851，
   各 app 实际占用以 pac.at 与 manifest 为准，无后端的不声明后端端口。
