@@ -163,6 +163,8 @@ stage: goal | plan_id: PLAN-058 | plan_revision: r1 | round: 2 | from: review | 
 
 2026-11-04 / stage:merge / closeout / cleaned（部分 pending 项见尾） / wt-guard：六树全清（auto-os/lang/ui/web/down/man 逐树 "无任何 reparse point"）；worktree 移除：lang/ui/web/down/man 五树+git 元数据 prune 完毕、分支 codex/plan-058-product-themes 已删（@c2e9c5a）；auto-os 树内容全部删除（python 逐文件 0 locked），唯空目录句柄被外部进程占用（他方 cargo 构建会话 CWD），rmdir pending——guard 已清、git 已 prune、内容已空，仅剩目录壳，句柄释放后 rmdir 即净；plan-artifacts/plan-058 全 scope 折叠后删除（R-01 两腿日志=exit 0 摘要已折入本页 merge 收据；R-02 config 就地改写注明于 hosted 收据；所有像素数值/命令/退出码已折入 §9 各收据）；registry 刷新：新增 hold ①PLAN-058-MEDIA-BACK-GEN（video media 能力臂后端生成两链同败，owner=auto-lang 后端生成，关闭条件=生成完整工作区+video smoke.spec.ts 真实 scan/播放门绿）、②PLAN-058-FROZEN-LINE-CHILD-IMPORT（冻结线子模块 dep-style 导入解析 fatal，owner=auto-lang 解析线，关闭条件=冻结线兼容或批次例外线文档化维持）；既有 hold ③OS056-REAPPLY-NOTE（owner=053）维持并在本批复现实录；完成态 completion_kind: delivered；batch_regression due（.last-batch-regression.json 缺失）→ 交接 auto-plan-regress 主检出单实例执行，非本计划门。
 
+stage: goal | plan_id: PLAN-058 | plan_revision: r1 | round: 3 | from: merge | to: done | status: archived | outcome: pass | worktree: 已移除（.wt/os-058 组：五树+分支+git 元数据净删；auto-os 树内容净删、空目录壳 pending 外部句柄——guard clean/git prune 在案） | commit: 交付=c2e9c5a7（main ff-only，已 push）；归档=06a3751/7e16819（已 push） | next: done（goal `完成计划058` 全链闭环：work 六任务+三产品候选+V-01..05 → 独立 final review pass（AC-01..05，评审自主 photos 复跑 exit 0 字节级可复现+红①复现+hosted 11 PNG 实测）→ merge 三产品 ff push/OS ff 落地/canonical 核实/归档/清理；batch regression due 交接 regress（单实例纪律：检测到他方 cargo-nextest 在跑，不并行）；空目录壳 rmdir pending 项仅 cosmetic）
+
 ## 10. 待澄清事项
 
 1. 当前仅计划；U036和三个产品实际声明的扫描/播放/图像支持基线；不等Reader007、059、UI038研究或054整项。真实媒体链若阻断必需门，交实际owner修复/前置，不以空视图或404代PASS。
