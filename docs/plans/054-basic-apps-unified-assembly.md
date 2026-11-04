@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-054
-status: drafting
+status: executing
 feature_name: 八个基础应用统一组合与桌面任务验收
 author: [Codex]
 created_at: 2026-11-03
-updated_at: 2026-11-03
+updated_at: 2026-11-04
 plan_revision: 1
-current_step: 0
+current_step: 1
 total_steps: 10
 base_branch: main
 base_commit: 65fc70de8b505657db660d91024b2cf4425b7759
@@ -142,7 +142,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 
 ## 8. 执行步骤
 
-- [ ] T-00（owner_stage=work；依赖050/051；AC-01/02）：只读复核交付/公共工具和registry/backend全路径，输出assembly-decision；对尚缺前置写具体owner/关闭条件，此任务不需升级pin。
+- [x] T-00（owner_stage=work；依赖050/051；AC-01/02）：只读复核交付/公共工具和registry/backend全路径，输出assembly-decision；对尚缺前置写具体owner/关闭条件，此任务不需升级pin。[✅ 已完成 2026-11-04] 证据：7/8 交付门关闭（Todo-002、Database-002 已于 11-03 后归档交付并 push；Notes/Calendar/Paint/Chat/Charts 门在 056 基线上 intact）；Blog 唯一硬缺口，其 auto-ui 前置 PLAN-050 已 merge pass（master 024fe57a，vue.rs 发射 optimizeDeps.include+host 127.0.0.1+strictPort），BLOG-005 owner 会话已获授权路线①待 resume 归档。registry/backend 四臂全路径探针冻结 T-03 接线边界：Paint/Charts 走 inproc ③ VM session（其已验 profile）；Rust 六雄首选 outproc 孵化臂（auto run --autodesk-incubate，api:"rust" 自动起 Rust 服务），daemon 臂因 8 app 均无 /api/health 暂不可用（退路=app owner 补 health+release 二进制）。数据根六 env 逐仓 grep 核实。主检出 apps/auto-charts 检出 d5f5535≠gitlink 77b6f82 记录待 T-02 校正。全文见 plan-artifacts/plan-054/assembly-decision.md（sha256 06575569…48d8）。工作树 D:/autostack/.wt/os-054/auto-os（codex/plan-054-dev@f34edf1）已建，T-00 零代码改动。
 - [ ] T-01（owner_stage=work；依赖T-00及8app实际交付；AC-01）：关闭§5全部交付门并冻结delivery-lock；Todo002/Database002/Blog005未闭合时不能勾选。
 - [ ] T-02（owner_stage=work；依赖T-01；AC-02）：建立唯一OS候选树，完整初始化所需组合，只把8app detached到已push交付SHA；验证健康/ID/源身份及错误反控，Reader和其他pin保持。
 - [ ] T-03（owner_stage=work；依赖T-02及实际最小owner前置；AC-02/03）：在现有声明/接入机制收口后端profile、端口/路由和数据作用域；不开发app功能或重建服务生态。
@@ -157,7 +157,11 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 
 - stage: new | plan_id: PLAN-054 | plan_revision: 1 | outcome: pass（仅T-00只读准备就绪；T-01交付门尚不满足，禁止pin升级） | next: work/T-00（等待后续实施指令）；TODO-002→work、DATABASE-002→final review/merge/push、BLOG-005→实际owner前置消费分别沿原计划。
 - 本轮只查Plan/Spec/源码/提交祖先与远端，未构建/运行应用或桌面、未创建工作树、未修改app或升级OS子模块。053预留号和在途文件保留；不自动执行这份草案。
+- stage: work | plan_id: PLAN-054 | plan_revision: r1 | outcome: pass（T-00 完成；T-01 被外部前置阻塞，保持 executing） | worktree_path: D:/autostack/.wt/os-054/auto-os | branch: codex/plan-054-dev | base_commit: f34edf1 | code_commit: f34edf1（T-00 零代码改动） | dependency_revisions: auto-ui master 024fe57a（PLAN-050 已并）/auto-lang 9f38bbf69/auto-man 2bbd954（观察值，T-01 重冻结） | task_ids: T-00 | evidence: 7/8 交付门关闭（TODO-002 archived delivery 4c51230、DATABASE-002 archived delivery f07d86e 均 push；056 具名 hold OS056-U054-PINS 移交 8/8 基线 SHA）；Blog 门未关闭=唯一硬缺口，其上游 auto-ui 前置已交付，owner=BLOG-005 会话 | blockers: T-01 需 BLOG-005 archived+push（auto-blog） | next: work/T-01（等 BLOG-005）
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 1 | from: drafting | to: work | status: executing | outcome: pass | worktree: D:/autostack/.wt/os-054/auto-os | commit: f34edf1 | next: work/T-01（ Blog-005 外部前置；未关闭前禁止 T-02 pin 升级与候选桌面验收）
 
 ## 10. 待澄清事项
 
-无须再次确认“先独立可用、后统一OS集成”的方向。必需前置当前未关闭，具体事实见核对报告。技术选择由T-00形成有界可行性/责任决策，只有实际变更目标/验收/跨仓写入范围才需新用户决定；不得通过降低Blog dev门、跳过Database原生review或沿旧Todo基线使前置看似满足。若某app确无法在声明的桌面承载运行，给最小反例与owner前置，受影响任务保持未完成。
+无须再次确认“先独立可用、后统一OS集成”的方向。不得通过降低Blog dev门、跳过Database原生review或沿旧Todo基线使前置看似满足。若某app确无法在声明的桌面承载运行，给最小反例与owner前置，受影响任务保持未完成。
+- **T-01 硬前置（2026-11-04 T-00 结论）**：BLOG-005 未归档 = 唯一关闭缺口。其上游 auto-ui 前置已于 2026-11-04 交付（PLAN-050 merge pass @ master 024fe57a：optimizeDeps.include+strictPort+host 发射）；BLOG-005 目标会话已获用户路线①授权，resume→冷缓存 vue-dev-rust 至绿→T-02..T-07→归档。**关闭条件 = auto-blog docs/plans/archived/005-*.md status: archived 且 delivery commit 已 push**。此前禁止 T-02 pin 升级与候选桌面验收（§2/AC-01 红线）。Blog pin 不得用 056 移交的 6769d6e（仅主题基线、不含 005 作者页功能）。
+- 主检出 apps/auto-charts 检出 d5f5535 ≠ gitlink 77b6f82：T-02 候选树按 pin 重建校正，本轮不动（与 11-03 核对一致）。技术选择由T-00形成有界可行性/责任决策，只有实际变更目标/验收/跨仓写入范围才需新用户决定；不得通过降低Blog dev门、跳过Database原生review或沿旧Todo基线使前置看似满足。若某app确无法在声明的桌面承载运行，给最小反例与owner前置，受影响任务保持未完成。
