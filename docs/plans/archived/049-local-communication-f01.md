@@ -6,7 +6,7 @@ author: [Codex]
 created_at: 2026-10-16
 updated_at: 2026-10-16
 plan_revision: 1
-current_step: 5
+current_step: 8
 total_steps: 8
 supersedes_spec_components: []
 new_spec_components:
@@ -279,6 +279,19 @@ proposed 与实现一致（worktree docs/specs/communication/）。
 Spec 发布（SD-01..04 落 canonical）、归档、wt-guard 清理。
 
 状态：executing → reviewed；current_step 6。
+
+### goal 回执（2026-11-05，round 3 —— 终态）
+
+`stage: goal | plan_id: PLAN-049 | plan_revision: r1 | round: 3 | from: merge | to: done | status: archived | outcome: pass | delivery_commit: 4be813d | archive: docs/plans/archived/049-local-communication-f01.md | next: done`
+
+完成审计（对实际盘上状态逐项核验）：① main tip=4be813d，ff-only 线性落地，
+无 merge commit；② canonical specs 四文件在落地提交上（哈希见 merge 回执）；
+③ 本计划 archived 且已提交 main（1f791e6），status: archived；④ wt-guard
+clean ×2 后 worktree/分支/组目录全部移除（盘上 0 残留）；⑤ plan-artifacts/
+plan-049/ 已折叠删除、registry 刷新、无未决 hold；主检出本计划写面干净
+（其余未提交改动属其他计划/用户 WIP，非本计划触碰）。T-01..T-08 全闭环
+（8/8）；AC-01..09 pass（work）、AC-10 pass（review final）、AC-11 pass
+（merge：冻结门重放/复用、Spec 落地、归档、清理）。
 
 ### merge 回执（2026-11-05）—— `PLAN-049:r1`
 
