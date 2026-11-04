@@ -85,9 +85,6 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_value(&mut self, depth: usize) -> Result<JVal, PErr> {
-        if depth > MAX_DEPTH {
-            return Err(PErr::Depth);
-        }
         self.skip_ws();
         match self.peek() {
             Some(b'{') => self.parse_object(depth),
@@ -108,6 +105,9 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_object(&mut self, depth: usize) -> Result<JVal, PErr> {
+        if depth > MAX_DEPTH {
+            return Err(PErr::Depth);
+        }
         self.i += 1; // '{'
         let mut entries: Vec<(String, JVal)> = Vec::new();
         self.skip_ws();
@@ -144,6 +144,9 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_array(&mut self, depth: usize) -> Result<JVal, PErr> {
+        if depth > MAX_DEPTH {
+            return Err(PErr::Depth);
+        }
         self.i += 1; // '['
         let mut items = Vec::new();
         self.skip_ws();

@@ -1,0 +1,1 @@
+{"op":"pcall","route_id":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeee04","request_id":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa001","caller":"caller-a","method":"capture","schema_id":"capture.inbox.capture/1","deadline_ms":1500,"body":{"operation_id":"dddddddddddddddddddddddddddddd03","text":"x"}}
