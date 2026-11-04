@@ -157,3 +157,5 @@ frontmatter只列OS目标；参与仓Spec T-01按实际存在与owner确认。�
 2. 本批全部产品是结项分母，未就绪产品可保持待办并推进无依赖项，但不能以“先试点”降为代表几例就归档。原支持面新缺口需实际owner/关闭条件或重规划，不自动接管全部债。
 3. 只消费已交付接口；新语义/协议/引擎能力、预算/平台扩大不由本合同自动授权。双端/原生实际未支持必须具名，不能偷减原义务。
 4. 真实窗口/端口/磁盘/解码/数据隔离T-01冻结，不操作用户系统主题/真实库/活凭据；真实OS事件沿055具体窗口规则，不做全局迁移前置。
+
+- stage: goal | plan_id: PLAN-059 | plan_revision: r1 | round: 1..k（单会话全链：work→review→修复→bounded re-review→merge→archived→cleaned） | from: merge | to: done | status: archived | outcome: pass | worktree: 已移除（.wt/os-059 组 6 树全移除+desktop-target；os/ui 两计划分支删除；组目录空删） | commit: 交付=ui cfe04ce1（master ff）+ reader 6d65224（origin/main 已推）+ os f250c57（pin+SD）；归档=auto-os main 2328cf1 | next: done（goal`完成计划059`全链闭环：T-01..T-09 全执行；canonical 三文件落地+reader SD-03 随 push；组合门=gitlink 6d652249+健康门 missing_pac_at=0+真实桌面启动证据；plan-artifacts/plan-059 全删+registry 刷新，无具名持有；无 pending merge-owned gate）
