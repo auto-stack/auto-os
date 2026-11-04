@@ -9,6 +9,7 @@ mod common;
 use autoos_comm_core::error::ErrorCode;
 use autoos_comm_core::protocol::{SCHEMA_CAPTURE_CAPTURE, SERVICE_ID_CAPTURE};
 use common::*;
+use std::time::{Duration, Instant};
 
 /// V-05: real-handle transport security — explicit DACL membership,
 /// reject-remote state bit, first-instance protection.
@@ -71,7 +72,7 @@ async fn v12_inflight_and_provider_queue_quota() {
     let _broker = run.spawn_broker();
     run.endpoint = Some(support::wait_endpoint(&run.run_dir, run.deadline()).expect("endpoint"));
     // silent provider: registers, never replies (holds all routes open)
-    let _provider = RawProvider::connect(&run, "desc-v12quota").await;
+    let mut provider = RawProvider::connect(&run, "desc-v12quota").await;
 
     let a = run.client(CALLER_A).await;
     let sref = run.discover(&a).await;
@@ -124,8 +125,21 @@ async fn v12_inflight_and_provider_queue_quota() {
         .expect("second caller abandoned call");
     }
 
+    // deterministic saturation: wait until all 16 routed calls have ARRIVED
+    // at the provider (counting reader) before probing — frame processing on
+    // separate caller connections is concurrent, so a probe sent earlier
+    // could legally find queue room (review finding F-1)
+    let seen = provider.spawn_call_counter();
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while seen.load(std::sync::atomic::Ordering::Relaxed) < 16 {
+        assert!(
+            Instant::now() < deadline,
+            "16 forwarded calls never arrived"
+        );
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
+
     // a third caller now hits the provider-queue cap (16)
-    // (the denied caller cannot call; use a fresh caller-a connection)
     let c = run.client(CALLER_A).await;
     let srefc = run.discover(&c).await;
     let op = autoos_comm_core::ids::new_id();
@@ -140,7 +154,8 @@ async fn v12_inflight_and_provider_queue_quota() {
         Some(autoos_comm_core::error::ExecutionState::NotDispatched)
     );
 
-    // a service that nobody registered still yields not_found (not quota)
+    let _ = provider; // silent provider held for the whole test
+                      // a service that nobody registered still yields not_found (not quota)
     let e = c
         .discover("auto.capture.nonexistent")
         .await

@@ -205,7 +205,7 @@ pub struct RawProvider {
     pub write: std::sync::Arc<
         tokio::sync::Mutex<tokio::io::WriteHalf<tokio::net::windows::named_pipe::NamedPipeClient>>,
     >,
-    pub read: tokio::io::ReadHalf<tokio::net::windows::named_pipe::NamedPipeClient>,
+    pub read: Option<tokio::io::ReadHalf<tokio::net::windows::named_pipe::NamedPipeClient>>,
     pub service_ref: autoos_comm_core::protocol::ServiceRef,
 }
 
@@ -265,7 +265,7 @@ impl RawProvider {
         };
         RawProvider {
             write: w,
-            read: r,
+            read: Some(r),
             service_ref,
         }
     }
@@ -273,11 +273,12 @@ impl RawProvider {
     /// Await the next forwarded call (with a test budget).
     pub async fn next_call(&mut self) -> CallToProvider {
         let deadline = Instant::now() + Duration::from_secs(5);
+        let mut r = self.read.as_mut().expect("read half available");
         loop {
             if Instant::now() > deadline {
                 panic!("no forwarded call within budget");
             }
-            match tokio::time::timeout(Duration::from_secs(5), read_message(&mut self.read)).await {
+            match tokio::time::timeout(Duration::from_secs(5), read_message(r)).await {
                 Ok(Ok(Some(Message::CallToProvider(c)))) => return c,
                 Ok(Ok(Some(_))) => continue,
                 Ok(Ok(None)) => panic!("provider connection closed while waiting for call"),
@@ -285,6 +286,29 @@ impl RawProvider {
                 Err(_) => panic!("next_call budget exceeded"),
             }
         }
+    }
+
+    /// Detach a counting reader: every forwarded call that ARRIVES at this
+    /// provider increments the counter. Deterministic synchronization for
+    /// quota tests — when the counter reaches N, the broker has actually
+    /// processed and routed N calls (they stay routed until their deadlines).
+    /// `next_call` must not be used afterwards.
+    pub fn spawn_call_counter(&mut self) -> std::sync::Arc<std::sync::atomic::AtomicUsize> {
+        let counter = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let c2 = counter.clone();
+        let mut r = self.read.take().expect("read half available");
+        tokio::spawn(async move {
+            loop {
+                match read_message(&mut r).await {
+                    Ok(Some(Message::CallToProvider(_))) => {
+                        c2.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                    }
+                    Ok(Some(_)) => continue,
+                    _ => return, // closed or error: counting ends
+                }
+            }
+        });
+        counter
     }
 
     /// Reply on a route with an arbitrary body.

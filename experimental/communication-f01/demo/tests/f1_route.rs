@@ -148,7 +148,11 @@ async fn v06_takeover_after_disconnect() {
         .await
         .unwrap();
         drop(w);
-        match read_message(&mut p1.read).await.unwrap().unwrap() {
+        match read_message(p1.read.as_mut().unwrap())
+            .await
+            .unwrap()
+            .unwrap()
+        {
             Message::Registered(rg) => {
                 assert_eq!(
                     rg.service_ref.instance_id, sref1.instance_id,
@@ -177,7 +181,11 @@ async fn v06_takeover_after_disconnect() {
         .await
         .unwrap();
         drop(w);
-        match read_message(&mut p1.read).await.unwrap().unwrap() {
+        match read_message(p1.read.as_mut().unwrap())
+            .await
+            .unwrap()
+            .unwrap()
+        {
             Message::Error(e) => {
                 assert!(matches!(e.code, ErrorCode::AlreadyRegistered), "{e:?}")
             }
