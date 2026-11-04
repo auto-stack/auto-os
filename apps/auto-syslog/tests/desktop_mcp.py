@@ -48,6 +48,12 @@ PROJECT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def pick_free_port(start=MCP_PORT_DEFAULT):
     import socket
+    # PLAN-057 T-03：外置钉定优先——本机 9247..94xx 大段落在系统保留区间
+    # （bind os error 10013 机器事实），AUTOUI_MCP_PORT 显式给钉时直接采用；
+    # 缺省行为不变（检查不变量未动）。
+    env_port = os.environ.get("AUTOUI_MCP_PORT")
+    if env_port:
+        return int(env_port)
     for port in range(start, start + 100):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             if s.connect_ex(("127.0.0.1", port)) != 0:

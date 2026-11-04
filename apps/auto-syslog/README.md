@@ -39,3 +39,20 @@ cd apps/039-syslog && auto run
 ```sh
 cd tests && python desktop_mcp.py   # VM 轨 MCP 冒烟（注入→Rebuild→过滤断言）
 ```
+
+## 主题（auto-os/PLAN-057 接入）
+
+本应用已接入 AutoUI **官方主题包**正式消费面（2026-11-04，PLAN-057 T-03）：
+
+- `vendor/themes` 为 UI 管理渠道发布的固定版本快照（`themes` 0.2.0，内容
+  digest `9fa07742dc68aa5377ae06cb2d966386002063f184c515b6c5dddf8a6bef838e`），
+  经 `pac.at` `dep themes` 消费；快照不可二次编辑、非第二权威源。
+- 主合同（宿主策略/通知/持久化/拒绝语义）在 **auto-os/PLAN-057**
+  （`docs/plans/057-desktop-utilities-theme-adoption.md` 与其 canonical
+  specs）：pac 无显式 `theme` 键 = **follow 宿主**（本应用即 OS 桌面常驻
+  诊断窗，宿主跟随为天然主语义）；`src/front/app.at`
+  `design { theme: "Auto", mode: "light" }` 为独立 `auto run` 的静态浅色
+  默认腿（原无 dark_mode 位/明暗切换；`use themes.themes: Auto` 注册收集
+  链——C-11 合同）。
+- 级别警示色（amber/红系固定类）为日志语义着色豁免，不随主题映射；
+  暂停/筛选/尾随/宿主注入等业务面不受换肤影响。

@@ -22,3 +22,13 @@ title: "System Log"
 title_zh: "系统日志"
 category: "system"
 desktop: "true"
+# auto-os/PLAN-057 T-03：官方主题包正式接入——`vendor/themes` 为 UI 管理渠道
+# 发布的**固定版本快照**（themes 0.2.0，内容 digest
+# 9fa07742dc68aa5377ae06cb2d966386002063f184c515b6c5dddf8a6bef838e，
+# per-file sha256 与源包逐文件校验同律；不可二次编辑、非第二权威源）。
+# theme 键保持缺省 = follow 宿主（本应用即 OS 桌面常驻诊断窗，宿主跟随
+# 为天然主语义；独立 `auto run` 回落 design 静态浅色默认）。主合同反链
+# 见本目录 README。
+dep themes {
+    path: "vendor/themes"
+}

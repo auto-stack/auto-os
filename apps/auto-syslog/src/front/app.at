@@ -15,6 +15,11 @@
 // 暂停语义（PLAN-042 §5.4）：paused 期间注入照收列表（宿主泵不感知），
 // 仅不重建 rows——恢复时一拍全量快照替换追平（pending 计数条提示）。
 
+// auto-os/PLAN-057 T-03：官方主题包主题名导入（031 合同消费面——pac `dep
+// themes` 声明使包可解析，本 use 把包内 pub 主题收进收集链；无此行 themes
+// 树不注册，design.theme/follow 宿主候选都会在 C-11 未注册拒绝）。
+use themes.themes: Auto
+
 widget App {
     msg {
         Init, SetQ(str), Rebuild, ToggleLevel(str), TogglePause,
@@ -50,6 +55,18 @@ widget App {
         var pending_label str = "" // 暂停积压条文案（handler 算好，模板不插值）
         var demo_n int = 0       // 独立模式 mock 行计数
         var demo_lv str = "info" // mock 级别轮转（info→warn→error）
+    }
+
+    // auto-os/PLAN-057 T-03：主题设计默认（独立默认腿）。theme="Auto" 经
+    // pac `dep themes`（vendor/themes 固定快照）注册的官方树解析。本应用
+    // 原无 dark_mode 位/明暗切换（零遗留先例同型），独立默认腿取静态
+    // light 保现默认语义；桌面内宿主策略完整快照（family+mode）按 031
+    // full-host 语义整体接管（follow——pac theme 键保持缺省）。视图全部
+    // 为语义 token 类，族内明暗由 token 切换承接；级别警示色（amber/
+    // 红系固定类）为日志语义着色豁免，不随主题映射。
+    design {
+        theme: "Auto"
+        mode: "light"
     }
 
     view {

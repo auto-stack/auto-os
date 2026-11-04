@@ -43,6 +43,12 @@ Status: v0.6 development baseline; product paths updated 2026-10-22 (PLAN-050).
   已按固定 `vendor/themes` 快照接入官方主题包（follow 语义 + design 默认腿），
   候选冻结与逐产品合同见 [product-theme-batch-056](product-theme-batch-056.md)；
   OS 组合 gitlink 更新等 PLAN-054 审定业务版本（§5.3 冻结裁定），阶段计数仅按实际验收。
+- **主题批次（PLAN-057）**：weather/launcher/monitor/explorer/os-config 五产品独立仓候选
+  （8c13952/134d047/6ff5646/8505ef2/0018066）+ syslog（OS local，`apps/auto-syslog` 树内），
+  同 056 消费形态接入官方主题包；os-config 另含 053 policy 编辑消费面
+  （详见 [product-theme-batch-057](product-theme-batch-057.md)）。本批 OS 组合
+  gitlink 按本批自身门更新（fetch/detach 同 SHA + 健康门 + 实际启动后提交），
+  无 054 全局前置；阶段计数仅按实际验收。
 - apps.manifest 使用 kind=repo，repo 指实际子模块应用根；.gitmodules 与 160000 gitlink 同一提交维护。
 - 21 个新产品的物理目录使用正式产品仓名（如 `apps/auto-notes`）；原主来源 ID 继续保留桌面身份、图标与引用。新产品端口在 17810–17851，
   各 app 实际占用以 pac.at 与 manifest 为准，无后端的不声明后端端口。

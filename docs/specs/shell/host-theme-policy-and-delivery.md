@@ -4,6 +4,32 @@
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
 > P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
 
+## 产品批次消费面（PLAN-057 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-057 为第二实际消费者批次
+（桌面工具与设置六入口，登记见
+[../apps/product-theme-batch-057.md](../apps/product-theme-batch-057.md)）：
+
+- 六产品同 056 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；pac `theme` 键缺省 = follow）。
+- **os-config = 首个经 config 外写通道的策略编辑消费者**：其设置面
+  「主题包策略」卡（family/mode）经既有 `PUT /api/config/desktop` 链写
+  `theme_family`/`theme_mode` 两键（Plan 504 同一文件承诺），宿主 config
+  外写轮询差分臂按 P041 送本页唯一提交入口（stage 校验→version/digest
+  回填→publish revision；拒绝具名保旧）。`theme_rev` 外部写方不手改；
+  family 未选时 mode 键为 no-op。宿主侧 boot 恢复消费**完整候选**（含
+  version/digest）——仅 family+mode 的半候选被具名拒绝保旧（"候选 '(缺席)'
+  ≠ 目录 0.2.0" 实录），family 候选需重新选择。
+- **OS056-REAPPLY-NOTE 在本批复现**：拒绝后无间隔立即重投偶发不生效
+  （weather standalone 轮询臂 1/2 次）；合同命名恢复路径"重开或重连"
+  双产品像素级通过（reopen@dark luma 50/11）。维持 053 owner 注记不变。
+- **独立默认腿 frame-0 观察（053/458 owner 注记，非本批缺陷）**：无已提交
+  策略时 design mode 表达式（`if .dark_mode …`）在 frame-0 读到模型默认
+  落位前值，启动呈现 family 默认浅色且位同步为 false；基线（未采纳）同现
+  （A/B 双臂 light boot），一次用户翻转后策略链双向正常。宿主策略在场时
+  boot 恢复即暗（luma 50/11），不受此影响。若需命名"无策略启动默认腿"
+  为必需语义，属本页/458 新合同项（053 owner）。
+
 ## 产品批次消费面（PLAN-056 增补）
 
 本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-056 为其**实际消费者扩展
