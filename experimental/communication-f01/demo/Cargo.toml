@@ -1,0 +1,28 @@
+[package]
+name = "autoos-comm-demo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+autoos-comm-core = { path = "../core" }
+autoos-comm-local = { path = "../local" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+rusqlite = { workspace = true }
+sha2 = { workspace = true }
+getrandom = { workspace = true }
+windows-sys = { workspace = true }
+
+[[bin]]
+name = "comm-broker"
+path = "src/bin/comm-broker.rs"
+
+[[bin]]
+name = "capture-inbox"
+path = "src/bin/capture-inbox.rs"
+
+[[bin]]
+name = "comm-client"
+path = "src/bin/comm-client.rs"

@@ -1,0 +1,15 @@
+[package]
+name = "autoos-comm-local"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+autoos-comm-core = { path = "../core" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+windows-sys = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }
