@@ -34,7 +34,7 @@ os-057 冻结工具链（组树 detached，全部 clean）：
 | 028-launcher | auto-launcher `134d047` | 静态 light（零遗留） | desktop_mcp **A/B 同集 20P/4F**（4F=001 r7 provider 行为 vs 前置套件预期，预存） | vue_verify **ALL PASS**（admission digest 实录） |
 | 025-sys-monitor | auto-monitor `6ff5646` | 静态 dark（pac dark 退役） | desktop_mcp **13 passed/0 failed**（含重启持久 T6） | playwright smoke 被**预存** back E0432 阻（A/B 两臂同，具名 hold owner=monitor 产品线） |
 | 027-file-manager | auto-explorer `8505ef2` | dark_mode 位派生（pac dark 退役） | desktop_mcp **78/78 PASS** | verify_p2 12/0、p3 10/0、p4 11/0、p6 21/0；p5 AC-04 菜单挂载 flake **A/B 两臂同分布**（12/1、11/2）；perf P-2/P-4 过，P-5 last_snapshot_ms=-77ms **A/B 两臂逐字节同值**（预存仪器伪值） |
-| os-config | auto-os-config `0018066` | Theme store dark_mode 派生 | e2e-vm **14 PASS**（accent 切换/重启持久/重启后导航；connection 项=运行臂无 daemon 环境项，back/api 零改动；2 GAP=plan010 台账预存） | npm run build 绿（scoped 部署）；**策略卡实机点击全过**（隔离根：Auto 写入 family+mode、浅色切换、未选清除、刷新读回、其余字段零触碰）；e2e vue 轨两臂预存红（详见 SD-03）；theme-switch 两臂 networkidle 预存不兼容 |
+| os-config | auto-os-config `0018066` | Theme store dark_mode 派生 | e2e-vm **15 PASS/1 FAIL**（FAIL=test connection "unreachable"=运行臂无 daemon 环境项，back/api 零改动；accent 切换/重启持久/重启后导航 PASS；2 GAP=plan010 台账预存） | npm run build 绿（scoped 部署）；**策略卡实机点击全过**（隔离根：Auto 写入 family+mode、浅色切换、未选清除、刷新读回、其余字段零触碰；终态证据=隔离 config（family+mode+其余字段原样）+ policy-daemon/vite 会话日志）；e2e vue 轨两臂预存红（详见 SD-03）；theme-switch 两臂 networkidle 预存不兼容 |
 | 039-syslog（OS 本地） | OS 树内 | 静态 light（零遗留） | desktop_mcp **8/8 PASS** | 桌面组合启动（registry=9 见下） |
 
 ## 组合与宿主（T-04/T-05 实录）
@@ -44,6 +44,10 @@ os-057 冻结工具链（组树 detached，全部 clean）：
   未知 family "Noir" 具名拒绝保旧 → **恢复腿 1/2 偶现不生效 = OS056-REAPPLY-NOTE
   hold 复现**（053 owner 注记维持）；命名恢复路径"重开"双腿全过（reopen@dark
   luma 50/11）；vendor 快照往返 sha256 不变。
+- **两族运行时实证（T-07 独立评审自主探针补齐）**：Solarized/dark 完整候选
+  外写后窗角像素 RGB #09090b（Auto/dark）→ **#002b36（Solarized/dark 精确值）**
+  ——family 跟随为真实像素级（评审探针脚本与 home 快照存 review/ 目录，
+  fold 后摘要于此）。
 - **V-04 包源腿**（weather）：vendor 篡改一字节 → **具名拒绝
   `主题包生成准入失败…themes.at`**、启动中止不静默消费；恢复后逐文件
   sha256 等值（themes.at 329c2d56…）+ 干净 boot（interpreter ok=true）；
