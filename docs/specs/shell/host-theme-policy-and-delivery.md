@@ -4,6 +4,31 @@
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
 > P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
 
+## 产品批次消费面（PLAN-058 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-058 为第三实际消费者批次
+（媒体三应用：020-music-player、030-video-player、029-photo-gallery，登记见
+[../apps/product-theme-batch-058.md](../apps/product-theme-batch-058.md)）：
+
+- 三产品同 056/057 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；pac `theme` 键缺省 = follow——music/video 原
+  显式 `theme:"dark"` 键退役，photos 历来无键）。
+- **双产品相反策略隔离腿（standalone follow 臂）**：music@Solarized/dark 与
+  video@Auto/light 各持独立 `AUTOOS_DESKTOP_CONFIG` 同时运行，策略互不串扰
+  （逐腿像素 oracle：Solarized dark `#002b36` / Auto light card `#ffffff`）；
+  坏 digest 候选 boot 具名拒绝保旧（"内容 digest 不符——候选拒绝（保
+  legacy 链）"实录）；策略文件改写后**重开追最新**双腿像素过
+  （reopen@Auto/dark `#09090b` 实测）。**OS056-REAPPLY-NOTE 在本批复现**：
+  运行中 live 外写翻转臂停留旧主题（#051a21 混合帧滞留，60s 不落定）——
+  053 owner 注记维持，非本批回归；合同命名恢复路径"重开"实测通过。
+- **video 双工具链例外（本批实录，非策略语义变更）**：video VM 轨在
+  lang 2f558fc93 冻结线 fatal（子模块 dep-style 导入解析），主检出线正常；
+  其门跑主检出链。owner=auto-lang 解析线（具名红，见批次页）。
+- **media 能力臂后端生成红（video 真实 scan/播放腿阻塞）**：`backend
+  Cargo.toml missing`（media_root 能力臂、无 api.at 形态；两链同败；
+  photo 能力臂正常）——owner=auto-lang 后端生成，关闭条件见批次页。
+  本批不削减该承诺。
+
 ## 产品批次消费面（PLAN-057 增补）
 
 本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-057 为第二实际消费者批次
