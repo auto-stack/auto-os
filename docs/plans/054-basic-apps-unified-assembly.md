@@ -365,3 +365,9 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 104 | from: work | to: work | status: executing | outcome: 定性（calendar=broker 帧客户端，非 HWND 嵌入） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 用 click 相位验证 delivered
   `calendar.exe` **MainWindowHandle=0**（无可见主窗）；桌面日志里的 `[plan060] adopt surface 480x320`/`frame2` 来自 calendar 进程自己的 auto-ui 运行时 ⇒ calendar 是 **broker 帧客户端**（client_runtime 消费 `InputMsg::PointerPressed`，client_runtime.rs:1195），不是 HWND 嵌入。
   因此指针应走 `broker_pointer_down/up`（shell_state 已调用），但 `delivered` 只在 Click 相位记录；本轮 Down/Up 无 delivered 日志 ⇒ 下轮改用 `phase:"click"` 直接看 delivered 与 child 反应。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 105 | from: work | to: work | status: executing | outcome: pass（060 指针坐标投影换算已落；命中点仍待标定） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 标定 child 表面命中点
+  **060 扩展落地**（auto-ui，分支提交 `e91f0104`/`23f63500`）：
+  - `SurfaceStore::size()` 新 API；
+  - `broker_pointer_down/up` 增加 `broker_surface_local(...)`：按 `rect.width/height` → `surface w/h` 比例把 canvas 局部坐标换算成 child 表面坐标（投影缩放）。
+  - desktop 重建（二进制 01:20:58 含改动）。
+  复测：calendar click 相位 `delivered=true`，但月份仍未翻——命中点在 child 表面坐标系里还需标定（next：日志打印换算后的 lx/ly 与便于逐点探测）。
