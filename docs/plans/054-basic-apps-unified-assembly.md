@@ -358,3 +358,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   下一步：把指针下行纳入 outproc 协议（060 扩展）或改验 calendar 键盘/msg 面。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 102 | from: work | to: work | status: executing | outcome: 反证（outproc-native 表面不接收合成点击） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 060 扩展（outproc 指针）或改用应用自身的键盘/协议面
   **calendar 反证**：canvas 指针注入（hit=Some(Wid(1))）与 **OS 级 SendInput 点击**（SetCursorPos+mouse_event，屏幕 (548,149)/(467,489)/(467,412)）均无任何反应；月份仍 November 2026。⇒ outproc-native 表面（calendar.exe 子 HWND）不消费合成点击——canvas 事件不下行、OS 合成事件也未命中。归属：060/desktop outproc 输入面扩展（不是 app 缺陷）。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 103 | from: work | to: work | status: executing | outcome: 定性（calendar 为投影帧表面；输入需协议下行） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 060 扩展 outproc 指针下行
+  日志 `[plan060] adopt surface 480x320` + `[plan060] frame2 wid=1 nops=43 texts=["<","November",...]` ⇒ calendar 在桌面里是 **子进程投影帧**（frame compose），不是本地控件树；canvas 指针事件无下行通道、OS 合成点击命中的是桌面窗口而非子进程。
+  另：`action:key` 发 VK_RIGHT 后无新帧 ⇒ calendar 自身不做键盘翻月（应用面）。
+  结论：T-04 的 calendar 交互验收依赖 **060 outproc 指针下行**（协议增 Pointer + 子进程注入 + 坐标换算）；随后复验「>」翻月。
