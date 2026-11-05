@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-061
-status: executing
+status: execution_done
 feature_name: 看板终端及外部工作区五产品的正式主题接入
 author: [Codex]
 created_at: 2026-11-03
 updated_at: 2026-11-05
 plan_revision: 1
-current_step: 2
+current_step: 6
 total_steps: 9
 supersedes_spec_components: [docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/independent-repositories.md]
 new_spec_components: [docs/specs/apps/product-theme-batch-061.md]
@@ -178,3 +178,17 @@ frontmatter只列OS目标；参与仓Spec T-01按实际存在与owner确认。�
 4. 真实窗口/端口/磁盘/解码/数据隔离T-01冻结，不操作用户系统主题/真实库/活凭据；真实OS事件沿055具体窗口规则，不做全局迁移前置。
 
 stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 1 | from: drafting | to: work | status: executing | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: 35026a1（OS 树本轮零提交——OS 面改动归 T-05/T-06） | candidates: auto-kanban a19c4ba（main）、auto-musk d93d919（.wt/musk-061 plan-061-dev）、auto-term c9e5e56+0677020（main） | next: work（jade-edit/jade-garden → T-04/T-05/T-06）
+
+2026-11-05 / stage:work(续2) / auto-os/PLAN-061 r1 / outcome:pass（五产品候选全交付——jade-edit/jade-garden 补齐；T-04/T-05 进行中）/
+- **jade-edit 候选（待提交）**：主题五腿 5/5（run4：A/B/C sidebar bg-card 官方值精确；D 真实开档+type_text+活体翻转草稿守恒+保存磁盘字节；E 冷恢复 #eee8d5+标记存续）。vm_matrix 原门：MCP 口 9381 落 WinNAT 排除段 9300-9399（netsh 实测）→ 整门环境死——pick_port.mjs 复活修复（仓内避让件，probe 族同款）；基线 v34→v35 重锁（delta 全录：dark_mode 位=本批、console 端口值=pickPort 动态、ws_name workspace=wiki-demo fixture 上游现值[预存环境差]）；merged 臂 15 PASS 至 check15 trash 增强子步失败（TrashR1/R2 双行未现）——base probe（5fb1e9e2+同 pickPort 修复）对拍进行中定责。
+- **jade-garden 候选 2180f5a8a2c6d52ed8afde4af18b84bf0b58e11c（.wt/os-061/auto-down os-061-dev）**：构建链投影实证——front/auto dep themes+use Auto → auto build -d . → 生成 index.css 四块官方值（primary 258 90% 66% 等）+ .theme-inputs.json receipt（digest 9fa07742…）；front/src/assets/index.css 消费投影（品牌 .theme-* overlay/--af-*/状态色/模式 popover 全保留）。原门 e2e **24/24 全绿**（投影在场）；主题反控 5 腿全过（A dark boot 官方值/B 真 popover 翻转+品牌 overlay+持久化/C 单族静态通道边界具名/D 开档+输入跨翻转守恒/E reload 持久化）。具名边界：静态投影单族（Auto）——第二族需运行时切换通道（owner=auto-ui/jade-garden 后续），未伪造族腿。
+- 实施注记：Solarized 变体构建试 derivation 未走通（生成静态四块固定取 Auto 优先——tree_index_css_for_app 默认族策略），按具名边界处置而非伪造。
+
+2026-11-05 / stage:work(终) / auto-os/PLAN-061 r1 / outcome:pass / task_ids: T-01..T-06 / execution_done 6/9 /
+- **最终候选冻结（work 交付面）**：auto-kanban `1efe9aa`（main，a19c4ba+SD-03 docs）、auto-musk `721ecfa`（.wt/musk-061 plan-061-dev）、jade-garden/auto-down `58ea33f`（.wt/os-061/auto-down os-061-dev）、auto-term `37820f6`（main，c9e5e56+0677020+SD-03）、jade-edit `b71ee53`（main，8d2dbf8+SD-03）。SD-03 docs-only 增量不改代码——先前行为证据（五腿/原门/组合）对最终 SHA 复用有效（证据政策：输入未变）。
+- **T-04 组合腿（combo-run1.log + REJ 重跑）**：ISO ✓（kanban@Solarized/dark #073642 精确 × musk@Auto/light 白 dominant 同时运行零串扰）；EXIT ✓（收割后 auto.exe 回落基线 5/6/5）；REJ×3 ✓（缺件/篡改/同 mtime 内容变更→候选拒绝、回落 legacy/种子链白，boot 存续）；恢复 ✓（#073642 重现）。oracle 修正注记：REJ"保旧"=保 legacy 链（060 同口径），首跑 oracle 标签误写已改，行为值两跑一致。
+- **T-05 交付渠道（V04）**：man-install full root1/root2 双绝对根 install exit0（9726 文件）+ verify exit0；staged sdk themes per-file sha256 与 managed 源一致；manifest sources 记录（auto-down 7c4d5cbb=嵌套根 HEAD/auto-ui fa6833bf/auto-man 03bb65e/auto-lang 72ac9e7b/auto-web 37d32c22）；jade-garden .theme-inputs.json receipt（digest 9fa07742…）= 生成输入凭证。910 边界：全程 plan-artifacts scope。
+- **T-06 自查**：全批 AC-01..05 work 侧闭合（AC-01 五产品两族×明暗正式包逐项过[jade-garden 单族边界具名]/AC-02 业务守恒各 D 腿+原门零回归/AC-03 宿主 ISO/REJ/EXIT/恢复+策略权威实录/AC-04 036 渠道 V04 四腿/AC-05 候选组合全验+预存红 base 对拍具名）；SD-01/02/04 已落 OS 工作树 c2d8219、SD-03 五页各仓提交；无未闭阻塞项；merge-owned 门（产品 push/OS pin/健康门/归档/清理）保持 pending 归 T-08/T-09。worktree 零 dirty（OS 树/各产品树/两 worktree 全清）。
+- work 交付审查交接：冻结面 = OS 工作树（T-06 后续 commit）+ 五产品候选 SHA；review 在同检出独立上下文只验证不修码。
+
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to: review | status: execution_done | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: c2d8219（OS 规格面 SD-01/02/04） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 37820f6 / jade-edit b71ee53 | evidence: plan-artifacts/plan-061/auto-os/ | next: review
