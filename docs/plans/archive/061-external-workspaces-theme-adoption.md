@@ -1,12 +1,13 @@
 ---
 plan_id: PLAN-061
-status: reviewed
+status: archived
 feature_name: 看板终端及外部工作区五产品的正式主题接入
 author: [Codex]
 created_at: 2026-11-03
 updated_at: 2026-11-05
 plan_revision: 1
-current_step: 6
+completion_kind: delivered
+current_step: 9
 total_steps: 9
 supersedes_spec_components: [docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/independent-repositories.md]
 new_spec_components: [docs/specs/apps/product-theme-batch-061.md]
@@ -191,7 +192,7 @@ stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 1 | from: drafting 
 - **T-06 自查**：全批 AC-01..05 work 侧闭合（AC-01 五产品两族×明暗正式包逐项过[jade-garden 单族边界具名]/AC-02 业务守恒各 D 腿+原门零回归/AC-03 宿主 ISO/REJ/EXIT/恢复+策略权威实录/AC-04 036 渠道 V04 四腿/AC-05 候选组合全验+预存红 base 对拍具名）；SD-01/02/04 已落 OS 工作树 c2d8219、SD-03 五页各仓提交；无未闭阻塞项；merge-owned 门（产品 push/OS pin/健康门/归档/清理）保持 pending 归 T-08/T-09。worktree 零 dirty（OS 树/各产品树/两 worktree 全清）。
 - work 交付审查交接：冻结面 = OS 工作树（T-06 后续 commit）+ 五产品候选 SHA；review 在同检出独立上下文只验证不修码。
 
-stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to: review | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: c2d8219（OS 规格面 SD-01/02/04） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 37820f6 / jade-edit b71ee53 | evidence: plan-artifacts/plan-061/auto-os/ | next: review
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to: review | status: archived | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: c2d8219（OS 规格面 SD-01/02/04） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 37820f6 / jade-edit b71ee53 | evidence: plan-artifacts/plan-061/auto-os/ | next: review
 
 2026-11-05 / stage:review / review_scope: final / reviewer_identity: 独立子代理会话（无实现上下文；从冻结面构件重建验证，未采信执行方摘要——86 次工具调用，5777089 tokens） / auto-os/PLAN-061 r1 / outcome: needs_fix（初审）→ 修复后受影响面复验 pass → final pass / worktree: D:/autostack/.wt/os-061/auto-os（branch codex/plan-061-product-themes，clean）/ reviewed_commit: c2d8219 / base_commit: 35026a1 / dependency_revisions: 同 work 收据（auto.exe t19-18-g03bb65e、themes 0.2.0 per-file sha256 复验 5/5 vendor 快照 match）
 - **acceptance_results**：AC-01 pass（复审者活体 boot 复现 kanban 角点 #0f0f12 36/36px、term 状态栏 #0f0f12 精确；diff 形态五产品全核）；AC-02 pass（修复后，见 R-01）/AC-03 pass（ISO/EXIT/REJ/恢复实录对账一致）/AC-04 pass（install/verify root1/root2 exit0、receipt digest/identity 逐位核对）/AC-05 pass（候选 SHA==树 HEAD==diff 内容；v34→v35 delta 恰 3 行；WinNAT 9300-9399 活体核验；stdlib fixture 抽样 4/4 字节一致）；AC-06 pass（修复后）；AC-07/08 pending-merge（by design）。
@@ -201,4 +202,19 @@ stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to
 - evidence: 复审报告全文随本轮会话存档；关键复算（活体像素/哈希/netsh/delta diff）已录本收据；D:/autostack/plan-artifacts/plan-061/auto-os/{review/,rej-rerun-receipt.log,term-cargo-gates-run2.log,term-cargo-gates-base2.log}
 - next: merge
 
-stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 3 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: 578526e（review 修正后 OS 规格面） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 6eb4613 / jade-edit a8975f9 | next: merge
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 3 | from: review | to: merge | status: archived | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: 578526e（review 修正后 OS 规格面） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 6eb4613 / jade-edit a8975f9 | next: merge
+
+2026-11-05 / stage:merge / PLAN-061:r1 / 检查点实录：
+- **prepared**：reviewed 基线（OS c2d8219→578526e + 五产品候选）；canonical 目标 docs/specs/{apps/product-theme-batch-061.md(new), shell/host-theme-policy-and-delivery.md, apps/independent-repositories.md}。
+- **产品落地**：五产品 push 全成功——auto-kanban 1c967c5..1efe9aa（origin/main）、auto-term 3573a07..6eb4613（origin/main）、jade-edit 5fb1e9e..a8975f9（origin/main）、auto-musk de92b90..721ecfa（worktree plan-061-dev rebase 无变→主检出 ff-only→origin/main）、auto-down 7c4d5cb..58ea33f（os-061-dev rebase 无变→master ff-only→origin/master，jade-garden 随仓交付）。
+- **OS 组合**：worktree apps/ 初始化 kanban/term submodule→fetch/detach 同 SHA（1efe9aa/6eb4613）；健康门 check-app-submodules -OsRoot 组树 exit0（其余未初始化=worktree 设计态）；gitlink pin 提交 d0581ee。
+- **实际启动四连 READY**：kanban@1efe9aa（组合 apps 路径 boot）、term@6eb4613（组合 apps 路径 boot）、musk@721ecfa（外部根 worktree boot）、jade-edit@a8975f9（clone boot）；jade-garden=web 形态（e2e 24/24+主题探针 vite+back 同码已证）。全程 scoped PID 收割。
+- **landed**：rebase main（main 其间前进：054 round63-78/055 archive/062 立项等并入）→ 旧→新映射 c2d8219→b0dc1a7、578526e→d992f6f、d0581ee→ddfe5a5；range-diff commit2/3 全等号，commit1 `!`=上下文行漂移（055 clock 节同页落地的头注链接行），本批三节内容零漂移（batch-061.md/independent-repositories 061 节 diff=0 行实证）；`git merge --ff-only` 成功，main tip=ddfe5a5（无 merge commit）；origin push 0c715dc..ddfe5a5。
+- **canonical_verified**：ddfe5a5 ls-tree 含三 spec（blob 4ca25532/0598d113/e56c0812）+ plan 文件（41db1e44）；主检出 submodule 同步新 pin 后 git 干净（除他会话 docs/apps/auto-charts WIP）；主检出健康门 exit0（missing_pac_at=0）。
+- **archived**：plan 移至 docs/plans/archive/（git mv，随 f548850 入库）；status: archived + completion_kind: delivered；push 后 054 会话 round79（ac9addf）续于其上——线性历史保持，归档读回核验（本文件 status/archived/位置/任务计数 9/9 一致）。
+- **cleaned**：OS worktree（.wt/os-061/auto-os，submodule deinit 后 worktree remove 拒→仓内 prune+scoped 手动移除，分支 codex/plan-061-product-themes 删 was ddfe5a5 已落地）；auto-down worktree（junction 依 R-04 先 rmdir 链接 + pnpm node_modules 经 Windows rmdir /s /q 拆除[只删链接不穿透]，guard clean→remove，分支 os-061-dev 删 was 58ea33f 已落地）；musk worktree（guard clean→remove，分支 plan-061-dev 删 was 721ecfa 已落地）；组目录 .wt/os-061 与 .wt/musk-061 均删；worktree list 零 061 残留。产品 clone 全保留（auto-kanban/auto-musk/auto-down/auto-term/jade-edit）。
+- **证据折算**：全部必需摘要（命令/退出码/SHA/像素 oracle 值/digest/base 对拍/具名预存红与 owner）已折入本文件 §5.1/§9 与批次页 docs/specs/apps/product-theme-batch-061.md（ddfe5a5 落地，仓库内持久）；D:/autostack/plan-artifacts/plan-061（5.2GB：install 双根、probe clone、套件日志/截图、base probe×2、combo 驱动）按 2026-10-31 delete-at-merge 全删，无具名持有（预存红 owner 记录于批次页=仓库内 Spec）。
+- **registry**：.retention/policy.json 刷新（plan-061 scope 删除登记）。
+- **landing 留观**（merge 自有门）：OS 桌面宿主二进制与本批无关（本批 OS delta=spec+gitlink，零 OS 代码）；产品 desktop_exe rust 制品为开发环 debug 档（launch=vm 桌面轨不经它），沿各产品原状；jade-garden web 形态 dist 由其仓 e2e 流程管理。
+
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 4 | from: merge | to: done | status: archived | outcome: pass | delivery_commit: ddfe5a5（main tip, pushed origin 0c715dc..ddfe5a5） | archive: docs/plans/archive/061-external-workspaces-theme-adoption.md | spec_paths: docs/specs/apps/product-theme-batch-061.md, docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/independent-repositories.md | pins: apps/auto-kanban 1efe9aa + apps/auto-term 6eb4613（组合路径启动 READY）；外部源=auto-musk 721ecfa/jade-garden 58ea33f/jade-edit a8975f9（全推 origin，外部根启动 READY） | cleanup: os-061/musk-061 worktree+分支+组目录全删（junction 先链删），worktree list 零残留；plan-artifacts/plan-061 5.2GB 全删（证据折入本文件+批次页），registry 已刷新，无 holds | pending_gates: 批次回归到期检查（下一节） | next: done
