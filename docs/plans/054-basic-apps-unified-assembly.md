@@ -392,3 +392,9 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 24**：`[plan060] child endpoint input Discriminant(10)` 证明 Action 已到 child；calendar 是 **rust profile**（a2r 生成组件），`Component::dispatch_named` 默认返回 false ⇒ 需生成器为 a2r 组件生成 `dispatch_named`（handler 名→Msg 变体）。下一步改 `auto-ui-tools/src/rust_ui.rs` 并复验 `NextMonth`。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 114 | from: work | to: work | status: executing | outcome: pass（生成器改动落地；产物未包含 + auto-web 路径冲突） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 定位 emitter 命中
   **060 round 25**：`generate_component_impl` 已发射 `dispatch_named`（提交 25b7a805），但 calendar 生成产物无该串；另发现 `rust-workspace/Cargo.toml` 的 `auto-web` 路径指向 os-054 兄弟（与 ui-060 auto-web-contract 冲突），已临时改写绕过。下一步确认 calendar 走哪个 emitter / message_variants 发射时序。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 115 | from: work | to: work | status: executing | outcome: blocked（a2r 重生成路径受 901 交付闭包路径冲突阻断） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 需 auto-ui 侧修 901 投射路径（auto-web 兄弟 vs ui-060）
+  **060 round 26**：尝试让 calendar `auto build -r rust` 带上新生成器：
+  - 生成器 `dispatch_named` 已编入 auto-ui-tool（二进制含 `fn dispatch_named(&mut self, name: &str, arg: Option<&str>)`）；
+  - 但 app 的 staging 工作区 `auto-web` path 固定写 `../../../../auto-web`（os-054 兄弟），而 auto-lang-core 走 ui-060 → `auto-web-contract` 同 links 双包冲突；
+  - 尝试把 os-054/auto-web 的 lang 依赖重指 ui-060，触发 "不同 target 源路径" manifest 错误，已回滚（不动他人树）。
+  ⇒ calendar 重生成被 **auto-ui PLAN-901 交付投射路径**问题阻断（auto-web 应投射到 ui-060 组树）。这是跨计划依赖，需在 auto-ui 侧修 901 的 `PROJECTION_AUTO_WEB` 路径后再回 054。
