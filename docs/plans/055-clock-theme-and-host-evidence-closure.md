@@ -155,6 +155,12 @@ OS/.at资产本身不跑语言cargo t/docs_gen；UI Rust接缝实改才跑theme_
 
 材料唯一D:/autostack/plan-artifacts/plan-055/auto-os/，UI/clock按repo分区并登记owner/用途/在途。外部SDK/包/快照/源码副本/设置备份/截图日志/显式target与测试数据均在此；普通编译在组树，产品clone合法编译输出列账。merge核全部实际路径（含其他盘/安装/临时根），命令/退出码/关键值/源hash/恢复节选折Plan后删scope与自有树产物；具名未闭持有有owner/理由/关闭条件，G-1/G-2必需面不能转hold冒交付。未知/活动/他方不盲删，产品clone不删不reset。
 
+### T-04 VM 轨四 tab oracle 全绿 + 产品候选落（2026-11-05，work 执行中）
+
+- **四 tab oracle 15/15 全绿**（`plan-artifacts/plan-055/auto-os/fourtab-vm.log`）：T0 表盘（含 dial_mode 切换）/T1 秒表（走表≥1000ms、MM:SS.cc、计圈、复位）/T2 计时器（1s 到零 banner、Dismiss）/T3 世界时钟（8 城、北京/伦敦 ±60s 原容差，b=790 l=310）/T4 闹钟入列+storage 跨重启——**主题采纳落地后的完整原业务门，原条件未放宽**。组工具链（AUTO_BIN=组 auto.exe + 组 tool），`tests/desktop_mcp.py` 就绪判定修为状态非空（MCP 端口先于首帧 view 同步打开——空 State 竞态株）。
+- **产品候选提交**：auto-clock main `3495671`（= pac.at dep themes + app.at use/design + README 反链 + 测试修 + vendor/themes 快照 + .gitignore deps/）；树 clean；**push 留待 review 后**（T-09）。独立默认腿（Auto/light 无宿主）由本 oracle 即证（VM 轨无宿主 env = design 默认生效，业务/渲染双绿）。
+- 待办：载体 exe MCP 四 tab 腿、clock/calc 同场腿、T-05 组合健康/pin。
+
 ### T-03 真载体整链实证（2026-11-05，work 执行中）
 
 **G-2 四腿之三条真腿已通**（隔离桌面 probe，desktop-9 + clock exe，日志 `plan-artifacts/plan-055/auto-os/probe/{desktop-9,clock-13,clock-14}.log`）：
@@ -168,7 +174,7 @@ OS/.at资产本身不跑语言cargo t/docs_gen；UI Rust接缝实改才跑theme_
 2. **HeadlessFrameSource 缺主题转发**：remote/v2 臂是 a2r 载体主产线，缺省 theme_capable=false 压掉 caps 门（`caps=[]` 株）→ 补三方法转发。
 3. **broker 管道 env 覆盖**（`AUTOOS_BROKER_PIPE`）：同名多实例服务端使客户端连入任意桌面实例（含用户桌面/僵尸桌面）——probe 隔离必需；无 env 零行为差。**probe 教训：管道名必须每次启动唯一**。
 
-**未竟腿**：stale 分列（宿主端判定 L5453 已实现；**专用单测缺失**——补 session 级受控注入测试：ThemePolicyResult rev < theme_pushed_rev → `theme_outproc_status` 行=stale）；载体端拒绝路径（family/version/digest/mode 四拒绝臂）——补 NativeThemeCarrier 单测。坏 family 外写实腿已通（见下）。probe 诊断打点（`[probe-broker]/[probe-client]` eprintln、LAST_BAD_FRAME static、carrier 注册/推送行）为临时件，收口前清理为常驻语义或摘除。
+**未竟腿**：无——T-03 全部收口（2026-11-05）。载体端拒绝路径单测 3 绿（四拒绝臂+应用/帧翻+裸包装）；stale 判定锚 session 级单测绿（迟到 rev<推送 → stale 行不覆盖 / 同 rev 原样落行，受控注入常驻回归）。坏 family 外写实腿已通（见下）。probe 诊断打点（`[probe-broker]/[probe-client]` eprintln、LAST_BAD_FRAME static、carrier 注册/推送行）为临时件，收口前清理为常驻语义或摘除。
 
 **拒绝/恢复真腿（desktop-10 + clock-15）**：外写 `theme_family: "NoSuchFamily"` → 宿主具名拒绝、**零提交零推送**（无 rev=3、config 不回写、载体保持 rev=2 保旧）→ 再写合法 Auto/dark → **rev=3 applied**（恢复后下一次实际操作成功，V-07 恢复语义）。`__theme_status` 具名面 MCP 读回未走通（9304 连接拒绝——待查 MCP bind），具名拒绝面由 053 单测+Spec 承担，probe 补充为状态不变形证。
 
