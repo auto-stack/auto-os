@@ -4,9 +4,9 @@ status: executing
 feature_name: 八个基础应用统一组合与桌面任务验收
 author: [Codex]
 created_at: 2026-11-03
-updated_at: 2026-11-04
+updated_at: 2026-11-05
 plan_revision: 1
-current_step: 1
+current_step: 2
 total_steps: 10
 base_branch: main
 base_commit: 65fc70de8b505657db660d91024b2cf4425b7759
@@ -143,7 +143,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 ## 8. 执行步骤
 
 - [x] T-00（owner_stage=work；依赖050/051；AC-01/02）：只读复核交付/公共工具和registry/backend全路径，输出assembly-decision；对尚缺前置写具体owner/关闭条件，此任务不需升级pin。[✅ 已完成 2026-11-04] 证据：7/8 交付门关闭（Todo-002、Database-002 已于 11-03 后归档交付并 push；Notes/Calendar/Paint/Chat/Charts 门在 056 基线上 intact）；Blog 唯一硬缺口，其 auto-ui 前置 PLAN-050 已 merge pass（master 024fe57a，vue.rs 发射 optimizeDeps.include+host 127.0.0.1+strictPort），BLOG-005 owner 会话已获授权路线①待 resume 归档。registry/backend 四臂全路径探针冻结 T-03 接线边界：Paint/Charts 走 inproc ③ VM session（其已验 profile）；Rust 六雄首选 outproc 孵化臂（auto run --autodesk-incubate，api:"rust" 自动起 Rust 服务），daemon 臂因 8 app 均无 /api/health 暂不可用（退路=app owner 补 health+release 二进制）。数据根六 env 逐仓 grep 核实。主检出 apps/auto-charts 检出 d5f5535≠gitlink 77b6f82 记录待 T-02 校正。全文见 plan-artifacts/plan-054/assembly-decision.md（sha256 06575569…48d8）。工作树 D:/autostack/.wt/os-054/auto-os（codex/plan-054-dev@f34edf1）已建，T-00 零代码改动。
-- [ ] T-01（owner_stage=work；依赖T-00及8app实际交付；AC-01）：关闭§5全部交付门并冻结delivery-lock；Todo002/Database002/Blog005未闭合时不能勾选。
+- [x] T-01（owner_stage=work；依赖T-00及8app实际交付；AC-01）：关闭§5全部交付门并冻结delivery-lock；Todo002/Database002/Blog005未闭合时不能勾选。[✅ 已完成 2026-11-05] BLOG-005 于 2026-11-05 归档交付（832b71f，T-06 53/53 双实证），8/8 门关闭。Pin 锁：7 app 取 PLAN-056 hold 移交基线（=当前 remote tip，database 280ddac 与 tip b3499d5 src 字节一致），Blog 取其 005 交付提交 832b71f（6769d6e 主题基线为其祖先）；8/8 均逐仓实证为 origin/main 祖先（已 push）。逐 app Spec tree hash / 前后端 profile / 数据根 / pac 实值端口 / 路由前缀 / 工具链冻结（auto-lang 70b4a1de7、auto-ui b3414750、auto-man 03bb65e）全部入锁。全文见 plan-artifacts/plan-054/delivery-lock.md（sha256 3ecb71d4…202d）。
 - [ ] T-02（owner_stage=work；依赖T-01；AC-02）：建立唯一OS候选树，完整初始化所需组合，只把8app detached到已push交付SHA；验证健康/ID/源身份及错误反控，Reader和其他pin保持。
 - [ ] T-03（owner_stage=work；依赖T-02及实际最小owner前置；AC-02/03）：在现有声明/接入机制收口后端profile、端口/路由和数据作用域；不开发app功能或重建服务生态。
 - [ ] T-04（owner_stage=work；依赖T-03；AC-03）：两桌面从真实入口跑8app用户任务、关闭/重开与下一次操作，独立核对数据/图形。
@@ -168,3 +168,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 2 | from: work | to: work | status: executing | outcome: waiting（第 1 次，0/3） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 0260a5e | next: work/T-01（外部前置未变：BLOG-005 仍 drafting，owner 会话正在 main 上实施 src/back；无阶段工作可执行）
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 3 | from: work | to: work | status: executing | outcome: waiting（第 2 次，1/3） | worktree: D:/autostack/.wt/os-054/auto-os | commit: fafe548 | next: work/T-01（外部前置未变：BLOG-005 仍 drafting、owner main 实施中；无阶段工作可执行）
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 4 | from: work | to: user | status: executing | outcome: blocked（连续第 3 次 waiting 后按协议标记） | worktree: D:/autostack/.wt/os-054/auto-os | commit: ad6365f | next: user（解除动作：BLOG-005 归档交付——owner=BLOG-005 会话；其上游 auto-ui PLAN-050 前置已于 2026-11-04 交付 @ master 024fe57a，owner 已获用户路线①授权，关闭条件=auto-blog 005 status: archived 且 delivery commit push 到 main。关闭前 T-01 不得勾选、T-02+ 禁止执行。已核验事实：7/8 交付门关闭且 push；T-00 决策文档在 plan-artifacts/plan-054/assembly-decision.md；工作树与分支已备。）
+- stage: work | plan_id: PLAN-054 | plan_revision: r1 | outcome: pass（T-01 完成，交付门 8/8 关闭，delivery-lock 冻结） | worktree_path: D:/autostack/.wt/os-054/auto-os | branch: codex/plan-054-dev | base_commit: f34edf1 | code_commit: 未变（T-01 为只读锁定+文档） | dependency_revisions: auto-lang 70b4a1de7 / auto-ui b3414750 / auto-man 03bb65e（锁冻结值） | task_ids: T-01 | evidence: BLOG-005 archived @832b71f（2026-11-05，T-06 53/53）；8 pin 均 origin/main 祖先实证；锁全文 plan-artifacts/plan-054/delivery-lock.md（sha256 3ecb71d4…202d） | blockers: 无 | next: work/T-02（建候选树+init 组合+8 pin fetch/detach）
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 5 | from: work（blocked 恢复） | to: work | status: executing | outcome: pass | worktree: D:/autostack/.wt/os-054/auto-os | commit: 831734b（阻塞解除：BLOG-005 归档交付） | next: work/T-02
