@@ -276,3 +276,6 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **paint**：inproc VmBridge link 失败 `Undefined symbol: api.export_svg in module App`（VM front 引用了未链接的 back 导出）。
   **todo**：单独运行报 `desktop endpoint autodesk-broker 不可达`（预期——无桌面）；桌面会话内的退出原因仍待查（窗口残留旧帧）。
   **结论**：052 的六 app「编译绿」不等于 native 运行可用；calendar 为确定性启动崩溃，paint 为链接缺口，均需 auto-ui/toolchain owner 修复或在 054 侧记录为运行面前置（本计划不无授权改共享框架）。
+- stage: work | plan_id: PLAN-054 | plan_revision: r1 | round: 65 | from: work | to: work | status: executing | outcome: blocked（输入投递确认不达；vue 轨依赖 053 执行中） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: work/T-04（待 owner 前置）
+  **输入投递复核（19:56）**：以 registry 名 `auto-notes` 重试 `handler NewNote`（此前试过 `015-notes`、`widget=App`）——仍 `queued auto-notes handler: NewNote` 且 UI 无变化（截图 `tmp/autoui-screenshot-1793879772735.png` 与操作前一致）。结合代码路径，桌面侧 `DesktopInject::Handler` 对 outproc app 命中的是 rqhost-client 组件，handler 不会转投 app 进程；`DesktopInject::Key` 虽路由到 focused wid，但 app 输入未获得焦点（无指针通道）。**结论：iced 桌面验收通道不具备驱动 outproc app 的能力**（需 owner 增加 rq 输入/指针转发或 app 侧 MCP）。
+  **旁证**：auto-ui/PLAN-053（vue 桌面 host 多 api surface + 栈溢出）已置 `status: executing`（`docs/plans/053-*.md`，19:42 更新），表明 vue 轨前置也在推进中；其交付后 vue 轨 8 app 嵌载可再验。
