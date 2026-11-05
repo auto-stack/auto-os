@@ -150,7 +150,8 @@
         17815
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "014-weather",
@@ -171,17 +172,20 @@
         17819
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "016-calendar",
       "repo": "apps/auto-calendar",
       "kind": "repo",
       "ports": [
-        17820
+        17820,
+        17821
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "017-chat",
@@ -192,7 +196,8 @@
         17823
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "018-book-reader",
@@ -214,7 +219,8 @@
         17827
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "030-video-player",
@@ -254,10 +260,12 @@
       "repo": "apps/auto-paint",
       "kind": "repo",
       "ports": [
-        17834
+        17834,
+        17835
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "vm"
     },
     {
       "id": "025-sys-monitor",
@@ -275,10 +283,12 @@
       "repo": "apps/auto-database",
       "kind": "repo",
       "ports": [
-        17838
+        17838,
+        17839
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "native"
     },
     {
       "id": "027-file-manager",
@@ -296,10 +306,12 @@
       "repo": "apps/auto-charts",
       "kind": "repo",
       "ports": [
-        17850
+        17850,
+        17851
       ],
       "status": "active",
-      "added": "2026-10-03"
+      "added": "2026-10-03",
+      "launch": "vm"
     },
     {
       "id": "os-config",
