@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-061
-status: execution_done
+status: reviewed
 feature_name: 看板终端及外部工作区五产品的正式主题接入
 author: [Codex]
 created_at: 2026-11-03
@@ -191,4 +191,14 @@ stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 1 | from: drafting 
 - **T-06 自查**：全批 AC-01..05 work 侧闭合（AC-01 五产品两族×明暗正式包逐项过[jade-garden 单族边界具名]/AC-02 业务守恒各 D 腿+原门零回归/AC-03 宿主 ISO/REJ/EXIT/恢复+策略权威实录/AC-04 036 渠道 V04 四腿/AC-05 候选组合全验+预存红 base 对拍具名）；SD-01/02/04 已落 OS 工作树 c2d8219、SD-03 五页各仓提交；无未闭阻塞项；merge-owned 门（产品 push/OS pin/健康门/归档/清理）保持 pending 归 T-08/T-09。worktree 零 dirty（OS 树/各产品树/两 worktree 全清）。
 - work 交付审查交接：冻结面 = OS 工作树（T-06 后续 commit）+ 五产品候选 SHA；review 在同检出独立上下文只验证不修码。
 
-stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to: review | status: execution_done | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: c2d8219（OS 规格面 SD-01/02/04） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 37820f6 / jade-edit b71ee53 | evidence: plan-artifacts/plan-061/auto-os/ | next: review
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 2 | from: work | to: review | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: c2d8219（OS 规格面 SD-01/02/04） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 37820f6 / jade-edit b71ee53 | evidence: plan-artifacts/plan-061/auto-os/ | next: review
+
+2026-11-05 / stage:review / review_scope: final / reviewer_identity: 独立子代理会话（无实现上下文；从冻结面构件重建验证，未采信执行方摘要——86 次工具调用，5777089 tokens） / auto-os/PLAN-061 r1 / outcome: needs_fix（初审）→ 修复后受影响面复验 pass → final pass / worktree: D:/autostack/.wt/os-061/auto-os（branch codex/plan-061-product-themes，clean）/ reviewed_commit: c2d8219 / base_commit: 35026a1 / dependency_revisions: 同 work 收据（auto.exe t19-18-g03bb65e、themes 0.2.0 per-file sha256 复验 5/5 vendor 快照 match）
+- **acceptance_results**：AC-01 pass（复审者活体 boot 复现 kanban 角点 #0f0f12 36/36px、term 状态栏 #0f0f12 精确；diff 形态五产品全核）；AC-02 pass（修复后，见 R-01）/AC-03 pass（ISO/EXIT/REJ/恢复实录对账一致）/AC-04 pass（install/verify root1/root2 exit0、receipt digest/identity 逐位核对）/AC-05 pass（候选 SHA==树 HEAD==diff 内容；v34→v35 delta 恰 3 行；WinNAT 9300-9399 活体核验；stdlib fixture 抽样 4/4 字节一致）；AC-06 pass（修复后）；AC-07/08 pending-merge（by design）。
+- **findings（初审 5 项，复验闭 4 项）**：R-01(P2) term cargo "49/0" 主张 vs receipt——rerun 实测测试级 49/0 全绿但 cargo 进程退出 139（engine_ffi_integration 测试全绿后收尾段 0xc0000005）；base 3573a07 对拍（dll 注入）**逐位同败同值**（term-cargo-gates-base2.log）→ 预存 owner=autoterm FFI 套件拆解路径；主张位四处注记修正（plan §9/SD-01/term SD-03/收据；c9e5e56 commit message 为历史记录不改写）。R-02(P3) REJ 修正 oracle 重跑收据已存 rej-rerun-receipt.log（exit0）。R-03(P3) v35 头注已补（a8975f9）。R-04(P3) merge 卫生：auto-down front/auto/deps/themes 为 auto-man pac.rs Mode B 生成的仓内 junction（非 agent 建、非红线违例）——T-09 移组前 rmdir 链接；term src/front/tmp 需清扫（含复审者 boot 截图）。R-05(P3) 聚合 digest 为工具链内部算法（非朴素聚合）——per-file sha256 为可审计不变量，处处成立，无动作。回归：零。
+- spec_inputs: 批次页+host-theme 061 节+independent-repositories 061 条+五产品 theme-adoption.md（与实码一致性核过）
+- pending_closeout_gates: 产品 push、OS 干净组合 pin/健康门/实际启动、归档读回、输出对账与 scope 清理（T-08/T-09）
+- evidence: 复审报告全文随本轮会话存档；关键复算（活体像素/哈希/netsh/delta diff）已录本收据；D:/autostack/plan-artifacts/plan-061/auto-os/{review/,rej-rerun-receipt.log,term-cargo-gates-run2.log,term-cargo-gates-base2.log}
+- next: merge
+
+stage: goal | plan_id: PLAN-061 | plan_revision: r1 | round: 3 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-061/auto-os | commit: 578526e（review 修正后 OS 规格面） | candidates: auto-kanban 1efe9aa / auto-musk 721ecfa / jade-garden(auto-down) 58ea33f / auto-term 6eb4613 / jade-edit a8975f9 | next: merge
