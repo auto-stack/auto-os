@@ -163,6 +163,12 @@ OS/.at资产本身不跑语言cargo t/docs_gen；UI Rust接缝实改才跑theme_
 
 **T-04 同场腿全通（desktop-12 + clock-17 + calc-same）**：clock 载体（outproc 推送链）+ calc VM 独立跟随（轮询链，`AUTOOS_DESKTOP_CONFIG` 同一 probe config）共一宿主策略源。外写 dark→light：clock `rev=1 applied`（推送）+ calc `dark_mode=false`（轮询）**双消费器各自生效**；kill clock → calc 存活且下一次 dark 回切仍生效（`dark_mode=true`，关闭一方不影响另一 App follow 链）——V-04/AC-03 同场/隔离语义实证。载体 exe 无 MCP 面（生成体不含）记录为边界，V-05 载体语义由结构单测（push 不触 inner）承担。calc 组合子模块按既定 pin 3159a0f 组内初始化（不升级）。
 
+### T-07 probe 打点清理（2026-11-05，work）
+
+- 摘除：LAST_BAD_FRAME 静态+tap、attach 心跳、client hello 载荷 dump。转常驻：attach codec/on_message/activate err 归因日志（tag `[broker]`——原静默吞错收口）；carrier 嵌入包/推送观测行、`AUTOOS_BROKER_PIPE` env 覆盖保留（隔离/观测面）。
+- runtime lib 全量：2356 过/30 失败 = **pristine master 同集**（预存环境性红：menubar/clipboard/layout/uat，非本计划引入，failures 清单 `plan-artifacts/plan-055/auto-os/failed-tests.txt`）；carrier/hello_trailing/消息套件清理后复验绿。
+- T-06 窗口申请已发（AskUserQuestion 未获答复，等待项）：AC-05/G-1 未闭 → work 保持 executing，不声明完整交付（§10.1）。
+
 ### T-05 组合健康与 pin 对账（2026-11-05，work）
 
 - 组树健康门 `check-app-submodules.ps1 -OsRoot 组树`：exit=1，23 UNINITIALIZED = **worktree 默认形态**（gitlink 空检，AGENTS.md PLAN-013 预期；日志 `plan-artifacts/plan-055/auto-os/health-group.log`）；auto-calc 已按既定 pin 3159a0f 组内 init。正式组合门 = merge 时对主检出走（T-11）。
