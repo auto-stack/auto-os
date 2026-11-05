@@ -406,3 +406,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **关键**：`auto build -r rust` 必须用**同一组树**（AUTO_LANG_ROOT/AUTO_UI_ROOT/AUTO_MAN_ROOT 全指 `.wt/os-054/*`，不要与 ui-060 混用）→ 生成成功 `[tool] build rust (Completed)`，新 `main.rs`（02:57:23）包含：
   - `fn dispatch_named`（App：PrevMonth/NextMonth/Today/ToggleSettings/ToggleDarkMode…；CalendarStore：Init/NextMonth/SelectDay…）。
   但 03:09 手建二进制仍无该符号 ⇒ 编译输入/target 目录与实际产物不一致（c2e02416 vs d130ce6a），下轮核对 staging 拷贝与 `[build] target-dir`。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 118 | from: work | to: work | status: executing | outcome: pass（重生成修复落地；child Surface 类型待定） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 找 child Surface 具体类型
+  **060 round 28**：统一组树后 `auto build -r rust` 成功，calendar `main.rs` 含 `dispatch_named`；运行期 Action 到 endpoint（Discriminant(10)）但无我们埋点的 child 日志 ⇒ 实际 Surface 类型不是 RqProjector/HeadlessFrameSource。下一步读 `client_entry`/`host.rs:549`。
