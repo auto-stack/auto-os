@@ -4,6 +4,35 @@
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
 > P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
 
+## 产品批次消费面（PLAN-060 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-060 为第五实际消费者批次
+（桌面游戏三产品：037-klondike、036-tetris、038-minesweeper，登记见
+[../apps/product-theme-batch-060.md](../apps/product-theme-batch-060.md)）：
+
+- 三产品同 056–059 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；solitaire/tetris 原显式 `theme:"dark"` 键退役
+  = follow，minesweeper 历来无键）。
+- **双产品相反策略隔离腿（standalone follow 臂）**：solitaire@Solarized/dark
+  与 tetris@Auto/light 同时运行（各自独立 `AUTOOS_DESKTOP_CONFIG`），角点/
+  占比双 oracle 过（#002b36 精确 / #ffffff 12.9%），策略互不串扰；错
+  digest 候选 boot 具名拒绝保旧实录（"内容 digest 不符…候选拒绝（保
+  legacy 链）"）；owned 退出（taskkill 树+会话自收割）后 app 进程归零。
+- **包源消费腿**（solitaire 实证、机制同源）：缺 manifest/字节篡改/同
+  mtime 内容变更三坏包均具名拒绝（"主题包目录不可用（包缺席或校验失败）
+  ——候选拒绝（保 legacy 链…）"）、boot 存续；恢复后 family 重应用精确。
+  内容锁（per-file sha256）不受同 mtime 伪装影响。
+- **OS056-REAPPLY-NOTE 在本批复现（solitaire 一臂）**：活体外写翻转像素
+  滞留；tetris/minesweeper 活体翻转实测生效。合同命名恢复路径"重开"全过；
+  053 owner 注记维持，非本批回归。
+- **standalone 跟随臂 dark_mode 位不同步注记（053 owner 观察扩展）**：
+  跟随臂渲染层应用已提交策略派生 mode（像素 oracle 过），state 内
+  dark_mode 位不同步；显式 AUTO_UI_THEME 轨位同步正常。若日后需命名
+  "跟随臂位回写"为必需语义，属本页新合同项（053 owner），非 060 消费面。
+- tetris/minesweeper 的 a2r 生成预存红（`??` E0599 / 数值比较 E0308，
+  base 同败）与本批主题门轨选择（`--server vm` 既有支持模式）详见批次页；
+  owner=auto-lang 后端生成。
+
 ## 产品批次消费面（PLAN-059 增补）
 
 本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-059 为第四实际消费者批次

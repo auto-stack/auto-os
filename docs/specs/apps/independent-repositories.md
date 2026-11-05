@@ -63,6 +63,15 @@ Status: v0.6 development baseline; product paths updated 2026-10-22 (PLAN-050).
   gitlink 按本批自身门更新（fetch/detach 同 SHA + 健康门 + 实际启动后
   提交），无 054 全局前置；vue 轨 design 投影门控缺口具名修复
   owner=auto-ui（证据见批次页）；阶段计数仅按实际验收。
+- **主题批次（PLAN-060）**：桌面游戏三产品独立仓候选——solitaire
+  （037-klondike，54c0051）、tetris（036-tetris，d252f36）、minesweeper
+  （038-minesweeper，6873674），同 056–059 消费形态接入官方主题包
+  （逐产品表面/固定值见各仓 docs/specs/theme-adoption.md；详见
+  [product-theme-batch-060](product-theme-batch-060.md)）。本批 OS 组合
+  gitlink 按本批自身门更新（fetch/detach 同 SHA + 健康门 + 实际启动后
+  提交），无 054 全局前置；tetris/minesweeper 的 a2r 生成预存红（base
+  同败）owner=auto-lang，主题轨走 `--server vm` 既有支持模式，关闭条件见
+  批次页；阶段计数仅按实际验收。
 - apps.manifest 使用 kind=repo，repo 指实际子模块应用根；.gitmodules 与 160000 gitlink 同一提交维护。
 - 21 个新产品的物理目录使用正式产品仓名（如 `apps/auto-notes`）；原主来源 ID 继续保留桌面身份、图标与引用。新产品端口在 17810–17851，
   各 app 实际占用以 pac.at 与 manifest 为准，无后端的不声明后端端口。
