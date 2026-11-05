@@ -362,3 +362,6 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   日志 `[plan060] adopt surface 480x320` + `[plan060] frame2 wid=1 nops=43 texts=["<","November",...]` ⇒ calendar 在桌面里是 **子进程投影帧**（frame compose），不是本地控件树；canvas 指针事件无下行通道、OS 合成点击命中的是桌面窗口而非子进程。
   另：`action:key` 发 VK_RIGHT 后无新帧 ⇒ calendar 自身不做键盘翻月（应用面）。
   结论：T-04 的 calendar 交互验收依赖 **060 outproc 指针下行**（协议增 Pointer + 子进程注入 + 坐标换算）；随后复验「>」翻月。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 104 | from: work | to: work | status: executing | outcome: 定性（calendar=broker 帧客户端，非 HWND 嵌入） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 用 click 相位验证 delivered
+  `calendar.exe` **MainWindowHandle=0**（无可见主窗）；桌面日志里的 `[plan060] adopt surface 480x320`/`frame2` 来自 calendar 进程自己的 auto-ui 运行时 ⇒ calendar 是 **broker 帧客户端**（client_runtime 消费 `InputMsg::PointerPressed`，client_runtime.rs:1195），不是 HWND 嵌入。
+  因此指针应走 `broker_pointer_down/up`（shell_state 已调用），但 `delivered` 只在 Click 相位记录；本轮 Down/Up 无 delivered 日志 ⇒ 下轮改用 `phase:"click"` 直接看 delivered 与 child 反应。
