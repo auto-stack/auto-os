@@ -63,6 +63,20 @@ Status: v0.6 development baseline; product paths updated 2026-10-22 (PLAN-050).
   gitlink 按本批自身门更新（fetch/detach 同 SHA + 健康门 + 实际启动后
   提交），无 054 全局前置；vue 轨 design 投影门控缺口具名修复
   owner=auto-ui（证据见批次页）；阶段计数仅按实际验收。
+- **主题批次（PLAN-061）**：看板/终端/外部工作区五产品独立演进候选——
+  kanban（auto-kanban，a19c4ba0，main）、auto-musk（d93d9198，musk-061
+  worktree plan-061-dev）、jade-garden（auto-down 嵌套 front/auto，
+  2180f5a8，os-061-dev owner 树）、auto-term（c9e5e561+0677020，main，
+  app/ 根）、jade-edit（8d2dbf86，main）。接入形态：四产品同 056–060
+  vendor 快照消费形态；jade-garden 为构建链静态投影消费（生成四块→部署
+  CSS 变量，品牌 overlay 保留；单族边界具名）。musk 为 musk-061 专属
+  worktree（其 AGENTS 规约）、auto-down 为 os-061 组 owner 树——外部/
+  嵌套根无 OS gitlink，组合身份以候选 SHA+daemon/工具身份固定，不伪造
+  submodule。逐产品表面/固定值见各仓 docs/specs/theme-adoption.md；
+  详见 [product-theme-batch-061](product-theme-batch-061.md)。预存红
+  （kanban manual 写流/jade-edit vm_matrix 深检查/term CLI 轨——base
+  对拍同域）owner 见批次页；阶段计数仅按实际验收，OS pin 按 merge 自身
+  门更新。
 - **主题批次（PLAN-060）**：桌面游戏三产品独立仓候选——solitaire
   （037-klondike，54c0051）、tetris（036-tetris，d252f36）、minesweeper
   （038-minesweeper，6873674），同 056–059 消费形态接入官方主题包

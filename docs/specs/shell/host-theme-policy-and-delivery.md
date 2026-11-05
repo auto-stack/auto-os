@@ -28,6 +28,39 @@
 - **054 边界读回**：本批不触八产品 pin/装配与 037/038/918 边界；健康门
   check-app-submodules 组树通过（`012-clock` 注册，无批量删除签名）。
 
+## 产品批次消费面（PLAN-061 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-061 为第六实际消费者批次
+（看板/终端/外部工作区五产品：kanban、auto-musk、jade-garden、auto-term、
+jade-edit，登记见
+[../apps/product-theme-batch-061.md](../apps/product-theme-batch-061.md)）：
+
+- 五产品同 056–060 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto` + design 明暗派生）；term 原显式
+  `theme:"dark"` 标量键退役 = follow，kanban/jade-edit/jade-garden 历来
+  无键，musk theme 标量键缺省（其 theme{} 结构化品牌主题见下）。
+- **品牌 overlay 与宿主族/模式共存（musk，新消费形态）**：pac `theme{}`
+  结构化品牌主题（PLAN-075 composed palette）作为**默认主题**种子
+  （write-if-unset），宿主策略完整候选（family+mode）到货时**整体接管**
+  family/mode——品牌 overlay 不压宿主族/模式选择。实测：默认 boot 品牌紫
+  生效；Solarized/dark 完整候选 dominant #002b36 接管。
+- **宿主策略权威 over app mode toggle（term 实录，053 优先级确认）**：
+  active policy 下应用侧 mode 开关（◐）被 policy 快照 re-assert 压回；
+  toggle 的权威域 = standalone/override 轨（AUTO_UI_THEME 显式轨位同步
+  正常）。此为既有优先级链的行为确认，非新语义。
+- **boot 种子与 app 派生态同步缝（REAPPLY-NOTE 同族扩展）**：种子链在
+  boot 时回写 dark_mode（系统主题派生），app 内由 mode 位派生的次级状态
+  （term scheme）在 Init 时序内可能读到种子前值——一次显式开合或重开
+  追齐；合同恢复路径"重开"闭合，非新缺陷面。
+- **jade-garden 构建链静态投影消费形态**：非运行时注册（部署面手写
+  facade），官方族经生成 index.css 四块投影为部署 CSS 变量值；
+  `.theme-inputs.json` receipt 为消费凭证。静态投影单族（Auto）——第二
+  族需运行时切换通道，具名边界 owner=auto-ui/jade-garden（详见批次页）。
+- **平台注记（owner=VM 宿主平台，非本批缺陷）**：CLI VM split-over-HTTP
+  形态 shim extern `term/get_lines` 500（"future_all/race"）——独立
+  CLI 轨无 PTY；桌面形态（宿主进程内装载）不受影响。REJ/ISO/EXIT/
+  恢复腿全过（详见批次页），与 060 同口径。
+
 ## 产品批次消费面（PLAN-060 增补）
 
 本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-060 为第五实际消费者批次
