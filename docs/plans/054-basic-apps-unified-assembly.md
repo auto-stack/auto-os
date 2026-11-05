@@ -374,3 +374,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 106 | from: work | to: work | status: executing | outcome: pass（诊断：rect=surface=480x320，缩放因子为 1，命中点仍偏） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: adopted 窗口显示 rect 与输入映射
   诊断（`AUTO_PLAN060_DIAG=1`）：`broker pointer local (258.0,58.0) rect 480.0x320.0 surface 480.0x320.0 -> (258.0,58.0)`——**缩放因子 1**，说明 `wins[wid].rect` 对 adopted 表面存的是表面尺寸而非屏幕显示 rect（窗口在屏上约 588x398 px = canvas 294x199）。
   ⇒ child 收到的 (258,58) 落在它 480x320 布局的中部，而「>」在 child 坐标约 (421,94)。下一步：找 adopted 窗口的**显示 rect**（WM 布局/投影 fit 位置）并用它换算输入；或让 adopted 窗口 rect 按显示尺寸入 WM。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 107 | from: work | to: work | status: executing | outcome: pass（calendar msg 不下行；协议缺 Action 变体） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 060 增 InputMsg::Action（broker 下行）
+  calendar 正面源有 `NextMonth/PrevMonth/Today/SelectDay` msg；注入 `msg NextMonth` 无效果——`Msg` 臂只对 in-process VM 组件 `component.on`，broker 子进程（calendar.exe）收不到。
+  协议 `ProtocolMsg` 只有 Handshake/Frame/Input/Control/Observe；`InputMsg` 仅 pointer/key/IME，**无 handler/action 变体** ⇒ 需要新增 `InputMsg::Action { wid, name }` 并在 child client_runtime 派发 `component.on(DynamicMessage::String(name))`、宿主 `Msg` 臂对 broker client 转发。
+  指针逐点探测：frame 坐标 (434,42)/(431,106) 均无反应（canvas 命中已确认，坐标为 frame 级），进一步佐证需协议级输入而非坐标微调。
