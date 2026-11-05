@@ -402,3 +402,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 27**：`ui_crate_source` 支持 `AUTO_WEB_SOURCE_ROOT` 覆盖（auto-generation-core/source_owner.rs:590+），但 `auto build -r rust` 后 staging `Cargo.toml` 仍写 `../../../../auto-web`（os-054 兄弟）——实际生成路径由 **auto-man 的 auto.exe** 走的另一条路径产生，env 未生效。
   ⇒ 同一阻塞连续 3 轮（round 85/86/87）：calendar 的 a2r 重生成无法在组树内闭环；054 的 rust 应用交互验收（calendar 等）依赖 auto-ui/901 投射修复或 auto-man 生成路径对齐。
   ⇒ 已可交付面不变：notes 全链、todo VM 全链（949 闭合）、calendar 渲染。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 117 | from: work | to: work | status: executing | outcome: 突破（组树一致后 calendar 重生成成功且含 dispatch_named） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 编译产物未回填，查 staging/target 目录
+  **关键**：`auto build -r rust` 必须用**同一组树**（AUTO_LANG_ROOT/AUTO_UI_ROOT/AUTO_MAN_ROOT 全指 `.wt/os-054/*`，不要与 ui-060 混用）→ 生成成功 `[tool] build rust (Completed)`，新 `main.rs`（02:57:23）包含：
+  - `fn dispatch_named`（App：PrevMonth/NextMonth/Today/ToggleSettings/ToggleDarkMode…；CalendarStore：Init/NextMonth/SelectDay…）。
+  但 03:09 手建二进制仍无该符号 ⇒ 编译输入/target 目录与实际产物不一致（c2e02416 vs d130ce6a），下轮核对 staging 拷贝与 `[build] target-dir`。
