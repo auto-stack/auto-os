@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-052
-status: execution_done
+status: reviewed
 feature_name: auto-os-distro 建仓与 Autonix 路线图
 author: [codex]
 created_at: 2026-10-29
-updated_at: 2026-10-29
+updated_at: 2026-11-05
 plan_revision: 2
-current_step: 5
+current_step: 6
 total_steps: 7
 supersedes_spec_components: []
 new_spec_components: []
@@ -47,6 +47,7 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 - AutoOS main 有其他计划的文档 WIP，保留原样；本次仅在其 docs/plans/ 分配 052 并记进度。
 - 对照 docs/specs/apps/independent-repositories.md 与 shell/desktop-bootstrap.md：发行构建是独立基础设施，不是应用；现有 Specs 未定义发行仓治理。revision 1 建立行政归属和推荐方案；revision 2 用户正式批准路线及暂定名。产品运行契约未变。
 - GitHub 当前登录 zhaopuming，现有产品组织 auto-stack。本次默认 private，正式公开发布另行决定。
+- 授权记录：2026-11-05 用户以「完成计划052」授予 /auto-plan-goal 全链授权（work→review→merge），范围即本计划已批准契约；不改变目标、验收门槛、范围或预算。
 
 ## 5. 详细设计
 
@@ -92,7 +93,7 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 | [x] | T-03 | work | T-02 | 建私有 GitHub 远端，推送指定 refs；通过 API 与 ls-remote 核验 | AC-02、AC-04 |
 | [x] | T-04 | work | T-03 | 更新本计划证据与恢复入口，核对其他 WIP 不变并交接 review | AC-01～AC-04 |
 | [x] | T-07 | work | T-04 | 正式记录用户批准路线、暂定名与 M1 验证清单，建立四个 GitHub milestones；核对文档与实际基线 | AC-03、AC-07 |
-| [ ] | T-05 | review | T-04、T-07 | 独立复核行政改名/发布边界与文档 | AC-05 |
+| [x] | T-05 | review | T-04、T-07 | 独立复核行政改名/发布边界与文档 | AC-05 |
 | [ ] | T-06 | merge | T-05 pass | 合入本次说明文档并归档计划；旧 M1 安装计划继续独立跟踪 | AC-06 |
 
 ## 9. 复审记录
@@ -138,3 +139,22 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 - m1-nix-cosmic-preview peeled commit 仍为 79e1435598b0367481919e1a7486d83e599ee358；未改源码、输入锁、ISO 或 VM 状态。
 - PR #1 标题/描述已重写为最终交付：Record approved Autonix roadmap and M1 verification checklist；head=5100ce1，仍 draft，未 merge。本次 GitHub 元数据修改不等于独立复审通过。
 - T-01～T-04、T-07 work 已完成，current_step=5/7；T-05 独立复审与 T-06 合并归档保持待办。next: review。AutoOS main 其他研究/设计 WIP 保持原样。
+
+### review 独立复审（final pass）
+
+- stage: review；review_scope: final；reviewer: 独立复审上下文（与实现会话分离）；plan_id: PLAN-052；plan_revision: 2。
+- worktree_path: D:/autostack/.wt/os-052/auto-os-distro；branch: plan-052-repo-setup；reviewed_commit: 5100ce1ac323f51d40ea26819376f17a04c40f3a；base_commit: 6e7d07516489f883c656fc328b8edb9c8f52220a（main）；工作树干净，全部改动已提交。
+- 规范增量：无（计划声明不改变产品运行契约；已批准路线写入 ROADMAP，不冒充运行验收）——与计划「规范增量」表一致，无待发布 Spec 文本。
+- 验收证据（全部 pass）：
+  - AC-01：E:/AutoOS/src/auto-os-distro 存在、旧路径 autoos-nixos 已迁移；恢复 bundle `git bundle verify` 通过，SHA-256 BDBB05DA9CAC06A85D05405567232E774329BB2D00FA5C26A237746503AA5FE7；进度文件哈希 801F841CA367C264FE2BBFD0D315E26D004E94586EFC2497AAB4F236B6DF667B；三个工作树可解析；工作树无 reparse point；`git fsck --connectivity-only` 返回 0。
+  - AC-02：GitHub API 返回 private=True；`git ls-remote` 精确匹配 main=6e7d075、plan-001-dev=79e1435、plan-052-repo-setup=5100ce1；tag m1-nix-cosmic-preview（annotated b46f74e…）peeled=79e1435。
+  - AC-03：README/ROADMAP 准确区分 preview 快照与完整安装验收；已批准四阶段、代码所有权与 Autonix 暂定名明确。
+  - AC-04：auto-os main 其他文档/研究 WIP 保持原样；5100ce1 与 79e1435 发布树均无 ISO/VMDK/VMEM/log/凭据；恢复 bundle 可验证。
+  - AC-07：M1-CHECKLIST 12 个唯一 ID（I01–I05/U01/R01–R03/F01–F02/CLOSE），39 个复选框全部未执行，BASE-01/02 有已通过记录；步骤、通过条件、原 V/AC 映射齐全；GitHub 4 个里程碑全部 state=open（无虚构截止日期）；源码/ISO/lock 指纹与 artifacts manifest 一致（ISO SHA-256 52ec7ed3…，size 3791650816，lock aef717f9…）。
+- 文档检查：`git diff --check` 0；相对链接全部可解析；PR #1 state=open、draft=True、head=5100ce1、base=6e7d075、未合并（与待复审状态一致）。
+- findings：无。待合并收口门槛（merge-owned）：PR #1 文档合入 main、计划归档、工作树清理；旧 M1 实现 plan-001-dev 不连带合并。
+- outcome: pass；next: merge（T-06）。
+
+### goal 轮次记录
+
+- stage: goal | plan_id: PLAN-052 | plan_revision: 2 | round: 1 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-052/auto-os-distro | commit: 5100ce1 | next: merge。用户授权（见 §4）覆盖全链，后续阶段不再索取。
