@@ -1,5 +1,22 @@
 # Known debt and verification limits
 
+## PLAN-060 批回归记录（2026-11-05，batch regress due check）
+
+- **VERIFY-APP-LINKS-STALE（open，owner=本仓 verifier 维护）**：
+  `scripts/verify-app-links.py` 以 `docs/reports/v0.6-app-import.json` 的
+  **固化 import SHA 表**为 gitlink 断言源——任何后续 pin 前进（053 calc 起、
+  056–059 批、060 批三产品）都会在此失败（当前首断点
+  `Incorrect gitlink apps/auto-calc`）；脚本自 `57b2910` 未随 pin 前进更新，
+  属预存陈旧（060 落地 dd6c1d7 前即失败，与本批无关——本批断言面在
+  auto-calc，非 060 三产品）。关闭条件：verifier 数据源改为
+  "manifest+SOURCE-IMPORT 溯源 + pin 变更由各批收据登记"或每次 pin 落地
+  同步刷新 import 表（owner 裁定其一）。过渡期组合完整性以
+  `check-app-submodules.ps1`（exit 0）+ 各批健康门为准。
+- **060-.batch 腿实录**：check-app-submodules（main）exit 0（唯一 MISMATCH
+  =apps/auto-charts 他会话 WIP）；verify-app-links 失败如上（预存）；
+  本批自身门（三产品原门+主题套件 5/5×3+组合腿）全绿见
+  archive/060 收据与 docs/specs/apps/product-theme-batch-060.md。
+
 ## PLAN-876 桌面入口迁移（2026-10-28，本仓首次按新归属登记）
 
 - **OS876-APP-EXE（closed，2026-10-28 phase）**：`028-launcher` / `036-tetris` /

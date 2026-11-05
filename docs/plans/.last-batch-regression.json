@@ -1,0 +1,14 @@
+{
+  "last_covered_plan_id": 60,
+  "timestamp": "2026-11-05T12:00:00Z",
+  "covered_commit": "624768361e218ff7ff4e12c929dc1b01f3b71996",
+  "command": "check-app-submodules.ps1 (exit 0) + verify-app-links.py (pre-existing stale-table red, recorded VERIFY-APP-LINKS-STALE)",
+  "legs": [
+    "check-app-submodules",
+    "verify-app-links"
+  ],
+  "new_reds": [],
+  "known_reds_seen": [
+    "verify-app-links stale v0.6-import expectation table (fails at apps/auto-calc; pre-060; owner=repo verifier maintenance, see KNOWN-DEBT-AND-RISKS.md VERIFY-APP-LINKS-STALE)"
+  ]
+}
