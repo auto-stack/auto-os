@@ -161,6 +161,14 @@ OS/.at资产本身不跑语言cargo t/docs_gen；UI Rust接缝实改才跑theme_
 - **产品候选提交**：auto-clock main `3495671`（= pac.at dep themes + app.at use/design + README 反链 + 测试修 + vendor/themes 快照 + .gitignore deps/）；树 clean；**push 留待 review 后**（T-09）。独立默认腿（Auto/light 无宿主）由本 oracle 即证（VM 轨无宿主 env = design 默认生效，业务/渲染双绿）。
 - 待办：载体 exe MCP 四 tab 腿、clock/calc 同场腿、T-05 组合健康/pin。
 
+**T-04 同场腿全通（desktop-12 + clock-17 + calc-same）**：clock 载体（outproc 推送链）+ calc VM 独立跟随（轮询链，`AUTOOS_DESKTOP_CONFIG` 同一 probe config）共一宿主策略源。外写 dark→light：clock `rev=1 applied`（推送）+ calc `dark_mode=false`（轮询）**双消费器各自生效**；kill clock → calc 存活且下一次 dark 回切仍生效（`dark_mode=true`，关闭一方不影响另一 App follow 链）——V-04/AC-03 同场/隔离语义实证。载体 exe 无 MCP 面（生成体不含）记录为边界，V-05 载体语义由结构单测（push 不触 inner）承担。calc 组合子模块按既定 pin 3159a0f 组内初始化（不升级）。
+
+### T-05 组合健康与 pin 对账（2026-11-05，work）
+
+- 组树健康门 `check-app-submodules.ps1 -OsRoot 组树`：exit=1，23 UNINITIALIZED = **worktree 默认形态**（gitlink 空检，AGENTS.md PLAN-013 预期；日志 `plan-artifacts/plan-055/auto-os/health-group.log`）；auto-calc 已按既定 pin 3159a0f 组内 init。正式组合门 = merge 时对主检出走（T-11）。
+- 同场 probe 即组合真实运行证据（desktop-12 注册表读 calc ✓ 真实启动）。
+- pin 对账：候选 auto-clock main `3495671`；被测 exe（rust-workspace 生成）内容 = 候选 src/pac/vendor（生成后仅 tests/.gitignore 差异）；现组合 gitlink 仍 551d05e（pre-adoption），**正式 pin 推进 = review+push 后 merge（T-09）**。
+
 ### T-03 真载体整链实证（2026-11-05，work 执行中）
 
 **G-2 四腿之三条真腿已通**（隔离桌面 probe，desktop-9 + clock exe，日志 `plan-artifacts/plan-055/auto-os/probe/{desktop-9,clock-13,clock-14}.log`）：
