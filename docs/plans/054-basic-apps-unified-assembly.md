@@ -356,3 +356,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **canvas 标定（重要）**：验收指针坐标 = **屏幕坐标 ÷ 2**（桌面 canvas 为 1280x800 逻辑面，截图为 2560x1600）。例：calendar「>」屏幕 (548,149) → canvas (274,74)，命中日志 `hit=Some(Wid(1))`。
   **calendar 交互**：三次命中点击（274,74 / 266,66 / 258,58）后月份仍为 November 2026——`[plan060] pointer` 只记 hit、无 delivered/App 侧反应。calendar 为 **outproc-native**（calendar.exe），推断指针未下行到子进程表面（060 T-05 的 outproc 输入目前只有键盘/文本面）。
   下一步：把指针下行纳入 outproc 协议（060 扩展）或改验 calendar 键盘/msg 面。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 102 | from: work | to: work | status: executing | outcome: 反证（outproc-native 表面不接收合成点击） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 060 扩展（outproc 指针）或改用应用自身的键盘/协议面
+  **calendar 反证**：canvas 指针注入（hit=Some(Wid(1))）与 **OS 级 SendInput 点击**（SetCursorPos+mouse_event，屏幕 (548,149)/(467,489)/(467,412)）均无任何反应；月份仍 November 2026。⇒ outproc-native 表面（calendar.exe 子 HWND）不消费合成点击——canvas 事件不下行、OS 合成事件也未命中。归属：060/desktop outproc 输入面扩展（不是 app 缺陷）。
