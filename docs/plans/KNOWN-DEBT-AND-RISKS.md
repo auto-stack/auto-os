@@ -72,7 +72,7 @@
 - **V06-APP-003（知识/发布工程）**：Notes 暂以固定 AutoDown 子模块携带 engine 源码，StyleKit 为固定 vendor 快照。统一 package/install 成熟后可改为版本依赖；本轮不改包管理协议。终端历史证据日志很大， fresh-clone 验证以浅/过滤/稀疏模式获取同一 pin，正式配置不改。
 - **V06-APP-004（恢复任务）**：五个 OS 目录转 gitlink，隐藏 v0.5 修改须先导入对应产品 source-sync，再合产品开发线并更新 OS pin；禁止用旧目录覆盖新产品，父仓文件/目录冲突按应用处理。临时计划编号待主机恢复后登记，避免占用不可见计划 ID。
 
-## OS053-OUTPROC-CARRIER（2026-11-03，PLAN-053 review G-2）
+## OS053-OUTPROC-CARRIER（2026-11-03，PLAN-053 review G-2）——✅ 已闭（PLAN-055，2026-11-05）
 
 桌面组合式 outproc 应用的主题策略推送端到端（attach→推→applied 回读→
 重连重推→stale 分列）协议两端点已实现并有单测（帧 17/18 roundtrip、
@@ -84,9 +84,20 @@ Hello `theme-policy/1` caps、零装载 adopt、`theme_pushed_rev` 判定），
 merge 删除；重测脚本逻辑见 PLAN-053 归档页 §9 回合2 记录）。owner：
 宿主主题域后继计划。
 
-## 2026-11-03 主题后继认领（只立约，未关闭）
+**闭环（PLAN-055 T-03/T-06）**：真实载体 = auto-clock a2r exe（嵌入包
+digest 与宿主 catalog/Spec 三重同一 `9fa07742…`），隔离 probe 四腿全绿
+（attach 推送/变更广播/重连取最新/受控 stale 分列）+ 具名拒绝保旧恢复腿
++ 真实 OS 事件窗口腿（G-1 同批闭合，备份/finally 精确恢复读回 1/1）。
+协议修复随批：Hello 双尾段歧义（surfaces 段恒显式规则）。证据：
+PLAN-055 归档页 §9 T-03/T-06/修复轮收据 + 宿主页 SD-05/G-2 节
+（053 probe scope 不复活，本批 probe 为独立新证据）。
+
+## 2026-11-03 主题后继认领（已关闭，2026-11-05）
 
 [PLAN-055](055-clock-theme-and-host-evidence-closure.md) drafting r1、0/11认领053的G-1真实OS事件hold与OS053-OUTPROC-CARRIER（G-2）闭环；真实clock为第二产品/载体候选，T-01先有界核验现生成→adopt/broker可行性，036正式渠道随后消费。协议单测/standalone config轮询不代真实载体；系统设置仍须执行到该腿时获具体窗口许可。当前未实测/修复、两项不标closed，不释放原持有。054八产品装配不承担该主题工作。
+
+**关闭（2026-11-05）**：PLAN-055 交付 r1（T-06 窗口获准执行+finally 精确
+恢复；G-1/G-2 双闭，见上行与宿主页），正式 pin `3495671`，计划 archived。
 
 ## THEME-PRODUCT-ROLLOUT（2026-11-03，仅立约）
 
