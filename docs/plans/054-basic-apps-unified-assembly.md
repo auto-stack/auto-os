@@ -398,3 +398,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   - 但 app 的 staging 工作区 `auto-web` path 固定写 `../../../../auto-web`（os-054 兄弟），而 auto-lang-core 走 ui-060 → `auto-web-contract` 同 links 双包冲突；
   - 尝试把 os-054/auto-web 的 lang 依赖重指 ui-060，触发 "不同 target 源路径" manifest 错误，已回滚（不动他人树）。
   ⇒ calendar 重生成被 **auto-ui PLAN-901 交付投射路径**问题阻断（auto-web 应投射到 ui-060 组树）。这是跨计划依赖，需在 auto-ui 侧修 901 的 `PROJECTION_AUTO_WEB` 路径后再回 054。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 116 | from: work | to: work | status: executing | outcome: blocked（a2r 重生成链路第 3 轮同一阻塞） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 用户裁定范围
+  **060 round 27**：`ui_crate_source` 支持 `AUTO_WEB_SOURCE_ROOT` 覆盖（auto-generation-core/source_owner.rs:590+），但 `auto build -r rust` 后 staging `Cargo.toml` 仍写 `../../../../auto-web`（os-054 兄弟）——实际生成路径由 **auto-man 的 auto.exe** 走的另一条路径产生，env 未生效。
+  ⇒ 同一阻塞连续 3 轮（round 85/86/87）：calendar 的 a2r 重生成无法在组树内闭环；054 的 rust 应用交互验收（calendar 等）依赖 auto-ui/901 投射修复或 auto-man 生成路径对齐。
+  ⇒ 已可交付面不变：notes 全链、todo VM 全链（949 闭合）、calendar 渲染。
