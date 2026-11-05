@@ -378,3 +378,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   calendar 正面源有 `NextMonth/PrevMonth/Today/SelectDay` msg；注入 `msg NextMonth` 无效果——`Msg` 臂只对 in-process VM 组件 `component.on`，broker 子进程（calendar.exe）收不到。
   协议 `ProtocolMsg` 只有 Handshake/Frame/Input/Control/Observe；`InputMsg` 仅 pointer/key/IME，**无 handler/action 变体** ⇒ 需要新增 `InputMsg::Action { wid, name }` 并在 child client_runtime 派发 `component.on(DynamicMessage::String(name))`、宿主 `Msg` 臂对 broker client 转发。
   指针逐点探测：frame 坐标 (434,42)/(431,106) 均无反应（canvas 命中已确认，坐标为 frame 级），进一步佐证需协议级输入而非坐标微调。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 108 | from: work | to: work | status: executing | outcome: pass（060 Action 线格式落地） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: child 派发 + 宿主转发接线
+  **060 round 19**：`InputMsg::Action{wid,name,arg}`（tag 11）encode/decode 完成；child 侧派发受泛型 `C: Component` 限制，需在具体 DynamicComponent 出口接线；宿主 `Msg` 臂待对 broker 转发。复验目标 calendar `NextMonth`。
