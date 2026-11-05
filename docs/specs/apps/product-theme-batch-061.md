@@ -21,7 +21,7 @@ clone main；musk = `D:/autostack/.wt/musk-061/auto-musk`（分支 plan-061-dev�
 | kanban | auto-kanban `a19c4ba0`（main） | 1c967c5a | tests/test_061_theme.py 5/5 | playwright（stdlib 修复在场）10 绿/7 红——红集与 base **逐项相同**（M2-M9 manual 写流 POST 400 missing body，owner=PLAN-043 walkthrough 配方×现工具链）；stdlib/auto fixture=原门复活最小修复 |
 | auto-musk | musk-061 `d93d9198` | de92b909 | tests/test_061_theme.py 5/5 | 仓门=worktree 内验证；共存语义实测（下） |
 | jade-garden | auto-down `2180f5a8`（os-061-dev） | 7c4d5cbb | front/tests/test_061_theme.mjs 5 腿 | **e2e 24/24 全绿**（官方投影在场） |
-| auto-term | auto-term `c9e5e561`+`0677020`（main） | 3573a07a | app/tests/test_061_theme.py 5/5 | cargo workspace **49 passed/0 failed** |
+| auto-term | auto-term `c9e5e561`+`0677020`（main） | 3573a07a | app/tests/test_061_theme.py 5/5 | cargo workspace 测试级 **49 passed/0 failed**；cargo 进程退出 139 = engine_ffi_integration 收尾段 0xc0000005 崩（测试全绿后卸载路径）——base 3573a07 对拍逐位同败同值（plan-061/auto-os/term-cargo-gates-{run2,base2}.log），预存 owner=autoterm FFI 套件拆解路径 |
 | jade-edit | jade-edit `8d2dbf86`（main） | 5fb1e9e2 | tests/test_061_theme.py 5/5 | vm_matrix merged 臂 15 PASS→check15 trash 增强子步败=base probe 对拍同域（base 更早在「回收站」钮败）——预存上游漂移 |
 
 冻结工具链（060 同源）：`auto.exe = auto-man/target/debug/auto`
