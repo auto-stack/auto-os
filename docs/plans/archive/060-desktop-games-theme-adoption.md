@@ -205,6 +205,8 @@ stage: goal | plan_id: PLAN-060 | plan_revision: r1 | round: 3 | from: merge | t
 - 证据折算：全部必需摘要（命令/退出码/关键值/源 SHA/拒绝原文/像素 oracle 值/具名预存红与 owner 关闭条件）已折入本文件 §5.1.1/§9 与批次页 docs/specs/apps/product-theme-batch-060.md（随 dd6c1d7 落地，仓库内持久）；逐产品定向反控脚本已提交各产品仓 tests/test_060_theme.py；plan-artifacts/plan-060（1010MB：delivery root1/root2、base 复测 probe clone×3、日志/截图/union+v04 驱动）按 2026-10-31 delete-at-merge 裁定全删，无具名持有（预存红 owner=auto-lang 记录于批次页=仓库内 Spec，非 plan-artifacts hold）。
 - registry 已刷新（.retention/policy.json 增 auto-os/PLAN-060 条目）。
 - 归档后读回核验：本文件 status: archived + completion_kind: delivered + 9/9 + landed/canonical_verified/archived/cleaned 检查点齐。
+- 归档目录按 AGENTS §1 约定 `docs/plans/archive/`（6247683 修正）；batch regress due check（060 可整 5）完成：check-app-submodules exit0 + verify-app-links 预存陈旧表红登记 KNOWN-DEBT（VERIFY-APP-LINKS-STALE）+ `.last-batch-regression.json` 收据（3f0899a）。
+stage: goal | plan_id: PLAN-060 | plan_revision: r1 | round: 4 | from: done | to: done | status: archived | outcome: pass | delivery_commit: dd6c1d7 | archive: docs/plans/archive/060-desktop-games-theme-adoption.md | spec_paths: docs/specs/apps/product-theme-batch-060.md, docs/specs/shell/host-theme-policy-and-delivery.md, docs/specs/apps/independent-repositories.md | pins: auto-solitaire 54c0051 / auto-tetris d252f36 / auto-minesweeper 6873674 (pushed) | cleanup: worktree+branch+group removed, plan-artifacts scope deleted, registry refreshed, no holds | pending_gates: 无（合并自有门已录观察项） | next: done
 
 ## 10. 待澄清事项
 
