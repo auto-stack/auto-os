@@ -352,3 +352,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 100 | from: work | to: work | status: executing | outcome: pass（949 AC-03 部分 + calendar 渲染） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: work/T-04
   **949 AC-03 部分**：`cargo test -p auto-lang-core --lib -- json` → **13 passed / 0 failed**；boot `handler_App_Init parked/resumed` 在 r42 仍正常（未回归）。
   **054 T-04（calendar）**：`016-calendar` 实为 **outproc-native rust** 应用，`launch_app(outproc-native)` 成功，窗口渲染 2026 年 11 月日历（6 日高亮），截图存证 `plan-artifacts/plan-054/t04/calendar-render-r43.png`。下一步：指针点击「>」翻月 + 记录。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 101 | from: work | to: work | status: executing | outcome: pass（canvas 标定 + calendar 指针未响应归因） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 060 T-05 扩展（outproc 指针）或 calendar 键盘面
+  **canvas 标定（重要）**：验收指针坐标 = **屏幕坐标 ÷ 2**（桌面 canvas 为 1280x800 逻辑面，截图为 2560x1600）。例：calendar「>」屏幕 (548,149) → canvas (274,74)，命中日志 `hit=Some(Wid(1))`。
+  **calendar 交互**：三次命中点击（274,74 / 266,66 / 258,58）后月份仍为 November 2026——`[plan060] pointer` 只记 hit、无 delivered/App 侧反应。calendar 为 **outproc-native**（calendar.exe），推断指针未下行到子进程表面（060 T-05 的 outproc 输入目前只有键盘/文本面）。
+  下一步：把指针下行纳入 outproc 协议（060 扩展）或改验 calendar 键盘/msg 面。
