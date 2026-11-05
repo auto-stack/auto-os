@@ -412,3 +412,9 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 29**：`pixels.rs:83` `PixelsNoopSource::on_input` 为 **no-op**——若 calendar 裁决为 Pixels 帧模式，Action/指针到达 endpoint 后被丢弃，与全部现象吻合。下一步确认 `frame_mode`；若 Pixels 则在臂内转发输入给真实组件，或把 app 裁决为 Commands。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 120 | from: work | to: work | status: executing | outcome: pass（发现验证回路污染） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 固定 构建→publish→校验 流程
   **060 round 30**：部署的 calendar.exe(03:09:03) 含旧标记、无最新 `mode={:?}`；手建 target 产物也无 → 前几轮「无 child action 日志」不可信。固定流程：更新组树 → **`auto build -r rust`（publish）** → 校验二进制标记 → 运行验证。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 121 | from: work | to: blocked | status: executing | outcome: blocked（桌面 outproc 输入链无法在组树内验证） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变）
+  **阻塞条件（连续多轮）**：054 剩余应用的「真实用户任务」需要桌面把指针/组件消息下行到 adopted 应用；该链路每一环都已单独验证（Action 到 endpoint：`[plan060] child endpoint input Discriminant(10)`；宿主 `sent delivered=true`），但：
+  1. child 的 `endpoint.session` 具体 Surface 未能定位（RqProjector/HeadlessFrameSource 的 Action 分支均无日志，`Component::dispatch_named` 默认实现日志也不出现）；
+  2. 应用二进制的 auto-ui 版本与工作树不一致（干净重建后仍缺最新补丁串），构建/publish 语义无法自证 —— 因而行为验证不可信。
+  已交付证据（不变）：notes 全链（rust outproc）、todo VM 全链（949 闭合：列表/输入/落库）、calendar 渲染、a2r 重生成链路修复（统一组树 + 生成 `dispatch_named`）。
+  解除条件：auto-ui 侧定位 child Surface 具体类型并把 Action 接入（或证明 client 走像素 no-op 臂），并固定「auto build 产出即所测二进制」的可信回路。
