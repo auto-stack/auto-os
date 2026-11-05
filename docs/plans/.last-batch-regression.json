@@ -1,8 +1,8 @@
 {
-  "last_covered_plan_id": 60,
-  "timestamp": "2026-11-05T12:00:00Z",
-  "covered_commit": "624768361e218ff7ff4e12c929dc1b01f3b71996",
-  "command": "check-app-submodules.ps1 (exit 0) + verify-app-links.py (pre-existing stale-table red, recorded VERIFY-APP-LINKS-STALE)",
+  "last_covered_plan_id": 55,
+  "timestamp": "2026-11-05T13:30:00Z",
+  "covered_commit": "720aaa7",
+  "command": "check-app-submodules.ps1 (missing_pac_at=0, exit ok) + verify-app-links.py (pre-existing stale-table red at apps/auto-calc, recorded VERIFY-APP-LINKS-STALE)",
   "legs": [
     "check-app-submodules",
     "verify-app-links"
