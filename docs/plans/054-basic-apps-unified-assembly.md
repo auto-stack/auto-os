@@ -410,3 +410,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 28**：统一组树后 `auto build -r rust` 成功，calendar `main.rs` 含 `dispatch_named`；运行期 Action 到 endpoint（Discriminant(10)）但无我们埋点的 child 日志 ⇒ 实际 Surface 类型不是 RqProjector/HeadlessFrameSource。下一步读 `client_entry`/`host.rs:549`。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 119 | from: work | to: work | status: executing | outcome: pass（强候选：像素臂 no-op 输入） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 确认 frame_mode 并修像素臂输入转发
   **060 round 29**：`pixels.rs:83` `PixelsNoopSource::on_input` 为 **no-op**——若 calendar 裁决为 Pixels 帧模式，Action/指针到达 endpoint 后被丢弃，与全部现象吻合。下一步确认 `frame_mode`；若 Pixels 则在臂内转发输入给真实组件，或把 app 裁决为 Commands。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 120 | from: work | to: work | status: executing | outcome: pass（发现验证回路污染） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 固定 构建→publish→校验 流程
+  **060 round 30**：部署的 calendar.exe(03:09:03) 含旧标记、无最新 `mode={:?}`；手建 target 产物也无 → 前几轮「无 child action 日志」不可信。固定流程：更新组树 → **`auto build -r rust`（publish）** → 校验二进制标记 → 运行验证。
