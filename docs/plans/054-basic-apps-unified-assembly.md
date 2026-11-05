@@ -371,3 +371,6 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   - `broker_pointer_down/up` 增加 `broker_surface_local(...)`：按 `rect.width/height` → `surface w/h` 比例把 canvas 局部坐标换算成 child 表面坐标（投影缩放）。
   - desktop 重建（二进制 01:20:58 含改动）。
   复测：calendar click 相位 `delivered=true`，但月份仍未翻——命中点在 child 表面坐标系里还需标定（next：日志打印换算后的 lx/ly 与便于逐点探测）。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 106 | from: work | to: work | status: executing | outcome: pass（诊断：rect=surface=480x320，缩放因子为 1，命中点仍偏） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: adopted 窗口显示 rect 与输入映射
+  诊断（`AUTO_PLAN060_DIAG=1`）：`broker pointer local (258.0,58.0) rect 480.0x320.0 surface 480.0x320.0 -> (258.0,58.0)`——**缩放因子 1**，说明 `wins[wid].rect` 对 adopted 表面存的是表面尺寸而非屏幕显示 rect（窗口在屏上约 588x398 px = canvas 294x199）。
+  ⇒ child 收到的 (258,58) 落在它 480x320 布局的中部，而「>」在 child 坐标约 (421,94)。下一步：找 adopted 窗口的**显示 rect**（WM 布局/投影 fit 位置）并用它换算输入；或让 adopted 窗口 rect 按显示尺寸入 WM。
