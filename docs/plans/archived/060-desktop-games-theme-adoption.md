@@ -199,6 +199,13 @@ stage: goal | plan_id: PLAN-060 | plan_revision: r1 | round: 2 | from: review | 
 - 合并自有门留观（stale-artifact 观察，非重建项）：OS 桌面宿主二进制与本批无关（本批 OS delta=spec+gitlink，无 OS 代码）；产品 desktop_exe rust 制品为开发环 debug 档（launch=vm 桌面轨不经它），沿用各产品原状。
 stage: goal | plan_id: PLAN-060 | plan_revision: r1 | round: 3 | from: merge | to: done | status: archived | outcome: pass | worktree: D:/autostack/.wt/os-060/auto-os | commit: dd6c1d7（main tip, delivery） | next: done
 
+2026-11-05 / stage:merge(cleaned) / PLAN-060:r1 / outcome:pass：
+- 组归档提交 00ed99f（docs/plans/archived/060-… 入版本库，PLAN-104 UAT-K13 达成）。
+- 工作树移除：submodule deinit ×3 → wt-guard clean → git worktree remove 因 submodule 条目拒绝（git 限制）→ 二次 guard clean 后按组规约手动移除 + `git worktree prune` + 分支删除（was dd6c1d7，已落地）；组目录 .wt/os-060 已删；worktree list 零残留。
+- 证据折算：全部必需摘要（命令/退出码/关键值/源 SHA/拒绝原文/像素 oracle 值/具名预存红与 owner 关闭条件）已折入本文件 §5.1.1/§9 与批次页 docs/specs/apps/product-theme-batch-060.md（随 dd6c1d7 落地，仓库内持久）；逐产品定向反控脚本已提交各产品仓 tests/test_060_theme.py；plan-artifacts/plan-060（1010MB：delivery root1/root2、base 复测 probe clone×3、日志/截图/union+v04 驱动）按 2026-10-31 delete-at-merge 裁定全删，无具名持有（预存红 owner=auto-lang 记录于批次页=仓库内 Spec，非 plan-artifacts hold）。
+- registry 已刷新（.retention/policy.json 增 auto-os/PLAN-060 条目）。
+- 归档后读回核验：本文件 status: archived + completion_kind: delivered + 9/9 + landed/canonical_verified/archived/cleaned 检查点齐。
+
 ## 10. 待澄清事项
 
 1. 当前仅计划；U036和各产品已交付的规则/实际桌面launch=vm基线；不等待AG全线、UI038、054或055真实事件整项。图形扩展若新增需求另归owner，不迁游戏引擎。
