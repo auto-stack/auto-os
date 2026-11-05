@@ -382,3 +382,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 19**：`InputMsg::Action{wid,name,arg}`（tag 11）encode/decode 完成；child 侧派发受泛型 `C: Component` 限制，需在具体 DynamicComponent 出口接线；宿主 `Msg` 臂待对 broker 转发。复验目标 calendar `NextMonth`。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 109 | from: work | to: work | status: executing | outcome: pass（Action 接通；旧 app 二进制不兼容） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 重建 app 二进制或能力门
   **060 round 20**：Action 下行接通（dispatch_named + RqProjector/headless 消费 + 宿主转发）；实测 `msg 016-calendar NextMonth` 后窗口消失——`calendar.exe` 为旧构建（无 tag 11）→ 解码失败断链。下一步：用新 auto-ui 重建 app 二进制，或握手能力门控（未声明则不下发）。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 110 | from: work | to: work | status: executing | outcome: pass（060 round 21：dispatch 修正、转发未命中） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 宿主转发诊断
+  calendar.exe 已用新 auto-ui 重建（协议兼容、窗口不再消失）；`dispatch_named` 改 `call_handler`；`msg NextMonth` 仍无效果且无 `[plan060] action` 日志 ⇒ 宿主 Msg 臂 broker 转发未命中，下一步加诊断（app_id/wid/owns_wid）。
