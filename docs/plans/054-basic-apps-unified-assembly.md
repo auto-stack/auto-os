@@ -384,3 +384,5 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   **060 round 20**：Action 下行接通（dispatch_named + RqProjector/headless 消费 + 宿主转发）；实测 `msg 016-calendar NextMonth` 后窗口消失——`calendar.exe` 为旧构建（无 tag 11）→ 解码失败断链。下一步：用新 auto-ui 重建 app 二进制，或握手能力门控（未声明则不下发）。
 - stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 110 | from: work | to: work | status: executing | outcome: pass（060 round 21：dispatch 修正、转发未命中） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: 宿主转发诊断
   calendar.exe 已用新 auto-ui 重建（协议兼容、窗口不再消失）；`dispatch_named` 改 `call_handler`；`msg NextMonth` 仍无效果且无 `[plan060] action` 日志 ⇒ 宿主 Msg 臂 broker 转发未命中，下一步加诊断（app_id/wid/owns_wid）。
+- stage: goal | plan_id: PLAN-054 | plan_revision: r1 | round: 111 | from: work | to: work | status: executing | outcome: pass（宿主 delivered=true；child 路由未达） | worktree: D:/autostack/.wt/os-054/auto-os | commit: 3cd4585（未变） | next: child 输入路由表
+  **060 round 22**：`[plan060] action NextMonth sent wid=1 delivered=true`——宿主投递成功；但 child 无 `[plan060] child action`（RqProjector::on_input 分支未达）。部署二进制已确认含新标记。下一步查 client_entry/shell_client 的 face→surface 输入路由表，把 Action 与 pointer/key 同路投递。
