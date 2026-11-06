@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-052
-status: reviewed
+status: archived
 feature_name: auto-os-distro 建仓与 Autonix 路线图
 author: [codex]
 created_at: 2026-10-29
 updated_at: 2026-11-05
 plan_revision: 2
-current_step: 6
+current_step: 7
 total_steps: 7
 supersedes_spec_components: []
 new_spec_components: []
@@ -94,7 +94,7 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 | [x] | T-04 | work | T-03 | 更新本计划证据与恢复入口，核对其他 WIP 不变并交接 review | AC-01～AC-04 |
 | [x] | T-07 | work | T-04 | 正式记录用户批准路线、暂定名与 M1 验证清单，建立四个 GitHub milestones；核对文档与实际基线 | AC-03、AC-07 |
 | [x] | T-05 | review | T-04、T-07 | 独立复核行政改名/发布边界与文档 | AC-05 |
-| [ ] | T-06 | merge | T-05 pass | 合入本次说明文档并归档计划；旧 M1 安装计划继续独立跟踪 | AC-06 |
+| [x] | T-06 | merge | T-05 pass | 合入本次说明文档并归档计划；旧 M1 安装计划继续独立跟踪 | AC-06 |
 
 ## 9. 复审记录
 
@@ -158,3 +158,18 @@ Git / Git worktree / GitHub REST API / 本机 Git Credential Manager；凭据仅
 ### goal 轮次记录
 
 - stage: goal | plan_id: PLAN-052 | plan_revision: 2 | round: 1 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-052/auto-os-distro | commit: 5100ce1 | next: merge。用户授权（见 §4）覆盖全链，后续阶段不再索取。
+
+### merge 合并收尾（pass）
+
+- stage: merge；plan_id: PLAN-052；plan_revision: 2；completion_kind: delivered。
+- prepared：复审基线 final pass 绑定 reviewed_commit=5100ce1（base=6e7d075）；规范增量为空（文档型交付，已批准路线写入 ROADMAP 不冒充运行验收）——无 docs/specs 文本需落地。
+- landed：auto-os-distro main 经 `git merge --ff-only plan-052-repo-setup` 从 6e7d075 前进到 5100ce1（无合并提交）；main tip == 交付提交；`git push origin main` 成功（6e7d075..5100ce1）。PR #1 头分支 plan-052-repo-setup 删除后 GitHub 自动标记 merged（API: state=closed, merged=True, merged_at 2026-11-05）；远端最终保留 main=5100ce1、plan-001-dev=79e1435、tag m1-nix-cosmic-preview→79e1435。
+- canonical_verified：无规范增量（空 delta 获批准，理由见「规范增量」表：不改变既有产品运行契约）；README/ROADMAP/docs/verification/M1-CHECKLIST.md 作为交付文档落地于 5100ce1，未作为 docs/specs 冒充运行验收。
+- archived：本计划移至 docs/plans/archived/052-distro-repository-setup.md，status: archived；T-01～T-07 全部完成（7/7）。
+- cleaned：wt-guard.sh（Git Bash 执行）返回 clean；本地 worktree D:/autostack/.wt/os-052/auto-os-distro 移除；本地分支 plan-052-repo-setup 删除；空组目录 .wt/os-052 移除；plan-artifacts 无 plan-052 作用域（从未登记，无需删除、无需 registry 变更）。
+- 产物核对：纯文档交付，无代码/二进制/web bundle 消费方，无需重建或重启；批量回归门不适用（非 auto-lang 且 052 不整除 5）。
+- outcome: pass；next: done。
+
+### goal 轮次记录
+
+- stage: goal | plan_id: PLAN-052 | plan_revision: 2 | round: 2 | from: merge | to: done | status: archived | outcome: pass | worktree: D:/autostack/.wt/os-052/auto-os-distro | commit: 5100ce1 | next: done。

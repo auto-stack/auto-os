@@ -2,7 +2,93 @@
 
 > 来源：auto-os/PLAN-053（2026-11-03 交付）。supersedes：无（新增域页，旧
 > 暗亮/内置名链保留为 legacy 支持面）；关联：[showdesk-ux-polish](showdesk-ux-polish.md)
-> P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)。
+> P041 双路径契约、[../apps/calculator-theme-adoption.md](../apps/calculator-theme-adoption.md)、
+> [../apps/clock-theme-adoption.md](../apps/clock-theme-adoption.md)。
+
+## 产品批次消费面（PLAN-055 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-055 为第五实际消费者
+（独立产品 **auto-clock**：首个 outproc 真载体 + 独立产品仓消费，登记见
+[../apps/clock-theme-adoption.md](../apps/clock-theme-adoption.md)）：
+
+- clock 同 056–059 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；pac `theme` 键缺省 = follow——clock as-built
+  **follow-only**：C-03 VM 轨边界「启动播种只写已声明 dark_mode；未声明即
+  无主题面」+ scope App override 档运行时无生产者（`HostThemeInputs` 唯一
+  生产者 = 策略快照，`app_override` 恒 Unset）——CLI `--theme` 对未声明
+  采纳者只达窗口 chrome，031 内容面照随宿主策略（PLAN-055 修复轮实测
+  clock4 + 代码核验，SD-02 边界记录）。
+- **反选同场腿（角色等价，C-03 合规）**：显式受控启动钉死档由有声明面的
+  calc 承担（CLI `--theme dark` 无 follow env → 钉死 dark），clock follow
+  light——宿主策略翻转×2 双向跟随者全跟、钉死方恒定、宿主 config 零被
+  钉死方写入；重开无 flag 落最新 revision。像素 oracle（PrintWindow 全窗
+  luma）+ MCP 状态双面。
+- **真载体 outproc 四腿 + 真实 OS 事件窗口腿全绿**（G-1/G-2 闭合，见下
+  两节）；正式组合 pin = gitlink `3495671`（候选=被测=origin/main 同源）。
+- **054 边界读回**：本批不触八产品 pin/装配与 037/038/918 边界；健康门
+  check-app-submodules 组树通过（`012-clock` 注册，无批量删除签名）。
+
+## 产品批次消费面（PLAN-061 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-061 为第六实际消费者批次
+（看板/终端/外部工作区五产品：kanban、auto-musk、jade-garden、auto-term、
+jade-edit，登记见
+[../apps/product-theme-batch-061.md](../apps/product-theme-batch-061.md)）：
+
+- 五产品同 056–060 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto` + design 明暗派生）；term 原显式
+  `theme:"dark"` 标量键退役 = follow，kanban/jade-edit/jade-garden 历来
+  无键，musk theme 标量键缺省（其 theme{} 结构化品牌主题见下）。
+- **品牌 overlay 与宿主族/模式共存（musk，新消费形态）**：pac `theme{}`
+  结构化品牌主题（PLAN-075 composed palette）作为**默认主题**种子
+  （write-if-unset），宿主策略完整候选（family+mode）到货时**整体接管**
+  family/mode——品牌 overlay 不压宿主族/模式选择。实测：默认 boot 品牌紫
+  生效；Solarized/dark 完整候选 dominant #002b36 接管。
+- **宿主策略权威 over app mode toggle（term 实录，053 优先级确认）**：
+  active policy 下应用侧 mode 开关（◐）被 policy 快照 re-assert 压回；
+  toggle 的权威域 = standalone/override 轨（AUTO_UI_THEME 显式轨位同步
+  正常）。此为既有优先级链的行为确认，非新语义。
+- **boot 种子与 app 派生态同步缝（REAPPLY-NOTE 同族扩展）**：种子链在
+  boot 时回写 dark_mode（系统主题派生），app 内由 mode 位派生的次级状态
+  （term scheme）在 Init 时序内可能读到种子前值——一次显式开合或重开
+  追齐；合同恢复路径"重开"闭合，非新缺陷面。
+- **jade-garden 构建链静态投影消费形态**：非运行时注册（部署面手写
+  facade），官方族经生成 index.css 四块投影为部署 CSS 变量值；
+  `.theme-inputs.json` receipt 为消费凭证。静态投影单族（Auto）——第二
+  族需运行时切换通道，具名边界 owner=auto-ui/jade-garden（详见批次页）。
+- **平台注记（owner=VM 宿主平台，非本批缺陷）**：CLI VM split-over-HTTP
+  形态 shim extern `term/get_lines` 500（"future_all/race"）——独立
+  CLI 轨无 PTY；桌面形态（宿主进程内装载）不受影响。REJ/ISO/EXIT/
+  恢复腿全过（详见批次页），与 060 同口径。
+
+## 产品批次消费面（PLAN-060 增补）
+
+本页策略模型/提交序/拒绝保旧/交付通道不变；PLAN-060 为第五实际消费者批次
+（桌面游戏三产品：037-klondike、036-tetris、038-minesweeper，登记见
+[../apps/product-theme-batch-060.md](../apps/product-theme-batch-060.md)）：
+
+- 三产品同 056–059 消费形态（固定 `vendor/themes` 快照 + `dep themes` +
+  `use themes.themes: Auto`；solitaire/tetris 原显式 `theme:"dark"` 键退役
+  = follow，minesweeper 历来无键）。
+- **双产品相反策略隔离腿（standalone follow 臂）**：solitaire@Solarized/dark
+  与 tetris@Auto/light 同时运行（各自独立 `AUTOOS_DESKTOP_CONFIG`），角点/
+  占比双 oracle 过（#002b36 精确 / #ffffff 12.9%），策略互不串扰；错
+  digest 候选 boot 具名拒绝保旧实录（"内容 digest 不符…候选拒绝（保
+  legacy 链）"）；owned 退出（taskkill 树+会话自收割）后 app 进程归零。
+- **包源消费腿**（solitaire 实证、机制同源）：缺 manifest/字节篡改/同
+  mtime 内容变更三坏包均具名拒绝（"主题包目录不可用（包缺席或校验失败）
+  ——候选拒绝（保 legacy 链…）"）、boot 存续；恢复后 family 重应用精确。
+  内容锁（per-file sha256）不受同 mtime 伪装影响。
+- **OS056-REAPPLY-NOTE 在本批复现（solitaire 一臂）**：活体外写翻转像素
+  滞留；tetris/minesweeper 活体翻转实测生效。合同命名恢复路径"重开"全过；
+  053 owner 注记维持，非本批回归。
+- **standalone 跟随臂 dark_mode 位不同步注记（053 owner 观察扩展）**：
+  跟随臂渲染层应用已提交策略派生 mode（像素 oracle 过），state 内
+  dark_mode 位不同步；显式 AUTO_UI_THEME 轨位同步正常。若日后需命名
+  "跟随臂位回写"为必需语义，属本页新合同项（053 owner），非 060 消费面。
+- tetris/minesweeper 的 a2r 生成预存红（`??` E0599 / 数值比较 E0308，
+  base 同败）与本批主题门轨选择（`--server vm` 既有支持模式）详见批次页；
+  owner=auto-lang 后端生成。
 
 ## 产品批次消费面（PLAN-059 增补）
 
@@ -163,23 +249,41 @@ verify（owner/package/version/schema + per-file sha256 + 家族模式可用）
 stale|legacy` 行）与 `__theme_error`（具名拒绝/落盘失败诊断）。pending
 自续拍：eval 落定在帧构建路径，待定行下拍再查，落定即停。
 
-## 真实系统事件与平台边界（SD-05，具名 hold）
+## 真实系统事件与平台边界（SD-05，PLAN-055 已闭）
 
-- 受控腿（已实证）：`theme_mode=system` 经 `system_prefers_dark()`
+- 受控腿（053 实证）：`theme_mode` 经 `system_prefers_dark()`
   （Windows 注册表只读查询）在 boot/load/帧评估消费。
-- **真实腿具名 hold**：真实 OS 主题偏好变更→监听/轮询→policy resolved→
-  桌面/运行应用的端到端实证，需用户授权的验证窗口（备份原值、finally
-  精确恢复）。**PLAN-053 交付时未获授权，真实腿 pending**——owner:
-  user/merge；closure: 获授权窗口后补 V-07 真实腿。本页不声明真实腿
-  完整通过；受控绿不代替真实腿。
+- **真实腿已闭（PLAN-055 T-06，2026-11-05）**：获准短窗口内真实 OS 事件
+  端到端实证——真实注册表翻转（`AppsUseLightTheme` 1→0，读回 0x0）→
+  宿主 config 轮询差异臂（外写方按 poll 锚文档的「任意写方」面携带真实
+  注册表值）→ stage/commit 新 revision → outproc 载体 push/帧后 applied +
+  standalone 消费者 applied（时钟载体与 calc 双消费）；重启后
+  `theme_source:"system"` 零提交穿越（policy 仍 system）；finally 原值
+  1→1 精确恢复读回（`SystemUsesLightTheme` 全程未触碰）。控制腿：同内容
+  mtime touch 零效果（值源 = 真实注册表，非 touch 本身）。
+- **as-built system 语义（PLAN-055 实证钉定）**：family 校验只收包声明
+  modes（Auto=light/dark）——`theme_mode=system` 不可经 family 链提交
+  （`validate_fields` 具名拒绝）；「跟随系统」真源 = `theme_source:"system"`
+  选择器（PLAN-615：每次 config load 从 OS 派生 `dark_theme`）；family
+  提交臂按 053 语义把 `theme_source` 终结为 manual（显式 mode = 用户选择），
+  恢复 system 跟随须显式写回选择器。
 - 平台边界：provider 仅 Windows（`reg query`）；Linux/Mac 未测，不冒
   跨平台全绿。
 
-## outproc 载体后继闭环条件（G-2 遗留，源自 PLAN-053 review）
+## outproc 载体后继闭环（G-2，PLAN-055 已闭）
 
-桌面组合式 outproc 应用的策略推送端到端（attach→推→结果帧）已实现且
-协议两端点有单测（帧 17/18 roundtrip、caps、零装载采纳、stale 判定），
-但本环境无 outproc app 二进制载体（calc 为 vue/vm 单产品），外部自采纳
-客户端的 Hello 未达桌面 broker（Plan-500/694 代 spawn 机制，非 PLAN-053
-代码）。**闭环条件：存在 outproc 载体 app 后按 probe-t05 重测四腿
-（attach 推送/applied 回读/重连重推/stale 分列）。**
+桌面组合式 outproc 端到端已由真实载体 **auto-clock**（a2r 生成 exe，嵌入
+官方包身份/族表——与宿主 catalog 同一聚合 digest `9fa07742…`，三重链：
+Spec 记载 = 宿主目录 = 载体嵌入）实证四腿全绿（PLAN-055 T-03/T-06，隔离
+probe，唯一管道名+独立存储）：attach 推送（Hello `theme-policy/1` caps →
+push → 帧后 applied 读回）、变更广播（config 外写 → 新 revision → 推送
+applied）、重连取最新（杀进程重连 attach 即推最新快照非旧 rev）、stale
+分列（受控注入：低 rev 结果记 stale 不覆盖，`theme_pushed_rev` 锚 session
+级常驻单测）。具名拒绝保旧与恢复后真实再消费同腿实证（坏 family 外写零
+提交零推送、载体保持旧值、合法重投新 rev applied）。协议修复随本批
+（auto-ui `codex/plan-055-clock-theme-ui`）：Hello 双尾段「缺席=不写」
+歧义（surfaces 空 + caps 非空时解码错位 TooShort）——任一尾段在场则
+surfaces 段恒显式（计数可 0），双空旧端线字节不变（回归
+`hello_trailing_segments_caps_without_surfaces_round_trip`）；a2r 主产线
+HeadlessFrameSource 补主题转发三方法。多实例隔离：broker 管道 env
+`AUTOOS_BROKER_PIPE` 覆盖（无 env 零行为差）。
