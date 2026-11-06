@@ -10,13 +10,13 @@ PLAN-054 的规范候选；最终公共工具链、独立复审和主分支交�
 
 | 应用 / ID | 固定产品提交 | Vue 桌面后端 | iced 桌面形态 | 数据作用域 |
 |---|---|---|---|---|
-| Notes / 015-notes | bb064ca5ecdde8e39dfd3b0a9bac4e7f93902ae4 | Rust HTTP | Rust outproc，内嵌后端 | NOTES_DATA_DIR |
-| Todo / 013-todo | e915894d57d739719e06f016488f89989f68e843 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_TODO_DATA |
-| Calendar / 016-calendar | 7dab8f2f2e14c75bba3993b07d107853c373c31f | Rust HTTP | Rust outproc，内嵌后端 | AUTO_CALENDAR_DATA |
+| Notes / 015-notes | 16f3efb0a3f450ff616c338e4559a23eae36692f | Rust HTTP | Rust outproc，内嵌后端 | NOTES_DATA_DIR |
+| Todo / 013-todo | 0510e0501b3783bd68b5ff6f00b7a5f81fc1d0f0 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_TODO_DATA |
+| Calendar / 016-calendar | 1b0f344325d2c2f84ca49019b1103c7e6b684206 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_CALENDAR_DATA |
 | Paint / 031-paint | c49ef417631dd9a703bafabcb708b7ea13d00d88 | VM HTTP | inproc VM / VM API | Vue 同源 storage；iced 独立 VM storage |
 | Database / 026-database | dee81e00f7ba28e045c274cbae6c9f2140635933 | Rust HTTP | Rust outproc，内嵌后端 | 本次显式打开的只读 SQLite 夹具 |
 | Chat / 017-chat | 5cdca0f9e33883c7a72c3c9afbeb88234300c918 | Rust HTTP | Rust outproc，共享 Rust HTTP 服务 | CHAT_DATA_DIR |
-| Blog / 023-realworld | 33df0fd9db3a18f3d1a760adaa75b495827c1633 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_BLOG_DATA |
+| Blog / 023-realworld | 0a01b87255eb7ac20df3bd40139eee4d66f0b541 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_BLOG_DATA |
 | Charts / 024-charts | 64c9db54e75c016673733adfcfa8efd0cbbffc2e | VM HTTP | inproc VM / VM API | AUTO_CHARTS_DATA |
 
 iced 的六个 Rust 应用与两个 VM 应用不能统称八个原生 exe。949 的临时 Todo
