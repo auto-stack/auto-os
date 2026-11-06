@@ -39,6 +39,9 @@ Status: v0.6 development baseline; product paths updated 2026-10-22 (PLAN-050).
 
 ## 配套契约
 
+- **基础应用组合（PLAN-054）**：八个固定产品 pin、前后端支持形态和组合任务见
+  [八应用桌面组合](basic-app-assembly.md)。产品交付/推送、组合 pin、实际桌面任务
+  与公共 SDK 身份分别核验；不以更新 gitlink 或单个 app 独立通过替代组合验收。
 - **主题批次（PLAN-056）**：notes/todo/calendar/chat/paint/database/charts 七产品 + blog（待其写窗）
   已按固定 `vendor/themes` 快照接入官方主题包（follow 语义 + design 默认腿），
   候选冻结与逐产品合同见 [product-theme-batch-056](product-theme-batch-056.md)；

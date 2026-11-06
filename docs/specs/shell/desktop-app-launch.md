@@ -2,8 +2,9 @@
 
 > Source of truth for the per-app launch-mode declaration introduced by
 > PLAN-043（2026-09-26 落地，lang `1d597e3f4`）。Host implementation:
-> auto-lang `ui/app_registry.rs`（`manifest_launch_lookup`）+
-> `ui/session.rs`（`launch_app` 分派门）。Data: auto-os `apps.manifest`。
+> auto-ui `crates/auto-ui-compiler/src/app_registry.rs`（`manifest_launch_lookup`）+
+> `crates/auto-ui-runtime/src/ui/session.rs`（`launch_app` 分派门）。
+> 产品入口及资源归属在 auto-os `host/desktop/src/`；Data: auto-os `apps.manifest`。
 
 ## LD-01 声明与查表
 
@@ -15,15 +16,20 @@
   查询落空）。
 - 语义：声明 `vm` 的 app **恒 inproc 解释渲染**（编译产物存在也不走
   原生附着）；`native` 或缺席维持原判定链（`outproc_native_exe` 探测 →
-  SHM 像素桥附着，Plan 020 血统通道）。
+  按端点实际声明的帧模式附着，Plan 020 血统通道）。
 
-## LD-02 版本裁定（2026-09-25 用户）
+## LD-02 历史版本裁定（2026-09-25 用户）
 
 - 本版**纯 VM 集成模式**：apps.manifest 10 条目全声明 `vm`；RQHost /
   desktop 方言统一、中文渲染、图标字体等原生形态完善**下版本再做**
   （PLAN-043 移交清单 11）。
 - 动机分离：开发 RQ 仍可生成 exe（a2r 编译链不受影响）；打包测验以
   VM 声明为准——启动形态从「产物存在即切换」改为「按声明分派」。
+
+PLAN-054 的八应用候选在不改变声明分派原则的前提下，验证六个 Rust outproc
+与 Paint/Charts 两个 inproc VM；当前矩阵、依赖交付门与局限见
+[八应用桌面组合](../apps/basic-app-assembly.md)。历史“十项全 VM”不作为当前
+全部产品的支持矩阵。显式 native 但产物缺失须具名失败，不静默降级。
 
 ## LD-03 原生形态已知债（native 声明的前置门槛）
 
