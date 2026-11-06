@@ -1,12 +1,12 @@
 ---
 plan_id: PLAN-054
-status: executing
+status: archived
 feature_name: 八个基础应用统一组合与桌面任务验收
 author: [Codex]
 created_at: 2026-11-03
 updated_at: 2026-11-07
 plan_revision: 3
-current_step: 9
+current_step: 10
 total_steps: 10
 base_branch: main
 base_commit: 65fc70de8b505657db660d91024b2cf4425b7759
@@ -175,7 +175,7 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
 - [x] T-06（owner_stage=work；依赖T-05；AC-05/06）：使聚合入口可执行，跑V-01..07及受影响旧门、变异反控、候选回退/重放，准备SD和真实支持矩阵。
 - [x] T-07（owner_stage=work；依赖T-06；AC-01..06）：核对最新main/共用SDK及053共享窗口、源/工具漂移和文档，提交execution_done。[✅ 已完成 2026-11-07] ①最新main漂移：0649af9..a2290f1 全为 docs(plan-054) 回执提交，apps.manifest/.gitmodules/apps 零增量（V-07 重放/回退有效性保持）。②四应用兼容前置规范落地+归档推送：NOTES-005 16f3efb / TODO-003 0510e05 / CALENDAR-003 1b0f344 / BLOG-008 0a01b87 均为各自 origin/main 祖先（本轮逐仓 merge-base 实证），候选树绑定终局 pin（e595263，仅 4 gitlink 增量，基 39d7575=SDK195 OS 根；host/launcher 源零差异），delivery-lock 增 2026-11-07 终局锁节（8 pin+Spec tree+SDK195 三件套 SHA）。③框架终审+落地收口：Lang949 落地 1e6278728（range-diff 12 补丁全等、crates 与 f03226e1 逐字节一致，987 vm/http 冻结并集复用）→归档 0b3fc9063→收尾 9651aeef6，push 不适用（gitcode 为镜像仓）；UI060 终审 pass 后 merge-owned 有界并集全绿（compiler4/runtime7/tools5+owned-backend 1/1@188.5s，首轮 120s 超时为冷编译时长诚实红）→落地 84d5b7be→归档 993e3d59→push gitee；Web990 按用户裁定本地交付归档 0ab52ec2c（.wt/os-054/auto-web 留 T-09 具名持有）；Man lock 2a9b16e 已在 master。④053 共享窗口：Vue host 前置 053 已归档交付（9a94d568 线，经 060 集成 644d8366 消费），SDK194/195 Vue 生成面即其交付形态。⑤工具漂移：终局=SDK195 CLI a77cb353/tool 454bf902/host f9064cfe、generator v15、native identity 781ce3fa；iced 8/8 packet cd232e67…、vue 8/8 packet 348aeaa5…。execution_done 提交。
 - [x] T-08（owner_stage=review；依赖T-07；AC-07）：同树独立上下文最终复审，强制区分单独与桌面、前端VM与后端profile的证据。[✅ pass 2026-11-07] 独立子上下文复审（agent_5dde6d1e，全新上下文，未参与实施；报告 plan-artifacts/plan-054/t08/final-review-report.md）：首轮 8 项核查全过（AC-01 8 pin 祖先/检出/归档推送亲验；AC-02 健康门+ID/端口+main-vs-候选仅 8 目标路径差；AC-03 双 packet 8+8 case oracle/截图逐 sha 亲历、6 native+2 VM profile 区分无误、零凭据；AC-04/05 混合/失败具名红/V-06 变异 receipts 亲算；AC-06 回退收据+main 漂移亲跑；AC-07 框架落地/归档亲验；SD-01..03 在候选不在 main）。首轮 needs_fix 三项全为回执绑定层（实现门实质全过）：F1 vue packet 引用 348aeaa5 为 recorded_run 元数据误留（盘上实为 9c91aadc，060 复审已更正）、F2 终局树无门绿字节绑定、F3 装配 Spec pin 列表滞后。修复=r196 重绑（frozen-candidate-lock-r196 4ad9c5b0…/vue-run-r196 a51fa75e…/iced-run-r196 c4f6ec3c…，cases/SDK/registry 与 r195 逐字段全等，仅 candidate_lock+4 gitlink+说明，无新 UI 手势）+ 终局树 49aac96 双 profile 汇总门独立重跑 exit0/8of8（vue-gate-r196 8d8861e0…/iced-gate-r196 e2bd338d…）+ 49aac96 仅 4 pin 行（src/pac/tests 与 r195 pin 逐 app 0 文件差）。复审收口核验 a-d 四项全部亲跑确认，终裁 **pass**；delivery-lock §119 记录 348aeaa5→9c91aadc→r196 全链，历史回执不改写以指针消歧。
-- [ ] T-09（owner_stage=merge；依赖T-08 pass；AC-08）：合入审定组合、规范/归档/push；主检出clean/detached/健康绿和回退收据验证后，deinit候选子模块、wt-guard再清理自有树。
+- [x] T-09（owner_stage=merge；依赖T-08 pass；AC-08）：合入审定组合、规范/归档/push；主检出clean/detached/健康绿和回退收据验证后，deinit候选子模块、wt-guard再清理自有树。[✅ 2026-11-07] main --ff-only e0d5d3d→eba6fd3（branch merge main 一次 ort 无冲突，plan 文件以 main 权威版为准）；SD-01..03 规范（docs/specs/apps/basic-app-assembly.md 等）与审定 8 gitlink/manifest/host private_rqhost+native_backends/launcher 修复/汇总门脚本随分支落地；主检出 8 目标 fetch+detach 终局 pin（notes 16f3efb/todo 0510e05/calendar 1b0f344/blog 0a01b87/chat 5cdca0f/database dee81e00/paint c49ef41/charts 64c9db5，含 T-00 遗留 charts d5f5535 校正），apps/ 零脏项；健康门 healthy/27/missing_pac_at 0；回退收据 rollback-state-r170 已验。候选树 deinit+wt-guard 清理与 registry/push 见 merge 回执。
 
 ## 9. 复审记录
 
@@ -793,3 +793,10 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   Allwork-owned runtime task gaps nowclosed; T07remainscurrent7/10 untilchildcanonicalSpecs/finaldocs/source-equivalentpins/frameworkfinalreview+merge-ownedunion/landing complete. ParentT08independentfinalreview thenT09landing/archive/cleanup stillrequired. No furtherglobalCore987orunrelatedcatalogrerun justified.
 - stage: work | plan_id: PLAN-054 | revision: r3 | round: 182 | outcome: execution_done（T-07 完成，7/10→8/10，转 T-08 review） | worktree: D:/autostack/.wt/os-054/auto-os | branch: codex/plan-054-dev | code_commit: e595263（终局 8-pin 候选；基 39d7575=SDK195 OS 根） | dependency_revisions: SDK195 八根 Down7c4/Lang f032（949 落地 1e6278728 同码）/Man 2a9b16e/Musk de92/UI 9c009f70（060 落地 84d5b7be 同码）/Web c36（990 本地交付 2d698413 同码）/Jade 5fb1e9e2 | task_ids: T-07 | evidence: 见 §8 T-07 勾选行全文——main 漂移 docs-only、四应用前置归档推送实证、框架 949/060/990 落地归档收口、health 27/missing_pac_at 0 healthy、wt-guard clean、delivery-lock 终局锁节 | blockers: 无 | next: T-08（同树独立上下文最终复审 AC-01..06 + SD-01..03，强制区分单独/桌面与前端VM/后端profile 证据）
 - stage: review | plan_id: PLAN-054 | revision: r3 | round: 183 | reviewer_identity: 独立子上下文 agent_5dde6d1e（全新上下文，未参与实施，同树只读+亲跑只读验证） | outcome: pass（首轮 needs_fix F1/F2/F3 回执绑定层修复后收口核验确认） | reviewed_commit: 49aac96（候选终局树；= e595263 + 装配 Spec 4 pin 行） | task_ids: T-08 | evidence: §8 T-08 勾选行全文；报告与复审附录 plan-artifacts/plan-054/t08/final-review-report.md | next: T-09（合入审定组合/归档/push/主检出子模块 clean-detached/deinit 候选树+wt-guard 清理）
+
+- stage: merge | plan_id: PLAN-054 | revision: r3 | outcome: pass（archived；cleaned 见收尾回执） | delivery_commit: eba6fd34b802cdf6bc8e1ba0b9fc2f883a6888db | checkpoints:
+  - prepared：reviewed 基线=候选 49aac96（T-08 独立终审 pass）；canonical delta=SD-01（independent-repositories 修改）/SD-02（desktop-app-launch 修改）/SD-03（basic-app-assembly 新增，终局 8 pin），三分均在候选分支、不在 main（T-08 亲验）。
+  - landed：候选分支 merge main（ort 无冲突，plan 文件以 main 权威版为准）→ main `--ff-only` e0d5d3d→**eba6fd3**；落地内容=8 终局 gitlink（notes 16f3efb/todo 0510e05/calendar 1b0f344/blog 0a01b87/chat 5cdca0f/database dee81e00/paint c49ef41/charts 64c9db5）+ apps.manifest 端口/launch/native_http 声明 + host/desktop private_rqhost.rs（V05-RQ01..05 单测 5/5）与 native_backends.rs（4/4）+ launcher AUTO_BIN 身份修复（13 tests）+ scripts/tests/verify_basic_app_assembly.py（永久汇总门）+ Cargo.lock + SD-01..03。
+  - canonical_verified：主检出 8 目标子模块 fetch+detach 终局 pin（apps/ 零脏项，含 T-00 遗留 charts d5f5535→64c9db5 校正）；健康门 healthy/27 repo/missing_pac_at 0；终局树双 profile 汇总门 exit0/8of8（r196 packets，vue-gate-r196 8d8861e0…/iced-gate-r196 e2bd338d…）；SDK195 三件套 a77cb353/454bf902/f9064cfe。
+  - archived：本文件 git mv 至 docs/plans/archive/、status: archived、current_step 10/10。
+  - 备注：主检出存在先于本计划的 .pnpm-store 与 ui-gallery 生成面 junction（pnpm 原生布局，非 copy_local 错误、非本计划产物、主检出不删除），wt-guard 报告仅为盘点；候选组清理前另行 wt-guard。
