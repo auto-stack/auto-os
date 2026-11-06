@@ -29,6 +29,12 @@ impl DesktopRqhost {
         spec.stdout = StdioPolicy::Inherit;
         spec.stderr = StdioPolicy::Inherit;
         spec.tree_scope = TreeScope::DirectChildOnly;
+        // Match the existing framework launcher: test-runner control variables
+        // belong to the parent, not to the actual rqhost CLI.
+        spec.env_remove = std::env::vars_os()
+            .map(|(key, _)| key)
+            .filter(|key| key.to_string_lossy().starts_with("NEXTEST_"))
+            .collect();
         let endpoint = pipe.clone();
         Self::spawn_checked(
             spec,
