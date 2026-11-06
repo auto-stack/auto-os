@@ -21,6 +21,7 @@ use std::path::PathBuf;
 
 mod health;
 mod native_backends;
+mod private_rqhost;
 
 /// apps 目录缺省解析序：`AUTO_OS_ROOT/apps` → `CWD/apps` → 仓根（编译期锚）。
 ///
@@ -85,6 +86,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     health::report(&apps_dir, apps_dir_src);
     let mut native_backends = native_backends::DesktopBackends::start(&apps_dir)
         .map_err(std::io::Error::other)?;
+    let mut private_rqhost = private_rqhost::DesktopRqhost::start(
+        std::env::var("AUTO_DESKTOP_RQHOST").as_deref() == Ok("1"),
+    ).map_err(std::io::Error::other)?;
+    if let Some(endpoint) = private_rqhost.endpoint() {
+        std::env::set_var("AUTO_DESKTOP_ENDPOINT", endpoint);
+        // OS owns this helper; the shared renderer must not spawn a duplicate.
+        std::env::set_var("AUTO_DESKTOP_RQHOST", "0");
+    }
 
     // PLAN-053 T-02：官方主题包目录注入（宿主持有 catalog 真源；校验失败 =
     // family 链降级为具名拒绝，legacy 链不受影响）+ 落盘策略恢复。
@@ -110,11 +119,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         run_dynamic_desktop_with_options(comps, opts)
     };
+    let rqhost_result = private_rqhost.close();
+    if let Err(e) = &rqhost_result {
+        eprintln!("[ui-desktop] private rqhost teardown failed: {e}");
+    }
     let backend_result = native_backends.close();
     if let Err(e) = &backend_result {
         eprintln!("[ui-desktop] native backend teardown failed: {e}");
     }
-    let result = result.and_then(|_| backend_result.map_err(|e| std::io::Error::other(e).into()));
+    let teardown = match (rqhost_result, backend_result) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(a), Err(b)) => Err(format!("{a}; {b}")),
+        (Err(e), _) | (_, Err(e)) => Err(e),
+    };
+    let result = result.and_then(|_| teardown.map_err(|e| std::io::Error::other(e).into()));
     match &result {
         Ok(_) => eprintln!("[ui-desktop] exit ok (code 0)"),
         Err(e) => eprintln!("[ui-desktop] exit err (code 1): {e}"),
