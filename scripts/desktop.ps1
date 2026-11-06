@@ -104,13 +104,14 @@ function Invoke-DesktopMain {
     $tool = Join-Path $bin "auto-ui-tool$suffix"
     $required = @($cli, $tool)
     if ($Track -eq 'iced') { $required += $desktop }
-    $keys = @('AUTO_LANG_ROOT', 'AUTO_UI_ROOT', 'AUTO_MAN_ROOT', 'AUTO_UI_TOOL_BIN', 'AUTO_OS_ROOT', 'AUTO_DESKTOP_APPS', 'AUTO_DESKTOP_APPS_EXTRA', 'AUTO_DESKTOP_RQHOST', 'AUTO_MPV_LIB')
+    $keys = @('AUTO_LANG_ROOT', 'AUTO_UI_ROOT', 'AUTO_MAN_ROOT', 'AUTO_BIN', 'AUTO_UI_TOOL_BIN', 'AUTO_OS_ROOT', 'AUTO_DESKTOP_APPS', 'AUTO_DESKTOP_APPS_EXTRA', 'AUTO_DESKTOP_RQHOST', 'AUTO_MPV_LIB')
     $previous = @{}
     foreach ($key in $keys) { $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process') }
     try {
         if ($mode -eq 'source') {
             $env:AUTO_LANG_ROOT = $LangRoot; $env:AUTO_UI_ROOT = $UiRoot; $env:AUTO_MAN_ROOT = $ManRoot
         }
+        $env:AUTO_BIN = $cli
         $env:AUTO_UI_TOOL_BIN = $tool
         $env:AUTO_OS_ROOT = $os
         if (-not $env:AUTO_DESKTOP_RQHOST) { $env:AUTO_DESKTOP_RQHOST = '1' }

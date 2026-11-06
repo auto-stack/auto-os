@@ -24,7 +24,7 @@ function Invoke-DesktopProgram([string]$Executable, [string[]]$ArgumentList) {
     if ($LASTEXITCODE -ne 0) { Throw-DesktopFailure 'controlled launch failure' $LASTEXITCODE }
 }
 $old = @{}; $cwd = (Get-Location).Path
-$keys = @('AUTO_OS_ROOT','AUTO_LANG_ROOT','AUTO_UI_ROOT','AUTO_MAN_ROOT','AUTO_UI_TOOL_BIN','AUTO_DESKTOP_APPS','AUTO_DESKTOP_APPS_EXTRA','AUTO_DESKTOP_RQHOST','AUTO_MPV_LIB','CARGO_TARGET_DIR')
+$keys = @('AUTO_OS_ROOT','AUTO_LANG_ROOT','AUTO_UI_ROOT','AUTO_MAN_ROOT','AUTO_UI_TOOL_BIN','AUTO_BIN','AUTO_DESKTOP_APPS','AUTO_DESKTOP_APPS_EXTRA','AUTO_DESKTOP_RQHOST','AUTO_MPV_LIB','CARGO_TARGET_DIR')
 foreach ($key in $keys) { $old[$key] = [Environment]::GetEnvironmentVariable($key,'Process') }
 $code = 0
 try { $options = ConvertFrom-Json -AsHashtable $env:DESKTOP_OPTIONS; Invoke-DesktopMain @options }
@@ -37,18 +37,18 @@ BASH_HARNESS = r'''
 source "$DESKTOP_SCRIPT"
 if [[ "${NATIVE_CARGO:-}" != 1 ]]; then desktop_cargo() { "$DESKTOP_PYTHON" "$DESKTOP_FIXTURE" cargo "$@"; }; fi
 desktop_program() { "$DESKTOP_PYTHON" "$DESKTOP_FIXTURE" launch "$@"; }
-old_dir="$PWD"; old_tool="${AUTO_UI_TOOL_BIN:-}"
+old_dir="$PWD"; old_tool="${AUTO_UI_TOOL_BIN:-}"; old_cli="${AUTO_BIN:-}"
 set +e
 desktop_main "$@"
 code=$?
-[[ "$PWD" = "$old_dir" && "${AUTO_UI_TOOL_BIN:-}" = "$old_tool" ]] || exit 91
+[[ "$PWD" = "$old_dir" && "${AUTO_UI_TOOL_BIN:-}" = "$old_tool" && "${AUTO_BIN:-}" = "$old_cli" ]] || exit 91
 exit "$code"
 '''
 FIXTURE = r'''
 import json, os, sys
 from pathlib import Path
 kind=sys.argv[1]
-record={'kind':kind,'cwd':os.getcwd(),'args':sys.argv[2:],'tool':os.environ.get('AUTO_UI_TOOL_BIN'),'os':os.environ.get('AUTO_OS_ROOT'),'mpv':os.environ.get('AUTO_MPV_LIB'),'extra':os.environ.get('AUTO_DESKTOP_APPS_EXTRA')}
+record={'kind':kind,'cwd':os.getcwd(),'args':sys.argv[2:],'tool':os.environ.get('AUTO_UI_TOOL_BIN'),'cli':os.environ.get('AUTO_BIN'),'os':os.environ.get('AUTO_OS_ROOT'),'mpv':os.environ.get('AUTO_MPV_LIB'),'extra':os.environ.get('AUTO_DESKTOP_APPS_EXTRA')}
 with open(os.environ['TRACE'],'a',encoding='utf-8') as f:f.write(json.dumps(record,ensure_ascii=False)+'\n')
 if kind=='cargo':
     root,target=sys.argv[2:4];args=sys.argv[4:]
@@ -73,7 +73,7 @@ class DesktopLauncher(unittest.TestCase):
         self.ps=self.root/'harness.ps1';self.ps.write_text(PS_HARNESS);self.sh=self.root/'harness.sh';self.sh.write_text(BASH_HARNESS)
         self.env=os.environ.copy()
         for k in ['AUTO_LANG_ROOT','AUTO_UI_ROOT','AUTO_MAN_ROOT','AUTO_DESKTOP_BUILD_ROOT','CARGO_TARGET_DIR']:self.env.pop(k,None)
-        self.env.update(DESKTOP_OS_ROOT=str(self.osroot),TRACE=str(self.trace),DESKTOP_FIXTURE=str(self.fixture),DESKTOP_PYTHON=sys.executable,AUTO_UI_TOOL_BIN='previous-tool',AUTO_DESKTOP_APPS_EXTRA='previous-extra',AUTO_MPV_LIB='explicit-mpv',CARGO_TARGET_DIR='previous-target')
+        self.env.update(DESKTOP_OS_ROOT=str(self.osroot),TRACE=str(self.trace),DESKTOP_FIXTURE=str(self.fixture),DESKTOP_PYTHON=sys.executable,AUTO_UI_TOOL_BIN='previous-tool',AUTO_BIN='previous-cli',AUTO_DESKTOP_APPS_EXTRA='previous-extra',AUTO_MPV_LIB='explicit-mpv',CARGO_TARGET_DIR='previous-target')
         self.suffix='.exe' if os.name=='nt' else ''
 
     def run_launcher(self,engine,**options):
@@ -114,6 +114,7 @@ class DesktopLauncher(unittest.TestCase):
                 self.assertEqual(Path(launch['cwd']),self.osroot);self.assertIn('--fullscreen',launch['args']);self.assertEqual(launch['mpv'],'explicit-mpv')
                 self.assertEqual(Path(launch['tool']).parent,Path(builds[0]['args'][1])/'debug')
                 self.assertTrue((Path(launch['args'][0]).parent/('auto'+self.suffix)).is_file())
+                self.assertEqual(Path(launch['cli']),Path(launch['args'][0]).parent/('auto'+self.suffix))
 
     def test_failed_build_does_not_launch_stale_artifacts(self):
         target=self.osroot/'.auto/desktop-runtime/target/debug';self.artifacts(target)
@@ -145,6 +146,7 @@ class DesktopLauncher(unittest.TestCase):
             with self.subTest(engine=engine):
                 r,e=self.run_launcher(engine,Track='iced',CandidateDir=str(bundle));self.assertEqual(r.returncode,0,r.stdout+r.stderr)
                 self.assertEqual([x['kind'] for x in e],['launch']);self.assertEqual(Path(e[0]['tool']),bundle/('auto-ui-tool'+self.suffix))
+                self.assertEqual(Path(e[0]['cli']),bundle/('auto'+self.suffix))
 
     def test_candidate_missing_tool_has_no_fallback(self):
         bundle=self.root/'candidate';self.artifacts(bundle);(bundle/('auto-ui-tool'+self.suffix)).unlink()
@@ -157,6 +159,7 @@ class DesktopLauncher(unittest.TestCase):
             with self.subTest(engine=engine):
                 r,e=self.run_launcher(engine);self.assertEqual(r.returncode,0,r.stdout+r.stderr);self.assertEqual(len(e),3)
                 self.assertEqual(e[-1]['args'][1:],['run','--desktop']);self.assertEqual(Path(e[-1]['cwd']),self.root/'auto-lang/examples/desktop-host');self.assertIsNone(e[-1]['extra'])
+                self.assertEqual(Path(e[-1]['cli']),Path(e[-1]['args'][0]))
 
     def test_launch_failure_code(self):
         bundle=self.root/'candidate';self.artifacts(bundle);self.env['LAUNCH_EXIT']='31'

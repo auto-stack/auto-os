@@ -67,7 +67,7 @@ desktop_main() (
   fi
   if [[ "$track" = vue && ! -d "$lang_root/examples/desktop-host" ]]; then desktop_fail 'Vue desktop requires the language examples/desktop-host project'; fi
   local cli="$bin/auto$suffix" tool="$bin/auto-ui-tool$suffix" file
-  export AUTO_UI_TOOL_BIN="$tool" AUTO_OS_ROOT="$(desktop_win_path "$os")"
+  export AUTO_BIN="$cli" AUTO_UI_TOOL_BIN="$tool" AUTO_OS_ROOT="$(desktop_win_path "$os")"
   export AUTO_DESKTOP_RQHOST="${AUTO_DESKTOP_RQHOST:-1}"
   if [[ -z "${AUTO_MPV_LIB:-}" && -f "$parent/tools/mpv/libmpv-2.dll" ]]; then export AUTO_MPV_LIB="$(desktop_win_path "$parent/tools/mpv/libmpv-2.dll")"; fi
   # Keep the prior shell desktop storage location; never overwrite explicit isolation.

@@ -61,3 +61,7 @@ AUTO_DESKTOP_RQHOST=1时，OS入口通过现有auto CLI启动本次私有PID端�
 正常桌面事件循环返回后，OS取消并有界回收自己的空闲helper，再drain共享HTTP后端。helper没有正常shutdown接口，记录实际controlled cancellation和已回收状态，不能称为helper正常退出0；helper已自然退出0可正常收尾，意外非零退出或回收失败使产品退出具名失败。DirectChildOnly不创建KILL_ON_JOB_CLOSE Job，保留外部终止跳过析构时helper不级联的兼容边界；全局/手工-q生命周期未修改。
 
 资源验证包含真实子进程就绪/关闭/Drop、占用者保存、提前退出与观测过监听后的超时回收，以及父process exit跳过析构后子监听仍存活的等价类（测试专用quit回收）。该等价类不冒称用户实际外部强杀。正式桌面须另外证明本次helper只有一个、normal退出后自有进程/端点消失且旁观者和应用数据不受影响。
+
+## LD-07 桌面入口的 CLI 身份绑定（PLAN-054）
+
+PowerShell 与 Bash 入口在源码构建和显式 CandidateDir 两种模式下，都将本次选定的 auto 路径通过 AUTO_BIN 传给桌面及其子进程，与 AUTO_UI_TOOL_BIN 使用同一产物目录，覆盖外部残留的旧 AUTO_BIN。入口返回后恢复调用者环境；启动失败也必须恢复。该绑定不改变独立手工 CLI 的解析优先级。
