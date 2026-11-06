@@ -45,3 +45,11 @@
 ## LD-04 产品目录与启动 ID 分离（PLAN-050）
 
 应用物理目录使用正式产品名（如 `apps/auto-tetris`），manifest `id` 继续是 `036-tetris`。AutoUI 主根扫描、VM/iced 容器展开、Vue 容器展开按容器父级 `apps.manifest` 的 active repo/local 条目的真实目录路径匹配 ID；未匹配或清单损坏时回退目录名。启动 lookup、图标、桌面 pin 和配置仍使用稳定 ID，不能把新目录名作为第二个入口重复注册。空子模块保持跳过。此能力需要包含 PLAN-050 注册表变更的 AutoUI 工具/宿主；更新后重建旧二进制再验证启动。
+
+## LD-05 原生共享 Rust HTTP 服务的桌面归属（PLAN-054，待本计划最终复审）
+
+`apps.manifest` 的 `native_http: true` 显式选择需要独立共享HTTP服务的原生应用，目前为017-chat。`launch: native` 本身不意味着独立服务；其他应用已有内嵌后端和VM供给保持原路径。启动声明必须active/native，实际聚合注册表选中的应用根必须存在pac.at、`api: "rust"`和唯一字面量back_port，端口必须包含在manifest ports中。基址仍由正式app构建绑定该pac profile，不向宿主或其他app写入HTTP基址。
+
+AutoOS iced宿主在展示启动器前，以既有auto service Rust入口准备这些服务；使用既有auto-tool-execution的无shell/自有进程树设施。只认本次进程stdout的实际AUTO_SERVICE_READY及loopback健康响应中同一个instance/config/fingerprint，不收编已有监听者。端口占用、缺源/错误profile、提前退出、READY超时或身份不符都使启动失败；不换端口、不解释降级、不杀占用者。
+
+持有者是桌面实例，最后一个应用窗口关闭后仍保留服务，便于重新打开/多客户端共享。桌面事件循环正常返回时，核对当前服务仍为本次READY身份，调用既有loopback shutdown并等待实际服务CLI正常退出。身份变化时不向未知监听者发送关闭；失败只取消本次自有进程树，返回具名错误，不记作正常释放。Vue沿其既有desktop_backends供给实现，不由本原生入口重复启动。

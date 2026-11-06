@@ -20,6 +20,7 @@ use auto_ui_runtime::ui::iced::{
 use std::path::PathBuf;
 
 mod health;
+mod native_backends;
 
 /// apps 目录缺省解析序：`AUTO_OS_ROOT/apps` → `CWD/apps` → 仓根（编译期锚）。
 ///
@@ -82,6 +83,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // boot 自检（只读）：一次说清注册表/exe 产物/空壳 app/storage/rqhost 可达性。
     health::report(&apps_dir, apps_dir_src);
+    let mut native_backends = native_backends::DesktopBackends::start(&apps_dir)
+        .map_err(std::io::Error::other)?;
 
     // PLAN-053 T-02：官方主题包目录注入（宿主持有 catalog 真源；校验失败 =
     // family 链降级为具名拒绝，legacy 链不受影响）+ 落盘策略恢复。
@@ -107,6 +110,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         run_dynamic_desktop_with_options(comps, opts)
     };
+    let backend_result = native_backends.close();
+    if let Err(e) = &backend_result {
+        eprintln!("[ui-desktop] native backend teardown failed: {e}");
+    }
+    let result = result.and_then(|_| backend_result.map_err(|e| std::io::Error::other(e).into()));
     match &result {
         Ok(_) => eprintln!("[ui-desktop] exit ok (code 0)"),
         Err(e) => eprintln!("[ui-desktop] exit err (code 1): {e}"),

@@ -4721,6 +4721,7 @@ name = "os-desktop"
 version = "0.1.0"
 dependencies = [
  "auto-lang-core",
+ "auto-tool-execution",
  "auto-ui-runtime",
  "serde_json",
 ]

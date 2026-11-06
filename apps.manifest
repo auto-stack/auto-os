@@ -197,7 +197,8 @@
       ],
       "status": "active",
       "added": "2026-10-03",
-      "launch": "native"
+      "launch": "native",
+      "native_http": true
     },
     {
       "id": "018-book-reader",

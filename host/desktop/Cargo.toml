@@ -20,5 +20,6 @@ auto-lang-core = { path = "../../../auto-lang/crates/auto-lang-core" }
 # apps.manifest 直读（PLAN-876 REV2：manifest_repo_roots 会滤掉缺 pac.at 的条目，
 # 不能作为 skip 统计的数据源）。
 serde_json = "1"
+auto-tool-execution = { path = "../../../auto-lang/crates/auto-tool-execution" }
 
 [dev-dependencies]
