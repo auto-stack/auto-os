@@ -5,7 +5,7 @@ feature_name: 八个基础应用统一组合与桌面任务验收
 author: [Codex]
 created_at: 2026-11-03
 updated_at: 2026-11-06
-plan_revision: 2
+plan_revision: 3
 current_step: 4
 total_steps: 10
 base_branch: main
@@ -112,6 +112,22 @@ Chat沿现有应用Spec共享Rust HTTP服务，继续原生桌面承载；不解
 失败场景包括候选tool缺失/身份不符、端口被旁观服务占用、后端未就绪/中途退出、写入拒绝、子模块缺pac/指针错与路由误绑。失败可见且不出现演示成功，已提交数据保留，解除后下一次实际操作成功。回退只还原候选8个源码pin和声明，不倒写迁移后的用户数据；数据变更需app已验证备份/兼容合同或本次隔离目录，不能许诺git回退能逆转数据迁移。
 
 053主题/计算器与本包共享manifest/宿主入口时按实际文件窗口协调，T-00冻结接口/基线后串行合入；不整体等待053或改其WIP。未来主main前进时重放只含本包的8个pin/声明增量，对新main的非目标pin做差集；不覆盖其他owner合法升级。
+
+### 私有 rqhost 生命周期收口（r3，原目标/AC/任务数不变）
+
+实机四次正常桌面退出后，PID38512/15528/29924/44260的私有零窗rqhost仍存活；框架spawn_desktop_daemon只spawn即丢弃Child，零窗常驻原属于手工-q的兼容策略。OS产品入口改为保留本次私有helper的拥有权；不修改框架全局/手工q行为、不新增协议或服务管理器。仅AUTO_DESKTOP_RQHOST=1启用，复用现有auto CLI rqhost --pipe私有PID端点与auto-tool-execution DirectChildOnly；该范围无Windows KILL_ON_JOB_CLOSE Job，保留宿主被外部终止不级联这一旧兼容承诺。普通共享Chat后端仍由已有ProcessTree与admin shutdown管理，两者不得混淆。
+
+执行入口：OS host/desktop/src/private_rqhost.rs（新）拥有helper句柄；启动前拒绝已占用私有端点，不收编/杀现有服务；确认本次进程未退出且私有端点就绪，才发布AUTO_DESKTOP_ENDPOINT，并关闭框架重复boot-spawn标记。配置缺失/提前退出/5秒未就绪具名失败，已有后端guard回收自己的服务。normal桌面事件循环返回后，先取消并有界回收这个私有helper，再正常drain自己的共享HTTP服务；helper没有正常shutdown接口，取消的实际非零退出记录为controlled cancellation，绝不宣称helper自然退出0。helper若已自然退出0允许收尾；非零意外退出与回收失败须使产品出口具名失败。保留句柄比按PID/端口kill强，不扫描/清理其他实例。禁用时不启动、不改端点环境。full T05仍依赖T04，已有资源反例的有界修复/单测可先行。
+
+| case | AC/owner | 实际入口/区分控制 | 关闭条件 |
+|---|---|---|---|
+| V05-RQ01 | AC04/work | 自有真实helper进程就绪→normal close与Drop；独立旁观listener/进程 | 观察自有状态回收/监听消失，旁观者存活；重复close幂等 |
+| V05-RQ02 | AC04/work | 已有私有端点+不可执行argv | 拒绝在spawn前；占用者仍可连接 |
+| V05-RQ03 | AC04/work | 提前退出、已实际监听但probe保持false | 具名拒绝；观测过的自有监听回收，不以超时替代回收 |
+| V05-RQ04 | AC04/work | 真父子进程；父process exit跳过析构/关闭句柄，子helper维持监听 | 子进程在owner退出后仍存活（DirectChildOnly的无Job边界），测试专用quit回收；这是析构跳过等价类，不冒充用户实际强杀 |
+| V05-RQ05 | AC04/work | 禁用标记、真实正式桌面boot/Chat打开关闭/normal shutdown | 禁用无新helper；启用仅一个本次helper，product退出后不再有自有helper/HTTP监听，旁观/数据保留 |
+
+旧泄漏进程先核对PID+创建时刻+可执行路径+私有rqhost命令行后才按具名fixture清理，明确是历史泄漏清理，不倒算新正常退出通过。当前实现树codex/plan-054-dev@643b8c6、consumer UI72bbcb04/Lang23f3a031，现有28532 scoped viewport host禁用了helper，不能证明本条完成。新入口/测试在work阶段建立，当前尚未执行。SD02补产品私有helper归属；T05剩余混合/拒写/源错/工具错/native-dock门与原AC01..08不变。
 
 ### 规范增量
 
@@ -626,3 +642,6 @@ work内部自检只表明可交最终review；未指定其他模型/agent，本�
   Scoped viewport host explicitly AUTO_DESKTOP_RQHOST=0, no private-helper cleanup pass implied. Host28532/child46844/backend19892 retained; parent credentials21374/70332 memory-only. Private rqhost38512/15528/29924/44260 leaks remain known witnesses. Next finite OS owner must use existing execution facility DirectChildOnly so forced-host-death no-cascade/global-q compatibility remains, while normal desktop return explicitly cancels/reaps only its private helper; exact design/testing contract must be recorded before code. No new supervisor, global/manual daemon shutdown, or permission request needed for unchanged054 resource scope. T04 final commonSDK/allapp continuity, T05 full failures/native-dock, aggregate/mutations, independent review/framework landing/merge remain open. Counts4/10, original AC unchanged.
 
 - stage: goal | plan_id: PLAN-054 | plan_revision: r2 | round: 157 | from: work | to: work | status: executing | outcome: progress native overflow and WGPU paint counterexamples closed | worktree: D:/autostack/.wt/os-054/auto-os | commit: 643b8c616ac5344ef8c497d7cc10bf074835ba0a | ui_consumer: 72bbcb045e141233db1380978efdd7d03b2a47af | next: work/T05 private helper ownership then frozen union
+
+- stage: new | plan_id: PLAN-054 | plan_revision: r3 | round: 158 | outcome: pass | next: work/T05 private helper owner
+  Reconstructed live four leaked private helpers plus source Child-drop/zero-window policy, and existing execution facility DirectChildOnly (spawn creates Job only for ProcessTree). Bounded OS assembly owner fixes required T05 resource invariant, preserving global/manualq and forced-owner no-cascade compatibility, no new repo/protocol/supervisor/budget. §5 freezes normal cancellation versus graceful0, scope/environment, failure visibility and five distinguishing case rows. Original8-app goal/AC01..08/10tasks/current4 unchanged; unrelated main WIP preserved; prior T03 backend evidence retained under unchanged implementation. New private owner not yet implemented or passed.
