@@ -16,7 +16,7 @@ PLAN-054 的规范候选；最终公共工具链、独立复审和主分支交�
 | Paint / 031-paint | c49ef417631dd9a703bafabcb708b7ea13d00d88 | VM HTTP | inproc VM / VM API | Vue 同源 storage；iced 独立 VM storage |
 | Database / 026-database | dee81e00f7ba28e045c274cbae6c9f2140635933 | Rust HTTP | Rust outproc，内嵌后端 | 本次显式打开的只读 SQLite 夹具 |
 | Chat / 017-chat | 5cdca0f9e33883c7a72c3c9afbeb88234300c918 | Rust HTTP | Rust outproc，共享 Rust HTTP 服务 | CHAT_DATA_DIR |
-| Blog / 023-realworld | 3ead087723dff0ea36df4f9abb64a942a92beeb6 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_BLOG_DATA |
+| Blog / 023-realworld | 33df0fd9db3a18f3d1a760adaa75b495827c1633 | Rust HTTP | Rust outproc，内嵌后端 | AUTO_BLOG_DATA |
 | Charts / 024-charts | 64c9db54e75c016673733adfcfa8efd0cbbffc2e | VM HTTP | inproc VM / VM API | AUTO_CHARTS_DATA |
 
 iced 的六个 Rust 应用与两个 VM 应用不能统称八个原生 exe。949 的临时 Todo
@@ -86,3 +86,4 @@ Vue Chat 的既有 store 在关窗重开时保留当前登录身份；已验恢�
 本八应用 adopted 渲染 profile 中；历史一次未定位触发源的 native-dock toast
 保留为复审局限，不能宣称已修复。已验当前控制是拒绝不存在的 PID 后，
 原应用仍可正常保存、关闭、重开。
+
