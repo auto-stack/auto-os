@@ -6,7 +6,7 @@ author: [Codex]
 created_at: 2026-11-05
 updated_at: 2026-11-08
 plan_revision: 4
-current_step: 1
+current_step: 3
 total_steps: 7
 depends_on: [auto-ui/PLAN-061, auto-ui/PLAN-062, auto-ui/PLAN-063, auto-os/PLAN-054, auto-ui/PLAN-073]
 supersedes_spec_components: []
@@ -169,8 +169,8 @@ work负责实现/自检；独立上下文review只检查冻结同一树，不另
 | 完成 | ID | owner_stage | 依赖/进入门 | 文件/操作与结果 | 关闭方式/AC |
 |---|---|---|---|---|---|
 | [x] | T-01 | work | 可先只读枚举；冻结等UI061；T-02起等UI062/063、OS054正式结果 | 冻结apps.manifest所有active ID（观察28）、全部教学Demo与能力对应表、真实产品源/工具/资源版本；列缺产物/旧红，禁止缩分母；冻结同环境direct与两Host性能工作负载、可用刷新率、1/4/8实际规模和产品映射；消费UI061/062现合同，单列代理/未测及r5局部门；冻结真实最终预算，不改变功能分母 ；按r4承接表冻结四旧红/计时真实环境/重建身份与UI073分工| V-01；AC-01；AC-07/V-05～08（按§6分工） ；V-10/11/12|
-| [ ] | T-02 | work | T-01完成及UI062/063、OS054正式交付 | 在host/desktop、scripts/desktop与UI通用adapter正式接口中闭合独立/桌面Host装配、入口和资源发现；不复制ReplayCore或改产品业务；装配不额外引入同步RPC/重复资源上传；消费UI062有界队列与持久资源正式合同 | V-02；AC-02；AC-07/V-05～08（按§6分工）；V-09 |
-| [ ] | T-03 | work | T-02 | 消费UI063 adapter；在OS及§5限定UI策略写面补齐placement/z序/clip/resize/DPI/focus/capture及所有权接线（V-09），独立窗口profile保持；按实际能力接系统服务；核虚拟桌面焦点/遮挡/可见性和present节奏与UI063调度接口，避免重窗口垄断；隐藏/恢复策略须保业务时钟语义 | V-03；AC-03；AC-07/V-05～08（按§6分工）；V-09 |
+| [x] | T-02 | work | T-01完成及UI062/063、OS054正式交付 | 在host/desktop、scripts/desktop与UI通用adapter正式接口中闭合独立/桌面Host装配、入口和资源发现；不复制ReplayCore或改产品业务；装配不额外引入同步RPC/重复资源上传；消费UI062有界队列与持久资源正式合同 | V-02；AC-02；AC-07/V-05～08（按§6分工）；V-09 |
+| [x] | T-03 | work | T-02 | 消费UI063 adapter；在OS及§5限定UI策略写面补齐placement/z序/clip/resize/DPI/focus/capture及所有权接线（V-09），独立窗口profile保持；按实际能力接系统服务；核虚拟桌面焦点/遮挡/可见性和present节奏与UI063调度接口，避免重窗口垄断；隐藏/恢复策略须保业务时钟语义 | V-03；AC-03；AC-07/V-05～08（按§6分工）；V-09 |
 | [ ] | T-04 | work | T-03 ；UI073正式交付且同版消费产物已重建| 运行全能力六格及Demo全部需求；按manifest逐产品跑既有主要任务和运行形态；不足归具名owner且维持待办；按同源同画质测M-01～08；direct N进程对比RQ N App+Host总成本，桌面壳成本与共享内存分列，产品样本不冒全产品性能结论 ；逐073关闭连续媒体/RemoteFrame、文字/阴影/残差，不能静态帧抵连续播放| V-01/02/03；AC-01..03；AC-07/V-05～08（按§6分工） ；V-10/12|
 | [ ] | T-05 | work | T-04 | 多App、pending采纳/末窗、HostLost/取消与资源回收；验证固定发布闭包无开发根依赖，整理Spec/完整交付矩阵；两Host真实混合负载、慢Host/ACK、重App过载/断连及轻App输入；核M-07预算与资源终态、发布态性能差额 ；闭合r4适用旧红/资源终态/制品与计时交接，缺必需项不交review为PASS| V-04；AC-04；AC-07/V-05～08（按§6分工）；V-09 ；V-10/11/12|
 | [ ] | T-06 | review | T-05 | 独立上下文核实际OS/UI双仓接线、进程/画面/产品数据/源身份、未执行和全部分母，冻结组合；独立核P/M口径、冻结预算、性能负控和完整分布，不能用平均FPS或实现者摘要替代 | AC-05；复核AC-07 |
@@ -222,8 +222,17 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - 新增线级证据：`p063_os_desktop_pump_budget_slices_flood`（64/拍切片、余量 FIFO 续排、不误杀）；`p063_os_desktop_input_immediate_pump_same_call`（KeyPressed+Resize 同调用上线，无 400ms 档等待）。
 - 本 receipt 仅 T-03 实施面关闭；T-02 boot 探针与 work 阶段整体收口证据后随。
 
+### 2026-11-08 work 进展（goal round 1 收口：T-02 装配闭合；T-04/05 阻塞登记）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（T-02）/ worktree:D:/autostack/.wt/os-063/auto-os / branch:codex/plan-063-dev / base_commit:07646dd / code_commit:7b3946b（Cargo.lock 随 UI063 交付图最小重解析 +38 行 accesskit 族） / dependency_revisions:UI auto-os-dev 076167aa、auto-lang 1f05effab、auto-web 2d698413b、auto-man 347c29f / task_ids:T-02 / evidence:plan-artifacts/plan-063/auto-os/{t02-t03-evidence.md,boot-probe.log,boot-probe2.log} / blockers:T-04/05 等 UI073（executing 0/8） / next_responsible_role:user（交付 UI073 后续接 T-04）
+- `cargo check --offline -p os-desktop --bin ui-desktop` PASS；`cargo test -p os-desktop` **18/0**；smoke-031/034 判定历史入口（era-031/034 布局，不抵全量）。
+- boot 探针（真实启动）：冷一次性 lang consumers 构建 2m38s 后装配链全绿——健康报告 registry=26/可见 25（双臂发现：manifest 臂对 worktree 空容器具名 skip、容器臂经 CLI apps-dir 命中主检出）、私 rqhost `owner=desktop pid=35756 endpoint=autodesk-rqhost-desktop-26560 ready=true`、主题包 themes v0.2.0 装载、syslog host logger 在线；收尾 taskkill 后 `rqhost --pipe` 进程=0 无泄漏。探针身份三二进制 SHA256 前 16 绑定（t02-t03-evidence.md）。
+- **阻塞（§10 同步）**：T-04 进入门"UI073正式交付且同版消费产物已重建"未满足（UI073 executing r1 0/8）；T-05 依赖 T-04。T-01/02/03 work 面已闭；T-06/07 待 work 全闭后。
+- work 阶段在本轮的诚实边界：已达 UI073 之外的可用终态；恢复动作 = UI073 正式交付归档后，重建同版消费产物（本树 pull/copy UI master 交付 commit）→ T-04 六格与全产品运行。
+
 ## 10. 待澄清事项
 
+- **T-04/05 阻塞（2026-11-08 goal round 1 登记）**：唯一未决前置 = auto-ui/PLAN-073 正式交付（当前 executing r1 0/8：连续媒体/精确绘制/资源乱序负控生产修复）。解除动作：UI073 归档后在本组 UI 树同步其交付 commit、重建消费产物，即可恢复 T-04。T-01/02/03 已闭不受影响。
 - r4当前未决：T-01冻结实际入口/预算/旧红当前适用及必要关闭合同；媒体/绘制/乱序资源详UI073。不把062的阶段性豁免挪作M1豁免。
 - 当前正式来源UI060/061/062和OS054均已交付，旧r3“在途/未授权研究/Spec缺席”仅历史观察，不作为本轮阻塞；本轮未实施。
 - Linux全平台/compositor、ACE/AGE独立进入门保持；无必须重新询问才能完成本次草案的问题。
