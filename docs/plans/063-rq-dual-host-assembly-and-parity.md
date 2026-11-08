@@ -242,6 +242,12 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - 持久事实核查：UI073 仍 executing r1 但已推进 1/8（T-01 媒体容量探针、T-03 A5 持久 tiny_skia recorder 落其 worktree，rq_ 族 46/46 绿）——积极信号但交付门未满足。另：auto-ui master 新增 3 个 docs 提交（7bc8f5cb 等，含 062 direct-draw replay 路径用户裁定）——T-04 恢复时组 UI 树需同步 master 后再重建同版产物。
 - 本轮按等待轮协议：无 stage work、无检查、无树变更。
 
+### 2026-11-08 goal round 3（waiting：无工作无检查）
+
+- stage:goal / plan_id:auto-os/PLAN-063 / plan_revision:r4 / round:3 / from:- / to:- / status:executing / outcome:waiting（等待轮2/3） / worktree:同 round 1（保留不动） / commit:不变（OS 7b3946b / UI 076167aa / main c17a4c8+） / next:user（UI073 交付后恢复 T-04）
+- 持久事实核查：UI073 仍 executing r1 current_step 1/8，worktree tip 未变（20590168）；auto-ui 本地 master tip 仍 4ebc51ce（round 2 所见 7bc8f5cb 系 origin/master 前向引用，本地未并——组树与本地 master 一致）。交付门未满足。
+- 本轮按等待轮协议：无 stage work、无检查、无树变更。
+
 ## 10. 待澄清事项
 
 - **T-04/05 阻塞（2026-11-08 goal round 1 登记）**：唯一未决前置 = auto-ui/PLAN-073 正式交付（当前 executing r1 0/8：连续媒体/精确绘制/资源乱序负控生产修复）。解除动作：UI073 归档后在本组 UI 树同步其交付 commit、重建消费产物，即可恢复 T-04。T-01/02/03 已闭不受影响。
