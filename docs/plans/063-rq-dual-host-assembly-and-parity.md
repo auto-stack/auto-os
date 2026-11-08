@@ -248,6 +248,13 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - 持久事实核查：UI073 仍 executing r1 current_step 1/8，worktree tip 未变（20590168）；auto-ui 本地 master tip 仍 4ebc51ce（round 2 所见 7bc8f5cb 系 origin/master 前向引用，本地未并——组树与本地 master 一致）。交付门未满足。
 - 本轮按等待轮协议：无 stage work、无检查、无树变更。
 
+### 2026-11-08 goal round 4（waiting 3/3 → goal blocked）
+
+- stage:goal / plan_id:auto-os/PLAN-063 / plan_revision:r4 / round:4 / from:- / to:- / status:executing / outcome:blocked（连续三等待轮满，goal 标记 blocked；非计划内可解） / worktree:同 round 1（五组树+两 dev 分支+plan-artifacts 全保留，恢复零重建） / commit:不变（OS 7b3946b / UI 076167aa / main 0a078a0+） / next:user
+- 持久事实核查（第三轮同向）：UI073 仍 executing r1 current_step 1/8、worktree tip 20590168 未变、未归档。交付门未满足，等待轮协议用尽。
+- **确切解除动作（唯一）**：auto-ui/PLAN-073 正式交付归档（其会话完成 work→review→merge）→ 本 goal 恢复：①组 UI 树 `.wt/os-063/auto-ui` 同步其交付 commit；②重建同版消费产物（三库）；③T-04 六格与全产品运行 → T-05 → T-06 独立 review → T-07 merge 归档。
+- 在此之前本 goal 不再消耗等待轮；所有检查点已固化（§9 round 1 收据）。
+
 ## 10. 待澄清事项
 
 - **T-04/05 阻塞（2026-11-08 goal round 1 登记）**：唯一未决前置 = auto-ui/PLAN-073 正式交付（当前 executing r1 0/8：连续媒体/精确绘制/资源乱序负控生产修复）。解除动作：UI073 归档后在本组 UI 树同步其交付 commit、重建消费产物，即可恢复 T-04。T-01/02/03 已闭不受影响。
