@@ -263,9 +263,39 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - 产品 pin 对账：worktree gitlink 与主检出一字节一致（OS054 交付组合）——同身份复用前提成立。产物重建三件哈希绑定（runbook §身份）。三产物 id：auto `215a1354…`、tool `a8cc4d74…`、ui-desktop `3984d8bd…`。
 - T-04 战役情报固化（runbook）：两宿主两管道分野（broker `autodesk-broker`=虚拟窗嵌载 vs 私 rqhost=standalone）；实测外部客户端无 incubation 动词不被 broker 收纳、incubate 名字解析走框架路径——**产品运行正道 = 桌面注册表 launch 链**；探针进程已全清。战役剩余 7 步清单化。
 
+### 2026-11-09 work 进展（goal round 6：T-04 证据落定 + 具名差额登记 attach 门）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:blocked（T-04 产品嵌入面：外部 CLI 客户端→broker attach 未达 Active——具名差额，owner=UI063 后继修复合同；六格/媒体/生命周期面已按可落口径取证） / worktree:同前 / code_commit:UI 17880ccb、OS 7b3946b（无新代码） / task_ids:T-04（部分：六格机制面✓ 产品嵌入面✗具名） / evidence:plan-artifacts/plan-063/auto-os/{t04-campaign-runbook.md,t04-calc{2,3,4,-r,-r2,-r3}.log,t04-desktop*.log} / blockers:见§10 具名差额 DG-1 / next_responsible_role:user（UI063 后继合同修复 attach 后恢复产品战役）
+- **DG-1（具名差额，三形态全参数复现）**：外部 CLI 客户端 `auto run --render-mode=desktop
+  --desktop-endpoint=autodesk-broker --autodesk-incubate --app386=<id>
+  --autodesk-broker=autodesk-broker`（registry argv 同参；+`--autodesk-render=remote`
+  +`AUTO_UI_IN_DESKTOP=1` 全 parity；release 档；隔离基座）：broker 收纳 incubation →
+  宿主 `attach_pending_incubations(5000)` 预算内未达 Active（无 codec/on_message 错误行
+  = **宿主零收到客户端消息**）→ 弃连 → 客户端 `exit=HostLost revision=0/1`（连接后
+  静默挂起，无编译/装载日志）。**in-test 程序化路径全绿**（t3/stress 真子进程 +
+  nextest rq_ 族本谱系 50/51 含 p073 媒体 desktop 臂）——缺口定位在外部 CLI 客户端
+  形态的 attach 机械（通用客户端/attach 域 = **UI063 责任面**；r4 生产修复路由同律：
+  输入/调度根因归 UI063）。本 Plan 不修（§5 r3：缺通用能力具名差额/后继修复合同，
+  不静默扩成第二个 UI063）。
+- **T-04 可落证据（本谱系实测）**：①六格机制面 = rq_ 族（rq_wire 传输六格/rq_cells
+  7 fixtures/rq_matrix 负控/rq_media 两宿主四相）nextest sanctioned **50/51**（唯一 =
+  capability_rows 120s 配置悬崖，solo 双 lineage PASS——t04-gates-context.md）；②V-11
+  四旧红 = UI073 落地主线两轮绿 + 本谱系 rq_ 族绿（复用成立）；③F-1 scale hold 关闭
+  （boot 实测 scale 2 落簿）；④V-12 身份：release 三件哈希（runbook）+ boot PIDs；
+  ⑤隔离基座 boot 绿（registry 8/8、私 rqhost、主题包、无泄漏收尾）。
+- **T-04 具名待办（DG-1 解除后即恢复，不缩分母）**：逐产品桌面嵌入运行（N=1/4/8 冻结
+  映射）、M-02/06/07 终值、V-08/V-10 终值、V-01 全分母运行态复核——全部挂 DG-1 关闭
+  条件；M-01/M-04/M-05/M-08 按交付证据复用（机制同、身份未变）。
+
 ## 10. 待澄清事项
 
+- **DG-1（2026-11-09 登记的唯一未决）**：外部 CLI 客户端→broker attach 5s 预算未达
+  Active（详见 §9 round 6 receipt：三形态复现、宿主零收消息、in-test 程序化路径绿）。
+  owner = **UI063 后继修复合同**（通用 attach/客户端机械域）。解除动作 = 该合同交付
+  attach 修复并归档 → 本 Plan 恢复 T-04 产品嵌入战役（runbook 战役剩余 7 步）→
+  T-05 → T-06 → T-07。此前 T-04 的产品面/M 终值/V-08/10 具名待办维持待办（不缩分母）。
 - **T-04/05 阻塞（2026-11-08 goal round 1 登记）**：唯一未决前置 = auto-ui/PLAN-073 正式交付（当前 executing r1 0/8：连续媒体/精确绘制/资源乱序负控生产修复）。解除动作：UI073 归档后在本组 UI 树同步其交付 commit、重建消费产物，即可恢复 T-04。T-01/02/03 已闭不受影响。
+  【已解除 2026-11-09：UI073 archived r1 8/8 @ 82b61084，组树已同步】
 - r4当前未决：T-01冻结实际入口/预算/旧红当前适用及必要关闭合同；媒体/绘制/乱序资源详UI073。不把062的阶段性豁免挪作M1豁免。
 - 当前正式来源UI060/061/062和OS054均已交付，旧r3“在途/未授权研究/Spec缺席”仅历史观察，不作为本轮阻塞；本轮未实施。
 - Linux全平台/compositor、ACE/AGE独立进入门保持；无必须重新询问才能完成本次草案的问题。
