@@ -287,6 +287,12 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
   映射）、M-02/06/07 终值、V-08/V-10 终值、V-01 全分母运行态复核——全部挂 DG-1 关闭
   条件；M-01/M-04/M-05/M-08 按交付证据复用（机制同、身份未变）。
 
+### 2026-11-09 goal round 7（PLAN-074 开立 + T-01 红线闭合）
+
+- stage:goal / plan_id:auto-os/PLAN-063 / plan_revision:r4 / round:7 / from:- / to:- / status:executing / outcome:waiting（DG-1 修复已开工：auto-ui/PLAN-074 T-01 完成） / worktree:不变（UI auto-os-dev 树续用） / commit:UI 80f0c3bf（074 合同）→ c2254800（T-01 红线测试） / next:PLAN-074 T-02（transport 层修复）
+- 用户裁定"开修复计划修复"→ **auto-ui/PLAN-074**（074-rq-desktop-broker-attach-closure.md，master 80f0c3bf）：DG-1 → 外部 CLI 客户端 attach 闭合；5 任务（红线→修复→真桌面端到端→review→merge）；树延用 os-063 组 UI 树（auto-os-dev，谱系连续）。
+- **T-01 完成（c2254800）**：红线测试 `p074_broker_incubate_vm_client_attach_active` 5s 确定性复现 DG-1；根因经逐层插桩缩定**传输配对层**（客户端 Hello 已发出、宿主 pending end 零读到——tokio pipe serve 端配对/读线程启动序嫌疑）；T-02 续作断点固化于 runbook"PLAN-074 T-02 续作断点"节。
+
 ## 10. 待澄清事项
 
 - **DG-1（2026-11-09 登记的唯一未决）**：外部 CLI 客户端→broker attach 5s 预算未达
