@@ -293,6 +293,13 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - 用户裁定"开修复计划修复"→ **auto-ui/PLAN-074**（074-rq-desktop-broker-attach-closure.md，master 80f0c3bf）：DG-1 → 外部 CLI 客户端 attach 闭合；5 任务（红线→修复→真桌面端到端→review→merge）；树延用 os-063 组 UI 树（auto-os-dev，谱系连续）。
 - **T-01 完成（c2254800）**：红线测试 `p074_broker_incubate_vm_client_attach_active` 5s 确定性复现 DG-1；根因经逐层插桩缩定**传输配对层**（客户端 Hello 已发出、宿主 pending end 零读到——tokio pipe serve 端配对/读线程启动序嫌疑）；T-02 续作断点固化于 runbook"PLAN-074 T-02 续作断点"节。
 
+### 2026-11-09 work 进展（goal round 8：DG-1 关闭——074 交付消费实测成功，N=1 落地）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（DG-1 关闭确认 + N=1 落地） / worktree:同前（UI auto-os-dev == master 31e532e4） / code_commit:UI 5d8056f3（074 交付，含我方 F-1/红线 rebase 续含） / task_ids:T-04（产品嵌入面恢复） / evidence:plan-artifacts/plan-063/auto-os/{t04-desktop-iso.log,t04-calc-iso.log,t04-n1-iso.png,t04-campaign-runbook.md} / blockers:无 / next_responsible_role:work（N=4/8 扫 + M 终值）
+- PLAN-074 交付核验（archived r1 5/5 @ 5d8056f3，根因 = 孵化 resolve 失败臂）；组树同步；release 产物重建绑定（auto f2c2abfe/tool a3a6bf22/ui-desktop 993f85ee）。
+- **N=1 实测**：隔离 broker 井盖（AUTOOS_BROKER_PIPE——共享 well-known 曾短暂触达用户生产桌面，已纠）+ 全方言外部客户端 → 客户端全程存活无 HostLost → 我的桌面日志 `adopt surface 480x320` + `frame compose wid=1 frame_id=1`（虚拟窗帧合成）。**零拒绝/零 budget 失败。战役配方冻结于 runbook（N 扫描直接复用）。**
+- 运行配方情报：宿主 attach 按 manifest id 解析（app_resolver）；AUTO_386_APP_ROOT=probe-386root 供客户端装载；桌面注册表经默认 extra-roots 吸入主检出臂（注册表隔离不完整，管道隔离已足够）；V-02 视觉证据一律按 PID PrintWindow。
+
 ## 10. 待澄清事项
 
 - **DG-1（2026-11-09 登记的唯一未决）**：外部 CLI 客户端→broker attach 5s 预算未达
