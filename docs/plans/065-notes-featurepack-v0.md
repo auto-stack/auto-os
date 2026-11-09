@@ -98,6 +98,10 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
+2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | outcome: pass（UI 响应形态修正落地；浏览器内页面 body 形态 fetch 已证 200 ok；页面自身 submit 的网络级隔离待下轮首个动作）| code_commit: auto-reader d5d0075（facade 单层解码 + 代理引号规范 + 结构化 capture 参数） | evidence: 浏览器内以页面新 body 形态直打代理=200 ok:true（n-x 经代理→notes 落库）；notes 侧 list/外部改文用例 PASS；三项实测裁定：facade .json() 已解一层（页面单次 parse）、json_escape 不产引号（须手工包）、front json.encode 不落 vue codegen（结构化参数下沉代理） | blockers: 页面 handler 自身 submit 的浏览器内 400（网络 tap 隔离=下轮首个动作） | next_responsible_role: work
+
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+
 ## 10. 待澄清事项
 
 跨仓组件导入与正式服务接线以 OS-T-01 的实测决定。遇到需要更改旧引擎私有接口的情形，向 AutoUI 提交最小反例并评估单独立项。首版以构建时嵌入为验收边界。
