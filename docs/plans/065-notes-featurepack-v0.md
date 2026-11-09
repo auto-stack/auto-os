@@ -102,6 +102,10 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
+2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 7 | outcome: pass（reader UI E2E 7/8——R-2a UI 捕获全链 200 实证；R-4b reload 列表瞬态一档暂阻）| code_commit: auto-reader 10f57d7（charset-safe operation_id + 代理整数字段/引号修正） | evidence: reader_smoke NET-REQ/NET-RESP tap 实录（页面 submit body 含 book:scope/quote/locator → 200 ok:true 落库 n-x）；R-4b 隔离记录=reload 后抽屉列表两次刷新仍 undefined（curl 同调用 ok——VM back 出站瞬断疑点，非产品缺陷；行点击编排下轮收口） | blockers: R-4b 一档 | next_responsible_role: work
+
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 7 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+
 ## 10. 待澄清事项
 
 跨仓组件导入与正式服务接线以 OS-T-01 的实测决定。遇到需要更改旧引擎私有接口的情形，向 AutoUI 提交最小反例并评估单独立项。首版以构建时嵌入为验收边界。
