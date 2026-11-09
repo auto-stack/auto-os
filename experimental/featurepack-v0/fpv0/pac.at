@@ -1,0 +1,16 @@
+// fpv0 —— FeaturePack v0 探针组件包（PLAN-065 OS-T-01 带版本样例）。
+//
+// 库形态（auto-lang blueprints 先例）：单一最小双参数组件，供真实工程以
+// `dep fpv0 { path: "<本目录相对路径>" }` + `use fpv0.fp_probe: FpProbeCard`
+// 跨包导入（解析面 = PLAN-635 声明门控 + resolve_module_path）。
+//
+// 版本即契约：消费方 pac.at 的 dep 块只允许 `path`（version/pin/rev 键非法，
+// 跨仓对齐由 git 承担——blueprint contract Q5）。本包版本 0.1.0 对应
+// PLAN-065 OS-T-01 冻结的机制样例；组件正式版（NoteEditor）由 NOTES-006
+// T-03 在 auto-notes 发布后取代本样例成为产品组件源。
+name: "fpv0"
+version: "0.1.0"
+scene: "ui"
+render: "vue"
+title: "FeaturePack Probe"
+title_zh: "特性包探针"

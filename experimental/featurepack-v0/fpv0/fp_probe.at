@@ -1,0 +1,49 @@
+// fp_probe.at — OS-T-01 最小双参数探针组件（PLAN-065 · featurepack-v0 样例）。
+//
+// 目的：证明同一组件包可被两个真实工程（015-notes / 018-reader）以
+// `dep fpv0` + `use fpv0.fp_probe: FpProbeCard` 形态在 Vue/VM 双轨导入、
+// 构建与挂载，并核对参数、回调、卸载与重新挂载（PLAN-041 实例语义）。
+//
+// 契约面（双参数，两族各一）：
+//   label    : str  数据参数——宿主持有、每帧重播种（PLAN-045 prop 通道）
+//   on_acked : msg  回调参数——子 emit 通道（TreeView PLAN-037 同款命名映射：
+//                    内部 emit 消息名 Acked ↔ prop on_acked，同 Toggle↔on_toggle）
+//   LocalTap        纯内部消息（on{} 臂消费，不映射任何 prop）——用于核对
+//                   卸载→重挂后实例 model 重播种（PLAN-041：重挂=全新 Init）
+//
+// 宿主侧核对口径（两工程一致）：
+//   参数    ——text .label 显示宿主绑定值；宿主换值后显示跟随
+//   回调    ——fp-ack 点击 → 宿主计数（.FpAck）递增
+//   卸载    ——宿主 if 臂隐藏后组件从视图消失
+//   重挂    ——重新显示后本地 taps 归零（全新 Init），宿主 acks 计数保留
+
+widget FpProbeCard (label: str, on_acked: msg) {
+    msg { Acked, LocalTap }
+
+    model {
+        var taps int = 0
+    }
+
+    view {
+        col {
+            style: "items-start gap-1.5 px-3 py-2 rounded-md border border-dashed border-border bg-muted/30 w-auto"
+            row {
+                style: "items-center gap-2 w-auto"
+                text .label { style: "text-xs font-semibold text-foreground" }
+                button {
+                    onclick: .Acked
+                    text "fp-ack" { style: "text-xs" }
+                }
+                button {
+                    onclick: .LocalTap
+                    text "fp-local" { style: "text-xs" }
+                }
+                text .taps { style: "text-xs text-muted-foreground" }
+            }
+        }
+    }
+
+    on {
+        .LocalTap -> { .taps = .taps + 1 }
+    }
+}
