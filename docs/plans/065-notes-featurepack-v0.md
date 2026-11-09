@@ -86,10 +86,14 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 2 | from: work | to: work | status: executing(2/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 51cb528（worktree）+ main 计划进度提交 | next: work
 
+2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 3 | outcome: pass（NOTES-006 T-03 交付=OS-T-03 的组件消费面就绪；T-03 任务本身未完——READER-013 集成与组合验收待下轮）| worktree: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | code_commit: NOTES-006 T-03=auto-notes main 48e0fc9 | dependency_revisions: auto-notes@48e0fc9（组件发布 components/fp_editor.at + verify_featurepack_editor.py vue 14/14、vm 4/0/1）· auto@0.1.0+plan-890-r7-t19 | task_ids: T-03（部分：组件与产品编辑消费面） | evidence: D:/autostack/plan-artifacts/plan-006/（编辑器验证跑测目录） | blockers: T-03 剩余面依赖 READER-013 T-02/T-03（reader 工具链装配 blocked 前置在案，§10①） | next_responsible_role: work（READER-013 启动 → OS-T-03 组合验收）
+
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 3 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+
 ## 10. 待澄清事项
 
 跨仓组件导入与正式服务接线以 OS-T-01 的实测决定。遇到需要更改旧引擎私有接口的情形，向 AutoUI 提交最小反例并评估单独立项。首版以构建时嵌入为验收边界。
 
-**T-01 实测新增（2026-11-09）**：① reader VM 轨第 4 格 blocked——reader main 在当前工具链（auto plan-890-r7-t19）后端装配失败（`library.at` 转译 undefined function，vue/vm 两轨同点；另有 reading_page 严格门 `<doc-surface>` S002，均 stash 干净树复现、预先存在）。owner=reader 适配线（READER-009 适配链进行中）；最小前置=reader main 通过当前工具链装配；不阻塞 OS-T-02，但 READER-013 T-03（真实 Vue/VM 产品入口 V-01/02）前必须解决或在案绕行。② T-03 组合验收依赖状态（2026-11-09 T-02 后更新）：NOTES-006 服务侧已交付（executing 2/5，auto-notes 9cabed4，verify 39/39）——其 T-03 编辑器组件待做；READER-013 未开始（drafting，含 reader 工具链装配前置①）。T-03 前需推进两子计划至可消费态。
+**T-01 实测新增（2026-11-09）**：① reader VM 轨第 4 格 blocked——reader main 在当前工具链（auto plan-890-r7-t19）后端装配失败（`library.at` 转译 undefined function，vue/vm 两轨同点；另有 reading_page 严格门 `<doc-surface>` S002，均 stash 干净树复现、预先存在）。owner=reader 适配线（READER-009 适配链进行中）；最小前置=reader main 通过当前工具链装配；不阻塞 OS-T-02，但 READER-013 T-03（真实 Vue/VM 产品入口 V-01/02）前必须解决或在案绕行。② T-03 组合验收依赖状态（2026-11-09 T-03 轮后更新）：NOTES-006 组件已发布并双端验证（auto-notes 48e0fc9，fp_editor.at + verify_featurepack_editor.py vue 14/14、vm 4/0/1——reader 可经 `dep notes-fp { path: "../auto-notes/src/front/components" }` 消费）；READER-013 未开始（drafting，含 reader 工具链装配前置①）。③ NOTES-006 T-03 实测五条裁定在案（auto-notes 计划 §10）：组件草稿 prop 往返机制、纯 emit 通道 @input 提取需镜像臂、emit 事件名随 prop 派生、App 层转发臂必需、`pub const` 断 VM 面解析 + components/ 目录名门 + ui-cache 不因 back 编辑失效——READER-013 集成时按此执行。
 
 **T-02 实测新增（2026-11-09）**：NOTES-006 T-02 交付对 OS 契约做了两处实测修订（`.at` API 无 header 通道 → `cred` 信封字段；生成服务器不绑定「路径参数+query/body 混合」→ 全 POST body 端点形态）与两处 daemon 语义定形（bin=命令行、就绪窗口 600s），均已冻结进 worktree 的 featurepack-v0.md §2.4/§3/§5——复审（T-04）时按该版本核对。
