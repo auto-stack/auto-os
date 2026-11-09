@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-065
-status: reviewed
+status: archived
 feature_name: Notes FeaturePack v0 系统契约与首包验收
 author: [Codex]
 created_at: 2026-11-07
@@ -80,39 +80,41 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-07 · stage: new · PLAN-065 r1 · outcome: pass（草案）· next: work T-01。新增 T-01～05、AC-01～04；实施及产品验证均待执行。
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 1 | from: drafting | to: work | status: reviewed(1/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: afeaf94（worktree，codex/os-065-dev）+ 53bb103（main，计划进度） | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 1 | from: drafting | to: work | status: archived(1/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: afeaf94（worktree，codex/os-065-dev）+ 53bb103（main，计划进度） | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 2 | outcome: pass（T-02 完成，任务级；stage 继续）| worktree: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | base_commit: afeaf94 | code_commit: 51cb528（worktree）；NOTES-006 交付=auto-notes main 9cabed4 | dependency_revisions: auto-notes@9cabed4（NOTES-006 T-01/T-02 交付，main 直提）· auto@0.1.0+plan-890-r7-t19 | task_ids: T-02 | evidence: D:/autostack/plan-artifacts/plan-065/t02-evidence.md（verify_featurepack_service.py 39/39 + verify_featurepack_host.py 19/19 + 实测修订四条） | blockers: 无（AC-01 宿主契约全绿） | next_responsible_role: work（T-03，依赖 NOTES-006 T-03 编辑器组件与 READER-013 T-02/T-03 宿主集成）
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 2 | from: work | to: work | status: reviewed(2/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 51cb528（worktree）+ main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 2 | from: work | to: work | status: archived(2/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 51cb528（worktree）+ main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 3 | outcome: pass（NOTES-006 T-03 交付=OS-T-03 的组件消费面就绪；T-03 任务本身未完——READER-013 集成与组合验收待下轮）| worktree: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | code_commit: NOTES-006 T-03=auto-notes main 48e0fc9 | dependency_revisions: auto-notes@48e0fc9（组件发布 components/fp_editor.at + verify_featurepack_editor.py vue 14/14、vm 4/0/1）· auto@0.1.0+plan-890-r7-t19 | task_ids: T-03（部分：组件与产品编辑消费面） | evidence: D:/autostack/plan-artifacts/plan-006/（编辑器验证跑测目录） | blockers: T-03 剩余面依赖 READER-013 T-02/T-03（reader 工具链装配 blocked 前置在案，§10①） | next_responsible_role: work（READER-013 启动 → OS-T-03 组合验收）
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 3 | from: work | to: work | status: reviewed(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 3 | from: work | to: work | status: archived(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 4 | outcome: pass（READER-013 blocked 解除 + T-02 集成落地；E2E 收口与 OS-T-03 待下轮）| worktree: D:/autostack/.wt/os-065/auto-os | code_commit: READER-013=auto-reader main 618390e | dependency_revisions: auto-notes@48e0fc9 · auto-reader@618390e · auto@0.1.0+plan-890-r7-t19 | task_ids: T-03（READER-013 面） | evidence: reader_smoke.py S-1..S-5+R-1a（notes 服务+reader VM back+vite 栈全绿、抽屉渲染）；blocked 诊断=diag worktree（origin/main 同失败→engine rust-emission adapter 契约缺口：as_int 标量形态无契约+type_of 类属；owner=engine，VM 服务路径=reader harness N-003-8 绕行同款 ready 实证） | blockers: T-03 收口=reader 冒烟导入书 id 解析+E2E 键入流；OS-T-03 组合脚本待建 | next_responsible_role: work
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 4 | from: work | to: work | status: reviewed(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 4 | from: work | to: work | status: archived(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | outcome: pass（后端链路全程实证；UI 层收口差最后一次诊断迭代）| code_commit: auto-reader e36f7fe（book_id 契约 scope 形态 book:<uuid>——capture/list 与授权书格式对齐） | task_ids: T-03（READER-013 E2E 收口） | evidence: 手动全链 replay=经 reader 代理 capture ok:true n-1 + list ok 含条目（正确 cred/scope 下代理→notes 全通）；浏览器内代理诊断=permission_denied 对越权书正确返回（通路+契约双向实证）；UI 提交仍得空码失败（双层解码或 facade 返回形态疑点，下一轮首个动作=打印 drawer fp_error 原文 + Http.post 返回类型核对面） | blockers: reader UI E2E 收口（精确疑点已定位到 front 解析层） | next_responsible_role: work
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | from: work | to: work | status: reviewed(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | from: work | to: work | status: archived(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | outcome: pass（UI 响应形态修正落地；浏览器内页面 body 形态 fetch 已证 200 ok；页面自身 submit 的网络级隔离待下轮首个动作）| code_commit: auto-reader d5d0075（facade 单层解码 + 代理引号规范 + 结构化 capture 参数） | evidence: 浏览器内以页面新 body 形态直打代理=200 ok:true（n-x 经代理→notes 落库）；notes 侧 list/外部改文用例 PASS；三项实测裁定：facade .json() 已解一层（页面单次 parse）、json_escape 不产引号（须手工包）、front json.encode 不落 vue codegen（结构化参数下沉代理） | blockers: 页面 handler 自身 submit 的浏览器内 400（网络 tap 隔离=下轮首个动作） | next_responsible_role: work
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | from: work | to: work | status: reviewed(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 6 | from: work | to: work | status: archived(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 7 | outcome: pass（reader UI E2E 7/8——R-2a UI 捕获全链 200 实证；R-4b reload 列表瞬态一档暂阻）| code_commit: auto-reader 10f57d7（charset-safe operation_id + 代理整数字段/引号修正） | evidence: reader_smoke NET-REQ/NET-RESP tap 实录（页面 submit body 含 book:scope/quote/locator → 200 ok:true 落库 n-x）；R-4b 隔离记录=reload 后抽屉列表两次刷新仍 undefined（curl 同调用 ok——VM back 出站瞬断疑点，非产品缺陷；行点击编排下轮收口） | blockers: R-4b 一档 | next_responsible_role: work
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 7 | from: work | to: work | status: reviewed(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 7 | from: work | to: work | status: archived(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 8 | outcome: pass（T-03 完成——OS-T-03 组合验收 11/11）| worktree: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | base_commit: afeaf94 | code_commit: 6ea47a8（worktree）；NOTES-006=auto-notes 48e0fc9、READER-013=auto-reader 10f57d7 | dependency_revisions: auto@0.1.0+plan-890-r7-t19 | task_ids: T-03 | evidence: scripts/tests/verify_notes_featurepack.py 11/11（组合捕获/改文/读回/拒写/重启持久）+ verify_featurepack_service.py 39/39 + verify_featurepack_host.py 19/19 + verify_featurepack_editor.py vue 14/14 vm 4/0/1 + reader_smoke 7/8（R-4b 瞬态在案） | blockers: 无阻断（R-4b 一档交 T-04 复审裁决） | next_responsible_role: review（T-04）
 
-2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 8 | from: work | to: review | status: reviewed(4/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 6ea47a8（worktree）+ main 计划进度提交 | next: review
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 8 | from: work | to: review | status: archived(4/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 6ea47a8（worktree）+ main 计划进度提交 | next: review
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 9 | outcome: needs_fix（G-1 未闭合——精确诊断在案；G-2 以流程规避；F-2 已闭合 auto-notes 1aa2e72）| code_commit: auto-notes 1aa2e72（pac.at）+ auto-reader 工作区（ToggleFp 收对话框修正落盘） | task_ids: T-03（G-1 残面） | evidence: probe_g2..g7 五轮实录（tests/.reader_smoke.mjs 迭代）：真实选区流已证至 R-1pre（对话框摘录预填=ann_quote 产品接缝 ✓）；**G-1 根因收敛**：抽屉在对话框开合循环后的二次 ToggleFp 不再渲染（fp_show=true 但 DOM 无抽屉——Vue 条件渲染/状态疑点，playwright 与 JS 两种点击均然），R-1a 首开恒 ✓ | blockers: G-1 抽屉二次开渲染调查（Vue codegen 条件渲染面，READER-013 域） | next_responsible_role: work
 
 2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 10 | outcome: needs_fix→大幅收敛（G-1 闭合；R-4b/R-2a 残面=断言时序与 VM back 出站偶发，机制分别已证）| code_commit: auto-reader 5ec6846（内容寻址 operation_id——back ph1(book|quote|text) 空 id 派生，跨页加载冲突根除） | task_ids: T-03（G-1 残面） | evidence: probe_h3 实录：真实选区流全绿 R-1pre/R-1b/R-1c（对话框摘录预填→抽屉种子含定位锚点）+ **NET-RESP 200 ok:true n-4（title=选区原句、body=键入正文，页面→vite→代理→notes 全链）**——G-1 闭合；残面：R-2a 断言列表匹配时序竞态（捕获本身已 200）、R-4b 编辑提交偶发 500（reader VM back 出站 post_json 间歇——机制已分别证：代理 update 签名/notes 侧均绿） | blockers: 无阻断（残面两档交复审裁定：时序断言收紧 + VM back 出站稳定性=engine/reader 运行时域） | next_responsible_role: review
+
+2026-11-09 · stage: merge | plan_id: PLAN-065:r1 | outcome: pass | delivery_commit: 08dcf91（main，ff-only；rebase 映射 afeaf94→d1cf8ef / 51cb528→2f2c155 / 6ea47a8→08dcf91，range-diff 三提交全等=安全重写证明） | canonical_verified: docs/specs/communication/featurepack-v0.md（blob 476d7932，落自 2f2c155）；scripts/tests/verify_notes_featurepack.py + verify_featurepack_host.py（08dcf91）；experimental/featurepack-v0/fpv0/（d1cf8ef） | archived: docs/plans/archived/065-notes-featurepack-v0.md（本提交，completion_kind: delivered） | cleaned: wt-guard clean 后移除 .wt/os-065/auto-os 与 codex/os-065-dev（紧随本提交核验）；plan-artifacts/plan-065 证据折叠入本文件后按 delete-at-merge 删除、registry 刷新 | named_hold（存续）: reader VM back 同路由第二次出站 post_json 间歇 500——owner=engine/reader 运行时域；闭合条件=VM http 客户端重复调用稳定性修复（详见 §10） | landing_note（落地≠部署）: 本次交付为 spec/脚本/manifest/样例包——无新增运行二进制；桌面运行面消费的 apps.manifest daemon 登记随 main 生效，桌面重启后按 daemon 链按需孵化 notes 服务 | batch_regression: PLAN-065 整除 5 → 批量回归到期，交 auto-plan-regress 主检出单实例门（后续操作，不阻归档） | next: cleaned
 
 2026-11-09 · stage: review | review_scope: final（re-review）| reviewer_identity/limitations: 同实现会话（独立上下文，凭工件裁决）| plan_id: PLAN-065 | plan_revision: r1 | outcome: pass | worktree_path: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | reviewed_commit: 6ea47a8（+auto-notes 1aa2e72/48e0fc9 + auto-reader 5ec6846/10f57d7/e36f7fe/d5d0075） | base_commit: 8f752d9 | dependency_revisions: auto@0.1.0+plan-890-r7-t19 | spec_inputs: featurepack-v0.md（worktree 定稿，实测修订与实现逐项一致） | acceptance_results: G-1 CLOSED（probe_rr2：R-1pre/R-1b/R-1c 真实选区流全绿 + NET-RESP 200 n-x 经页面全链）；R-2a 断言收紧后 PASS（tap 标志 + notes 直查可达）；AC-01 pass、AC-02 pass（选句捕获/Notes 改文/重开新修订/同修订读回全实证）、AC-03 pass | pending_closeout_gates: 统一回归门（merge 所有） | findings: **具名未结持有（merge 后存续，owner=engine/reader 运行时域）**：reader VM back 同路由第二次出站 post_json 间歇 500（drawer 刷新列表 UX 受扰；接受语义不受阻——捕获首调/列表 API 直查/组合语义均实证；闭合条件=VM http 客户端重复调用稳定性修复） | evidence: /tmp/probe_rr2.log（8/9 PASS，唯一 FAIL=R-4b 行点击受上述持有阻塞） | next: merge（T-05）
 
