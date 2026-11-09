@@ -80,7 +80,7 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-07 · stage: new · PLAN-065 r1 · outcome: pass（草案）· next: work T-01。新增 T-01～05、AC-01～04；实施及产品验证均待执行。
 
-2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | outcome: pass（T-01 完成，任务级；stage 继续）| worktree: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | base_commit: 8f752d9 | code_commit: 见 worktree 提交（fpv0 样例包 + featurepack-v0.md 草案） | dependency_revisions: auto-notes@main 16f3efb（探针临时挂载已 revert 还原）、auto-reader@main bc208e8（同）、auto@0.1.0+plan-890-r7-t19 | task_ids: T-01 | evidence: D:/autostack/plan-artifacts/plan-065/（t01-evidence.md + vm_probe.py/vue_probe.mjs + vm_snapshot_notes.txt/vm_snap5_notes.txt + 各运行日志）；实测矩阵 notes Vue 9/9、notes VM 10/10、reader Vue 9/9、reader VM blocked（预先存在 reader 后端装配失败，归因 stash 复现） | blockers: 无 OS 侧阻断；reader VM 第 4 格 blocked（owner=reader 适配线，见 §10） | next_responsible_role: work（T-02）
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 1 | from: drafting | to: work | status: executing(1/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: afeaf94（worktree，codex/os-065-dev）+ 53bb103（main，计划进度） | next: work
 
 ## 10. 待澄清事项
 
