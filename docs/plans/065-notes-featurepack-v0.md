@@ -94,6 +94,10 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 4 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
 
+2026-11-09 · stage: work | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | outcome: pass（后端链路全程实证；UI 层收口差最后一次诊断迭代）| code_commit: auto-reader e36f7fe（book_id 契约 scope 形态 book:<uuid>——capture/list 与授权书格式对齐） | task_ids: T-03（READER-013 E2E 收口） | evidence: 手动全链 replay=经 reader 代理 capture ok:true n-1 + list ok 含条目（正确 cred/scope 下代理→notes 全通）；浏览器内代理诊断=permission_denied 对越权书正确返回（通路+契约双向实证）；UI 提交仍得空码失败（双层解码或 facade 返回形态疑点，下一轮首个动作=打印 drawer fp_error 原文 + Http.post 返回类型核对面） | blockers: reader UI E2E 收口（精确疑点已定位到 front 解析层） | next_responsible_role: work
+
+2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 5 | from: work | to: work | status: executing(3/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: main 计划进度提交 | next: work
+
 ## 10. 待澄清事项
 
 跨仓组件导入与正式服务接线以 OS-T-01 的实测决定。遇到需要更改旧引擎私有接口的情形，向 AutoUI 提交最小反例并评估单独立项。首版以构建时嵌入为验收边界。
