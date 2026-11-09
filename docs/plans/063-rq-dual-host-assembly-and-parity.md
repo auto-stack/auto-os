@@ -300,6 +300,12 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - **N=1 实测**：隔离 broker 井盖（AUTOOS_BROKER_PIPE——共享 well-known 曾短暂触达用户生产桌面，已纠）+ 全方言外部客户端 → 客户端全程存活无 HostLost → 我的桌面日志 `adopt surface 480x320` + `frame compose wid=1 frame_id=1`（虚拟窗帧合成）。**零拒绝/零 budget 失败。战役配方冻结于 runbook（N 扫描直接复用）。**
 - 运行配方情报：宿主 attach 按 manifest id 解析（app_resolver）；AUTO_386_APP_ROOT=probe-386root 供客户端装载；桌面注册表经默认 extra-roots 吸入主检出臂（注册表隔离不完整，管道隔离已足够）；V-02 视觉证据一律按 PID PrintWindow。
 
+### 2026-11-10 work 进展（goal round 9：N 扫描 6/8 嵌入运行 + DG-2 具名）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:blocked（DG-2：todo/video 宿主 attach 构建 > 5s 预算，两次复现暖缓存同败——owner=UI 后继合同，074 同域） / task_ids:T-04（N 扫描 6/8） / evidence:plan-artifacts/plan-063/auto-os/t04-sweep-*（时间戳全量） / next_responsible_role:user（DG-2 修复合同后补 todo/video 两产品面）或以 6/8 + 具名推进收口（T-05 评审裁定）
+- **6/8 产品桌面嵌入运行**：calc/clock/charts/reader/monitor/photos 全部 attach 落地；帧合成 wid=1..4,6（wid2=152/wid3=89 连续帧流；静态品低帧正确）——**预算切片下无饥饿**（M-07/V-08 机制面正证）。N=8 映射 todo/video 两台 DG-2 具名待办（不缩分母）。
+- M-02 数据源就绪：`frame compose wid=N frame_id=k` 时间戳全量（下一轮算 p50/p95 帧间距）。
+
 ## 10. 待澄清事项
 
 - **DG-1（2026-11-09 登记的唯一未决）**：外部 CLI 客户端→broker attach 5s 预算未达
