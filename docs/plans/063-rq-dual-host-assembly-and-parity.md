@@ -255,6 +255,14 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - **确切解除动作（唯一）**：auto-ui/PLAN-073 正式交付归档（其会话完成 work→review→merge）→ 本 goal 恢复：①组 UI 树 `.wt/os-063/auto-ui` 同步其交付 commit；②重建同版消费产物（三库）；③T-04 六格与全产品运行 → T-05 → T-06 独立 review → T-07 merge 归档。
 - 在此之前本 goal 不再消耗等待轮；所有检查点已固化（§9 round 1 收据）。
 
+### 2026-11-09 work 进展（goal round 5：UI073 交付后恢复——同步/F-1 关闭/族门重绑）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（F-1 关闭 + 同步 + 门重绑；T-04 战役 running） / worktree:D:/autostack/.wt/os-063/auto-os + 组UI树 / branch:codex/plan-063-dev + auto-os-dev / base_commit:UI master bcceb419 / code_commit:UI 71150e75（T-03 重放）→ 17880ccb（F-1）；lang 重冻结 d057ae5ea / dependency_revisions:auto-web 2d698413b、auto-down 58ea33f（=UI073 谱系） / task_ids:T-04（部分） / evidence:plan-artifacts/plan-063/auto-os/{t04-gates-context.md,t04-campaign-runbook.md,t04-desktop.log,t04-calc*.log,dp-filter-*.log} / blockers:无 / next_responsible_role:work（T-04 产品战役）
+- UI073 交付核验（archived r1 8/8，交付 82b61084，canonical 3 文件落地）；组 UI 树 rebase 后 T-03 重放、**F-1 scale hold 关闭**（OS063 域）：`DesktopState.device_scale` 双源落簿（boot 一次性 scale_factor Task + Rescaled 事件）宿主窗门控 + `broker_client_content` v2 臂消费 `broker_v2_device_scale`（rqhost 同律）——boot 探针实测 `[ui-desktop] host device scale 2`（本机 scale=2，HiDPI 软字关闭）。
+- 族门重绑（谱系变更后）：`ui::session` **109/0**（含新 F-1 测）；rq_ nextest sanctioned **50/51**（唯一 = capability_rows 撞 profile 120s 悬崖：solo 我的 tip 114.41s PASS / 纯基线 144.04s PASS——机器速度边界非 oracle 失败）；cargo 顺序上下文双 lineage 对照（基 3 红/tip 5 红，红项 nextest 全绿）判为不承载门（nextest.toml 隔离窗语义自证）。**p073_t05/t02 媒体语义（desktop 臂经本 Plan 泵接线）nextest 全 PASS——泵接线与媒体门无交互回归。**
+- 产品 pin 对账：worktree gitlink 与主检出一字节一致（OS054 交付组合）——同身份复用前提成立。产物重建三件哈希绑定（runbook §身份）。三产物 id：auto `215a1354…`、tool `a8cc4d74…`、ui-desktop `3984d8bd…`。
+- T-04 战役情报固化（runbook）：两宿主两管道分野（broker `autodesk-broker`=虚拟窗嵌载 vs 私 rqhost=standalone）；实测外部客户端无 incubation 动词不被 broker 收纳、incubate 名字解析走框架路径——**产品运行正道 = 桌面注册表 launch 链**；探针进程已全清。战役剩余 7 步清单化。
+
 ## 10. 待澄清事项
 
 - **T-04/05 阻塞（2026-11-08 goal round 1 登记）**：唯一未决前置 = auto-ui/PLAN-073 正式交付（当前 executing r1 0/8：连续媒体/精确绘制/资源乱序负控生产修复）。解除动作：UI073 归档后在本组 UI 树同步其交付 commit、重建消费产物，即可恢复 T-04。T-01/02/03 已闭不受影响。
