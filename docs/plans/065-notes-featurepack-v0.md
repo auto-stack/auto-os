@@ -110,6 +110,8 @@ V-01 / AC-01：用相同合法请求分别经授权与未授权入口调用，�
 
 2026-11-09 · stage: goal | plan_id: PLAN-065 | plan_revision: r1 | round: 8 | from: work | to: review | status: executing(4/5) | outcome: pass | worktree: D:/autostack/.wt/os-065/auto-os | commit: 6ea47a8（worktree）+ main 计划进度提交 | next: review
 
+2026-11-09 · stage: review | review_scope: final | reviewer_identity/limitations: 同实现会话（独立上下文重建裁决，凭工件不复述执行者摘要）| plan_id: PLAN-065 | plan_revision: r1 | outcome: needs_fix | worktree_path: D:/autostack/.wt/os-065/auto-os | branch: codex/os-065-dev | reviewed_commit: 6ea47a8 | base_commit: 8f752d9 | dependency_revisions: auto-notes@48e0fc9（dirty: src/front/components/pac.at 未提交——dep 物化面属已审特性，须提交）、auto-reader@10f57d7（scratch probe tests/.reader_smoke.mjs 未跟踪，随 READER-013 收口处置）、auto@0.1.0+plan-890-r7-t19 | spec_inputs: docs/specs/communication/featurepack-v0.md（worktree 草案，随实测定形五条修订已核对与实现一致） | acceptance_results: AC-01 pass（host 19/19 独立复演）；AC-03 pass（service 39/39 独立复演——首轮 7/39 为端口占用串台，净端口后全绿；combo 11/11 独立复演）；AC-02 partial（notes 编辑组件双端 vue 14/14 + vm 4/0/1 ✓、组合语义 combo 11/11 ✓、reader UI 捕获链 R-2a 200 NET-RESP ✓；**缺口 G-1: reader 浏览器端真实选句→抽屉捕获交互序未证**——段点击后对话框 modal 与抽屉互斥，playwright force 与 JS click 两法均未使抽屉编辑器出现；**缺口 G-2: 抽屉 reload 后列表瞬态**（列表失败：undefined，VM back 出站瞬断疑点，curl 同调用 ok）——二者属 READER-013 T-02 剩余面，阻塞 PLAN-065 AC-02 全字面收口 | pending_closeout_gates: 统一回归门（merge 阶段按仓门定） | findings: F-1（needs_fix，AC-02）：G-1+G-2 闭合前不得 pass；F-2（housekeeping，随修）：auto-notes components/pac.at 提交 | evidence: /tmp/rev_service2.log（39/39）+ /tmp/rev_host.log（19/19）+ /tmp/rev_combo2.log（11/11）+ /tmp/probe_rev.log（选区流 R-1b 失败实录） | next: work（READER-013 T-02 收口 G-1/G-2 → 复审）
+
 ## 10. 待澄清事项
 
 跨仓组件导入与正式服务接线以 OS-T-01 的实测决定。遇到需要更改旧引擎私有接口的情形，向 AutoUI 提交最小反例并评估单独立项。首版以构建时嵌入为验收边界。
