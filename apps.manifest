@@ -173,7 +173,12 @@
       ],
       "status": "active",
       "added": "2026-10-03",
-      "launch": "native"
+      "launch": "native",
+      "daemon": {
+        "port": 17819,
+        "bin": "auto service --server rust -B 17819",
+        "env_port": "NOTES_DAEMON_PORT"
+      }
     },
     {
       "id": "016-calendar",

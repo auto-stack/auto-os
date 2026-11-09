@@ -73,11 +73,14 @@ ACE/AGE 切换。
 - 凭据为 256-bit hex 文本，**只经私有凭据文件传递**（每宿主一份，桌面
   ensure 链签发；per-user DACL，沿 broker-session 管道 DACL 语义）；凭据
   不出现在命令行、日志与回执。
-- 传递：请求头 `X-FP-Credential: <256-bit hex>`（每次调用）；服务侧
-  policy 将 凭据 → (principal, operations, book_scopes) 绑定（运行配置，
-  服务私有目录）。body 自报 caller/principal **不可信**（沿
-  local-profile-v1 身份来自凭证绑定）。
-- 桌面 ensure 链把凭据文件路径经 `<NAME>_FP_CRED_FILE` env 注入宿主 App
+- 传递（T-02 实测修订，2026-11-09）：**请求信封字段 `cred`**（每次调用；
+  原拟 HTTP 头 `X-FP-Credential`——.at API 面无 header 通道，v0 单用户
+  诚实边界下信封字段与头等价：凭据的裁决权都在服务侧 policy 绑定，调用
+  方自报的 caller/principal **不可信**的语义不变）。服务侧 policy 将
+  凭据 → (principal, operations, book_scopes) 绑定（运行配置文件，
+  `NOTES_FP_POLICY` 指向；服务私有目录）。凭据或作用域不匹配 →
+  `permission_denied`（业务前）。
+- 桌面 ensure 链把 policy 文件路径经 `<NAME>_FP_POLICY` env 注入宿主 App
   会话（与既有 `<NAME>_DAEMON=<url>` 注入同链同权）；独立启动见 §3。
 
 ### 2.5 后端直连的授权边界（冻结）
@@ -93,14 +96,15 @@ ACE/AGE 切换。
 
 | 项 | 冻结语义 |
 |---|---|
-| 桌面启动发现 | apps.manifest 条目 `daemon { port: 17819, bin, env_port }`；ensure 链探活 `GET /api/health` → 未在线按 `bin` spawn → 退避重试；在线后注入 `NOTES_DAEMON=<url>` + `NOTES_FP_CRED_FILE=<path>` 到宿主 App 会话 |
-| 独立启动发现（dev） | 服务以 notes `back_port` 直启；宿主以显式 env `NOTES_DAEMON` / `NOTES_FP_CRED_FILE` 指向（无桌面注入时的等价面）；两 env 缺失且服务不可达 → 宿主进降态（阅读/本地功能不受阻） |
+| 桌面启动发现 | apps.manifest `015-notes` 条目 `daemon { port: 17819, bin, env_port: NOTES_DAEMON_PORT }`；ensure 链探活 `GET /api/health` → 未在线按 `bin` spawn → 退避重试；在线后注入 `NOTES_DAEMON=<url>` 到宿主 App 会话。**v0 bin 语义（T-02 实测定形）**：bin = app 仓根相对**命令行**（notes 为 `auto service --server rust -B 17819`——服务二进制由工具链产出不在仓内，既有「仓内二进制路径」语义此推广；桌面 ensure 消费面落地时按此实现） |
+| 独立启动发现（dev） | 服务以 `bin` 命令直启（等价 `-B <port>`；端口可用 `NOTES_DAEMON_PORT` 覆盖）；宿主以显式 env `NOTES_DAEMON` 指向；env 缺失且服务不可达 → 宿主进降态（阅读/本地功能不受阻） |
+| 授权书注入 | 桌面 ensure 链将 policy 文件路径经 `<NAME>_FP_POLICY` env 注入宿主会话；服务按该文件把 凭据 → (principal, operations, book_scopes) 绑定；文件缺席 = deny-all（FeaturePack 关闭态） |
 | 单实例 | 同一服务实例对全部宿主服务；并发首次调用**合并启动**（ensure 幂等：探活竞争中只允许一个 spawn 赢家，输家复用赢家实例） |
-| 退出恢复 | 主应用（notes 窗口）退出后服务**不随退**：daemon 生命周期独立，另一宿主仍能调用（冷启动场景：主应用关闭时从 Reader 冷启动服务，AC-01） |
-| 就绪探测 | `GET /api/health`，超时 2s；200 + body `interface == notes.fpack/1` = 就绪 |
-| 启动退避 | ensure 链既有探活→spawn→退避节奏；spawn 后最顺便绪等待窗口 30s，超时按服务不可达降态，不阻塞宿主 |
-| 调用超时 | 请求信封 `timeout_ms ∈ [1, 5000]` 缺省 2000（沿 local-profile-v1 截止轴）；deadline 语义：转发未尝试 `not_dispatched`，已触业务 `may_have_run` |
-| 重试身份 | **调用尝试 ID（每次尝试新）与保存操作 ID（跨重试稳定）分离**——重试携带同 operation_id + 新尝试 ID；服务按 (principal, operation_id) 去重幂等（沿 capture-inbox 去重键产品化），同 key 同 payload 返回原结果、同 key 异 payload `operation_conflict` |
+| 退出恢复 | 主应用（notes 窗口）退出后服务**不随退**：daemon 生命周期独立，另一宿主仍能调用；服务被杀后宿主 ensure 探测下线并可重连（重 spawn），已提交数据跨重启持久（回执仍可查） |
+| 就绪探测 | `GET /api/health`，超时 2s；200 + body `interface == notes.fpack/1` = 就绪（仅 200 不够） |
+| 启动退避 | ensure 探活→spawn→退避；spawn 后就绪等待窗口 600s（首启含工具链构建），超时按服务不可达降态，不阻塞宿主 |
+| 调用超时 | 请求信封 `timeout_ms ∈ [1, 5000]` 缺省 2000（沿 local-profile-v1 截止轴）；v0 服务内联执行（无转发段），超时由 HTTP 客户端截止承担，deadline 语义随 F1 产品化再启用 |
+| 重试身份 | **调用尝试 ID（`attempt_id`，每次尝试新）与保存操作 ID（`operation_id`，跨重试稳定）分离**——重试携带同 operation_id + 新 attempt_id；服务按 (principal, operation_id) 去重幂等，同 key 同 payload 返回原结果（replayed:true）、同 key 异 payload `request_conflict`（即契约 `operation_conflict` 语义，沿仓储既有 err_code 词表） |
 
 ## 4. UI 组件契约与 T-01 可行性结论
 
@@ -126,28 +130,39 @@ ACE/AGE 切换。
 ## 5. 领域样例（合法/拒绝）
 
 方法 schema 属 NOTES-006 spec；本节冻结 OS 层信封与授权样例。服务基址
-`<NOTES_DAEMON>`；全部请求带头 `X-FP-Credential` 与 `interface_version`。
+`<NOTES_DAEMON>`；全部请求带信封字段 `cred`（§2.4）与 `interface_version`。
+
+**端点形态表（T-02 实测定形，全部 POST + JSON body——生成服务器对
+「路径参数 + query/body 混合」不绑定非路径参数，纯 body 形态双端可用）**：
+
+| 端点 | body 信封 | 返回（仓储信封） |
+|---|---|---|
+| `POST /api/fp/v1/capture` | `cred, interface_version, attempt_id, operation_id, source_json, text` | `ok, err_code, note{note_id,revision,title=quote,body=text,…}, receipt{status:committed}, replayed` |
+| `POST /api/fp/v1/get` | `cred, interface_version, note_id` | `ok, note{…13 列 + book_id + source}, receipt(空占位)` |
+| `POST /api/fp/v1/list` | `cred, interface_version, book_id, cursor(0=首页), limit(1..100)` | `ok, items[note…], next_cursor(翻页面才出现)` |
+| `POST /api/fp/v1/update` | `cred, interface_version, attempt_id, note_id, expected_revision, text, operation_id` | `ok/revision_conflict(+current_revision)，仅 body 可变` |
+| `POST /api/fp/v1/receipt` | `cred, interface_version, operation_id` | `status: committed(含原收据) | not_observed` |
+| `GET /api/health` | — | `{status:ok, interface:"notes.fpack/1"}`（就绪探针） |
 
 **合法**——Reader（授权 `book:abc123`）捕获：
 
 ```json
-POST /fp/v1/capture
-{ "interface_version": "notes.fpack/1", "caller": "018-book-reader",
-  "attempt_id": "<128-bit hex, 每次尝试新>",
+POST /api/fp/v1/capture
+{ "interface_version": "notes.fpack/1", "cred": "<256-bit hex>",
+  "attempt_id": "<每次尝试新>",
   "operation_id": "<128-bit hex, 跨重试稳定>",
-  "timeout_ms": 2000,
-  "body": { "source": { "book_id": "abc123", "book_version": "v3",
-             "author": "…", "quote": "原句原文…", "chapter": 7,
-             "locator": { "kind": "cfi", "v": 1, "value": "epubcfi(…)" } },
-             "text": "可编辑正文…" } }
-→ 200 { "note_id", "revision", "receipt": { "committed": true } }
+  "source_json": "{ \"book_id\": \"book:abc123\", \"book_version\": \"v3\", \"author\": \"…\", \"quote\": \"原句原文…\", \"chapter\": 7, \"locator\": { \"kind\": \"cfi\", \"v\": 1, \"value\": \"epubcfi(…)\" } }",
+  "text": "可编辑正文…" }
+→ 200 { "ok": true, "note": { "note_id": "n-N", "revision": 1, "title": "<quote 原句>",
+        "body": "<text>", "book_id": "book:abc123", "source": {…原文快照} },
+        "receipt": { "status": "committed" }, "replayed": false }
 ```
 
 **拒绝**（全部业务前、无写入）：
 
 | 样例 | 结果 |
 |---|---|
-| 无 `X-FP-Credential` 直连 | `permission_denied`（§2.5） |
+| 无 `cred` 直连 | `permission_denied`（§2.5） |
 | 凭据有效但书不在 `book_scopes` | `permission_denied`（错作用域） |
 | `operations` 未含 `update` 调 update | `permission_denied`（越操作） |
 | `interface_version: "notes.fpack/2"` | `unsupported_version` |
