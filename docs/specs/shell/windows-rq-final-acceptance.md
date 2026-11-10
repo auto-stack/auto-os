@@ -33,7 +33,7 @@
 | Todo attach（queue，UI077 交接） | **adopt + frame compose**，无 NotCovered——覆盖门拒绝已关闭 | T-04 td1 |
 | Video attach（remote） | **adopt + frame compose**（remote 真渲）；queue 臂拒绝=契约保持（vd1） | T-04 vd1/vd2 |
 | auto-edit attach | App Init + 14 actions + **frame_id 121..126 连续帧流** | T-03 ae1 |
-| 客户端故障隔离 | kill 客户端桌面存活继续帧 | T-06 t6 |
+| 客户端故障隔离 | **calc attach 确认后 kill 客户端 → 桌面存活并继续 [P725-FRAME]**（t6b 实证：adopt + frame compose → kill → ui-desktop 继续帧） | T-06 t6b |
 | 无泄漏收尾 | 桌面关闭 leftover=0（多轮） | observe/n-sweep |
 | 负控 | 错误端点 exit=1 具名错误 | negative.ps1 |
 
@@ -55,6 +55,7 @@
 | 项 | 状态 | owner |
 |---|---|---|
 | 7 个 Demo 工程构建失败（023/024/026/027/029/032/stylekit）——源缺陷 | 真实缺口 | UI Demo 源域（auto-ui 仓） |
+| 041-auto-edit 运行期 `use 模块解析失败`（P-15，PLAN-664，引用符号面落空） | 真实缺口（运行期警告） | UI Demo 源域 |
 | N=8 中 018/025/029 未 adopt（VM-PARKED/后端等待） | 具名待办 | OS066 战役后继/产品后端链 |
 | 017-chat native HTTP 后端组树生成失败（auto-web-contract links 冲突） | 真实缺口 | 生成器/auto-web 解析域 |
 | auto-edit 编辑/IME/弹层/保存、Todo 业务/Video 播放深测 | 具名待办 | 战役后继（真实 GUI 自动化边界） |

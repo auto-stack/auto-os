@@ -88,7 +88,7 @@ def main():
         "composes": len(composes),
         "frame_gap_ms": summary("frame_gap", [b["begin"] - a["begin"] for a, b in zip(frames, frames[1:])])
         if len(frames) > 1 else None,
-        "present_latency_ms": summary("present_latency", [f["present"] - f["begin"] for f in frames])
+        "present_latency_ms": summary("present_latency", [f["present"] - f["begin"] for f in frames if f["present"] > 0])
         if frames else None,
         "draw_end_latency_ms": summary("draw_end_latency", [f["draw_end"] - f["begin"] for f in frames if f["draw_end"] > 0])
         if frames else None,
