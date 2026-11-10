@@ -306,6 +306,12 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - **6/8 产品桌面嵌入运行**：calc/clock/charts/reader/monitor/photos 全部 attach 落地；帧合成 wid=1..4,6（wid2=152/wid3=89 连续帧流；静态品低帧正确）——**预算切片下无饥饿**（M-07/V-08 机制面正证）。N=8 映射 todo/video 两台 DG-2 具名待办（不缩分母）。
 - M-02 数据源就绪：`frame compose wid=N frame_id=k` 时间戳全量（下一轮算 p50/p95 帧间距）。
 
+### 2026-11-10 work 进展（goal round 10：PLAN-075 交付闭环——DG-2 井盖到手）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（075 消费闭环） / task_ids:T-04（战役基建齐备） / evidence:UI master c55aef9b（075 archive @ 9684ca5e + 披露）；auto-os-dev 同步完 / next_responsible_role:work（N=8 全量扫描 env=30000 + M 终值）
+- PLAN-075 交付闭环：T-04 独立评审 pass（新鲜复跑五档绿/ui::session 110/0/p074 1/1；diff 逐行核）；T-05 merge pass（ff-only 128cef27 on 22ba6192；canonical §1 attach 预算 env 发布；归档；组树具名持有披露——他会话 058 r2 簿记随索引入库已披露归属）。
+- OS063 消费：重编译产品扫设 `AUTO_BROKER_ATTACH_BUDGET_MS=30000`；todo/video 产品面挂覆盖缺口（归因已更正）。
+
 ## 10. 待澄清事项
 
 - **DG-1（2026-11-09 登记的唯一未决）**：外部 CLI 客户端→broker attach 5s 预算未达
