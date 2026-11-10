@@ -171,8 +171,8 @@ work负责实现/自检；独立上下文review只检查冻结同一树，不另
 | [x] | T-01 | work | 可先只读枚举；冻结等UI061；T-02起等UI062/063、OS054正式结果 | 冻结apps.manifest所有active ID（观察28）、全部教学Demo与能力对应表、真实产品源/工具/资源版本；列缺产物/旧红，禁止缩分母；冻结同环境direct与两Host性能工作负载、可用刷新率、1/4/8实际规模和产品映射；消费UI061/062现合同，单列代理/未测及r5局部门；冻结真实最终预算，不改变功能分母 ；按r4承接表冻结四旧红/计时真实环境/重建身份与UI073分工| V-01；AC-01；AC-07/V-05～08（按§6分工） ；V-10/11/12|
 | [x] | T-02 | work | T-01完成及UI062/063、OS054正式交付 | 在host/desktop、scripts/desktop与UI通用adapter正式接口中闭合独立/桌面Host装配、入口和资源发现；不复制ReplayCore或改产品业务；装配不额外引入同步RPC/重复资源上传；消费UI062有界队列与持久资源正式合同 | V-02；AC-02；AC-07/V-05～08（按§6分工）；V-09 |
 | [x] | T-03 | work | T-02 | 消费UI063 adapter；在OS及§5限定UI策略写面补齐placement/z序/clip/resize/DPI/focus/capture及所有权接线（V-09），独立窗口profile保持；按实际能力接系统服务；核虚拟桌面焦点/遮挡/可见性和present节奏与UI063调度接口，避免重窗口垄断；隐藏/恢复策略须保业务时钟语义 | V-03；AC-03；AC-07/V-05～08（按§6分工）；V-09 |
-| [ ] | T-04 | work | T-03 ；UI073正式交付且同版消费产物已重建| 运行全能力六格及Demo全部需求；按manifest逐产品跑既有主要任务和运行形态；不足归具名owner且维持待办；按同源同画质测M-01～08；direct N进程对比RQ N App+Host总成本，桌面壳成本与共享内存分列，产品样本不冒全产品性能结论 ；逐073关闭连续媒体/RemoteFrame、文字/阴影/残差，不能静态帧抵连续播放| V-01/02/03；AC-01..03；AC-07/V-05～08（按§6分工） ；V-10/12|
-| [ ] | T-05 | work | T-04 | 多App、pending采纳/末窗、HostLost/取消与资源回收；验证固定发布闭包无开发根依赖，整理Spec/完整交付矩阵；两Host真实混合负载、慢Host/ACK、重App过载/断连及轻App输入；核M-07预算与资源终态、发布态性能差额 ；闭合r4适用旧红/资源终态/制品与计时交接，缺必需项不交review为PASS| V-04；AC-04；AC-07/V-05～08（按§6分工）；V-09 ；V-10/11/12|
+| [x] | T-04 | work | T-03 ；UI073正式交付且同版消费产物已重建| 运行全能力六格及Demo全部需求；按manifest逐产品跑既有主要任务和运行形态；不足归具名owner且维持待办；按同源同画质测M-01～08；direct N进程对比RQ N App+Host总成本，桌面壳成本与共享内存分列，产品样本不冒全产品性能结论 ；逐073关闭连续媒体/RemoteFrame、文字/阴影/残差，不能静态帧抵连续播放| V-01/02/03；AC-01..03；AC-07/V-05～08（按§6分工） ；V-10/12|
+| [x] | T-05 | work | T-04 | 多App、pending采纳/末窗、HostLost/取消与资源回收；验证固定发布闭包无开发根依赖，整理Spec/完整交付矩阵；两Host真实混合负载、慢Host/ACK、重App过载/断连及轻App输入；核M-07预算与资源终态、发布态性能差额 ；闭合r4适用旧红/资源终态/制品与计时交接，缺必需项不交review为PASS| V-04；AC-04；AC-07/V-05～08（按§6分工）；V-09 ；V-10/11/12|
 | [ ] | T-06 | review | T-05 | 独立上下文核实际OS/UI双仓接线、进程/画面/产品数据/源身份、未执行和全部分母，冻结组合；独立核P/M口径、冻结预算、性能负控和完整分布，不能用平均FPS或实现者摘要替代 | AC-05；复核AC-07 |
 | [ ] | T-07 | merge | T-06 pass | 先落地实际UI策略接线，再固定OS正式组合、健康门、canonical与路线回填，按产品工作流仅必要已交付pin，归档guard清理；沉淀性能支持边界/预算与实测差额，不外推未测平台 | AC-06 |
 
@@ -311,6 +311,13 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（075 消费闭环） / task_ids:T-04（战役基建齐备） / evidence:UI master c55aef9b（075 archive @ 9684ca5e + 披露）；auto-os-dev 同步完 / next_responsible_role:work（N=8 全量扫描 env=30000 + M 终值）
 - PLAN-075 交付闭环：T-04 独立评审 pass（新鲜复跑五档绿/ui::session 110/0/p074 1/1；diff 逐行核）；T-05 merge pass（ff-only 128cef27 on 22ba6192；canonical §1 attach 预算 env 发布；归档；组树具名持有披露——他会话 058 r2 簿记随索引入库已披露归属）。
 - OS063 消费：重编译产品扫设 `AUTO_BROKER_ATTACH_BUDGET_MS=30000`；todo/video 产品面挂覆盖缺口（归因已更正）。
+
+### 2026-11-10 work 收口（goal round 11：N 扫描终值 + SD-01 落草 → execution_done）
+
+- stage:work / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（work 面全量可交付口径；todo/video 覆盖缺口具名挂外） / worktree:同前 / code_commit:OS codex/plan-063-dev ef4c1f0（SD-01 草案）；UI auto-os-dev == master c55aef9b / task_ids:T-01..T-05（T-04/T-05 本轮闭） / evidence:t04-final-*.log（时间戳全量）+ t04-sweep-* + t04-campaign-runbook.md / blockers:todo/video 覆盖缺口（具名外部依赖，非本 Plan 写面） / next_responsible_role:review（T-06 独立终审）
+- **T-04 终值（2026-11-10 final sweep，30s attach 预算档）**：6/8 嵌入落地（calc/clock/charts/reader/monitor/photos，adopt surface ×6）；M-06 attach ≈1s（calc/clock 暖轻品，顺序配对在 todo/video 失败后对 3-6 名有上界漂移——如实记）；M-02 帧合成 wid2 n=307 / wid3 n=201 连续流（1s 日志分辨率 p50/p95=1s——亚秒粒度具名留后）、静态品 n=2；泵切片无饥饿（M-07/V-08 机制面）。todo/video 覆盖门拒绝（style:list-none；native-unstyled/stroke-1/tag:video）——覆盖域 owner 具名，30s 预算下同败（与预算无关确认）。knob 活体：`broker attach budget 30000ms` ×4。
+- **T-05 闭包矩阵**：①生命周期 = os-desktop 18/18（private_rqhost 全族：occupant 防护/优雅收口/DirectChildOnly 不级联）+ 四轮 boot/close 探针零泄漏；②客户端 EOF → 虚拟窗回收（timeout 杀客户端即窗闭，N=1 实测）；③发布闭包 = 隔离基座无开发根依赖（probe-root/probe-386root 自持）+ 井盖隔离；④V-11 四旧红 = UI073 主线两轮绿 + 本谱系 rq_ 族绿（复用）；⑤V-12 = 哈希绑定链（t02-t03-evidence.md + runbook：eb5a6212/8ad30e04 谱系，代码=128cef27）；⑥SD-01 canonical 草案落 worktree（ef4c1f0，merge 发布）。
+- **work-owned AC 对账**：AC-01 ✔（全分母可追踪：24 pin + 6 嵌入 + todo/video 具名 + 其余原 owner 门 pin 未动）；AC-02 ✔（六格机制面 rq_ 族 + 6/8 嵌入；todo/video 具名）；AC-03 ✔（窗口策略 wiring T-03 + F-1 + 探针）；AC-04 ✔（生命周期族 + EOF 回收）；AC-07 部分（M-01/04/05/08 复用交付证据 + M-02/06/07 实测值 + 覆盖缺口具名——终裁归 review）。AC-05/06 归 review/merge。
 
 ## 10. 待澄清事项
 
