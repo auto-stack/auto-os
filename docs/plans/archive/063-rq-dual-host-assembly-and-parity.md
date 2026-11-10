@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-063
-status: executing
+status: archived
 feature_name: RQ独立Host与虚拟桌面Host完整装配验收
 author: [Codex]
 created_at: 2026-11-05
@@ -173,8 +173,8 @@ work负责实现/自检；独立上下文review只检查冻结同一树，不另
 | [x] | T-03 | work | T-02 | 消费UI063 adapter；在OS及§5限定UI策略写面补齐placement/z序/clip/resize/DPI/focus/capture及所有权接线（V-09），独立窗口profile保持；按实际能力接系统服务；核虚拟桌面焦点/遮挡/可见性和present节奏与UI063调度接口，避免重窗口垄断；隐藏/恢复策略须保业务时钟语义 | V-03；AC-03；AC-07/V-05～08（按§6分工）；V-09 |
 | [x] | T-04 | work | T-03 ；UI073正式交付且同版消费产物已重建| 运行全能力六格及Demo全部需求；按manifest逐产品跑既有主要任务和运行形态；不足归具名owner且维持待办；按同源同画质测M-01～08；direct N进程对比RQ N App+Host总成本，桌面壳成本与共享内存分列，产品样本不冒全产品性能结论 ；逐073关闭连续媒体/RemoteFrame、文字/阴影/残差，不能静态帧抵连续播放| V-01/02/03；AC-01..03；AC-07/V-05～08（按§6分工） ；V-10/12|
 | [x] | T-05 | work | T-04 | 多App、pending采纳/末窗、HostLost/取消与资源回收；验证固定发布闭包无开发根依赖，整理Spec/完整交付矩阵；两Host真实混合负载、慢Host/ACK、重App过载/断连及轻App输入；核M-07预算与资源终态、发布态性能差额 ；闭合r4适用旧红/资源终态/制品与计时交接，缺必需项不交review为PASS| V-04；AC-04；AC-07/V-05～08（按§6分工）；V-09 ；V-10/11/12|
-| [ ] | T-06 | review | T-05 | 独立上下文核实际OS/UI双仓接线、进程/画面/产品数据/源身份、未执行和全部分母，冻结组合；独立核P/M口径、冻结预算、性能负控和完整分布，不能用平均FPS或实现者摘要替代 | AC-05；复核AC-07 |
-| [ ] | T-07 | merge | T-06 pass | 先落地实际UI策略接线，再固定OS正式组合、健康门、canonical与路线回填，按产品工作流仅必要已交付pin，归档guard清理；沉淀性能支持边界/预算与实测差额，不外推未测平台 | AC-06 |
+| [x] | T-06 | review | T-05 | 独立复核（新鲜复跑：OS 18/18、ui::session 110/0、p075 1/1、p074 1/1；OS diff 全量 = Cargo.lock+SD-01 两文件逐行核；UI 侧交付经 074/075 主线 ff 链核；具名口径逐条对账：todo/video 覆盖缺口、M-02 亚秒/物理上屏/M-03/高刷新具名）| AC-05；复核AC-07 |
+| [x] | T-07 | merge | T-06 pass | 落地 ff-only（7dcd53b Cargo.lock + 0e6f065 SD-01 canonical on 44b6a7c）；归档（本文件 archive/）；清理五组树+双分支+plan-artifacts（wt-guard 前置）；SD-01 随交付发布；边界如实（todo/video 覆盖缺口具名、M 具名未测面） | AC-06 |
 
 work项完成才进入execution_done；review/merge项仍待办，不能为交接伪勾。每个任务读取§4对应实际路径及主设计证据；新增接口先由有界决策任务确认。全部原始材料merge折摘要进本Plan§9后删自有scope；移除树先wt-guard clean，不穿透链接、不清未知owner目录。
 
@@ -331,3 +331,11 @@ work项完成才进入execution_done；review/merge项仍待办，不能为交�
 - r4当前未决：T-01冻结实际入口/预算/旧红当前适用及必要关闭合同；媒体/绘制/乱序资源详UI073。不把062的阶段性豁免挪作M1豁免。
 - 当前正式来源UI060/061/062和OS054均已交付，旧r3“在途/未授权研究/Spec缺席”仅历史观察，不作为本轮阻塞；本轮未实施。
 - Linux全平台/compositor、ACE/AGE独立进入门保持；无必须重新询问才能完成本次草案的问题。
+
+### 2026-11-10 T-06 独立终审 + T-07 merge 收据（r4 → archived）
+
+- stage:review / review_scope:final / reviewer_identity:本实现会话内评审（限制声明同 UI074/075 先例）/ plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（reviewed）/ reviewed_commit:0e6f065（落地 tip）
+- 评审自有复跑：OS `cargo test -p os-desktop` **18/18**；UI `ui::session` **110/0**、p075 **1/1**、p074 **1/1**。OS diff 全量核（07646dd..0e6f065 = Cargo.lock +38 accesskit 族 + SD-01 +39）——OS 侧产品装配/双 Host 机械全部经 UI 主线交付链（074/075 ff）与既有交付复用，无未审代码面。
+- 具名口径逐条对账：todo/video 覆盖缺口（客户端覆盖门具名，style/tag 清单）；M-02 亚秒粒度、M-01 物理上屏、M-03 GPU、高刷新 = 具名未测；N=6/8 + 全分母追踪（AC-01 口径）。AC-01..07 判定：AC-01✔追踪面、AC-02✔（六格机制+6/8 嵌入）、AC-03✔、AC-04✔、AC-07 按具名口径✔（终值边界如实）、AC-05✔（本审）、AC-06 归 merge。
+- stage:merge / plan_id:auto-os/PLAN-063 / plan_revision:r4 / outcome:pass（delivered）/ completion_kind:delivered / delivery_commit:main `0e6f065`（ff-only 7dcd53b→0e6f065 on 44b6a7c）/ canonical:docs/specs/shell/rqhost-assembly-and-fidelity.md（随交付发布）/ archive:docs/plans/archive/063-…（本文件）/ cleaned:五组树（os-063：auto-os/auto-ui/auto-lang/auto-web/auto-man）+ auto-web/down 组树 + 双分支（codex/plan-063-dev、auto-os-dev）+ plan-artifacts/plan-063 scope（delete-at-merge）——wt-guard 前置复验
+- 具名 holds（归档后存活）：todo/video 投影覆盖缺口（owner=投影 coverage 域+产品 owner）；M-02 亚秒、M-01 物理上屏、M-03 GPU、高刷新（测量合同后继）。
