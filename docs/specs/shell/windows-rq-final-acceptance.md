@@ -1,11 +1,11 @@
-# Windows RQ 最终验收（PLAN-066 草案）
+# Windows RQ 最终验收（PLAN-066）
 
-本页是 AutoOS 桌面域 **Windows 完整 RQ 最终验收当前结论** 的 canonical 草案：
+本页是 AutoOS 桌面域 **Windows 完整 RQ 最终验收当前结论** 的 canonical 规范：
 完整分母（能力/Demo/产品）、六格/任务/性能的逐 ID 实证状态、具名缺口与
 989 消费入口。来源：PLAN-066（r1）实施与实测（2026-11-10），承接
 [rqhost 装配与保真](rqhost-assembly-and-fidelity.md) 与 UI077
 [产品投影覆盖](windows-rq-product-coverage.md) 的 OS 消费面。
-**本草案仅 worktree 起草态，发布由 PLAN-066 merge 审定后落地。**
+未在本页写明的行为不视为已实现。
 
 ## 1. 完整分母（冻结）
 
