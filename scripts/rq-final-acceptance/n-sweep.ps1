@@ -5,14 +5,16 @@
 param(
     [ValidateSet(1, 4, 8)] [int]$N = 1,
     [int]$Seconds = 60,
-    [string]$Out = 'D:\autostack\plan-artifacts\plan-066\auto-os\sweep'
+    [string]$Out = 'D:\autostack\plan-artifacts\plan-068\auto-os\sweep',
+    [string]$Root = 'D:\autostack\.wt\os-068\auto-os',
+    [string]$ProbeRoot = 'D:\autostack\plan-artifacts\plan-068\auto-os\probe-root',
+    [string]$MpvLib = 'D:\autostack\tools\mpv\libmpv-2.dll'
 )
 $ErrorActionPreference = 'Stop'
-$root = 'D:\autostack\.wt\os-066\auto-os'
-$target = Join-Path $root '.auto/desktop-runtime/target/debug'
+$target = Join-Path $Root '.auto/desktop-runtime/target/debug'
 $desktop = Join-Path $target 'ui-desktop.exe'
 $cli = Join-Path $target 'auto.exe'
-$probe = 'D:\autostack\plan-artifacts\plan-066\auto-os\probe-root'
+$probe = $ProbeRoot
 $ts = Get-Date -Format 'yyyyMMdd-HHmmss'
 $dir = Join-Path $Out "N$N-$ts"
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
@@ -37,13 +39,13 @@ $apps = switch ($N) {
     ) }
 }
 
-$pipe = "autodesk-broker-os066-n$N-ts"
+$pipe = "autodesk-broker-os068-n$N-ts"
 $env:AUTO_OS_ROOT = $probe
 $env:AUTOOS_BROKER_PIPE = $pipe
 $env:AUTO_FRAME_BENCH = '1'
 $env:AUTO_DESKTOP_RQHOST = '1'
 $env:AUTO_386_APP_ROOT = Join-Path $dir '386root'
-$env:AUTO_MPV_LIB = 'D:\autostack\tools\mpv\libmpv-2.dll'
+$env:AUTO_MPV_LIB = $MpvLib
 New-Item -ItemType Directory -Force -Path $env:AUTO_386_APP_ROOT | Out-Null
 
 $dp = Start-Process -FilePath $desktop -ArgumentList '--apps-dir', (Join-Path $probe 'apps') -WorkingDirectory $root -RedirectStandardError (Join-Path $dir 'desktop.log') -PassThru -WindowStyle Hidden

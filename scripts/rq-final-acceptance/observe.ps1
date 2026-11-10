@@ -9,6 +9,7 @@ param(
     [string]$AppDir,
     [string]$AppId,
     [string]$Pipe,
+    [string]$OsRoot,
     [switch]$DryRun
 )
 
@@ -27,15 +28,16 @@ $cli = Join-Path $targetRoot 'debug/auto.exe'
 if (-not (Test-Path -LiteralPath $desktop -PathType Leaf)) { throw "ui-desktop artifact missing: $desktop" }
 
 if ($Minimal) {
-    if (-not $ManifestRoot) { $ManifestRoot = 'D:\autostack\plan-artifacts\plan-066\auto-os\probe-root' }
+    if (-not $ManifestRoot) { $ManifestRoot = 'D:\autostack\plan-artifacts\plan-068\auto-os\probe-root' }
     $osRoot = $ManifestRoot
     if (-not (Test-Path -LiteralPath (Join-Path $osRoot 'apps.manifest') -PathType Leaf)) { throw "minimal manifest missing: $osRoot/apps.manifest" }
     $appsDir = Join-Path $osRoot 'apps'
 } else {
-    $osRoot = 'D:\autostack\auto-os'
+    if (-not $OsRoot) { $OsRoot = 'D:\autostack\.wt\os-068\auto-os' }
+    $osRoot = $OsRoot
     $appsDir = Join-Path $osRoot 'apps'
 }
-if (-not $Pipe) { $Pipe = "autodesk-broker-os066-$PID" }
+if (-not $Pipe) { $Pipe = "autodesk-broker-os068-$PID" }
 $env:AUTO_OS_ROOT = $osRoot
 $env:AUTOOS_BROKER_PIPE = $Pipe
 $env:AUTO_FRAME_BENCH = '1'
