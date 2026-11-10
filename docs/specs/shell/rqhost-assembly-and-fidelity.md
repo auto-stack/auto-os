@@ -22,16 +22,17 @@ PLAN-074/075 修复交付。未在本页写明的行为不视为已实现。
 
 ## 2. 验收边界与具名缺口（不视为通过）
 
-- 产品嵌入扫描（隔离基座，2026-11-10）：**6/8 落地**（calc/clock/charts/reader/
-  monitor/photos；M-02 帧合成 wid 分布——timer 品 n=307/201 连续流、静态品低帧，
-  泵预算切片无饥饿）。**todo/video 不进嵌入运行**：客户端覆盖门即拒（禁静默
-  错绘）——todo 缺 `style:list-none`；video 缺 `style:native-unstyled,
-  style:stroke-1, tag:video`。owner = 投影 coverage 域 + 产品 owner；缺口关闭前
-  两品嵌入运行不可达（与 attach 预算无关）。
-- M-01 物理上屏终点、M-02 亚秒粒度、M-03 GPU 时间、高刷新适用面 = 具名未测
-  （rq-execution-input-and-host-services.md §3.1 同律延续）。
-- 测量口径：1s 时间戳日志为 M-02 上限分辨率；亚秒帧间距需 ms 级时间戳管道
-  （后继测量合同）。
+- 产品嵌入扫描（隔离基座）：历史 6/8 落地（calc/clock/charts/reader/monitor/
+  photos；timer 品连续流、静态品低帧、泵预算切片无饥饿）。**todo/video 覆盖
+  缺口已由 UI077 关闭（2026-11-10）**：Todo 走 queue/Auto 放行（list-none），
+  真实 attach 实证 adopt+frame compose；Video 产品公开形态=remote（queue 臂
+  保持覆盖门拒绝=契约，防静默错绘）——详见
+  [产品投影覆盖](windows-rq-product-coverage.md) 与 [最终验收](windows-rq-final-acceptance.md)。
+- M-01 物理上屏终点、M-03 GPU 独占时间、高刷新适用面（本机 59/60Hz）= 具名
+  pending；M-02 亚秒粒度已实证（`[P725-FRAME]` ms 单调时钟，AUTO_FRAME_BENCH=1，
+  OS066 T-02/05）。代理终点=present/draw_end（呈现真相），物理终点分列不冒签。
+- 测量口径：1s 日志上限分辨率已被 ms 级帧时间戳管道取代（scripts/
+  rq-final-acceptance/observe.ps1 + metrics.py，OS066 交付）。
 
 ## 3. 重建身份
 
