@@ -34,12 +34,15 @@ PLAN-074/075 修复交付。未在本页写明的行为不视为已实现。
   40s 连续 frame compose 358 帧（VM×desktop-RQ 六格形态成立）。Todo 真实
   API 后端（Rust split over HTTP 17815）Init park 832-871ms → resumed，
   AddTodo/ToggleTodo 经 back-proxy HTTP 持久到 SQLite（cold 重开读回一致）。
-- M-01 物理上屏终点、M-03 GPU 独占时间、高刷新适用面（本机 59/60Hz）= 具名
-  pending；M-02 亚秒粒度已实证（`[P725-FRAME]` ms 单调时钟，AUTO_FRAME_BENCH=1，
-  OS066 T-02/05）。代理终点=present/draw_end（呈现真相），物理终点分列不冒签。
-  **R-06 探针耗尽（2026-11-11）**：ETW present-photon（WPT GPUView-Present
-  profile 10.0.26100）需提权（Access denied 0x80070005，sudo 禁用）；
-  nvidia-smi NVML 不可用；无采集设备——物理终点子门保持 pending。
+- M-02 亚秒粒度已实证（`[P725-FRAME]` ms 单调时钟，AUTO_FRAME_BENCH=1，
+  OS066 T-02/05）。代理终点=present/draw_end（呈现真相）。
+  **R-06 探针耗尽（2026-11-11，历史）**：ETW present-photon（WPT
+  GPUView-Present profile 10.0.26100）需提权（Access denied 0x80070005，
+  sudo 禁用）；nvidia-smi NVML 不可用；无光学采集设备。**修约后结论
+  （PLAN-068 §0 用户裁定）**：物理上屏以 logman 用户态 ETW DWM-Core 呈现
+  节奏交付（Task9/10 present 2404 事件、1199 帧 14-18ms=60Hz vsync）；
+  高刷适用面按当前环境 60Hz 承诺；光子终点光学采集不作必需项——R-06 物理
+  上屏/高刷子门按修约关闭（GPU 独占计时 NVML 环境不可得仍如实具名）。
 - 测量口径：1s 日志上限分辨率已被 ms 级帧时间戳管道取代（scripts/
   rq-final-acceptance/observe.ps1 + metrics.py，OS066 交付）。
 

@@ -32,7 +32,7 @@
 | R-03 | chat links 保守卫（auto-lang `f9738f0fe` source_owner.rs check_web_group_consistency + 单测）；组 env 正控生成成功 | 关闭 |
 | R-04 | N8 8/8 adopt（桌面宿主 attach：018/025/029 由 VM-PARKED 转 adopt；Init 后端就绪链 park→resume 实证） | 关闭（业务数据面 T-07/08 深测） |
 | R-05 | Todo 持久业务闭环（AddTodo→ToggleTodo→SQLite 落盘读回→冷重开一致）；Video mpv 深测待 T-11/R-06 门后窗口 | 部分关闭（Video 待） |
-| R-06 | release P/M 终值（sweep-rel N1/N4/N8）；物理上屏/GPU 独占/高刷=代理 draw_end，物理终点子门 pending | pending（设备门） |
+| R-06 | release P/M 终值（sweep-rel N1/N4/N8）；物理上屏=ETW DWM 呈现节奏实证（logman 用户态采集 Microsoft-Windows-Dwm-Core，Task9/10 present 2404 事件、1199 帧 14-18ms=60Hz vsync）；高刷按当前环境 60Hz 承诺 | 关闭（PLAN-068 §0 修约口径） |
 | R-07 | 驱动参数化（build-demos/observe/n-sweep 显式 roots/exe/out，os-066 硬编码清除）+ 自测 test_rq_complete_acceptance.py 全绿 | 关闭 |
 
 ## 3. 性能终值（T-09 release 实测，2026-11-11 独立显示环境）
@@ -64,9 +64,10 @@
 - 证据：plan-artifacts/plan-068/auto-os/（demo-build-t06.csv、sweep-rel/、
   budget-freeze.md、ae14-fixed.err、td1..td3-*.log、observe-041/、r06-probe/）
   + 本 Plan §9 收据。
-- 限制：物理上屏/高刷 pending（R-06 探针耗尽：WPT present 需提权、NVML 不可用、
-  无采集设备）；Video 真实播放深测待媒体环境；041 真实字符插入受 canvas
-  编辑器 MCP 边界限制（T-11 裁定证据充分性）。
+- 限制：物理上屏按 PLAN-068 §0 修约以 ETW DWM 呈现节奏关闭（探针历史：
+  WPT present 需提权、NVML 不可用、无光学采集设备）；高刷适用面按当前环境
+  60Hz 承诺、光子终点光学采集不作必需项（修约）。Video 真实播放深测待媒体
+  环境；041 真实字符插入受 canvas 编辑器 MCP 边界限制（T-11 裁定证据充分性）。
 - **989 C-01..05 逐渠道交接**：
   - C-01 UI 生成工程独立交付：本包交 T-06 同源重建三件套（release hash
     68A0CC11/F039FE91/D7CA31EB）+ demo 矩阵 35/35；独立移根/缺失依赖反控由
