@@ -1,15 +1,19 @@
 {
-  "last_covered_plan_id": 55,
-  "timestamp": "2026-11-07T04:20:00Z",
-  "covered_commit": "463c26a8037a64263a31546c3c3650f5ea0d9ad6",
-  "command": "check-app-submodules.ps1 (healthy, manifest_repo_entries=27, missing_pac_at=0, exit ok) + verify-app-links.py (assert Incorrect gitlink apps/auto-calc, exit nonzero)",
+  "last_covered_plan_id": 68,
+  "timestamp": "2026-11-11T11:07:16Z",
+  "covered_commit": "b3ecbdba4f2b17ef13e7ccff93d74083708f7798",
+  "command": "check-app-submodules.ps1 + verify-app-links.py (auto-os adopted batch legs, main single instance)",
   "legs": [
     "check-app-submodules",
     "verify-app-links"
   ],
+  "results": {
+    "check-app-submodules": "EXIT=0 manifest_repo_entries=27 missing_pac_at=0 (uninitialized submodules = documented default, skipped by pac.at gate)",
+    "verify-app-links": "AssertionError Incorrect gitlink apps/auto-calc (exit nonzero)"
+  },
   "new_reds": [],
   "known_reds_seen": [
-    "VERIFY-APP-LINKS-STALE: import-time snapshot v0.6-app-import.json (auto-lang Plan 775 era) vs evolved reader/calc pins — assert at apps/auto-calc, same identity as 2026-11-05 receipt; not caused by PLAN-054 (054 touched only the 8 target gitlinks); fix-forward owner = verify-app-links table owner"
+    "VERIFY-APP-LINKS-STALE — Incorrect gitlink apps/auto-calc; pre-existing stale verifier table, unchanged shape vs PLAN-055/060 receipts, owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
   ],
-  "note": "due check triggered by 48h+ and PLAN-054 merge (eba6fd3); main checkout 8 target submodules clean/detached at final pins; foreign docs WIP preserved per user ruling"
+  "notes": "due check after PLAN-068 merge (receipt age >48h with merges); triage=known-reds-only, no fix-forward needed"
 }
