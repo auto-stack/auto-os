@@ -28,9 +28,18 @@ PLAN-074/075 修复交付。未在本页写明的行为不视为已实现。
   真实 attach 实证 adopt+frame compose；Video 产品公开形态=remote（queue 臂
   保持覆盖门拒绝=契约，防静默错绘）——详见
   [产品投影覆盖](windows-rq-product-coverage.md) 与 [最终验收](windows-rq-final-acceptance.md)。
+- **PLAN-068 追加（2026-11-11）**：041-auto-edit（Demo）desktop-RQ attach 实证
+  ——探针 manifest 9+041=10 registry 条目，`[VM-PARKED] Init park HttpRequest
+  1.5-1.8s → resumed`（后端就绪链），`[plan060] adopt surface 480x320`，
+  40s 连续 frame compose 358 帧（VM×desktop-RQ 六格形态成立）。Todo 真实
+  API 后端（Rust split over HTTP 17815）Init park 832-871ms → resumed，
+  AddTodo/ToggleTodo 经 back-proxy HTTP 持久到 SQLite（cold 重开读回一致）。
 - M-01 物理上屏终点、M-03 GPU 独占时间、高刷新适用面（本机 59/60Hz）= 具名
   pending；M-02 亚秒粒度已实证（`[P725-FRAME]` ms 单调时钟，AUTO_FRAME_BENCH=1，
   OS066 T-02/05）。代理终点=present/draw_end（呈现真相），物理终点分列不冒签。
+  **R-06 探针耗尽（2026-11-11）**：ETW present-photon（WPT GPUView-Present
+  profile 10.0.26100）需提权（Access denied 0x80070005，sudo 禁用）；
+  nvidia-smi NVML 不可用；无采集设备——物理终点子门保持 pending。
 - 测量口径：1s 日志上限分辨率已被 ms 级帧时间戳管道取代（scripts/
   rq-final-acceptance/observe.ps1 + metrics.py，OS066 交付）。
 

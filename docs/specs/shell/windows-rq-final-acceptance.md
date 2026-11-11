@@ -53,12 +53,12 @@
 
 | 项 | 状态 | owner |
 |---|---|---|
-| 7 个 Demo 工程构建失败（023/024/026/027/029/032/stylekit）——源缺陷 | 真实缺口 | UI Demo 源域（auto-ui 仓） |
-| 041-auto-edit 运行期 `use 模块解析失败`（P-15，PLAN-664，引用符号面落空） | 真实缺口（运行期警告） | UI Demo 源域 |
-| N=8 中 018/025/029 未 adopt（VM-PARKED/后端等待） | 具名待办 | OS066 战役后继/产品后端链 |
-| 017-chat native HTTP 后端组树生成失败（auto-web-contract links 冲突） | 真实缺口 | 生成器/auto-web 解析域 |
-| auto-edit 编辑/IME/弹层/保存、Todo 业务/Video 播放深测 | 具名待办 | 战役后继（真实 GUI 自动化边界） |
-| release 档性能终值、物理上屏/GPU 独占/高刷 | 具名待办/pending | OS066 终审后继 |
+| 7 个 Demo 工程构建失败（023/024/026/027/029/032/stylekit）——源缺陷 | **已关闭（PLAN-068 T-04/T-06）**：023/024/026/029/032 修复+027 环境消解+stylekit 库工程归类；T-06 矩阵 35/35 应用格绿 | UI Demo 源域（auto-ui 仓） |
+| 041-auto-edit 运行期 `use 模块解析失败`（P-15） | **已关闭（PLAN-068 T-04/T-05）**：VM use-loader 识别 `{ package` 块（非文件系统形态静默）；041 实机无 AUTO-USE-DIAG | UI Demo 源域 |
+| N=8 中 018/025/029 未 adopt（VM-PARKED/后端等待） | **已关闭 adopt（PLAN-068 T-05/T-08）**：N8 8/8 adopt（release）；Init 后端就绪链 park→resumed 实证（Todo 真实 API 后端 850ms 恢复）；业务数据面深测绑定 T-07/T-08 | OS068 战役后继 |
+| 017-chat native HTTP 后端组树生成失败（auto-web-contract links 冲突） | **已关闭（PLAN-068 T-05）**：source_owner 保守卫（异组 AUTO_WEB_SOURCE_ROOT 具名拒绝）+ 单测；组 env 正控生成成功 | 生成器/auto-web 解析域 |
+| auto-edit 编辑/IME/弹层/保存、Todo 业务/Video 播放深测 | Todo 业务闭环已交（PLAN-068 T-08：AddTodo→Toggle→SQLite 落盘→冷重开）；041 保存/重开闭环已交（T-07）；041 编辑/IME 真实字符插入与 Video 真实播放深测留 T-11/R-06 门后窗口 | 战役后继 |
+| release 档性能终值、物理上屏/GPU 独占/高刷 | release P/M 数据已交（PLAN-068 T-09 N1/N4/N8）；**物理上屏/高刷保持 pending**（R-06 设备门：WPT present 需提权、NVML 不可用、无采集设备） | OS068 终审后继 |
 
 ## 4. 989 消费入口
 
