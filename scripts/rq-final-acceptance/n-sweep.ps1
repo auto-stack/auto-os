@@ -8,10 +8,11 @@ param(
     [string]$Out = 'D:\autostack\plan-artifacts\plan-068\auto-os\sweep',
     [string]$Root = 'D:\autostack\.wt\os-068\auto-os',
     [string]$ProbeRoot = 'D:\autostack\plan-artifacts\plan-068\auto-os\probe-root',
-    [string]$MpvLib = 'D:\autostack\tools\mpv\libmpv-2.dll'
+    [string]$MpvLib = 'D:\autostack\tools\mpv\libmpv-2.dll',
+    [ValidateSet('debug', 'release')] [string]$Config = 'debug'
 )
 $ErrorActionPreference = 'Stop'
-$target = Join-Path $Root '.auto/desktop-runtime/target/debug'
+$target = Join-Path $Root ".auto\desktop-runtime\target\$Config"
 $desktop = Join-Path $target 'ui-desktop.exe'
 $cli = Join-Path $target 'auto.exe'
 $probe = $ProbeRoot
