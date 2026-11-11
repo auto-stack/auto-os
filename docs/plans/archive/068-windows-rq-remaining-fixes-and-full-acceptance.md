@@ -1,0 +1,254 @@
+---
+plan_id: PLAN-068
+status: archived
+feature_name: Windows完整RQ剩余缺陷修复与全量功能性能终验
+author: [Codex]
+created_at: 2026-11-10
+updated_at: 2026-11-11
+plan_revision: 1
+current_step: 10
+total_steps: 13
+depends_on: [auto-os/PLAN-066, auto-ui/PLAN-077, auto-ui/PLAN-073, auto-lang/PLAN-1003]
+supersedes_spec_components: [docs/specs/shell/windows-rq-final-acceptance.md, docs/specs/shell/rqhost-assembly-and-fidelity.md]
+new_spec_components: [docs/specs/shell/windows-rq-complete-delivery.md]
+touched_goals: []
+affects: [windows-rq-m1, all-demos, all-products, fidelity, native-input, rq-performance]
+---
+
+# PLAN-068：Windows完整RQ剩余修复与终验
+
+## 0. 变更摘要
+
+承接已归档[OS066](archive/066-windows-rq-final-parity-and-performance.md)的**有限交付及AC-02 partial**，关闭7个Demo构建失败、041-auto-edit运行/业务、017-chat后端、N8三未adopt和剩余六格/产品/最终性能取证。本合同完成必须原Windows完整RQ目标真实成立；没有“归档但必需项继续pending”的完成例外，不用具名owner代正式关闭。
+
+**2026-11-11 用户修约（R-06 剩余子门）**：用户明确裁定将「高刷 >60Hz 适用面实证」与「严格光子终点光学采集」两项从本包原支持面收缩——原 R-06 物理上屏/高刷子门调整为：**物理上屏以 ETW DWM-Core 呈现节奏（60Hz vsync 实证，logman 用户态采集）为交付证据；高刷适用面按当前环境（60Hz 上限）只承诺 60Hz 支持，不因环境缺 >60Hz 实证而阻断计划完成；光子终点以 DWM 呈现事件为准，光学采集不作为必需项**。修约依据：plan §5.4「高刷范围不能因本机60Hz自动删掉」的替代路径——用户裁定收窄承诺范围（非删格，是明确修约），保物理上屏可观测性（ETW 证据）而免除光学采集/高刷设备的必需性。
+
+**2026-11-11 用户修约（§10.11 五项裁定，"按推荐组合"）**：F-3a（M-04 字节级计数器）以已证机制面（稳定重复帧 builds=0/present=-1 零重绘零上传 + compose slot=0/1 双槽在途≤2）关闭，字节级测量列具名边界（[P725-FRAME] 无字节字段）；F-3b（P-03 replay p95）以 release direct/RQ present 配对数据（direct calc p50=4ms/p95=15.5ms vs N1 desktop-RQ p50=40/p95=229，测量语义分层具名：App swapchain vs Host 混成+surface）关闭，replay harness 列具名边界（盘点确认不存在）；F-3c（M-01 ≤100ms 原生输入门）以 12 轮 MCP 协议面分布（dispatch p50≈112ms 具名、todos 2→14 逐轮业务响应、input→帧双峰 0.5/1.9s=tick 相位量化）关闭，原生输入通道列具名边界；F-4a（Video 桌面宿主形态深测）按已证机制面（demo 030 back 合同→媒体服务自动生成→E:\Video 14 真实文件加载→选片 is_playing 状态机→音频端点在案）+ 具名边界（嵌入 MCP bind 9388..9398 FATAL + surface 未 adopt 两发现、seek 原生通道、N8 video 277 帧=空库待机渲染非播放的口径修正）修约关闭；F-4b（auto-video 产品后端合同缺失）**具名移交 auto-video owner**（owner=auto-video 产品仓 owner、闭合条件=实现媒体扫描/流服务 back 合同并交付，登记于 SD-03/989 交接，不空挂），本包按 demo 机制面+边界关闭。依据：与 R-06 修约同构——owner 级新工具/后端实现超出本包有界修复面，修约为用户专属裁定权；修约保机制面证据与具名边界，不假绿、不删格。
+
+本轮仅新立r1、0/13；不施工/编译/GUI/性能/安装/清理/建树/改gitlink/提交/tag或创建代理。1003负责调试策略C落地，本包负责当前UI/iced/wgpu RQ完整产品结果，[989](../../../auto-lang/docs/plans/989-split-refactor-joint-delivery-and-tag-readiness.md)只核最终治理+RQ组合；不重开066或代ACE/AGE迁移。
+
+## 1. 目标
+
+- G1：全能力、全部真实Demo/manifest active产品逐ID的VM/Rust×direct/standalone-RQ/desktop-RQ六格构建、运行和真实任务有完整来源、oracle及明确结果，原direct/Rust红先修，不据此删格。
+- G2：修已知生产缺口，完整客户端区视觉/布局/输入/IME/资源/媒体/业务/持久化/寿命与direct一致；App不自渲染，Host仍调用现有iced/wgpu。
+- G3：release档按冻结预算实测P-01～04与M-01～08，1/4/8 App完整adopt/真实任务/公平/成本；物理上屏、GPU计时和原承诺高刷新适用面均有真实证据，缺环境保持未完成。
+- G4：当前工具链/所有App/两Host/服务资源在1003正式C默认下可重建/移根/运行，独立终审及正式Spec/清理后给989完整收据，非“可验证面”替全部能力。
+
+非目标：Linux/OS062、自有Wayland compositor、ACE/AGE新引擎切换、全产品新业务、通用安装器/新测试平台、重开旧计划、全历史债清零、扩充新平台。修复限原RQ承诺与066具名缺口；重大新语言/架构需求须有界定位后正式修订/owner合同，保持当前门未过。
+
+## 2. 架构方案
+
+现有CLI/生成SDK→真实Demo/产品源→同版VM/Rust与三渲染形态→两Host共享replay/资源/输入→逐ID视觉/业务/数据oracle→同环境direct配对性能/故障负控→独立终审→正式完整交付Spec→989消费。
+
+| 条件 | 可先做 | 必须等什么 |
+|---|---|---|
+| 066/077/073 | 已交有限结果；T-01盘点/T-02有界根因可先 | 复用须核对应源码/工具/模式/输入/断言身份，旧attach/debug样本不冒完整产品或release终值 |
+| 语言1003 | 本包T-01～05可盘点、准备和有限修复/机制探针 | T-06最终候选重建、T-07～09正式六格/性能必须等C正式delivery/Spec；1003不等本包，无循环 |
+| UI068/OS067/产品活动owner | 只协调真实共享接口和当前WIP，复制零份业务实现 | Reader实际依赖UI068时只消费已正式交付接面并在T-02绑定；OS067 Notes FeaturePack新业务不自动作全包前置。既有功能的缺口仍由本包/正式owner交付，不能读WIP冒过门 |
+| 设备与预算 | T-03冻结实际方案/资源/负控/独占窗口，最多两种既有测量候选 | 原必须的物理上屏/GPU/刷新率缺条件不执行正式测量、不填PASS；不自行降为仅present代理/60Hz |
+| 989 | 消费本包完整交付及1003治理/必需渠道结果 | 989不成为本包前置，不接本包剩余生产修复，不以066归档解除D-RQ |
+
+主实施树拟`D:/autostack/.wt/os-068/auto-os`、分支`codex/plan-068-dev`；需要改UI/Man/Web/语言时同组一仓一树，按真实触面单写、独立提交与正式交付。产品在`D:/autostack/<产品仓名>`既有独立clone按当地规约单写，OS组合检出只消费已交付pin；不在apps/改业务、不切他人WIP、不建junction/symlink。本轮只写主计划和跨仓设计/路线指针。
+
+## 3. 技术栈
+
+现有Rust/iced/wgpu、VM/A2R、OS桌面/两Host公共入口、RQ媒体与像素/资源oracle、真实OS输入及产品数据读回、已有PowerShell/Python驱动。只补现有链的观测/可移根参数/任务断言；不新造渲染器、ABI、输入栈或万能自动化平台。
+
+## 4. 需求分析与背景调查
+
+2026-11-10用户明确要求本剩余修复/验收正式立计划，与C落地分包并同步989/路线，暂不实施。无新数值预算/模型/自动续跑授权，不创建代理/其他聊天。OS无spec overview，直接读`shell/windows-rq-final-acceptance.md`、`rqhost-assembly-and-fidelity.md`、UI `runtime/rq-fidelity-contract.md`与资源/运行Spec。设计依[OS Design04](../design/04-rqhost-platform-and-compositor.md)及[UI完整保真](../../../auto-ui/docs/design/autoui/renderqueue-complete-fidelity.md)，RQ子路线负责调度，当前目标不降。
+
+当前源：OS主线`253deb9f3d560e16aa84de35f09bfeccb4d32e57`，066正式实现b0bcd95；UI077 delivery=fa006603，UI现主线8d289105（含AGE UI078调查，非本包修复证据）；语言df190c1f。以下为只读规划基面，不是正式被测候选。关键SHA256：OS final Spec=`8b6bdc92f97ee2ef18f4988ec743fcec861a7bc94bc67db968b8c48633514e51`；metrics.py=`a0d0a333b44188d9a0113f15bad1d3e383b40b40264dda24ebe1d12588d52061`；build-demos.ps1=`d2a10dbe40362debeba2fd16a1f7221adc3fb5199ae3fcb4cef9507aa9e8540b`；UI rq-fidelity-contract=`f3aef37bf4294ceca2a09a401906f332d8af0b39586a1ca246efa39e94a69df4`。
+
+### 剩余义务与唯一关闭责任
+
+| ID | 066正式记录的缺口 | 本包任务/修复owner与关闭证据 |
+|---|---|---|
+| R-01 | 023-realworld/024-charts/026-database/027-file-manager/029-photo-gallery/032-handler-async-probe/stylekit构建失败 | T-02判定真实模式/源/工具偏斜→T-04在UI Demo源或实际公共生成owner有限修复；原功能保留，7项全部required形态构建/运行绿 |
+| R-02 | 041-auto-edit运行期use解析P-15，编辑/IME/弹层/保存未深测 | T-04修实际源码/解析接线；T-07三形态×两执行器完整编辑任务/中文IME/保存冷重开及客户区对照，不以连续帧流证明编辑器可用 |
+| R-03 | 017-chat后端组树生成auto-web-contract links冲突 | T-02/05核依赖真实source身份/锁/生成器；修Web/生成/编排唯一owner，不删links守卫/改包名绕冲突；真实后端任务、失败恢复与读回 |
+| R-04 | N8的018-book-reader/025-sys-monitor/029-photo-gallery未adopt（VM-PARKED/后端等待等） | T-02/05真实init/API/异步/队列根因，8/8都adopt且可交互/业务完成；UI068仅所需真实接口作任务前置，不靠加超时/删产品/静态空帧冒成功 |
+| R-05 | 全产品六格及Todo业务/Video真实播放深测不足 | T-07/08完整分母，Todo真实API/持久状态、Video真实mpv连续帧/暂停/seek/重开/音画既有义务；posted/合成媒体只补机制反例，不能替真实产品任务 |
+| R-06 | release M终值、物理上屏/GPU计时/高刷未交 | T-03定义/预算/环境→T-09真实direct配对和独立观测；1/4/8完整样本、过载/故障；原必需项缺测继续阻断 |
+| R-07 | 旧驱动硬编码已清os-066组树/主检出Demo、默认输出散落 | T-03改现有脚本的来源/工具/模式/工作集/输出显式参数和错误终态；不在主检出生成/编译，不复用已删材料路径 |
+
+不把R-01..07简化为“后继owner已登记”即关闭。实际大型公共缺陷超出有界修复时具名正式owner合同并绑定真实依赖；本包AC仍未完成，不能以needs_fix扫描结果当完整交付。
+
+## 5. 详细设计
+
+### 5.1 冻结分母、同源和模式
+
+066基线38真实Demo、28 active产品、9能力只是当前起点，T-01按实际树和manifest双向对账；043/044等文档载具不伪造工程，任何增减要来源和理由。每个真实工程/产品逐ID保原功能/能力→六格→任务→oracle→依赖/产物hash→结果，原direct或Rust红记required缺口，先修不删格；新平台扩面不自动进入。任何原支持格减少只能用户明确修约，本包无此授权。
+
+Todo queue/Auto、Video remote是077明确的当前路径；旧queue `tag:video/stroke-1/native-unstyled`仍拒绝是合法负控，不以开白名单当支持。最终每个RQ应用只能发送可支持渲染数据，App侧无自有GPU/窗口栅格化、无direct隐藏回退；独立与桌面Host共用现有replay。输入焦点/capture/坐标/DPI/IME/clipboard、surface/resource generation/释放和HostLost原合同不变。
+
+### 5.2 修复边界和实源
+
+真实文件：UI `examples/ui/<具名工程>/pac.at`及`src/front`，041相关模块；UI `crates/auto-ui-runtime/src/ui/{session.rs,desktop_protocol,iced}`和tools `rust_ui.rs`；语言中立`auto-generation-core`/真实模块解析与Web source-owner；Man `crates/auto/src/cmd_run.rs`（T-02核实际调用）；OS `host/desktop/src/main.rs`、`apps.manifest`、`scripts/rq-final-acceptance/`。这些是调查入口，不预判根因所在仓或凭warning文字归因语言。
+
+T-02对R-01..04用冻结正式工具重现，对照原direct/正常项目/相同输入，给最短完整链和至少一个能区分修复的永久反例。修复不能删代码/功能/守卫、放宽覆盖准入、强制远端关闭错误或增加无界等待。执行时若另一活动owner正改相同文件，先保单写/正式接口交付，禁止复制未提交实现。
+
+### 5.3 视觉与用户任务
+
+原direct图像/业务预期作为独立oracle保留，候选direct也验证，防共用代码同错。统一客户区分辨率/字体/主题/状态，完整像素/结构/字形/资源对账；仅原合同允许的窄AA区域可具名容差，不继承062全局2%/非exact豁免。画面、实际用户输入、业务数据读回和重启恢复分别断言；首帧/attach/帧计数/HTTP200都不能单独关闭真实任务。
+
+OS输入需真实路径、IME组合/提交/撤销、焦点与捕获、resize/DPI，posted/MCP只做机制或独立状态观察，不能冒OS路径。Video保连续帧/暂停/seek及音画原义务；auto-edit保存合成文档后独立读盘、关闭重开一致，Todo至少新增/切状态/持久读回。其他产品按各自已有正式主要任务冻结，不把三个深测样本当全28产品。
+
+### 5.4 最终release测量与不可缺环境门
+
+T-03先从061/062/063/073实际预算表/样本定义取可消费数值，缺项在候选结果出来前用原direct和原承诺有界冻结；保原预算/样本/规模，不新增任意百分比。T-06后正式测量同1003 C配置的VM/Rust各direct与两Host，各产品/负载的source、GPU/driver、DPI/分辨率、字体、刷新率、电源、服务和后台污染均可核。
+
+- P-01每帧异步批量、有界提交；P-02资源驻留/局部更新复用；P-03真实ready/deadline/ACK与present分离；P-04按App隔离/限额/过载/退出，慢Host/慢App不能拖垮轻App。
+- M-01输入到对应帧p50/p95/p99/max及分段；M-02真实帧间距/截止错过/重复丢弃；M-03各App/Host总CPU与GPU时间/空闲唤醒；M-04命令/资源字节、复制/上传/创建/往返；M-05去重内存/队列/共享/GPU驻留；M-06冷/暖/故障恢复首交互；M-07 1/4/8轻重混合进展/预算/重App吞吐；M-08同样本画质/输入/业务/资源守恒。所有指标按原contract单位/样本/统计量和失败处理，未知不填0。
+- `[P725-FRAME]`的present/draw_end、外层日志接收时刻、GPU完成与显示器物理上屏分层定义；多进程计时须有共同可比时钟/偏差校验和event/frame/surface关联，不能用读管道的时间代实际present。
+- 物理上屏用可校验的显示反馈/光学采集等能观测原物理终点的方案，GPU用实际可支持计时（如timestamp query/平台工具），真实刷新率由显示环境读回并核原高刷适用面。T-03最多两种现成方案可行性探针；无设备/权限/工具或只能得到代理则阻断R-06，不自行安装驱动/改变用户显示设置，不据时间流逝假通过。高刷范围不能因本机60Hz自动删掉。
+  **2026-11-11 用户修约（§0）**：物理上屏交付证据=ETW DWM-Core 呈现节奏（logman 用户态采集，60Hz vsync 实证，见 §4 R-06）；高刷适用面按当前环境只承诺 60Hz 支持（不因缺 >60Hz 实证阻断）；光子终点以 DWM 呈现事件为准，光学采集不作必需项。
+- 8App完整adopt只是进入条件，还要轻/重任务真实进展与业务正确，不能饿死重任务换轻任务绿。静态App按静态语义不强制刷新，但必须确实存在/可输入，未adopt不是低帧公平。
+
+保debug历史数据为描述，release配对不混减；p99样本不足/污染/首次失败/隔离重放均留记录。允许指标慢于direct但须满足原预算，超预算先定位修复，不测后抬阈值。不以“环境pending具名”代完整终验通过。
+
+### 5.5 闭包、独立验收与989边界
+
+1003正式交付后T-06重建来源一致的CLI/tool、SDK、所有required App/后端和两Host（不是重用旧PATH auto.exe），记录编译配置及实际进程hash；38/28变化按T-01清单。隔离可移动目录/必要包运行，缺资源/错Host/不兼容端点具名拒绝、合成数据保全与支持的恢复成立；不碰用户正式安装/真实数据。
+
+989 C-01 UI成员独立交付、C-02 Web成员独立导出、C-04 SDK和C-05有限升级恢复仍按989合同逐渠道验。本包交真实App/Host/后端闭包与产品证据，可复用已有有效owner交付；不声称完整backend启动自动关闭Web成员导出缺口，也不把全部渠道生产修复暗中接入本包。
+
+完成谓词：R-01..07实际关闭 AND 全required六格/业务/资源/寿命 AND P/M原预算/必需设备证据 AND 同源闭包 AND 独立review/正式落地/清理。任何partial/pending不允许以“本轮可测面完成”归档为本包已交完整目标。989只核本包与C/渠道的新耦合，不再无条件重复全部矩阵。
+
+### 规范增量
+
+| delta_id | add/modify/retire | docs/specs/... target | before/after rule | rationale | acceptance IDs |
+|---|---|---|---|---|---|
+| SD-01 | modify | docs/specs/shell/windows-rq-final-acceptance.md | 066有限实证/缺口→逐ID补充实际关闭/原支持格与最终性能来源，保历史限制身份 | 不改签历史PASS | AC-01～06 |
+| SD-02 | modify | docs/specs/shell/rqhost-assembly-and-fidelity.md | 当前装配→真实全产品任务、输入/资源/生命周期和release/终点证据 | 统一装配事实 | AC-02/03/04/05 |
+| SD-03 | add | docs/specs/shell/windows-rq-complete-delivery.md（新） | 未完整交付→冻结C/工具/App/Host/数据与P/M/设备、38/28/能力逐ID最终收据和重验入口 | 给989完整可复用结果 | AC-01～06 |
+
+UI/语言/Man/Web公共语义变化的Spec由实际owner在本包同组交付，各仓相对docs/specs目标在T-02固定并回填，不在OS复制规范或提前发布canonical。本轮只登记拟增量。
+
+## 6. 测试设计
+
+全部拟执行，owner_stage=work；独立上下文review在同一权威树顺序检查。现有驱动是基础，不冒已经支持完整六格/任务；T-03扩展后才可使用新参数/用例。每项含实际合法正控和区分性负控。
+
+| V-ID | AC/不变量 | 真实入口与合法/负控 | 可观察关闭结果 |
+|---|---|---|---|
+| V-01 | AC-01 全分母/来源 | apps.manifest/UI pac扫描、编译清单；删产品/错pin/旧工具/不同hash副本 | 每ID六格与任务/能力双向覆盖，不因原红删格；未知/条件排除独列 |
+| V-02 | AC-02 7Demo/041源缺口 | 公开CLI及原源、修复前复现/正常项目/永久反例，关联Cargo子终态 | 七项required形态构建/行为绿，041无未处理解析错误、编辑语义成立；不是仅父exit0 |
+| V-03 | AC-02/03 后端/8App | chat生成到真实HTTP任务、018/025/029依赖，错source/慢后端/缺端点 | 不删links/覆盖守卫；8/8adopt且可交互/业务完成，公平/失败隔离可证 |
+| V-04 | AC-03 真实六格/输入 | UI原像素/资源oracle＋全Demo/产品用户任务；隐藏direct回退/丢文字/漏输入/错surface/错状态负控 | 原direct/候选direct及两RQHost画面/结构/业务一致，真实IME/capture/保存读回，App无自渲染 |
+| V-05 | AC-03 媒体和资源寿命 | Todo API/持久状态、Video mpv连续/暂停/seek、auto-edit冷重开；poster冒连续/旧generation/宿主消失 | 完整任务与数据/帧对应，故障拒绝/回收有界、旁观App/last-good不坏 |
+| V-06 | AC-04/05 测量真实性 | T-03物理/时钟/GPU方案校准；注入负present/时钟偏差/无样本/重复frame/日志延迟 | 各阶段/代理/物理明确，失真样本拒绝，不用日志到达代实际呈现，不拿CPU代理当GPU/上屏 |
+| V-07 | AC-04 P/M与1/4/8 | 1003正式C的release原direct/两Host同环境配对，空闲/编辑/IME/动画/资源/媒体/混载，慢Host/ACK/资源重传/重任务反例 | P-01～04/M-01～08原预算通过，8/8且业务守恒，资源不重复、队列有界、轻重都进展；物理/GPU/高刷真实齐 |
+| V-08 | AC-05 完整闭包/恢复 | 同源重建/可移动隔离安装、错Host/资源/旧exe、kill已adopt客户端和HostLost | 实际进程hash/资源/模式正确，保存重开/失败保稿、桌面/旁观App不坏；clean leftover=0或按合同持有 |
+| V-09 | AC-06 复用/失效 | 066摘要有效对照、改变profile/工具/字体/锁、异版PASS拼接、仅partial AC | 身份未变且充分才复用，缺项/失效定向重验；C默认终验不能用旧debug/N8=5/8顶替 |
+| V-10 | AC-06 完成不假绿 | 逐R/AC/ID最终报告，副本只有owner无关闭/物理pending/改预算后PASS | 任一required缺测/超预算/业务红阻完整结论；未交不归档冒完成，修复交付后才可合法通过 |
+
+T-03拟新增`scripts/tests/test_rq_complete_acceptance.py`（新文件，尚不存在），只验证现driver的来源/分母/计时/结果准入及负控，不替真实产品oracle；按OS脚本测试职责调用，不注册成语言全仓组。现有`python scripts/rq-final-acceptance/metrics.py <log> --json <scope-summary>`可重算机制输出；`observe.ps1`/`n-sweep.ps1`/`negative.ps1`/`build-demos.ps1`当前含旧树/默认输出假设，T-03必须先参数化验证，不能照抄066命令在主检出运行。T-01/03冻结新准确命令、全部输出/target/源副本/端点/自有PID；新增负控放现driver测试职责，不建全仓runner。
+
+UI真实受影响完整职责测试/产品owner门；语言有实际改动才跑对应`cargo t auto-generation-core generated-delivery-controls`或真实受影响组，Parser/VM有改动追加其完整组与消费者。OS/UI改动不自动跑全语言/ACE/AG；AGE算法零改动不跑AG全套。最终冻结职责并集一次，修复/失效有证才重放。实际用例/运行/条件排除、编译/发现/运行/清理分账，父进程退出码不替子失败。物理窗口/GPU/音频/正式计量单实例，不抢用户或并发会话；设备不足保持未完成。
+
+## 7. 验收标准
+
+| AC | owner_stage | 必须真实满足 |
+|---|---|---|
+| AC-01 | work | 冻结全能力/全部Demo/active产品六格/任务/来源分母，V-01双向对账；旧38/28/9变化具名，不删原红格 |
+| AC-02 | work | R-01..04实际修复与永久反例成立；七Demo及041/chat/三个未adopt缺口全闭，V-02/03可重现来源/行为；重大owner前置未交仍不通过 |
+| AC-03 | work | 全required六格/用户任务/客户区视觉/真实输入IME/媒体/数据/资源与寿命通过V-04/05；auto-edit/Todo/Video真实深测齐，非attach/首帧/posted替代。**修约后（2026-11-11 用户裁定 §0）**：Video 深测=demo 030 机制面（后端链+14 真实媒体+选片状态机+音频端点）+具名边界（嵌入形态两发现/seek 原生通道）；auto-video 产品后端合同具名移交 owner |
+| AC-04 | work | release P-01～04/M-01～08原预算、完整1/4/8轻重混载及业务守恒；V-06/07含物理上屏/GPU/原高刷适用面真实证据，缺设备/样本/预算不PASS。**修约后（2026-11-11 用户裁定 §0）**：物理上屏=ETW DWM-Core 呈现节奏实证（60Hz vsync）；高刷适用面=按当前环境 60Hz 承诺；光子终点光学采集不作必需项。**修约二（§10.11 五项裁定）**：M-04 字节=机制面（零重绘+双槽）关闭、字节测量具名边界；P-03=release 配对数据+语义分层关闭、replay harness 具名边界；M-01=MCP 协议面 12 轮分布关闭、原生输入具名边界 |
+| AC-05 | work | 1003正式C后最终同源CLI/tool/SDK/App/Host/backend闭包可重建/运行，负控/HostLost/保存恢复/旁观隔离通过V-06/08，用户环境未改变 |
+| AC-06 | work | R-01..07及所有required逐ID无partial/pending，无未关闭生产前置空挂owner；V-09/10有效复用/定向重验与SD/989交接可核，不冒全生态/正式版完成 |
+| AC-07 | review | 独立上下文绑定冻结revision/源码/工具/设备逐AC/V/SD审，查漏/延后/workaround与假绿；零未处理新增warning/fmt/debug输出 |
+| AC-08 | merge | 实际各owner代码/产品pin和canonical正式落地/可取回，最终组合来源读回一致，全部输出/持有/guard清理与归档收据齐；989可消费完整结果，未创建tag |
+
+## 8. 执行步骤
+
+| 完成 | ID | owner_stage | 依赖 | 动作/预期结果 | 验收 |
+|---|---|---|---|---|---|
+| [x] | T-01 | work | 后续执行授权；066/077/073已交 | 唯一树/scope登记；冻结分母/R-01..07/源工具/旧证据适用性，保正常/失败对照，核活动写面与真实owner | AC-01；V-01/09准备 |
+| [x] | T-02 | work | T-01 | 对七Demo/041/chat/N8三项做有界完整链重现和根因决定；给修复文件/永久反例/实际接口依赖，超范围具名立约，不偷降格 | AC-02；V-02/03准备 |
+| [x] | T-03 | work | T-01；可与T-02并行准备 | 扩现驱动参数/源工具/输出/时钟/负控；冻结原direct预算/测量方案和设备资格，最多两种终点/GPU方案探针。缺环境阻正式测量，不自动跳过 | AC-04/05；V-06/07准备 |
+| [x] | T-04 | work | T-02根因闭合 | 有限修七Demo/041源或实际公共接线，永久反例和直接路径回归；与在途owner单写，重大缺口等正式交付 | AC-02；V-02 |
+| [x] | T-05 | work | T-02；实际外部接面已交 | 修chat生成/links与N8 init/API/异步/后端链，保守卫、超时/错误合同与正常真实任务；8/8初验 | AC-02；V-03 |
+|      |      |      | T-05 证据（2026-11-11）：R-03 chat 已交——`auto service --server rust` 组一致 env 正控生成成功；066 混合根 auto-web-contract 双副本机制已核（auto-web Cargo.toml `../../../auto-lang` 回链）；保守卫落地 auto-lang `source_owner.rs`（`check_web_group_consistency`：AUTO_WEB_SOURCE_ROOT 异组具名拒绝）+ 单测 os068_web_root_foreign_group_rejected；auto-generation-core 33/33 绿。**N8 初验（桌面宿主 attach 探针，probe-root 8 产品，75s）**：app registry 9 条目、**8/8 adopt surface 480x320**（含 066 时未 adopt 的 018/025/029——R-04 adopt 缺口闭合）；逐 wid 帧流 wid=1(calc)274/wid=6(monitor)174/wid=8(video)267 连续、wid=2/3/4/5/7 各 1 帧（静态品低帧，066 先例口径）；metrics：1101 帧/720 compose、frame_gap p50=74ms p95=169ms、present p50=68ms p95=157ms、cost 10 进程 ~1.5GB（debug 档，release 终值归 T-09）。018/029/030 客户端 Init 仍 `VM-PARKED` 等后端 HttpRequest（adopt 已过、业务数据面未闭）——深测归 T-07/T-08 后端就绪链，不假勾。 | |
+| [x] | T-06 | work | T-03～05；语言1003正式交付；实际新增owner前置齐 | 冻结最终C/源码/锁/SDK/工具及原direct oracle，重建全部required CLI/tool/App/Host/服务；登记准确命令/hash/环境和失效集 | AC-01/05；V-01/08/09 |
+|      |      |      | T-06 证据（2026-11-11，1003 已归档交付）：os-068 组树 rebase 至 1003 后主基线（auto-lang@9e36d984e+本包 f9738f0fe、auto-ui@d88e9c51+本包 6e3de861/35f1531b、man@347c29f、web@2d69841、down@58ea33f）；共享 target `.auto/desktop-runtime/target` 三件套重建（`cargo build --locked -p auto --bin auto --features mpv-widget` / `-p auto-ui-tools --bin auto-ui-tool --features auto-ui-runtime/mpv-widget` / `-p os-desktop --bin ui-desktop`），身份 hash：auto.exe=AC8F876CB4CF1F4C5360A43433AA83B8F7B1DF197E907D31FFD6EFF6F10B7439、auto-ui-tool.exe=B5B381D6360A4AC4DA5567BA8FD19725B7C7F8036D3525516B851F44CDAE8786、ui-desktop.exe=77C0079A3BB8177BC09AE134F13B612BA44E44FD51DF4CD49C82F67C5B7A4865；**C 策略生效验证**：生成工程 rust-workspace 根 manifest 均含 `[profile.dev] debug="line-tables-only"` + `[profile.dev.package."*"] debug=false`（023/013/015/017/018/019 等实证）；全量 Demo 矩阵 35/35 应用格绿（demo-build-t06.csv），stylekit 库工程分类。失效集：旧 os-066 组树 exe/PATH auto.exe 不可作 T-06 后身份（hash 不同），066 debug 样本仅描述性。**F-6 注记（T-11 round:10）**：debug 档 auto/auto-ui-tool 身份（AC8F876C…/B5B381D6…）已被 69104765 后 debug 重建覆盖（现 34455A42…/17F67231…），debug ui-desktop 与 release 三件身份不变——release 档测量身份完整有效。 | |
+| [x] | T-07 | work | T-06 | 全Demo六格/能力与041真实编辑/IME/弹层/保存/重开，独立像素/结构/资源/数据读回，失败回实际owner修复 | AC-03；V-04/05 |
+|      |      |      | T-07 续（2026-11-11，本会话续跑）：**V-05 新缺陷修复已交**——041 树组件（components/treeview.at）为纯 emit 子件（msg Toggle/Select 声明但子件无自有 handler，父路由回送常态），auto-ui-runtime 派发链此前对每次点击误报 `handler_TreeView_Toggle not in exports` + error syslog。修复=dynamic.rs `_framework_probe` 扩展（有父路由的 HandlerNotFound 与 `__` 探针同列降 debug）+ vm_bridge.rs `prepare_handler_dispatch` 同规则降 eprintln。commit=auto-ui 69104765（codex/plan-068-ui-dev）。**实机验证（ae14-fixed.err，AUTO_UI_TOOL_BIN 指向共享 target 修复版）**：MCP 点击 deps chevron → `.TreeView/TreeView#0.Toggle` → `tree_expanded: ["src"] -> ["src","deps"]`（功能正常）；点击 deps 行 → `TreeView.Select` → `tree_sel: "" -> "deps"` + 打开 deps 目录（tab_count 2->3、title_active=deps）；日志仅剩 `[VM-EMIT] TreeView.Toggle -> App.TreeToggle (handler-less declarative)` 正常回送行，**零 `not in exports`/`[VM-HANDLER] failed`**。child_emit 单测 7/7 绿（route_keys_strip_underscores 覆盖 on_toggle/onToggle 折叠命中）。**041 保存/重开闭环（ae15-save/ae16-reopen）**：AUTO_OPEN_PATH 打开 → `autoui_type` → `.App.SrcChanged(i=2)` → `edits: 1` → ActSave → `saved: C:\temp\os068-ae-edit.txt` → 读盘逐字一致 → 冷重开 AUTO_OPEN_PATH 再打开 → `src_active` 与磁盘一致。**041 desktop-RQ 六格对账（observe-041/run-20261111-153553）**：桌面宿主 attach（probe-root manifest 9+041=10 registry 条目）→ `[VM-PARKED] Init park HttpRequest 1.5-1.8s → resumed`（后端就绪链）→ `[plan060] adopt surface 480x320` → 连续 `frame compose wid=1`（40s 358 帧、frame_id 1..31+）——VM×desktop-RQ 形态 adopt+连续帧成立。编辑/IME 真实字符插入仍受 canvas 编辑器 MCP 边界限制（T-11 裁定证据充分性），六格 RQ 独立对账（standalone-RQ/Rust 轨）留 T-11 窗口。**F-5 注记（T-11 round:10）**：'041 真实编辑/IME'按 §10.8 canvas MCP 边界具名，T-11 独立终审裁定机制面（edits→SrcChanged→保存读盘→冷重开）充分；standalone-RQ 对账已由 ae17-srq 补证（VM×三形态全验，见 T-08 续）。 | |
+|      |      |      | T-07 进展（2026-11-11）：V-01 构建面 35/35 应用格绿（demo-build-t06.csv，最终 C 工具链）；VM 冒烟 002/013/024/027/031/041 全进 `vm+vm merged` 解释器、9s 存活零 panic（smoke-*.log）；041 机制深测（AutoUI MCP 驱动）：P-15 已消除、编辑器状态机实机（tabs/src_active/line/col/edits/dirty `*` 标记）、`autoui_type`→SrcChanged→edits/dirty 管线通、`autoui_action`/`autoui_state`/`autoui_snapshot`/`autoui_editor_state` 全响应、AUTO_OPEN_PATH/AUTO_SAVE_PATH 旁路存在（Plan 420 P2）。**边界（066 同源）**：code_editor 为 canvas 编辑器，MCP 仅暴露 Input/Textarea 视图面，真实字符插入需原生 IME/char 通道（MCP key_press 仅 autodown 壳）——041 编辑/IME/保存重开的**深测主体**与六格 RQ 画面/结构/资源独立对账留独立 review 窗口（T-11），此处只交机制证据不冒深测。**新发现（T-07 记录）**：041 二启（AUTO_OPEN_PATH 消费路径）`TreeView.Toggle/Select handler not in exports`（components/treeview.at 子模块 handler 未链接）——回实际 owner（auto-ui-runtime 模块编译链）有界修复，纳入 V-05 反例。 | |
+| [x] | T-08 | work | T-06；可与T-07分批错峰 | 全manifest产品六格主要任务，Todo持久业务/Video真实mpv，生命周期/故障隔离/闭包与可移动运行 | AC-03/05；V-04/05/08 |
+|      |      |      | T-08 续（2026-11-11，本会话）：**故障隔离深测（fault-041/desktop.log）**：桌面宿主 + 041 客户端（probe-root manifest 10 条目）→ 首次 `adopt surface 480x320`（line 91）→ 112 帧 → **kill 客户端** → 桌面宿主存活、帧流延续（after-kill 段 48 帧、末帧 29.9s）→ **第二次客户端 `adopt surface`（line 222）重连成功**——kill 已 adopt 客户端后桌面存活继续帧流且接受新 adopt，AC-03 旁观隔离/last-good 不坏成立。**041 standalone-RQ 六格对账（ae17-srq）**：`auto run -r vm --autodesk-render=rq`（rqhost 共享合成器内联）启动成功，210 帧流、present 持续（帧间距 ~14-30ms，s4_element/s5_layout/s5_draw 全链路执行）——VM×standalone-RQ 形态成立。**Todo 持久业务闭环**（td1..td3）与 **Video 深测边界**（vd1-video）见前续；闭包/可移动运行终验仍留 T-11。**T-11 注记（round:10）**：F-7 口径——fault-041 kill 前 `[P725-FRAME]` 行 172（真实 present 141），收据'112 帧'为窗口截取口径；after-kill 48 帧/末帧 29.99s/二次 adopt（line 222）独立复算吻合，实质结论不变。**F-4 重开**——Video 真实播放未测且不在 §0 修约面内，本行保持重开待用户裁定（§10.11：实测或机制面+具名边界）。**F-4 有界定位（round:12）**：① auto-video 产品**后端完全缺失**（src/back 空、rust-workspace 仅空 Cargo.toml；vd1 `no back contract — skipping backend`=跳过启动非致命，Init park 2.05s→resumed）——媒体库扫描 `/api/media/scan` 无服务可答→产品选片不可用；**N8 的 video 277 连续帧=产品空库待机 widget 渲染，非真实播放（诚实性口径修正，T-05/T-09 收据 video 连续帧按此注记）**。② demo 030 全链可用（back 合同 `api.at`→媒体服务自动生成 `/api/media/scan`+`/api/media/stream/:id`→编译运行→`AUTO_MEDIA_ROOT=E:\Video` **14 个真实文件加载成功 item_count=14**；音频端点在案 NVIDIA HD Audio+HD Audio 设备，音画环境可得）。③ standalone VM：选片 caelestia.mp4→`is_playing=true` 状态机成立，但无解码/tick 证据（current_time 冻结、无 mpv 行、无视频 bitmap、帧稀疏 ~1.2s）。④ desktop-RQ 形态：5 次有界探针（arg `=` 形式根因修复后 client 存活+rq-client bitmap 上传在产）止于两具名发现——**嵌入式 MCP bind 9388..9398 全段 FATAL 失败**（AUTOUI_MCP_PORT 已达 app，绑定瞬态失败原因未定位）+ **client surface 未 adopt**（bitmap 上传 Backpressure 弃置"超槽/非 Active"）——嵌入态 MCP 驱动与 adopt 链需 auto-ui-runtime 侧定位（041 先例 AE5 驱动曾以 9388 成功，差异未明）。⑤ seek：MCP `Unknown action: 'seek'`——原生/键盘通道边界（§10.8 同类）。**F-4 残余=桌面宿主形态真实播放深测（嵌 plumbing 定位）+ 产品后端合同（owner 功能开发）**——待用户裁定（§10.11）。**修约关闭（§10.11 用户"按推荐"）**：本行 Video 子项按已证机制面（demo 030 后端链+14 真实媒体+选片 is_playing 状态机+音频端点）+具名边界（④⑤ 两发现与 seek 原生通道）关闭；auto-video 产品后端合同具名移交 auto-video owner（闭合条件=实现媒体扫描/流服务 back 合同并交付，登记 SD-03 §4）——T-08 关闭。 | |
+|      |      |      | T-08 进展（2026-11-11）：N8 桌面宿主探针已覆盖 8 产品（8/8 adopt，calc/monitor/video 连续帧，cost 10 进程 ~1.5GB——机制面）；Todo 持久业务（新增/切状态/持久读回）与 Video mpv 连续帧/暂停/seek/音画、故障隔离/闭包/可移动运行未深测——归独立 review 窗口与 R-06 门后窗口。 | |
+| [x] | T-09 | work | T-07/08；T-03预算/设备资格齐 | 正式独占release direct/两Host配对，P/M与1/4/8、物理/GPU/高刷、过载/故障负控；超预算修复再测，无设备保持未完成 | AC-04；V-06/07 |
+|      |      |      | T-09 续（2026-11-11，本会话）：**N1/N4/N8 release metrics 独立复算全部一致**（metrics.py 重算：N1 580 帧/gap p50=77 p95=239/present p50=40 p95=229；N4 1102 帧/gap p50=42 p95=186/present p50=40 p95=176；N8 1420 帧/gap p50=47 p95=146/present p50=48 p95=143/draw_end p50=49 p95=143——与 T-09 原始记录逐项吻合）。**M-01 定向输入→帧/业务响应（m01-todo2）**：Todo VM 真实 MCP 注入（autoui_type+submit，dispatch 109ms）→ AddTodo park 39.3ms→resumed（后端 HTTP）→ todos 1→2 业务变更 + input 清空，3s 窗口 12 帧——输入→对应帧/业务响应成立（MCP 协议开销 109ms 具名）。**P/M 严格预算判定（对照 budget-freeze.md 逐项）**：M-02 帧间距（gap p50/p95/max）release 实测在案；M-05 驻留 N8 cost 10 进程 1.36GB（~136MB/App 描述性在界内）；M-01 定向响应已补（见上）；**P-01..04/M-03/M-04/M-06/M-07/M-08 严格 pass/fail 判定仍缺定向测量**（direct 配对、资源字节、故障注入负控、独立 GPU 计时）——与 R-06 修约前同阻，按 plan §5.4「缺样本/污染/超预算先定位修复，不测后抬阈值」，严格预算判定保持 pending（T-11 独立 review 按冻结协议裁定，不据现有数据假签 PASS）。**work 续（round:11，零新运行分析）**：M-07 公平从现有 release 日志逐 wid 计算（review-final/m07-fairness.json）——N4 wid2 286帧 gap p95=251ms/wid4 180帧 p95=309.5ms；N8 wid2 281帧 p95=324ms（max 3099 一次 stall）/wid4 179帧 p95=505ms/wid8 277帧 p95=392ms——动态 App 全部连续进展无饥饿、静态品 1 帧符合静态语义（progression 公平成立；061 3.11ms 为不同仪表 debug 参考已具名）。P-01 双槽提交机制面在案（compose `slot=0/1` 交替=在途≤2）；P-02 机制面在案（稳定重复帧 `builds=0/dirty=-1/present=-1` 零重绘零上传工作）。**F-3 精确残余**：① M-04 字节级计数器确认未埋（`[P725-FRAME]` 无字节字段）——需 auto-ui-runtime 埋点（owner 级）或修约；② P-03 replay p95 需 replay 录制/回放 harness（现有 4 驱动无 replay 驱动，盘点归下轮）；③ direct-档 release 基线可跑（`auto run -r vm`+AUTO_FRAME_BENCH，ae17-srq 先例 P725 通道在案）；④ M-01 扩样需一次带 MCP 注入的实机会话。**work 续（round:12，in-contract 实测）**：③ direct-档 release 基线已跑（review-final/direct-rel-calc/，VM×direct calc 75s 42 P725 行（present>0 计 40），frame_gap p50=1999ms=2s tick 节拍、present p50=4ms/p95=15.5ms/max=26ms）+ N1 desktop-RQ 配对复算（494 帧/gap p50=127 p95=250/present p50=40 p95=229.3，pair-stats.json）——**裸比值不作判据**（direct=App 本地 swapchain present vs RQ=Host 混成+surface 呈现且含仪表盘混载，测量语义分层+远程显示环境，具名）；④ M-01 扩样已跑（review-final/m01-expand/，release todo 12/12 轮 type+submit 全成功、todos 2→14 逐轮业务响应；dispatch(MCP 协议面) p50≈112ms min=62 具名；input→帧双峰 0.5/1.9s=2s tick 相位量化+后端 park 链，results.json）；② P-03 replay harness 盘点：**不存在**（auto-ui-tool 仅 describe/validate_project/generate_ui/run_ui；runtime 仅内部 paint-replay 测试助手，无 record/replay 外部 harness）——P-03 冻结判定需 owner 级实现或修约。**修约关闭（§10.11 用户"按推荐"）**：M-04=机制面（零重绘+双槽在途≤2）关闭/字节测量具名边界；P-03=release direct/RQ present 配对数据+测量语义分层具名关闭/replay harness 具名边界；M-01=MCP 协议面 12 轮分布（dispatch p50≈112ms 具名）关闭/原生输入具名边界——T-09 关闭。 | |
+|      |      |      | T-09 证据（2026-11-11，独立显示环境）：release 三件套构建（hash：auto=68A0CC11DDB309C4762476F3BF67085A7A5D7EB91DC14ED4449FAC0CAEC5D3A7、auto-ui-tool=F039FE916E323A0AA71BD55E4BEA96DA98AA0CD290B1D2772321855AA03662FA、ui-desktop=D7CA31EB095FC086DB158FCA47690B58DA14DCC3A47F9E2D6BAB04D2CCC42445）；**N1/N4/N8 release 实测**（sweep-rel/，75s）：N1 adopt 1/580 帧/frame_gap p50=77 p95=239/present p50=40 p95=229；N4 adopt 4/1102 帧/frame_gap p50=42 p95=186/present p50=40 p95=176（wid=2/4 连续、1/3 静态品）；N8 **adopt 8/8**/1420 帧/742 compose/frame_gap p50=47 p95=146 max=1846（一次 stall）/present p50=48 p95=143/draw_end p50=49 p95=143/cost 10 进程 ~1.36GB（wid=2/4/8 连续、1/3/5/6/7 静态品低帧）——release 优于 debug 档（p50 47 vs 74ms）。**GPU 证据**：真实 NVIDIA GeForce RTX 4060 Ti（Win32 显示适配器，59Hz@3840x2560）驱动渲染；draw_end（wgpu flush sync）=GPU 提交完成计时逐帧在案；nvidia-smi NVML 本会话初始化失败（远程/虚拟显示会话，如实记录，不伪造 GPU 利用率）。**R-06 诚实评估**：物理上屏（显示器实际刷新终点）无采集设备/PresentMon/ETW present-photon 观测通道——066 口径代理（draw_end）保留，物理终点子门**保持 pending**（plan §5.4「只能得到代理则阻断R-06」）；高刷适用面环境 60Hz（ToDesk 虚拟 + NVIDIA 59Hz）**无法实证 >60Hz**，原高刷格不因本机删、保持 pending；M-01 输入→帧定向测量与 P-01..04/M-03/M-04/M-05/M-07/M-08 严格预算判定需独立 review 按 T-03 冻结协议核验（此处只交原始实测数据与分段）。 | |
+| [x] | T-10 | work | T-01～09无必需缺口 | 冻结受影响完整职责并集、逐R/AC/ID审/SD草案/债务关闭与989准确交接；拒“可测面完成”结题 | AC-06；V-09/10 |
+|      |      |      | T-10 续（2026-11-11，本会话）：**SD-01/02/03 草案全部就绪（worktree docs/specs/shell/，落地归 T-12）**——SD-01 windows-rq-final-acceptance.md 缺口表更新为 PLAN-068 关闭状态（R-01..04 已关闭、R-05 部分、R-06 pending）；SD-02 rqhost-assembly-and-fidelity.md 追加 041 desktop-RQ attach 与 Todo 后端就绪链证据 + R-06 探针耗尽结论；SD-03 windows-rq-complete-delivery.md（新）含冻结身份/逐 R 收据/性能终值/重验入口 + **989 C-01..05 逐渠道交接**（C-01 三件套+35/35；C-02 归 auto-web owner；C-03 Todo 真实 API/041 attach/N8 8/8；C-04 1003 同源重建+generation-core 33/33；C-05 合成数据隔离证据不新增安装器）。**可移动运行探针（os068-reloc-probe）**：release 三件套复制到隔离目录 `C:\temp\os068-reloc-probe`——auto.exe `--version` 成功（不依赖原路径）、ui-desktop 移根启动且 auto_cli 正确指向隔离路径；`017-chat service stdout ended before READY` 错误在**主检出对照组同样出现**（registry 30=默认 extra-roots 扫描主检出 apps/，auto-chat submodule 未检出环境基线）——**非移根特有缺口**，可移动运行核心成立。**债务关闭**：R-01/02/03/04/07 关闭（证据链完整）；R-05 部分（Todo/041 保存闭、Video 待环境）；R-06 pending（探针耗尽）。989 交接：本包交真实 App/Host/后端闭包与逐 ID 状态（SD-03 §4），C-01..05 渠道独立交付仍归 989/各自 owner。**F-1 注记（T-11 round:10 后 work 重跑）**：原 reloc 证据已删未落 scope；已重跑落 `plan-artifacts/plan-068/auto-os/reloc-probe/`——probeA 隔离 `--version` exit=0（`0.1.0+plan-890-…-g347c29f-dirty`）、probeB 移根启动 `auto_cli=C:\temp\os068-reloc-probe\auto.exe`+registry=30、probeB2 `AUTO_OS_ROOT`=主检出对照 `apps_dir_src=auto_os_root`（apps_empty=0）同现 `017-chat service stdout ended before READY`——017 错误为环境基线（错误链路径全在主检出/manifest 侧 auto-chat rust-workspace links 冲突）非移根缺口。**修约关闭（§10.11 用户"按推荐"）**：F-2 SD 对齐已落地（327294f）；R-05 Video 子项按修约关闭+F-4b 具名移交 auto-video owner（登记 SD-03 §4）——T-10 关闭。 | |
+| [ ] | T-11 | review | T-10，required全闭 | 同树独立上下文逐AC/V/SD/原预算/设备/来源终审；partial/未测不能pass，缺陷有界修复重核 | AC-07 |
+| [ ] | T-12 | merge | T-11 pass | 各仓/产品按owner规约正式交付、OS组合pin及canonical落地读回，给989被测=交付清单；不推定用户桌面已部署 | AC-08落地 |
+| [ ] | T-13 | merge | T-12 | 摘要折入本Plan，逐全部输出/链接/活动PID/持有对账、guard后清worktree/材料，真实13/13归档，不创建tag | AC-08收尾 |
+
+材料唯一`D:/autostack/plan-artifacts/plan-068/auto-os/`（与UI068独立按仓子路径避免撞号），同组其他仓材料在该逻辑scope具名子目录。外部测量机路径映射也登记，禁止第二散落材料根。全部源副本/target/SDK/安装/合成数据/截图/日志显式归scope或本树正规target；merge摘要/命令/关键数/hash/设备与保留件身份折入本Plan后删除本包材料，用户/未知持有不动，必须逐实际输出路径对账。当前未创建目录。
+
+## 9. 复审记录
+
+2026-11-10 / stage:new / auto-os/PLAN-068 / r1 / outcome:blocked（仅规划；执行授权、1003正式交付和T-03预算/设备仍待）/ drafting0/13。认领R-01..07全部余项，没有沿用066“可验证面完成”的归档例外。设计自检不等独立review/测试PASS，所有T/V未执行，未启动窗口/构建/环境操作。
+
+2026-11-10 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:1 / from:drafting / to:executing / status:executing / outcome:pass(有限) / worktree:`D:/autostack/.wt/os-068/` 组（auto-os@codex/plan-068-dev、auto-ui@codex/plan-068-ui-dev、auto-lang@codex/plan-068-lang-dev、auto-man@codex/plan-068-man-dev、auto-web@codex/plan-068-web-dev、auto-down@codex/plan-068-down-dev）/ commit:auto-os 9493cb7（T-03 驱动）、auto-ui 9ce7d008（T-04 Demo+codegen）、auto-lang f1a27630b（T-05 R-03 卫）、auto-ui 1a8a635b（T-04/T-05 R-02 P-15）/ task_ids:T-01..T-05 / evidence:`plan-artifacts/plan-068/auto-os/`（freeze-and-rootcause.md、budget-freeze.md、demo-build.csv×2、err-*.txt、recheck*.txt、run-041-vm-*.log、service-017-rust.log、repro-build-demos.ps1、test_rq_complete_acceptance.py 驱动自测全绿）/ blockers:T-06+ 等 auto-lang/PLAN-1003 正式交付（§2 表已载：T-06 最终候选重建、T-07～09 正式六格/性能必须等 C 正式 delivery/Spec）；T-05 8/8 初验需桌面宿主 attach 探针（与 T-06 同窗）；R-06 物理上屏/GPU/高刷设备缺保持 pending / next_responsible_role:work（T-05 收尾 + T-06 起等 1003）
+
+T-01..T-04 收据链（2026-11-10）：
+- T-01 盘点：分母冻结（28 产品=24 gitlink+3 兄弟+syslog；38 Demo 目录=35 编号+remote-frame-e2e/stylekit/themes，36 含 pac.at；9 能力 message.rs:1037；六格与 1/4/8 映射）双树对账一致；工具=os-068 组树重建 auto.exe（3m32s）/auto-ui-tool（2m47s）；旧证据仅描述性。R-01..07 逐项核（027 由 066 红转绿=环境/工具链消解，具名）。
+- T-02 根因：7 Demo 复现 6 fail（023=源码跨店 `.me`；024=生成器裸标识默认 number+`to_int`→parseInt(number)；026=生成器 R001 正则无 v-for 作用域；029=源码 `Storage` 大写应为 `storage`+JSON 往返；032=生成器 ts_adapter 缺 post_json；stylekit=库工程无 app.at）；R-02 041=P-15 假阳性（`{ package` 块 use 不识别）；R-03=混合根 auto-web-contract 双副本机制；R-04=Init 同步等后端→无首帧→未 adopt。永久反例：ts_adapter 2 单测（post_json/encode）、source_owner 1 单测（异组 web）、dynamic_build 1 单测（package 块）。
+- T-03：驱动参数化（build-demos/observe/n-sweep 全显式 roots/exe/out/pipe，os-066 硬编码清除；stylekit 库工程分类）+ 新测试 `scripts/tests/test_rq_complete_acceptance.py`（参数面/无硬编码/库分类/metrics present>0 准入/负控自测 全绿）+ 预算冻结 `budget-freeze.md`（W-A/B/C p95、64KiB/1MiB/8MiB、256MiB/2帧、replay≤1.25×direct+2ms、冷启≤2.5s、M-01..08 原值，物理/GPU/高刷保持 pending）。
+- T-04：35/35 应用格绿（023/024/026/029/032 修复+027 消解；stylekit 归类库工程）。auto-ui-compiler 全量 1159 通过/2 基线红（rust.rs codegen fixture=1003 已记基线存量，暂存验证一致）零新增。041 P-15 实机消除（重建 auto-ui-tool 后 `auto run -r vm` 无 AUTO-USE-DIAG、进入 Init+MCP）。
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:2 / from:executing / to:executing / status:executing / outcome:pass(有限) / worktree:同 os-068 组（rebase 至 1003 后主基线）/ commit:os-068 组 rebase（auto-lang f9738f0fe、auto-ui 6e3de861+35f1531b 于 1003 交付之上，零冲突）/ task_ids:T-05..T-09 / evidence:`plan-artifacts/plan-068/auto-os/`（observe/run-*.log 桌面宿主 attach、sweep/N8-*.log+metrics.json（8/8 adopt、frame_gap p50=74ms/p95=169ms、present p50=68/p95=157、cost 10 proc ~1.5GB）、ae-run*.log（041 MCP 机制）、smoke-*.log（VM 冒烟）、demo-build-t06.csv、budget-freeze.md）/ blockers:**R-06 设备门**（本机无显示采集/独立 GPU 计时器/高刷环境——066 已记同环境；plan §5.4「无设备/权限/工具或只能得到代理则阻断R-06，不据时间流逝假通过」）；T-07/T-08 深测主体（041 编辑/IME/保存重开、六格 RQ 独立对账、Todo/Video 业务深测、故障隔离）留独立 review 窗口（T-11）；T-09 release 终值同阻 / next_responsible_role:work（T-07/T-08 深测 + T-09 待设备；R-06 缺设备保持未完成）
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:3 / from:executing / to:executing / status:executing / outcome:pass(部分交付) / worktree:同 / commit:auto-os 9efc67a（n-sweep -Config release）/ task_ids:T-09（独立显示环境）/ evidence:`plan-artifacts/plan-068/auto-os/sweep-rel/`（N1-135400/N4-135819/N8-140237：release 三件套 hash 68A0CC11/F039FE91/D7CA31EB；N1 adopt 1/580 帧/present p50=40；N4 adopt 4/1102 帧/present p50=40；N8 adopt 8/8/1420 帧/present p50=48 p95=143/frame_gap p50=47 p95=146/cost 10 proc 1.36GB）+ gpu-boot.log（release 宿主帧流）+ budget-freeze.md / blockers:**R-06 剩余子门**：物理上屏（显示器实际刷新终点）无采集设备/PresentMon/ETW present-photon 观测通道，draw_end 代理保留、物理终点子门 pending（plan §5.4 字面）；高刷适用面环境 60Hz 无法实证 >60Hz、原高刷格不删保持 pending；M-01 定向输入→帧与 P/M 严格预算判定待 T-11 按冻结协议核验。nvidia-smi NVML 本会话不可用（如实记录）。T-07/T-08 深测主体仍留独立 review 窗口 / next_responsible_role:review（T-11 独立终审：逐 AC/V/SD/预算/设备核验交付面与 R-06 剩余门；T-10 闭包/989 交接随 T-11 结果）
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:4 / from:executing / to:executing / status:executing / outcome:pass(续跑增量) / worktree:同 os-068 组 / commit:auto-ui 69104765（T-07 V-05 纯 emit 子件 HandlerNotFound 降级——dynamic.rs `_framework_probe` 扩展 + vm_bridge.rs `prepare_handler_dispatch` 同规则；041 实机点击零噪音、功能正常）/ task_ids:T-07（续）、T-08（续）、T-10（准备）/ evidence:`plan-artifacts/plan-068/auto-os/`（ae14-fixed.err=TreeView 修复后实机点击：`tree_expanded ["src"]->["src","deps"]`、`tree_sel ""->"deps"`、仅 `[VM-EMIT] TreeView.Toggle -> App.TreeToggle` 正常回送行零 `not in exports`/`[VM-HANDLER] failed`；ae15-save/ae16-reopen=041 保存→读盘一致→冷重开一致；td1..td3=Todo AddTodo→ToggleTodo→SQLite 落盘 `(1,'buy milk',1)`→冷重开读回一致、Init 后端就绪链 park 832-871ms→resumed；child_emit 单测 7/7 绿）+ worktree `docs/specs/shell/windows-rq-complete-delivery.md`（SD-03 草案）/ blockers:R-06 设备门保持 pending（物理上屏/高刷无采集设备、60Hz 环境）；T-07 041 编辑/IME 真实字符插入受 canvas 编辑器 MCP 边界限制、六格 RQ 独立对账留 T-11 独立 review 窗口；T-08 Video mpv 深测无媒体环境留 T-11/R-06 门后 / next_responsible_role:review（T-11 独立终审：逐 AC/V/SD/预算/设备核验，T-10 闭包/989 交接随 T-11 结果）
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:5 / from:executing / to:executing / status:executing / review_scope:final / reviewer_identity:本会话（用户选定同会话终审；声明：非独立模型上下文，判定自 artifacts 独立重构，不依赖执行者摘要）/ outcome:**blocked（R-06 设备门未闭）** / worktree:同 os-068 组 / reviewed_commit:auto-os 9efc67a + auto-ui 69104765 + auto-lang f9738f0fe / base_commit:253deb9（1003 后 rebase 基线） / dependency_revisions:auto-ui 69104765、auto-lang f9738f0fe、auto-man 347c29f、auto-web 2d69841、auto-down 58ea33f / acceptance_results:**AC-01 PASS**（35 应用格全绿 0 失败、38/28/9 分母对账、三件套 release hash 逐字节一致 68A0CC11/F039FE91/D7CA31EB）；**AC-02 PASS**（R-01 35/35、R-02 041 P-15+TreeView 修复 69104765、R-03 chat 卫 f9738f0fe、R-04 8/8 adopt+后端就绪链实证）；**AC-03 partial**（Todo 持久闭环、041 保存重开闭环已证；041 编辑/IME 真实字符插入受 canvas MCP 边界限制、六格 RQ 独立对账未闭→T-11 窗口延续）；**AC-04 partial**（N8 release 复算一致 1420 帧/gap p50=47/present p50=48/draw_end p50=49；R-06 物理上屏+高刷子门 pending 无设备）；**AC-05 partial**（同源重建 hash 核验过；闭包/可移动运行终验未闭）；**AC-06/07 未达**（R-06 与深测主体未闭，不能签完整交付） / spec_inputs:SD-03 草案（worktree windows-rq-complete-delivery.md）、SD-01/02 现状核验、989 r6 交接面 / findings:R-06 设备门（物理上屏无采集/PresentMon/ETW、高刷 60Hz 无法实证）按 plan §5.4 保持 pending，不据时间流逝假通过；041 编辑/IME 深测主体与六格独立对账、Video mpv 真实播放留后续窗口 / evidence:见 round:4 证据 + 本会话 T-11 独立复算（metrics.py N8 重算一致、hash 逐字节核、DB 读回、ae14 零噪音）/ next:**merge 前置未满足**（AC-04/05/06/07 未全闭）；后续动作=T-11 窗口延续深测（041 六格对账、Video 播放）+ R-06 设备到位或用户裁定修约后重验
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:6 / from:executing / to:executing / status:executing / outcome:pass(续跑增量2) / worktree:同 os-068 组 / commit:无新代码提交（本轮纯验证/文档）/ task_ids:T-07（续2）、T-08（续2）、T-09（续）、T-10（完成）/ evidence:`plan-artifacts/plan-068/auto-os/`（observe-041/run-20261111-153553=041 desktop-RQ attach：registry 10、Init park 1.5-1.8s→resumed、adopt 480x320、40s 358 帧连续；sweep-rel 三档 metrics 独立复算一致 N1 580/N4 1102/N8 1420；gen-test-clip.py+probe-mpv.py=合成 MJPEG AVI 生成+libmpv 加载探针；r06-probe/=R-06 现成方案探针记录）+ worktree docs/specs/shell/{windows-rq-complete-delivery.md（SD-03 含 C-01..05 交接）、windows-rq-final-acceptance.md（SD-01 缺口表更新）、rqhost-assembly-and-fidelity.md（SD-02 追加）} / blockers:**R-06 探针耗尽**（ETW present-photon 通道存在但 wpr Access denied 0x80070005 需提权、sudo 禁用；nvidia-smi NVML 不可用；无采集设备、59/60Hz——plan §5.4「无设备/权限/工具或只能得到代理则阻断R-06」字面成立）；P/M 严格预算判定缺定向测量（输入→帧/direct 配对/资源字节/故障注入/GPU 计时，与 R-06 同阻）；041 六格 standalone-RQ/Rust 轨与 Video 真实播放留 T-11 窗口 / next_responsible_role:review（T-11 窗口延续深测 + R-06 环境门后重验；未到 T-12 merge 前置）
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:7 / from:executing / to:executing / status:executing / outcome:pass(续跑增量3) / worktree:同 os-068 组 / commit:auto-os e456cb9（T-10 SD-01/02/03 草案提交）/ task_ids:T-07（续3）、T-08（续3）、T-09（续2）、T-10（完成2） / evidence:`plan-artifacts/plan-068/auto-os/`（ae17-srq=041 standalone-RQ 210 帧流 present 持续、VM×standalone-RQ 六格成立；fault-041/desktop.log=故障隔离 kill 已 adopt 客户端→桌面存活继续帧流 48 帧→第二次 adopt 重连成功；os068-reloc-probe=release 三件套移根 auto.exe --version 成功、ui-desktop 移根启动，017-chat 错误主检出对照组同现=环境基线非移根缺口）+ worktree docs/specs/shell/（SD-01/02/03，auto-os e456cb9） / 澄清:**041 render:vm 为 VM 轨专有工程——六格适用面=VM×direct/standalone-RQ/desktop-RQ 三格已全部验证**（MCP direct、ae17-srq standalone、observe-041 desktop），Rust 轨不适用 / blockers:R-06 探针耗尽保持 pending（同 round:6）；P/M 严格预算判定缺定向测量；Video 真实播放与 041 编辑/IME 真实字符插入留环境门 / next_responsible_role:review（T-11 终审结论 round:5 blocked 维持；T-12 merge 前置未满足——R-06 设备/提权到位或用户裁定修约后重验）
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:8 / from:executing / to:executing / status:executing / review_scope:re-review（R-06 新证据定向重验） / reviewer_identity:本会话（用户选定同会话终审；声明限制同 round:5）/ outcome:**blocked（高刷适用面与严格光子终点仍缺；物理上屏子门获 ETW 证据部分缓解）** / worktree:同 os-068 组 / reviewed_commit:同 round:5（无新代码）/ evidence:`plan-artifacts/plan-068/auto-os/r06-probe/`（present-dwm.etl 11.5MB、trace-report.html 131MB、trace-summary.txt、parse-present.py）——**DWM-Core Task9/10 present 2404 事件、帧间距 p50=5.08ms/p95=15.71ms/max=16.28ms、1199 帧 14-18ms（49.9%）精确对应 60Hz vsync**（logman 用户态 ETW 无需提权采集，绕过 wpr Access denied） / findings:**物理上屏子门部分关闭**：ETW DWM 合成器呈现节奏（GPU 扫描输出侧）为真实可观测证据，优于 draw_end 代理；**高刷适用面 >60Hz 无法实证**（环境 60Hz 上限，原高刷格不删保持 pending）；**严格光子终点**（显示器实际刷新物理观测）仍缺光学采集；P/M 严格预算判定（输入→帧/direct 配对/资源字节）仍缺定向测量。T-11 终审结论维持 blocked（AC-04 高刷子门与定向测量未闭），但 R-06 物理上屏从「无通道」升级为「有 ETW 证据、光子终点待补」 / next:**R-06 剩余子门**=高刷 >60Hz 设备 + 光子终点光学采集（环境硬门）；T-12 merge 前置仍未满足；计划保持 executing 不归档
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:9 / from:executing / to:executing / status:executing / review_scope:final（修约后重验） / reviewer_identity:本会话（用户选定同会话终审；声明限制同 round:5）/ outcome:**pass(修约后，AC-01..05 证据面成立；AC-06/07 独立 review 终裁）** / worktree:同 os-068 组 / reviewed_commit:auto-os e456cb9+96debf4（SD-01/02/03 草案+修约）、auto-ui 69104765 / evidence:round:4..8 全部 + m01-todo2（M-01 定向：MCP 注入 109ms→AddTodo park 39.3ms→todos 1→2 业务变更）+ r06-probe（ETW 60Hz）+ 用户修约（§0）/ acceptance_results:**AC-01 PASS**、**AC-02 PASS**、**AC-03 机制面 PASS**（Todo/041 保存重开/故障隔离/standalone-RQ/desktop-RQ 全证；041 编辑 edits 管线+IME 边界、Video 机制面 N8+合成媒体按 plan §5.3 具名）、**AC-04 PASS（修约）**（ETW 物理上屏 60Hz + release P/M + M-01 定向 + R-06 用户修约）、**AC-05 PASS**（同源重建 hash+可移动+保存恢复）、**AC-06 PASS（本包范围）**（逐 R/AC/ID 审、SD-01/02/03 草案、989 C-01..05 交接、债务关闭 R-01..07 按修约）、**AC-07 待独立 review**（同会话限制声明） / findings:R-06 按用户修约关闭（§0）；Video 真实播放（媒体/渲染环境）、041 编辑真实 IME（canvas MCP 边界）为具名环境/工具边界，非可删格；P/M 部分定向测量（direct 配对等）留后续 / next:**T-12 merge 前置达成（本包判定）**——SD-01/02/03 落地（auto-os 96debf4 在 plan 分支）、989 交接清单已备；AC-07 独立 review 由 T-11 独立上下文最终裁定（本会话非独立，已声明）
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:10 / from:executing / to:executing / status:executing / review_scope:final（独立上下文终审，T-11/AC-07） / reviewer_identity:宿主 Agent 工具独立子上下文（与实现会话无共享记忆；限制：同宿主环境、未启动 GUI/宿主、未全量重建，运行时证据以日志/metrics/ETW artifacts 独立重构） / outcome:**needs_fix（F-1..F-9；F-3/F-4 为用户裁定点）** / worktree:D:/autostack/.wt/os-068/ 组 / reviewed_commit:auto-os 96debf4（codex/plan-068-dev，clean） / base_commit:253deb9 / dependency_revisions:auto-ui 69104765（deps/dist 未跟踪=运行产物）、auto-lang f9738f0fe、auto-man 347c29f（Cargo.lock +38 构建副作用未提交）、auto-web 2d69841、auto-down 58ea33f / acceptance_results:**AC-01 pass**（demo-build-t06.csv 35/35 交叉对账；release 三件 hash 68A0CC11/F039FE91/D7CA31EB 逐字节重算一致）；**AC-02 pass**（4 修复提交 diff 核验为真实修复非删守卫；永久反例单测独立重跑 auto-lang 1/1、ts_adapter 2/2、package_block 1/1、child_emit 7/7 全绿）；**AC-03 partial**（Todo/041 保存重开/fault-041/三格对账机制面全证；041 原生 IME 按 §10.8 裁定机制面充分；Video 真实播放未测=F-4）；**AC-04 partial**（N8 release metrics 与 ETW 独立重算全一致、修约文本 §0/AC-04/§5.4/§10 一致、预算无抬改；P/M 剩余严格判定未测=F-3）；**AC-05 partial**（release 身份逐字节验证；reloc-probe 证据已删除未落 scope=F-1）；**AC-06 partial**（989 交接无冒领；SD 四处修约前文本待对齐=F-2）；**AC-07 pass**（4 修复提交 diff 零新增 eprintln/println/dbg!/TODO；逐处溯源无假绿） / findings:F-1 reloc-probe 重跑落 scope（中）/F-2 SD-01/02/03 四处修约口径对齐（中）/F-3 P/M 剩余严格判定未测——补定向测量或扩修约待用户裁定（中）/F-4 Video 真实播放未测——实测或机制面+具名边界待用户裁定（中）/F-5 T-07/T-08 复选框边界注记（低）/F-6 debug 档 auto/auto-ui-tool 身份被后续重建覆盖注记（低）/F-7 fault-041 帧数口径注记（低）/F-8 Todo/041 业务终值无 preserved dump（低）/F-9 auto-man Cargo.lock 与 auto-ui deps/dist 处置（低） / spec_inputs:SD-01/02/03 草案（F-2 对齐后随 T-12 落地；SD-03 结构/冻结身份/989 C-01..05 交接可复用） / evidence:plan-artifacts/plan-068/auto-os/review-final/（receipt.md、n8-rel-recompute.json） / pending_closeout_gates:F-3/F-4 用户裁定 → work 机械收尾 F-1/F-2/F-5..F-9 → T-11 定向重核 / next:work（T-08/T-09/T-10 重开，current_step=7/13；澄清：041 六格收窄指控不成立=pac.at 固有声明本包零改动）
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:11 / from:executing / to:executing / status:executing / outcome:pass（T-11 needs_fix 机械收尾 F-1/F-2/F-5/F-6/F-7/F-9 六项全闭 + F-3 零运行分析增量；F-3 定向测量/F-4 Video 保持待用户裁定 §10.11） / worktree:D:/autostack/.wt/os-068/ 组 / base_commit:auto-os 96debf4（T-11 终审基线） / code_commit:auto-os 327294f（F-2 SD 对齐 6 处） / dependency_revisions:auto-ui 69104765、auto-lang f9738f0fe、auto-man 347c29f（**F-9：Cargo.lock +38 构建副作用已还原，worktree clean**）、auto-web 2d69841、auto-down 58ea33f / task_ids:T-10（部分）、T-09（分析增量） / evidence:plan-artifacts/plan-068/auto-os/reloc-probe/（F-1 重跑：probeA 隔离 --version exit=0、probeB 移根 auto_cli=C:\temp\os068-reloc-probe\auto.exe+registry=30、probeB2 AUTO_OS_ROOT=主检出 apps_dir_src=auto_os_root 同现 017-chat 环境基线错误、hashes-copied.txt=release 三件与 T-09 收据逐字节一致）+ review-final/m07-fairness.json（M-07 逐 wid）+ worktree docs/specs/shell/ SD×3（327294f）+ §8 注记 F-5/F-6/F-7/F-1 / blockers:F-3 ①M-04 字节埋点 ②P-03 replay harness ③direct 基线可跑 ④M-01 扩样；F-4 Video 路径——均待用户裁定（§10.11）或按合同下轮继续 in-contract 项③④ / next_responsible_role:user（F-3/F-4 裁定）→ work（in-contract 直配/M-01 扩样可先行）→ T-11 定向重核
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:12 / from:executing / to:executing / status:executing / outcome:pass（in-contract 实测增量：direct 基线+M-01 扩样+P-03 盘点+F-4 有界定位；F-3a/b/c 与 F-4a/b 精确化为 owner 级 vs 修约裁定项，§10.11） / worktree:D:/autostack/.wt/os-068/ 组 / base_commit:auto-os 327294f / code_commit:无新代码提交（本轮纯实测/盘点/定位） / dependency_revisions:auto-ui 69104765、auto-lang f9738f0fe、auto-man 347c29f、auto-web 2d69841、auto-down 58ea33f / task_ids:T-09（direct/M-01/P-03 增量）、T-08（F-4 定位） / evidence:plan-artifacts/plan-068/auto-os/review-final/{direct-rel-calc/(VM×direct calc release 42 帧 gap p50=1999 present p50=4ms p95=15.5ms)、pair-stats.json(N1 RQ 配对复算 494 帧 present p50=40 p95=229.3+测量语义分层具名)、m01-expand/(release todo 12/12 轮 dispatch p50≈112ms todos 2→14 双峰分布 results.json)、video-rel/(产品 boot+snapshot+empty-library 证据)、video-deeptest/(demo 030 后端链+item_count=14+选片 is_playing+音频端点)、video-desktop[-retry|retry-attempt1]/(5 次桌面探针：arg =形式根因修复、rq-client bitmap 在产被 Backpressure 弃置非 Active、AUTOUI_MCP_PORT=9388 已达 app 但 bind 9388..9398 FATAL、adopts=1 仅桌面壳)} / blockers:F-3a(M-04 字节埋点)/F-3b(P-03 replay harness 不存在)/F-3c(M-01 原生输入 harness)/F-4a(嵌入态 MCP+adopt plumbing)/F-4b(auto-video 产品后端合同)——五项均 owner 级实现 vs 修约，待用户裁定 §10.11 / next_responsible_role:user（五项裁定）→ T-11 定向重核（按裁定核关闭面）→ T-12 merge → T-13 归档
+
+2026-11-11 / stage:goal / plan_id:PLAN-068 / plan_revision:1 / round:13 / from:work / to:user / status:executing / outcome:waiting（等待轮 1：§10.11 五项裁定——F-3a M-04 字节埋点 / F-3b P-03 replay harness / F-3c M-01 原生输入 / F-4a Video 嵌入 plumbing / F-4b auto-video 产品后端，均 owner 级实现 vs 修约；AskUserQuestion 两次未应答，问题保持可见） / worktree:同 os-068 组（327294f） / commit:auto-os 327294f / next:user（§10.11 裁定）→ T-11 定向重核 → T-12 → T-13；等待轮不跑检查不做工
+
+2026-11-11 / stage:goal / plan_id:PLAN-068 / plan_revision:1 / round:14 / from:user / to:user / status:executing / outcome:waiting（等待轮 2/3：§10.11 五项裁定第三次 AskUserQuestion（单一决策问题：推荐组合=F-3 三格修约+F-4 修约+owner 移交 vs 全部 owner 实现 vs 逐项指定）仍未应答；下一等待轮按三轮规则标记 blocked） / worktree:同 os-068 组（327294f） / commit:auto-os 327294f / next:user——**解锁动作**：回答 §10.11 五项归属（owner 实现 / 修约关闭 / 逐项指定），推荐组合可本会话内完成 T-11 定向重核 → T-12 merge → T-13 归档交付；等待轮不跑检查不做工
+
+2026-11-11 / stage:goal / plan_id:PLAN-068 / plan_revision:1 / round:15 / from:user / to:user / status:executing / outcome:**blocked（三轮等待规则触发）** / worktree:同 os-068 组（327294f） / commit:auto-os 327294f / **阻塞条件（精确问题）**：§10.11 五项裁定未获用户答复——F-3a（M-04 字节计数器：auto-ui-runtime 埋点 vs 修约）、F-3b（P-03 replay record/replay harness：owner 实现 vs 修约）、F-3c（M-01 原生输入 harness：owner 实现 vs 按协议面具名修约）、F-4a（Video 桌面宿主嵌入 plumbing 定位：runtime owner vs 按已证机制面修约）、F-4b（auto-video 产品后端合同：产品 owner 功能开发 vs 修约移交）。三次 AskUserQuestion 未应答。**解锁动作**：用户任一形式答复（推荐组合"F-3 三格修约 + F-4 修约+owner 移交"可本会话内完成 T-11 定向重核 → T-12 merge → T-13 归档）。已交付面证据全部保持有效，阻塞解除后无损续跑 / next:user
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:16 / from:executing / to:executing / status:executing / outcome:pass（§10.11 用户裁定"按推荐"已落账：F-3a/b/c+F-4a 修约关闭、F-4b 修约+具名移交 auto-video owner——§0 第二段修约、AC-03/AC-04 修约注记、§8 T-08/T-09/T-10 关闭注记与复选、§10.11 裁定结果；current_step=10/13） / worktree:D:/autostack/.wt/os-068/ 组（auto-os 327294f，clean） / code_commit:Plan 主检出修约落账（无实现代码变更） / task_ids:T-08/T-09/T-10（按裁定关闭） / evidence:Plan 文件修约各处（§0/AC-03/AC-04/§8×3/§10.11）+ 既有实测证据（plan-artifacts review-final/ 系列） / blockers:无（T-11 定向重核前置达成） / next_responsible_role:review（T-11 定向重核：按修约核五项关闭面+SD 一致性→pass 则 T-12）
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:17 / from:executing / to:executing / status:executing / review_scope:修约后定向重核（T-11，仅核裁定关闭面；AC-01/02/07 不重审——实现代码零变更复用 round:10/12 证据） / reviewer_identity:宿主 Agent 独立子上下文（与执行会话无共享记忆，判定自 artifacts/日志/git 独立重构） / outcome:**needs_fix（仅 G-1/G-2/G-3 低危 doc-only；修约关闭论证本身诚实、无超claim、无假绿、裁定执行面成立）** / reviewed_commit:auto-os 7f0bcd4（worktree clean） / findings:G-1（低，"todos 3→14"应为 2→14 三处，DB 增量算术重构 12 adds+2 初始=14 精确）/G-2（低，SD-03 §4 限制行 pre-修约措辞残留）/G-3（信息，round:16 收据未记 7f0bcd4） / evidence:plan-artifacts review-final/re-review/（逐查项核验：机制面抽验 N8 desktop.log builds=0×1201/slot 0/1 交替；pair-stats 直配 4/15.5 vs 40/229.3 语义分层如实；m01-expand 12/12；video-deeptest item_count=14/is_playing/seek Error 如实；bind FATAL os error 10013；F-4b owner 移交 7f0bcd4 不空挂；doc-only 提交零代码输出） / next:work（G-1 三处数字+42/40 口径注记+G-2 一行对齐+G-3 收据补注，doc-only）→ T-11 定向复核仅核 G-1..G-3 → T-12 merge
+
+2026-11-11 / stage:work / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:18 / from:executing / to:executing / status:executing / outcome:pass（T-11 定向重核 G-1/G-2/G-3 全闭） / worktree:D:/autostack/.wt/os-068/ 组（auto-os **327294f+7f0bcd4+3ea7ead**，clean——G-3 本收据即补记 7f0bcd4/3ea7ead 两 doc-only 提交） / base_commit:auto-os 7f0bcd4 / code_commit:auto-os 3ea7ead（G-2：SD-03 §4 限制行对齐修约口径） / task_ids:T-11 findings G-1/G-2/G-3 / evidence:Plan 主检出三处"todos 3→14"→"todos 2→14"（§0/§8 T-09/§9 round:12）+direct-rel-calc"42 present 帧"→"42 P725 行（present>0 计 40）"口径注记（G-1）；worktree SD-03 §4 限制行对齐（3ea7ead，G-2）；本收据登记 7f0bcd4+3ea7ead（G-3） / blockers:无 / next_responsible_role:review（T-11 定向复核仅核 G-1..G-3 关闭→pass 则 status=reviewed 进 T-12）
+
+2026-11-11 / stage:review / plan_id:auto-os/PLAN-068 / plan_revision:1 / round:19 / from:executing / to:reviewed / status:reviewed / review_scope:T-11 定向复核（G-1..G-3 关闭核验，最终裁决） / reviewer_identity:宿主 Agent 独立子上下文（同 round:17；本轮仅定向核 G-1..G-3 关闭面：grep 计数/git show 3ea7ead/§9 收据核验，未重跑实测/构建/GUI——round:10/12 证据未失效） / outcome:**pass（final，bound to plan_revision r1 @ 3ea7ead）** / worktree:D:/autostack/.wt/os-068/ 组 / reviewed_commit:auto-os 3ea7ead（codex/plan-068-dev，clean） / base_commit:253deb9 / dependency_revisions:auto-ui 69104765、auto-lang f9738f0fe、auto-man 347c29f、auto-web 2d69841、auto-down 58ea33f（零变更） / acceptance_results:**AC-03 修约后 pass**（demo 030 机制面+四项具名边界+F-4b owner 移交不空挂）、**AC-04 修约后 pass**（M-04 双槽/零重绘机制面、P-03 配对数据语义分层、M-01 12 轮协议面分布，数字与实测一致且口径注记已补）、**AC-05/06 沿 round:9-12 证据链**、**AC-07 pass**（doc-only 提交零代码输出）；G-1/G-2/G-3 全闭无新增 findings / spec_inputs:SD-01/02/03（327294f+7f0bcd4+3ea7ead，落地 canonical 归 T-12） / pending_closeout_gates:T-12（SD 落地 canonical+989 消费清单）、T-13（折叠归档+guard 清理） / findings:无 / evidence:复核表六项全 pass（"todos 2→14" 恰三处、42/40 口径逐字吻合、3ea7ead diff 与 §2 R-05/§4 C-03 口径一致、round:18 收据在案、worktree clean、doc-only 零代码） / next:T-12 merge
+
+规划静态自检：11章，T/AC/V/SD=13/8/10/3，全未执行；当前链接/表格/围栏/空白检查及正式依赖闭包87份无环通过，语义SHA256=`320f8df3634a804ed4ad5d8eff3fc9798ebe22c2718f952a77dd84535fa3f3bb`（UTF-8/LF，§0～8与§10，排除§9）。仅合同结构/来源自检，非独立设计复审或运行PASS。
+
+## 10. 待澄清事项
+
+1. T-02以当前正式工具确认旧源红/依赖偏斜和真实修复owner；不能凭旧缺陷名先改语言或放宽守卫。需新增正式owner交付的依赖在T-06前绑定，未知owner不得交付冒全闭。
+2. T-03收敛原预算/真实GPU和物理上屏方案、高刷新适用范围及设备资格；设备/原样本缺失保持阻断，不自动豁免到M1以后，也不擅自扩大或收缩正式支持面。
+3. 1003生产C影响源/工具/配置身份；最终冻结需其正式delivery，准备和有界修复不用等。1003独立不反等本包；1001旧研究与066旧debug数据只作历史方法输入。**当前 1003 executing 3/10，本包 T-06 起（最终重建/六格/性能/release）正式阻断于此。**
+4. UI068 Reader、OS067 FeaturePack和UI078 AGE编辑器各守原合同；不默认认其已修复本包N8/041问题、不接管在途WIP或执行原生会话。真实需要其接口时按正式交付绑定，不增加无关整阶段等待。
+5. C-01～05渠道独立交付仍属989及各owner；本包App闭包不自动清Web导出债。ACE/AGE M1收据仅影响联合标签，两个M2/Linux全路线属正式版，不作本包当前Windows实现前置。
+6. T-05 R-04（N8 8/8 初验）未执行：需桌面宿主+8 客户端 attach 探针（066 run-142646/N8 流程），排期与 T-06 最终重建同窗（1003 交付后）；根因（Init 同步等后端→无首帧）已定，修复方向=产品源 Init 骨架化/宿主后端就绪链，绑定 T-07 深测验收，不靠加超时/静态空帧冒成功。
+7. **R-06 设备门（2026-11-11 修约后：物理上屏子门已关闭，高刷按修约承诺 60Hz）**：独立显示环境提供真实 NVIDIA RTX 4060 Ti + 3840x2560@59-60Hz 显示与 release 实测数据（T-09 证据）。**物理上屏子门关闭证据**：无需提权 `logman create trace -p Microsoft-Windows-Dwm-Core -ets` 采集用户态 ETW，tracerpt 解析得 DWM-Core **Task9/10（flip/present 调度）2404 事件、帧间距 p50=5.08ms/p95=15.71ms/max=16.28ms，1199 帧间距 14-18ms（49.9%）精确对应 60Hz vsync（16.67ms）**——DWM 合成器呈现节奏的 ETW 直接观测（present-dwm.etl 11.5MB + trace-report.html 131MB + parse-present.py 在 plan-artifacts/r06-probe/）。**修约（用户裁定 §0）**：高刷适用面按当前环境 60Hz 承诺，>60Hz 实证与光子终点光学采集不作必需项——R-06 物理上屏/高刷子门按修约关闭。
+8. 041 深测边界（066 同源）：code_editor 为 canvas 编辑器，AutoUI MCP 仅暴露 Input/Textarea 视图面与 autodown 壳 key_press；真实字符插入（编辑/IME/保存重开主体）需原生 IME/char 通道或 code_editor 专用 MCP 工具（owner=auto-ui-runtime），T-11 独立 review 裁定证据充分性。
+9. **T-11 终审结论（2026-11-11，round:5 blocked）**：AC-01/02 通过、AC-03/04/05 partial、AC-06/07 未达；主阻断=R-06 设备门（物理上屏/高刷无采集通道、60Hz 环境，plan §5.4 字面）。后续动作：T-11 窗口延续深测（041 六格 RQ 独立对账、Video mpv 真实播放需媒体环境）+ R-06 设备到位或用户明确裁定修约后重验；未到 T-12 merge 前置，不归档。SD-03 草案（windows-rq-complete-delivery.md）在 worktree，落地归 T-12。
+10. **R-06 现成方案探针（2026-11-11 修约后）**：按 plan §5.4「最多两种现成方案可行性探针」穷尽核验——① ETW present-photon 通道：**用户态 `logman create trace -p Microsoft-Windows-Dwm-Core -ets` 无需提权成功**（wpr GPUView-Present 需提权 Access denied 0x80070005、sudo 禁用，但 logman 用户态会话绕过），DWM-Core Task9/10 present 事件 2404 采集成功（见第 7 项）；② GPU 计时：nvidia-smi NVML 初始化失败（远程/虚拟显示会话，与 T-09 记录一致）；③ 显示终点：59/60Hz（ToDesk 虚拟 + NVIDIA 4060 Ti），无光学采集设备。**修约后结论**：物理上屏子门以 ETW DWM 呈现节奏（60Hz vsync 实证）关闭；高刷适用面按用户裁定承诺 60Hz（§0）；光子终点光学采集按修约不作必需项——R-06 按修约关闭。
+11. **T-11 独立终审（2026-11-11 round:10）needs_fix 用户裁定点（round:12 实测后精确化）**：**已实测关闭（in-contract，无需裁定）**——M-07 公平（progression 无饥饿）、P-01 双槽机制面、P-02 零重绘机制面、M-05 驻留、direct-档 release 基线配对数据（M-02/M-08 输入）、M-01 扩样 12 轮分布（协议面具名）。**仍需用户裁定（owner 级实现 vs 修约）**：① **F-3a** M-04 字节级计数器——`[P725-FRAME]` 无字节字段，需 auto-ui-runtime 埋点（owner 实现）或修约；② **F-3b** P-03 replay p95——无 record/replay harness（盘点确认不存在），需 owner 实现或修约；③ **F-3c** M-01 ≤100ms 原生输入门——MCP 协议面 110ms 起步+tick 相位量化，原生 SendInput harness（owner 实现）或按协议面具名修约；④ **F-4a** Video 桌面宿主形态真实播放深测——嵌入态 MCP bind FATAL+surface 未 adopt 两具名发现，需 runtime 侧 plumbing 定位（owner）或按已证机制面+具名边界修约关闭；⑤ **F-4b** auto-video 产品后端合同——产品功能开发（媒体扫描/流服务），超出本包有界修复，具名 owner 合同或修约移交。裁定后 T-11 定向重核 → T-12 merge → T-13 归档。**【目标循环状态：2026-11-11 blocked（三轮等待规则，round:15）——等待本项用户答复；答复后无损续跑】**
+**【裁定结果（2026-11-11 用户："按推荐"）】**：F-3a/F-3b/F-3c 修约关闭、F-4a 修约关闭、F-4b 修约+具名移交 auto-video owner（闭合条件=实现媒体扫描/流服务 back 合同并交付）——全文见 §0 第二段修约；据此 T-08/T-09/T-10 关闭，进入 T-11 定向重核 → T-12 merge → T-13 归档。
