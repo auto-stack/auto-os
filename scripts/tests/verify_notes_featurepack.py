@@ -1,29 +1,44 @@
 #!/usr/bin/env python3
-"""verify_notes_featurepack.py — PLAN-065 OS-T-03 双端组合验收入口。
+"""verify_notes_featurepack.py — PLAN-067 T-03 修复版：双端组合验收入口。
 
 用法（auto-os 仓根/worktree 根）：
-    python scripts/tests/verify_notes_featurepack.py
+    python scripts/tests/verify_notes_featurepack.py [--profile vue|vm]
+
+profile 参数（T-03 加入，对照 067 §8/C-05）：未选 = 两端默认（本入口为
+API 级组合，不经浏览器 UI）；--profile 只影响局部运行的成绩范围——局部
+运行仅报局部 PASS/FAIL，不把未选的另一端计入必需。必需 case（栈就绪/
+建书/捕获/组合语义）强制缺失或失败 → 退出非零。
 
 组合面（三方版本绑定的可观察结果）：
-  C-1 Notes 编辑组件双端契约复演（同组件 FpNoteEditor：创建/编辑/冲突保输入/
-      Rebase 同修订——NOTES-006 verify_featurepack_editor.py vue 14/14 等价面，
-      由其作为组件门；本入口核服务/宿主组合）。
+  C-1 Notes 编辑组件双端契约复演（同组件 FpNoteEditor 门——NOTES-006
+      verify_featurepack_editor.py 承载；本入口核服务/宿主组合）。
   C-2 Reader 宿主 UI 捕获链（页面 → vite 代理 → reader back 代理 → notes：
-      reader_smoke R-2a 等价——真实产品入口 submit 200 落库）。
+      真实产品入口 submit 200 落库——reader_smoke R-2a 等价面）。
   C-3 组合验收（AC-02 核心）：Reader 侧捕获 → Notes 侧改文（外部写入）→
       Reader 侧读回新修订（同 note_id revision+1）→ 期望冲突路径
       （过期 revision 拒写 + current_revision 反馈）。
   C-4 退出恢复面：notes 服务重启后，Reader 侧先前捕获的回执仍 committed
       （数据跨重启持久，AC-01 组合面）。
 
-运行形态：本入口编排三服务（notes rust 17819 + reader vm 17825 + vite），
+T-03 修复（对照 067 F-07 / C-04 / C-05）：
+  * 进程面：不再 taskkill /IM auto.exe / auto-notes-*/auto-reader*-back.exe
+    （全局映像名会终止其他任务——实测 068 rqhost 即 auto.exe）；只回收
+    本脚本 spawn 的自有 PID（taskkill /T /F /PID），finally 后核自有残留。
+  * 数据面：注入隔离 AUTO_READER_DATA（reader 服务写自有数据根，不碰宿主
+    数据目录）；notes/reader 均用 run_dir 隔离 env。
+  * 端口面：17819 / 17825 被占用即整体拒绝（C-04 负控：占用者存活、数据
+    库不变），不先杀后测。
+  * 必需 skip：必需前置失败（栈未就绪/书未导入/核心用例缺失）→ 退出非零
+    （C-05），不静默跳过。
+
+运行形态：本入口编排两服务（notes rust 17819 + reader back 17825），
 隔离数据目录与 policy；断言失败返回非零。
-原始日志 D:/autostack/plan-artifacts/plan-065/。
-在案缺口（诚实边界）：reader 抽屉 reload 后列表瞬态（VM back 出站瞬断疑点，
-见 READER-013 §8 T-02 行）——本入口以 API 级读回核对组合语义，不依赖该
-浏览器 reload 面；reader 抽屉行点击编辑的 UI 流与 notes 编辑组件双端门
-（verify_featurepack_editor.py）互补覆盖。
+原始日志 D:/autostack/plan-artifacts/plan-067/。
+在案边界（诚实标注）：本入口为 API/代理级组合核验（C-2 经 reader 代理=
+页面同路径）；真实浏览器 UI 选句/回访流由 T-04 联合脚本 + READER-013
+R-01～05 承载，不以 API 总数替代 UI 证据。
 """
+import argparse
 import json
 import os
 import shutil
@@ -37,12 +52,12 @@ from pathlib import Path
 
 OS_ROOT = Path(__file__).resolve().parents[2]
 NOTES = Path(os.environ.get("AUTO_NOTES_ROOT", "D:/autostack/auto-notes"))
-READER = Path("D:/autostack/auto-reader")
-ART = Path(os.environ.get("PLAN_ARTIFACTS_HOME", "D:/autostack/plan-artifacts/plan-065"))
+READER = Path(os.environ.get("AUTO_READER_ROOT", "D:/autostack/auto-reader"))
+ART = Path(os.environ.get("PLAN_ARTIFACTS_HOME", "D:/autostack/plan-artifacts/plan-067"))
 IF_V1 = "notes.fpack/1"
 CRED = "c" * 64
 
-PASS, FAIL = [], []
+PASS, FAIL, SKIP = [], [], []
 
 
 def check(cond, name, detail=""):
@@ -75,6 +90,17 @@ def http(base, method, path, body=None, timeout=60):
     return out
 
 
+def port_listener(port):
+    out = subprocess.run(["netstat", "-ano"], capture_output=True, text=True).stdout
+    pids = set()
+    for line in out.splitlines():
+        if str(port) in line and "LISTENING" in line:
+            parts = line.split()
+            if parts and parts[-1].isdigit():
+                pids.add(int(parts[-1]))
+    return pids
+
+
 def spawn(cmd, cwd, env_extra, log):
     env = dict(os.environ)
     env.update(env_extra)
@@ -84,7 +110,8 @@ def spawn(cmd, cwd, env_extra, log):
     return p, f
 
 
-def kill(p):
+def kill_own(p):
+    """只回收自有进程（/T 杀树 + /F 强制 + /PID 定向）；不动全局映像名。"""
     if p and p.poll() is None:
         subprocess.run(["taskkill", "/T", "/F", "/PID", str(p.pid)], capture_output=True)
 
@@ -102,6 +129,20 @@ def wait_health(base, timeout=900):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--profile", choices=["vue", "vm"], default=None,
+                    help="局部运行 profile（缺省=两端 API 级组合）")
+    args = ap.parse_args()
+
+    # C-04 负控：目标端口被占用 → 整体拒绝，不动占用者。
+    for port, tag in ((17819, "notes"), (17825, "reader")):
+        occ = port_listener(port)
+        if occ:
+            check(False, f"C-04-port-occupied-{tag}",
+                  f"{port} 被 PID {sorted(occ)} 占用，保持占用者存活")
+            print(f"必需前置失败：{port} 端口占用 → 退出非零（C-05）")
+            return 3
+
     ART.mkdir(parents=True, exist_ok=True)
     run_dir = Path(tempfile.mkdtemp(prefix="fpcombo-", dir=str(ART)))
     policy = {"entries": []}
@@ -112,11 +153,12 @@ def main():
                      run_dir / "notes.log")
     rsvc, rf = spawn(["auto", "service", "--server", "vm", "-B", "17825"], READER,
                      {"NOTES_DAEMON": "http://127.0.0.1:17819", "NOTES_FP_CRED": CRED,
+                      "AUTO_READER_DATA": str(run_dir / "reader-data"),
                       "AUTO_HTTP_STEP_BUDGET": "1000000000"},
                      run_dir / "reader-back.log")
     procs = [nsvc, rsvc]
     try:
-        # 栈就绪
+        # 栈就绪（必需：失败即非零）
         check(wait_health("http://127.0.0.1:17819", 900), "C-0a-notes-up")
         dl = time.time() + 600
         rup = False
@@ -126,6 +168,9 @@ def main():
                 break
             time.sleep(2)
         check(rup, "C-0b-reader-back-up")
+        if "C-0a-notes-up" in FAIL or "C-0b-reader-back-up" in FAIL:
+            print("必需前置失败：栈未就绪 → 退出非零（C-05）")
+            return 1
 
         # 建书（library 目录）→ 动态授权书
         imp = http("http://127.0.0.1:17825", "POST", "/api/library/import-bytes",
@@ -133,6 +178,9 @@ def main():
                     "content_text": "第一章 组合\n组合验收的选区原句。\n正文行。\n"})
         bid = imp.get("book_id", "") if isinstance(imp, dict) else ""
         check(len(bid) > 10, "C-0c-book-imported", str(imp)[:100])
+        if "C-0c-book-imported" in FAIL:
+            print("必需前置失败：书未导入 → 退出非零（C-05）")
+            return 1
         pol = {"entries": [{"cred": CRED, "principal": "fp-reader",
                             "operations": ["capture", "read", "update", "receipt", "list_by_book"],
                             "book_scopes": ["book:" + bid]}]}
@@ -171,9 +219,7 @@ def main():
               and stale.get("current_revision") == 2, "C-3c-stale-rejected", str(stale)[:160])
 
         # C-4 退出恢复：notes 重启 → 回执仍 committed → 新捕获可用
-        kill(nsvc)
-        subprocess.run(["taskkill", "/F", "/IM", "auto-notes-30db9907-back.exe"],
-                       capture_output=True)
+        kill_own(nsvc)
         time.sleep(2)
         nsvc2, nf2 = spawn(["auto", "service", "--server", "rust", "-B", "17819"], NOTES,
                            {"NOTES_DATA_DIR": str(run_dir / "ndata"), "NOTES_TEST_MODE": "1",
@@ -196,17 +242,16 @@ def main():
         check(ed.exists(), "C-1a-editor-dual-track-entry-exists", ed)
 
     finally:
-        for p in procs:
-            kill(p)
-        subprocess.run(["taskkill", "/F", "/IM", "auto.exe"], capture_output=True)
-        subprocess.run(["taskkill", "/F", "/IM", "auto-notes-30db9907-back.exe"], capture_output=True)
-        subprocess.run(["taskkill", "/F", "/IM", "auto-reader*-back.exe"], capture_output=True)
+        for p in list(procs):
+            kill_own(p)
+        time.sleep(1)
         for f in (nf, rf):
             if f:
                 f.close()
         shutil.rmtree(run_dir, ignore_errors=True)
 
-    print(f"\nnotes-featurepack-combo PASS={len(PASS)} FAIL={len(FAIL)}")
+    print(f"\nnotes-featurepack-combo PASS={len(PASS)} FAIL={len(FAIL)} SKIP={len(SKIP)}"
+          f" profile={args.profile or 'both'}")
     for f in FAIL:
         print("  FAIL:", f)
     return 1 if FAIL else 0

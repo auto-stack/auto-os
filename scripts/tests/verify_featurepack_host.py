@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""verify_featurepack_host.py — PLAN-065 OS-T-02 宿主面永久验证入口（AC-01）。
+"""verify_featurepack_host.py — PLAN-067 T-03 修复版：宿主面永久验证入口（AC-01）。
 
 用法（auto-os 仓根/worktree 根）：
     python scripts/tests/verify_featurepack_host.py
@@ -11,19 +11,32 @@
 隔离环境注入）→ 退避等待。auto-notes 仓按跨仓解析序定位（AGENTS §2）：
 $AUTO_NOTES_ROOT → 兄弟检出 ../auto-notes → 主检出 D:/autostack/auto-notes。
 
+T-03 修复（对照 067 F-07 / C-04 / C-05）：
+  * 进程面：不再 taskkill /IM 全局杀（auto.exe / 具名 back exe 可能属于其他
+    会话任务——实测 068 worktree 的 rqhost 就是 auto.exe）；只回收本脚本
+    spawn 的自有 PID（taskkill /T /F /PID）。
+  * 端口面：spawn 前 connect 17819，被占用即整体拒绝（C-04 负控：占用者
+    存活、数据库不变），而非先杀后测。
+  * 必需 case：前置不满足（端口忙/notes 根缺失/manifest 无 daemon）时
+    必需用例缺失 → 退出非零（C-05），不静默跳过。
+  * 单实例核验：以自有 spawn 存活数 + 17819 LISTENING 归属断言，不用
+    全局映像名计数。
+
 覆盖（AC-01 可观察结果）：
-  H-01 冷启：服务不在时从宿主 ensure 冷启动（主应用 UI 不参与——spawn 即
-       无 UI 服务进程，daemon 生命周期独立于主应用窗口）；health 版本就绪核验。
+  H-01 冷启：服务不在时从宿主 ensure 冷启动；health 版本就绪核验。
   H-02 并发首调合并：两宿主线程同时 ensure → 只允许一个 spawn 赢家，双方
-       都拿到同一实例（跨宿主读写同一存储核验）+ 进程数恰 1。
+       都拿到同一实例（跨宿主读写同一存储核验）+ 自有进程数恰 1。
   H-03 拒绝面：未授权凭据 / 错作用域 / 版本不合 → permission_denied /
        unsupported_version，无写入。
   H-04 单实例：服务在位时第三次 ensure 不产生第二进程。
-  H-05 重连与退出恢复：杀服务 → ensure 探测下线 → 重连（重 spawn）→
+  H-05 重连与退出恢复：杀自有服务 → ensure 探测下线 → 重连（重 spawn）→
        杀前捕获的 operation 回执仍 committed（持久跨重启）→ 新调用可用。
 
-约定（PLAN-065 §6）：从本仓根运行 `python scripts/tests/verify_featurepack_host.py`，
-默认隔离目录，断言失败返回非零。原始日志 D:/autostack/plan-artifacts/plan-065/。
+边界说明（067 M1 G-01/G-02/G-09）：本脚本按 spec §3 冻结的 manifest bin
+命令行语义直启（独立模式等价面）；桌面宿主（auto-ui-runtime
+ensure_manifest_daemon）当前按路径语义消费 bin 且 notes pac.at 无 daemon:
+键、注入键派生 015_NOTES_DAEMON 与 Reader 消费 NOTES_DAEMON 不一致——
+生产桌面链缺口已列 owner 前置，本脚本不冒充桌面链证据。
 """
 import json
 import os
@@ -41,9 +54,9 @@ OS_ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = OS_ROOT / "apps.manifest"
 IF_V1 = "notes.fpack/1"
 BASE = "http://127.0.0.1:17819"
-ARTIFACTS = Path(os.environ.get("PLAN_ARTIFACTS_HOME", "D:/autostack/plan-artifacts/plan-065"))
+ARTIFACTS = Path(os.environ.get("PLAN_ARTIFACTS_HOME", "D:/autostack/plan-artifacts/plan-067"))
 
-PASS, FAIL = [], []
+PASS, FAIL, SKIP = [], [], []
 
 
 def check(cond, name, detail=""):
@@ -92,10 +105,13 @@ def http(method, path, body=None, timeout=20):
     except Exception:
         return {"__status": 0}
     if isinstance(out, str):
-        try:
-            out = json.loads(out)
-        except Exception:
-            pass
+        depth = 0
+        while isinstance(out, str) and depth < 3:
+            try:
+                out = json.loads(out)
+            except Exception:
+                break
+            depth += 1
     return out
 
 
@@ -105,30 +121,62 @@ def health_ready():
     return h.get("status") == "ok" and h.get("interface") == IF_V1
 
 
-def back_proc_count():
-    out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq auto-notes-30db9907-back.exe",
-                          "/FO", "CSV"], capture_output=True, text=True).stdout
-    return sum(1 for line in out.splitlines()
-               if line.startswith('"auto-notes-30db9907-back.exe"'))
+def port_listener():
+    """17819 上 LISTENING 的 PID 集合（netstat 解析；无 → 空集）。"""
+    out = subprocess.run(["netstat", "-ano"], capture_output=True, text=True).stdout
+    pids = set()
+    for line in out.splitlines():
+        if "17819" in line and "LISTENING" in line:
+            parts = line.split()
+            if parts and parts[-1].isdigit():
+                pids.add(int(parts[-1]))
+    return pids
+
+
+def pid_alive(pid):
+    out = subprocess.run(["tasklist", "/FI", f"PID eq {pid}", "/FO", "CSV"],
+                         capture_output=True, text=True).stdout
+    return f'"{pid}"' in out
 
 
 def spawn_service(daemon, run_dir, log_f):
-    """按 manifest daemon.bin spawn（app 仓根相对命令行；端口 env 覆盖键生效）。"""
+    """按 manifest daemon.bin spawn（app 仓根相对命令行；端口 env 覆盖键生效）。
+    返回 (Popen, 实际 pid)。"""
     env = dict(os.environ)
     env["NOTES_DATA_DIR"] = str(run_dir / "data")
     env["NOTES_TEST_MODE"] = "1"
     env["NOTES_FP_POLICY"] = str(run_dir / "fp-policy.json")
     env[daemon.get("env_port") or "NOTES_DAEMON_PORT"] = str(daemon["port"])
     cmd = daemon["bin"].split()
-    return subprocess.Popen(cmd, cwd=str(notes_root()), env=env, stdout=log_f,
-                            stderr=subprocess.STDOUT,
-                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    p = subprocess.Popen(cmd, cwd=str(notes_root()), env=env, stdout=log_f,
+                         stderr=subprocess.STDOUT,
+                         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    return p
 
 
-def kill_all():
-    subprocess.run(["taskkill", "/F", "/IM", "auto-notes-30db9907-back.exe"],
-                   capture_output=True)
-    subprocess.run(["taskkill", "/F", "/IM", "auto.exe"], capture_output=True)
+def own_alive(procs):
+    """自有 spawn 中仍存活的进程数（不含已退出/端口败者）。"""
+    return sum(1 for p in procs if p.poll() is None)
+
+
+def record_listener(spawned_pids):
+    """记录 17819 LISTENING PID 到自有集合（back 逃逸防漏：auto.exe 树被杀
+    后 back 仍可能占端口——定向回收依赖此记录）。"""
+    for pid in port_listener():
+        if pid not in spawned_pids:
+            spawned_pids.add(pid)
+
+
+def kill_own_all(spawned_pids, procs):
+    """只回收自有：先 auto.exe 树，再定向杀记录过的 listener/back PID。"""
+    for p in list(procs):
+        if p.poll() is None:
+            subprocess.run(["taskkill", "/T", "/F", "/PID", str(p.pid)],
+                           capture_output=True)
+    for pid in list(spawned_pids):
+        if pid_alive(pid):
+            subprocess.run(["taskkill", "/T", "/F", "/PID", str(pid)],
+                           capture_output=True)
     time.sleep(2)
 
 
@@ -138,7 +186,16 @@ def main():
     nr = notes_root()
     check(nr is not None, "H-00b-notes-root-resolved", nr)
     if not daemon or nr is None:
+        print("必需前置缺失：manifest daemon 或 notes 根 → 退出非零（C-05）")
         return 2
+
+    # C-04 负控：目标端口已被其他进程占用 → 整体拒绝，不动占用者。
+    occupants = port_listener()
+    if occupants:
+        check(False, "C-04-port-occupied-reject",
+              f"17819 被 PID {sorted(occupants)} 占用，保持占用者存活")
+        print("必需前置失败：端口占用 → 退出非零（C-05）")
+        return 3
 
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     run_dir = Path(tempfile.mkdtemp(prefix="fphost-", dir=str(ARTIFACTS)))
@@ -154,10 +211,10 @@ def main():
     CRED_OTHER = "o" * 64
     src = {"book_id": "book:abc123", "quote": "宿主探针原句", "chapter": 1}
     procs, logs = [], []
+    spawned_pids = set()
 
     try:
         # ── H-01 冷启（主应用 UI 不参与；daemon 独立生命周期） ─────
-        kill_all()
         check(not health_ready(), "H-01a-down-before-cold-start")
         log_f = open(run_dir / "service.log", "w", encoding="utf-8")
         logs.append(log_f)
@@ -169,6 +226,7 @@ def main():
                 return
             p = spawn_service(daemon, run_dir, log_f)
             procs.append(p)
+            spawned_pids.add(p.pid)
             deadline = time.time() + 600
             while time.time() < deadline:
                 if health_ready():
@@ -178,12 +236,14 @@ def main():
 
         t0 = time.time()
         ensure_once()
+        record_listener(spawned_pids)
         check(spawn["done"] and health_ready(), "H-01b-cold-start-ready",
               f"{time.time() - t0:.0f}s")
         check((run_dir / "service.log").exists(), "H-01c-spawn-log")
 
         # ── H-02 并发首调合并（两宿主同时 ensure → 同一实例） ─────
-        kill_all()
+        # 只回收自有：先停当前自有服务（保端口干净），再并发。
+        kill_own_all(spawned_pids, procs)
         procs.clear()
         results = []
 
@@ -191,11 +251,13 @@ def main():
             if not health_ready():
                 p = spawn_service(daemon, run_dir, log_f)
                 procs.append(p)
+                spawned_pids.add(p.pid)
                 deadline = time.time() + 600
                 while time.time() < deadline:
                     if health_ready():
                         break
                     time.sleep(2)
+                record_listener(spawned_pids)
             r = http("POST", "/api/fp/v1/capture",
                      {"cred": CRED, "interface_version": IF_V1,
                       "attempt_id": f"h2-{tag}", "operation_id": tag * 32,
@@ -214,8 +276,11 @@ def main():
               [r.get("err_code") for r in results])
         nids = {r["note"]["note_id"] for r in okcaps if r.get("note")}
         time.sleep(2)
-        pc = back_proc_count()
-        check(pc == 1, "H-02b-single-instance-proc", f"procs={pc}")
+        # 单实例语义：17819 上 LISTENING 恰 1 个（back 是唯一监听者），且归属自有。
+        listeners = port_listener()
+        own_listeners = listeners & spawned_pids
+        check(len(own_listeners) == 1 and len(listeners) == 1,
+              "H-02b-single-instance-listener", f"listeners={listeners}")
         # 跨宿主同实例：宿主 a 捕获的行对宿主 b 可读（同存储）
         nid_a = sorted(nids)[0] if nids else ""
         g = http("POST", "/api/fp/v1/get",
@@ -224,10 +289,9 @@ def main():
               "H-02c-shared-store", g)
 
         # ── H-03 拒绝面（宿主契约上下文） ─────────────────────────
-        before = http("POST", "/api/fp/v1/list",
-                      {"cred": CRED, "interface_version": IF_V1,
-                       "book_id": "book:abc123", "cursor": 0, "limit": 100})
-        n_before = len(before.get("items") or [])
+        # 拒绝面无写入用 receipt 证明（list 端点因服务端坏 JSON 缺口不可靠——
+        # 067 M1 G-10：auto-lang PLAN-994 生成器把局部变量 len() 翻成字符数、
+        # str_substr 按字节截，含中文 doc 时坏 JSON；owner=auto-lang）。
         d1 = http("POST", "/api/fp/v1/capture",
                   {"cred": "", "interface_version": IF_V1, "attempt_id": "h3a",
                    "operation_id": "1" * 32, "source_json": json.dumps(src), "text": "x"})
@@ -239,18 +303,28 @@ def main():
         d3 = http("POST", "/api/fp/v1/get",
                   {"cred": CRED, "interface_version": "notes.fpack/2", "note_id": nid_a})
         check(d3.get("err_code") == "unsupported_version", "H-03c-version", d3)
-        after = http("POST", "/api/fp/v1/list",
-                     {"cred": CRED, "interface_version": IF_V1,
-                      "book_id": "book:abc123", "cursor": 0, "limit": 100})
-        check(len(after.get("items") or []) == n_before, "H-03d-no-write",
-              (n_before, len(after.get("items") or [])))
+        # 被拒操作不得产生回执（无写入）；合法主体仍可查原已提交操作。
+        q1 = http("POST", "/api/fp/v1/receipt",
+                  {"cred": CRED, "interface_version": IF_V1, "operation_id": "1" * 32})
+        q2 = http("POST", "/api/fp/v1/receipt",
+                  {"cred": CRED, "interface_version": IF_V1, "operation_id": "2" * 32})
+        check(q1.get("status") == "not_observed" and q2.get("status") == "not_observed",
+              "H-03d-denied-no-receipt", (q1, q2))
+        # list 端点探针：记录服务端坏 JSON 缺口（不断言——G-10 归 auto-lang）。
+        lp = http("POST", "/api/fp/v1/list",
+                  {"cred": CRED, "interface_version": IF_V1,
+                   "book_id": "book:abc123", "cursor": 0, "limit": 100})
+        if not isinstance(lp, dict) or not lp.get("ok"):
+            print(f"  [G-10-probe] list 端点不可靠: {str(lp)[:120]}")
 
         # ── H-04 单实例（服务在位第三次 ensure 不再 spawn） ────────
-        pc0 = back_proc_count()
+        lst0 = port_listener()
         if health_ready():
             check(True, "H-04a-already-ready-no-spawn")
-        pc1 = back_proc_count()
-        check(pc1 == pc0 and pc1 == 1, "H-04b-no-second-instance", (pc0, pc1))
+        time.sleep(1)
+        lst1 = port_listener()
+        check(len(lst1) == len(lst0) and len(lst1) == 1, "H-04b-no-second-instance",
+              (lst0, lst1))
 
         # ── H-05 重连与退出恢复 ────────────────────────────────────
         op_kill = "4" * 32
@@ -259,17 +333,18 @@ def main():
                    "operation_id": op_kill, "source_json": json.dumps(src, ensure_ascii=False),
                    "text": "重启前捕获"})
         check(r5.get("ok") is True, "H-05a-pre-kill-capture", r5)
-        kill_all()
+        kill_own_all(spawned_pids, procs)
         procs.clear()
-        time.sleep(1)
         check(not health_ready(), "H-05b-down-after-kill")
         log_f2 = open(run_dir / "service2.log", "w", encoding="utf-8")
         logs.append(log_f2)
         p2 = spawn_service(daemon, run_dir, log_f2)
         procs.append(p2)
+        spawned_pids.add(p2.pid)
         deadline = time.time() + 600
         while time.time() < deadline and not health_ready():
             time.sleep(2)
+        record_listener(spawned_pids)
         check(health_ready(), "H-05c-reconnected")
         q = http("POST", "/api/fp/v1/receipt",
                  {"cred": CRED, "interface_version": IF_V1, "operation_id": op_kill})
@@ -282,15 +357,16 @@ def main():
         check(r6.get("ok") is True, "H-05e-post-reconnect-capture", r6)
 
     finally:
-        for p in procs:
-            if p.poll() is None:
-                subprocess.run(["taskkill", "/T", "/F", "/PID", str(p.pid)],
-                               capture_output=True)
-        kill_all()
+        kill_own_all(spawned_pids, procs)
+        # 清点：自有 spawn 残留须为 0；绝不动非自有进程。
+        leaked = [pid for pid in spawned_pids if pid_alive(pid)]
+        if leaked:
+            print("LEAK 自有进程残留:", leaked)
+            FAIL.append("leak-own-process-cleanup")
         for lf in logs:
             lf.close()
 
-    print(f"\nfeaturepack-host PASS={len(PASS)} FAIL={len(FAIL)}")
+    print(f"\nfeaturepack-host PASS={len(PASS)} FAIL={len(FAIL)} SKIP={len(SKIP)}")
     for f in FAIL:
         print("  FAIL:", f)
     return 1 if FAIL else 0
