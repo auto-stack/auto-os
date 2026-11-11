@@ -60,7 +60,7 @@
 | 041-auto-edit 运行期 `use 模块解析失败`（P-15） | **已关闭（PLAN-068 T-04/T-05）**：VM use-loader 识别 `{ package` 块（非文件系统形态静默）；041 实机无 AUTO-USE-DIAG | UI Demo 源域 |
 | N=8 中 018/025/029 未 adopt（VM-PARKED/后端等待） | **已关闭 adopt（PLAN-068 T-05/T-08）**：N8 8/8 adopt（release）；Init 后端就绪链 park→resumed 实证（Todo 真实 API 后端 850ms 恢复）；业务数据面深测绑定 T-07/T-08 | OS068 战役后继 |
 | 017-chat native HTTP 后端组树生成失败（auto-web-contract links 冲突） | **已关闭（PLAN-068 T-05）**：source_owner 保守卫（异组 AUTO_WEB_SOURCE_ROOT 具名拒绝）+ 单测；组 env 正控生成成功 | 生成器/auto-web 解析域 |
-| auto-edit 编辑/IME/弹层/保存、Todo 业务/Video 播放深测 | Todo 业务闭环已交（PLAN-068 T-08：AddTodo→Toggle→SQLite 落盘→冷重开）；041 保存/重开闭环已交（T-07）；041 编辑/IME 真实字符插入与 Video 真实播放深测留 T-11/R-06 门后窗口 | 战役后继 |
+| auto-edit 编辑/IME/弹层/保存、Todo 业务/Video 播放深测 | Todo 业务闭环已交（PLAN-068 T-08：AddTodo→Toggle→SQLite 落盘→冷重开）；041 保存/重开闭环已交（T-07）；041 编辑/IME 真实字符插入=canvas MCP 边界具名（T-11 裁定机制面充分）；Video 按 PLAN-068 §10.11 用户修约=机制面+具名边界关闭，auto-video 产品后端合同具名移交 owner | 已关闭（PLAN-068 修约口径） |
 | release 档性能终值、物理上屏/GPU 独占/高刷 | release P/M 数据已交（PLAN-068 T-09 N1/N4/N8）；物理上屏按 PLAN-068 §0 修约以 ETW DWM 呈现节奏关闭（60Hz vsync 实证）；高刷按当前环境 60Hz 承诺（探针历史：WPT present 需提权、NVML 不可用、无采集设备） | 已关闭（PLAN-068 修约口径） |
 
 ## 4. 989 消费入口

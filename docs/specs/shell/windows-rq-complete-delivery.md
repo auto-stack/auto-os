@@ -31,7 +31,7 @@
 | R-02 | 041 P-15 假阳性消除（auto-ui `35f1531b` 模块编译链）；TreeView 纯 emit 子件噪音修复（auto-ui `69104765`，041 实机点击零噪音） | 关闭 |
 | R-03 | chat links 保守卫（auto-lang `f9738f0fe` source_owner.rs check_web_group_consistency + 单测）；组 env 正控生成成功 | 关闭 |
 | R-04 | N8 8/8 adopt（桌面宿主 attach：018/025/029 由 VM-PARKED 转 adopt；Init 后端就绪链 park→resume 实证） | 关闭（业务数据面 T-07/08 深测） |
-| R-05 | Todo 持久业务闭环（AddTodo→ToggleTodo→SQLite 落盘读回→冷重开一致）；Video mpv 深测待 T-11/R-06 门后窗口 | 部分关闭（Video 待） |
+| R-05 | Todo 持久业务闭环（AddTodo→ToggleTodo→SQLite 落盘读回→冷重开一致）；Video 按 §10.11 用户修约（"按推荐"）：demo 030 机制面（back 合同→媒体服务生成→E:\Video 14 真实文件加载→选片 is_playing 状态机→音频端点在案）+具名边界（嵌入形态 MCP bind FATAL/surface 未 adopt、seek 原生通道、N8 video 277 帧=空库待机口径修正）关闭 | 关闭（修约口径） |
 | R-06 | release P/M 终值（sweep-rel N1/N4/N8）；物理上屏=ETW DWM 呈现节奏实证（logman 用户态采集 Microsoft-Windows-Dwm-Core，Task9/10 present 2404 事件、1199 帧 14-18ms=60Hz vsync）；高刷按当前环境 60Hz 承诺 | 关闭（PLAN-068 §0 修约口径） |
 | R-07 | 驱动参数化（build-demos/observe/n-sweep 显式 roots/exe/out，os-066 硬编码清除）+ 自测 test_rq_complete_acceptance.py 全绿 | 关闭 |
 
@@ -77,7 +77,11 @@
   - C-03 Windows 完整 App/后端运行闭包：本包交真实运行证据——Todo 真实
     API 后端（Rust split HTTP 17815 + SQLite 持久化冷重开读回）、041
     desktop-RQ attach（registry 10、adopt 480x320、358 帧）、N8 8/8 adopt
-    （release）；闭包/可移动运行终验随 T-11 窗口。
+    （release）；闭包/可移动运行终验随 T-11 窗口。**Video owner 移交
+    （PLAN-068 §10.11 用户裁定）**：auto-video 产品后端合同缺失（src/back
+    空、workspace 空）——媒体扫描/流服务 back 合同实现具名移交 auto-video
+    产品仓 owner（闭合条件=back 合同实现并按 owner 规约交付），本包按 demo
+    030 机制面+具名边界修约关闭 R-05 Video 子项，不空挂、不冒领。
   - C-04 语言 SDK/Man/Web 消费：1003 正式 C 后同源重建（line-tables-only
     根 manifest 实证 023/013/015/017/018/019 等），auto-generation-core 33/33。
   - C-05 本里程碑包安装/升级/恢复：本包不新增安装器；可移动目录运行与
