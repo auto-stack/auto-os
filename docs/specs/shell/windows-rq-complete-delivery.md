@@ -44,11 +44,14 @@
 | 8 | 8/8 | 1420 | 47/146ms | 48/143ms | 10 proc ~1.36GB |
 
 - draw_end（wgpu flush sync）= GPU 提交完成计时逐帧在案；真实 NVIDIA RTX
-  4060 Ti@59Hz 3840x2560 驱动渲染。
+  4060 Ti@59Hz 3840x2560 驱动渲染。**物理上屏 ETW 证据（2026-11-11）**：
+  logman 用户态采集 Microsoft-Windows-Dwm-Core，Task9/10 present 2404 事件、
+  帧间距 p50=5.08ms/p95=15.71ms/max=16.28ms、1199 帧 14-18ms（49.9%）精确
+  对应 60Hz vsync——DWM 呈现节奏实证。
 - 预算判定：P-01..04/M-01..08 严格 pass/fail 由 T-11 独立 review 按
-  budget-freeze.md 冻结协议裁定；物理上屏（显示器实际刷新终点）无采集
-  设备/PresentMon/ETW present-photon 通道 → 保持 pending，不据时间流逝
-  假通过；高刷适用面环境 60Hz 无法实证 >60Hz、原高刷格不因本机删。
+  budget-freeze.md 冻结协议裁定。**修约（用户裁定，PLAN-068 §0）**：物理
+  上屏以 ETW DWM 呈现节奏为交付证据；高刷适用面按当前环境 60Hz 承诺；
+  光子终点光学采集不作必需项。
 
 ## 4. 重验入口与 989 消费
 
