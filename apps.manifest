@@ -176,8 +176,8 @@
       "launch": "native",
       "daemon": {
         "port": 17819,
-        "bin": "auto service --server rust -B 17819",
-        "env_port": "NOTES_DAEMON_PORT"
+        "bin": "../../../auto-notes/target/release/notes-service",
+        "env_port": "AUTO_HTTP_PORT"
       }
     },
     {

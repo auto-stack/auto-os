@@ -32,11 +32,13 @@ T-03 修复（对照 067 F-07 / C-04 / C-05）：
   H-05 重连与退出恢复：杀自有服务 → ensure 探测下线 → 重连（重 spawn）→
        杀前捕获的 operation 回执仍 committed（持久跨重启）→ 新调用可用。
 
-边界说明（067 M1 G-01/G-02/G-09）：本脚本按 spec §3 冻结的 manifest bin
-命令行语义直启（独立模式等价面）；桌面宿主（auto-ui-runtime
-ensure_manifest_daemon）当前按路径语义消费 bin 且 notes pac.at 无 daemon:
-键、注入键派生 015_NOTES_DAEMON 与 Reader 消费 NOTES_DAEMON 不一致——
-生产桌面链缺口已列 owner 前置，本脚本不冒充桌面链证据。
+边界说明（067 M1 G-01/G-02/G-09；T-02 更新）：manifest daemon.bin 现为
+生产路径语义（apps.manifest 指发布件 notes-service.exe，本脚本按
+session.rs:4460 同款契约解析 + 065 时代命令行 split 兼容回退）——本脚本
+spawn 形状与生产 ensure 一致，但 ensure 调用仍由脚本自身驱动（独立模式
+等价面）；桌面宿主链（ensure_manifest_daemon 从真实桌面 launch 触发）与
+注入键对齐（015_NOTES_DAEMON vs NOTES_DAEMON）为 auto-ui/Reader owner
+前置，本脚本不冒充桌面链证据。
 """
 import json
 import os
@@ -86,8 +88,9 @@ def notes_daemon():
     m = json.loads(MANIFEST.read_text(encoding="utf-8"))
     for a in m["apps"]:
         if a["id"] == "015-notes":
-            return a.get("daemon")
-    return None
+            repo_dir = OS_ROOT / a["repo"] if a.get("repo") else None
+            return a.get("daemon"), repo_dir
+    return None, None
 
 
 def http(method, path, body=None, timeout=20):
@@ -139,15 +142,30 @@ def pid_alive(pid):
     return f'"{pid}"' in out
 
 
-def spawn_service(daemon, run_dir, log_f):
-    """按 manifest daemon.bin spawn（app 仓根相对命令行；端口 env 覆盖键生效）。
-    返回 (Popen, 实际 pid)。"""
+def daemon_bin_cmd(daemon, repo_dir):
+    """manifest daemon.bin → argv。生产契约（PLAN-067 T-02）：路径语义，
+    相对 manifest repo 目录解析 + Windows .exe 补全（镜像 auto-ui
+    session.rs:4460）。路径未命中按 065 时代命令行语义 split 兼容回退。"""
+    rel = daemon.get("bin") or ""
+    if repo_dir is not None and rel:
+        cand = repo_dir / rel
+        exe_cand = cand.with_name(cand.name + ".exe")
+        if exe_cand.is_file():
+            return [str(exe_cand)]
+        if cand.is_file():
+            return [str(cand)]
+    return rel.split()
+
+
+def spawn_service(daemon, repo_dir, run_dir, log_f):
+    """按 manifest daemon.bin spawn（路径语义发布件 / 命令行兼容回退；
+    端口 env 覆盖键生效）。返回 Popen。"""
     env = dict(os.environ)
     env["NOTES_DATA_DIR"] = str(run_dir / "data")
     env["NOTES_TEST_MODE"] = "1"
     env["NOTES_FP_POLICY"] = str(run_dir / "fp-policy.json")
     env[daemon.get("env_port") or "NOTES_DAEMON_PORT"] = str(daemon["port"])
-    cmd = daemon["bin"].split()
+    cmd = daemon_bin_cmd(daemon, repo_dir)
     p = subprocess.Popen(cmd, cwd=str(notes_root()), env=env, stdout=log_f,
                          stderr=subprocess.STDOUT,
                          creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
@@ -181,7 +199,7 @@ def kill_own_all(spawned_pids, procs):
 
 
 def main():
-    daemon = notes_daemon()
+    daemon, repo_dir = notes_daemon()
     check(bool(daemon) and daemon.get("port") == 17819, "H-00-manifest-daemon", daemon)
     nr = notes_root()
     check(nr is not None, "H-00b-notes-root-resolved", nr)
@@ -209,7 +227,12 @@ def main():
     (run_dir / "fp-policy.json").write_text(json.dumps(policy), encoding="utf-8")
     CRED = "c" * 64
     CRED_OTHER = "o" * 64
-    src = {"book_id": "book:abc123", "quote": "宿主探针原句", "chapter": 1}
+    # NOTES-006 r2 冻结闭集 schema（repository.at fp_source_validate）：
+    # book_id/source_hash/title/author/quote/locator 必需，chapter 可选。
+    src = {"book_id": "book:abc123", "source_hash": "a" * 64,
+           "title": "宿主探针书", "author": "探针",
+           "quote": "宿主探针原句",
+           "locator": {"kind": "epub.cfi", "value": "epubcfi(/6/4!/4/2/1:0)"}}
     procs, logs = [], []
     spawned_pids = set()
 
@@ -224,7 +247,7 @@ def main():
             if health_ready():
                 spawn["done"] = True
                 return
-            p = spawn_service(daemon, run_dir, log_f)
+            p = spawn_service(daemon, repo_dir, run_dir, log_f)
             procs.append(p)
             spawned_pids.add(p.pid)
             deadline = time.time() + 600
@@ -249,7 +272,7 @@ def main():
 
         def host_thread(tag):
             if not health_ready():
-                p = spawn_service(daemon, run_dir, log_f)
+                p = spawn_service(daemon, repo_dir, run_dir, log_f)
                 procs.append(p)
                 spawned_pids.add(p.pid)
                 deadline = time.time() + 600
@@ -338,7 +361,7 @@ def main():
         check(not health_ready(), "H-05b-down-after-kill")
         log_f2 = open(run_dir / "service2.log", "w", encoding="utf-8")
         logs.append(log_f2)
-        p2 = spawn_service(daemon, run_dir, log_f2)
+        p2 = spawn_service(daemon, repo_dir, run_dir, log_f2)
         procs.append(p2)
         spawned_pids.add(p2.pid)
         deadline = time.time() + 600
