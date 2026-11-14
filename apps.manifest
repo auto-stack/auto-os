@@ -177,7 +177,17 @@
       "daemon": {
         "port": 17819,
         "bin": "../../../auto-notes/target/release/notes-service",
-        "env_port": "AUTO_HTTP_PORT"
+        "env_port": "AUTO_HTTP_PORT",
+        "health_interface": "notes.fpack/1",
+        "data_root": "%APPDATA%/auto-notes/data",
+        "host": {
+          "credential": {
+            "env": "NOTES_FP_CRED",
+            "path": "%APPDATA%/auto-notes/data/fp-policy.json",
+            "principal": "fp-reader",
+            "field": "cred"
+          }
+        }
       }
     },
     {
