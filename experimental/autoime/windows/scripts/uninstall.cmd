@@ -12,5 +12,7 @@ regsvr32 /u /s "%DST%\autoime_ime.dll"
 if errorlevel 1 echo [uninstall] WARN: regsvr32 /u returned %errorlevel%
 del "%DST%\autoime_ime.dll" 2>nul
 rmdir "%DST%" 2>nul
+rem remove AutoIME from the current user's switcher lists (own entries only)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0disable-user-list.ps1"
 echo [uninstall] OK: AutoIME registration removed
 endlocal

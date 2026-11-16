@@ -9,6 +9,7 @@ add_library(autoime_ime SHARED
   candidate_window.cpp
   register.cpp
   autoime.rc
+  autoime_ime.def
 )
 target_compile_features(autoime_ime PRIVATE cxx_std_17)
 target_compile_definitions(autoime_ime PRIVATE _CRT_SECURE_NO_WARNINGS

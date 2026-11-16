@@ -24,4 +24,8 @@ if errorlevel 1 (
   exit /b 3
 )
 echo [install] OK: %DST%\autoime_ime.dll registered ^(zh-CN profile^)
+rem add AutoIME to the current user's Win+Space switcher list (per-user hive)
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0enable-user-list.ps1"
+echo [install] done. If the switcher list is stale, sign out/in or run:
+echo   enable-user-list.ps1 again after a settings refresh.
 endlocal
