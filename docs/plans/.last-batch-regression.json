@@ -1,19 +1,15 @@
 {
-  "last_covered_plan_id": 68,
-  "timestamp": "2026-11-11T11:07:16Z",
-  "covered_commit": "b3ecbdba4f2b17ef13e7ccff93d74083708f7798",
+  "last_covered_plan_id": 69,
+  "timestamp": "2026-11-16T21:30:00Z",
+  "covered_commit": "fd40a5e",
   "command": "check-app-submodules.ps1 + verify-app-links.py (auto-os adopted batch legs, main single instance)",
   "legs": [
     "check-app-submodules",
     "verify-app-links"
   ],
-  "results": {
-    "check-app-submodules": "EXIT=0 manifest_repo_entries=27 missing_pac_at=0 (uninitialized submodules = documented default, skipped by pac.at gate)",
-    "verify-app-links": "AssertionError Incorrect gitlink apps/auto-calc (exit nonzero)"
-  },
   "new_reds": [],
   "known_reds_seen": [
-    "VERIFY-APP-LINKS-STALE — Incorrect gitlink apps/auto-calc; pre-existing stale verifier table, unchanged shape vs PLAN-055/060 receipts, owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
+    "VERIFY-APP-LINKS-STALE — Incorrect gitlink apps/auto-calc; pre-existing stale verifier table (manifest 无 commit 字段 vs 演进 pin)，同身份 vs 35be187/PLAN-055/060 回执；owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
   ],
-  "notes": "due check after PLAN-068 merge (receipt age >48h with merges); triage=known-reds-only, no fix-forward needed"
+  "context": "plan-067 merge closeout batch (069/067 landed since last receipt 68@2026-11-11)"
 }
