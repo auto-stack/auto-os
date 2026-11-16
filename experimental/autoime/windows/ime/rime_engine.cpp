@@ -205,7 +205,9 @@ void RimeEngine::SelectCandidate(uintptr_t session, size_t index) {
 
 int AutoIMEVkToKeysym(WPARAM vk, LPARAM) {
   const DWORD v = static_cast<DWORD>(vk);
-  // Printable ASCII (letters, digits, punctuation, space handled below).
+  // VK codes for letters are UPPERCASE ASCII; pinyin needs lowercase keysyms.
+  if (v >= 'A' && v <= 'Z') return static_cast<int>(v + 0x20);
+  // Printable ASCII (digits, punctuation).
   if (v >= 0x20 && v <= 0x7e && v != VK_SPACE) return static_cast<int>(v);
   switch (v) {
     case VK_SPACE: return 0x0020;

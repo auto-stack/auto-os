@@ -90,10 +90,14 @@ bool CTextService::AdviseKeyEventSink() {
                                          reinterpret_cast<void**>(
                                              &keystroke_mgr))))
     return false;
+  // fForeground=TRUE: same as the MS TSF sample and Weasel. FALSE was
+  // observed to receive no key events at all.
   const HRESULT hr = keystroke_mgr->AdviseKeyEventSink(
-      client_id_, static_cast<ITfKeyEventSink*>(this), FALSE);
+      client_id_, static_cast<ITfKeyEventSink*>(this), TRUE);
   keystroke_mgr->Release();
   key_sink_advised_ = SUCCEEDED(hr);
+  ImeLog("AdviseKeyEventSink hr=0x%08lx foreground=1",
+         static_cast<unsigned long>(hr));
   return key_sink_advised_;
 }
 
@@ -254,10 +258,14 @@ bool CTextService::EnsureComposition(ITfContext* pic) {
     if (SUCCEEDED(hr_start) && composition_) {
       active_ctx_ = pic;
       active_ctx_->AddRef();
+      ImeLog("StartComposition ok comp=%p", (void*)composition_);
+    } else {
+      ImeLog("StartComposition FAILED hr=0x%08lx",
+             static_cast<unsigned long>(hr_start));
     }
     return hr_start;
   });
-  if (FAILED(hr)) ImeLog("StartComposition failed hr=0x%08lx",
+  if (FAILED(hr)) ImeLog("StartComposition session failed hr=0x%08lx",
                          static_cast<unsigned long>(hr));
   return SUCCEEDED(hr) && composition_ != nullptr;
 }
@@ -347,14 +355,28 @@ void CTextService::ApplyCompositionState(
 
 bool CTextService::ProcessAndApplyKey(ITfContext* pic, WPARAM wParam) {
   if (!EnsureEngine()) return false;
+  // Ctrl/Alt/Shift combinations (Ctrl+S, Ctrl+V, ...) belong to the host.
+  if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ||
+      (GetKeyState(VK_SHIFT) & 0x8000))
+    return false;
   const int keysym = AutoIMEVkToKeysym(wParam, 0);
   if (keysym == 0) return false;
+  // When NOT composing, only letters may start a composition; every other
+  // key (arrows, Home/End, space, Enter, Backspace, Esc, digits) belongs to
+  // the host application.
+  RimeEngine::Snapshot pre;
+  if (!engine_.GetContext(rime_session_, &pre)) pre.is_composing = false;
+  if (!pre.is_composing && !(keysym >= 'a' && keysym <= 'z')) return false;
+
   if (!engine_.ProcessKey(rime_session_, keysym)) return false;
 
   bool has_commit = false;
   const std::string commit = engine_.TakeCommit(rime_session_, &has_commit);
   RimeEngine::Snapshot snap;
   if (!engine_.GetContext(rime_session_, &snap)) snap.preedit_utf8.clear();
+  ImeLog("key vk=%lu consumed commit=[%s] preedit=[%s]",
+         static_cast<unsigned long>(wParam), has_commit ? commit.c_str() : "",
+         snap.preedit_utf8.c_str());
   ApplyCompositionState(pic, has_commit, commit, snap);
   return true;
 }

@@ -38,8 +38,9 @@ void ImeLog(const char* fmt, ...) {
                       st.wSecond, GetCurrentProcessId());
   va_list args;
   va_start(args, fmt);
-  _snprintf_s(line + n, sizeof(line) - static_cast<size_t>(n), _TRUNCATE,
-              fmt, args);
+  // va_list requires the v-variant; passing it to _snprintf_s is UB.
+  _vsnprintf_s(line + n, sizeof(line) - static_cast<size_t>(n), _TRUNCATE,
+               fmt, args);
   va_end(args);
   strcat_s(line, "\r\n");
   DWORD written = 0;
@@ -51,7 +52,9 @@ BOOL APIENTRY DllMain(HINSTANCE instance, DWORD reason, LPVOID) {
   if (reason == DLL_PROCESS_ATTACH) {
     g_hInst = instance;
     DisableThreadLibraryCalls(instance);
-    ImeLog("dll attach");
+    char path[MAX_PATH]{};
+    GetModuleFileNameA(instance, path, MAX_PATH);
+    ImeLog("dll attach module=%s", path);
   } else if (reason == DLL_PROCESS_DETACH) {
     ImeLog("dll detach");
   }
