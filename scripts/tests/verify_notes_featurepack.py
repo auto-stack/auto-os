@@ -147,9 +147,13 @@ def main():
     run_dir = Path(tempfile.mkdtemp(prefix="fpcombo-", dir=str(ART)))
     policy = {"entries": []}
     (run_dir / "fp-policy.json").write_text(json.dumps(policy), encoding="utf-8")
+    # T-04 重验（2026-11-16）：AUTO_ALLOW_PARTIAL_DB=1——asset_upload
+    # （NOTES-002/PLAN-730）无 db.rs 匹配，734 strict 门拒绝；notes 仓自有
+    # battery 同款 env 接受面（与 build_notes_service 发布开关同律）。
     nsvc, nf = spawn(["auto", "service", "--server", "rust", "-B", "17819"], NOTES,
                      {"NOTES_DATA_DIR": str(run_dir / "ndata"), "NOTES_TEST_MODE": "1",
-                      "NOTES_FP_POLICY": str(run_dir / "fp-policy.json")},
+                      "NOTES_FP_POLICY": str(run_dir / "fp-policy.json"),
+                      "AUTO_ALLOW_PARTIAL_DB": "1"},
                      run_dir / "notes.log")
     rsvc, rf = spawn(["auto", "service", "--server", "vm", "-B", "17825"], READER,
                      {"NOTES_DAEMON": "http://127.0.0.1:17819", "NOTES_FP_CRED": CRED,
@@ -191,10 +195,13 @@ def main():
         scope = "book:" + bid
 
         # C-2 Reader 宿主 UI 捕获链（经 reader 代理 = 页面同路径）
+        # T-04 重验（2026-11-16）：reader 5a6415a 代理契约——TXT 段锚路径
+        # 必带 para_ch（>=1，服务端逐字复核 quote 在章正文）+ para_pi。
         cap = http(RB, "POST", "/api/fp/note/capture",
                    {"attempt_id": "combo-c1", "operation_id": "a" * 32,
                     "book_id": scope, "quote": "组合验收的选区原句。",
-                    "chapter": 1, "locator": "", "text": "组合验收正文 v1"})
+                    "chapter": 1, "locator": "", "text": "组合验收正文 v1",
+                    "para_ch": 1, "para_pi": 0})
         check(cap.get("ok") is True and (cap.get("note") or {}).get("revision") == 1,
               "C-2a-reader-proxy-capture", str(cap)[:160])
         nid = (cap.get("note") or {}).get("note_id", "")
@@ -223,7 +230,8 @@ def main():
         time.sleep(2)
         nsvc2, nf2 = spawn(["auto", "service", "--server", "rust", "-B", "17819"], NOTES,
                            {"NOTES_DATA_DIR": str(run_dir / "ndata"), "NOTES_TEST_MODE": "1",
-                            "NOTES_FP_POLICY": str(run_dir / "fp-policy.json")},
+                            "NOTES_FP_POLICY": str(run_dir / "fp-policy.json"),
+                            "AUTO_ALLOW_PARTIAL_DB": "1"},
                            run_dir / "notes2.log")
         procs.append(nsvc2)
         check(wait_health("http://127.0.0.1:17819", 900), "C-4a-notes-restarted")
@@ -233,8 +241,9 @@ def main():
               "C-4b-receipt-persists", str(rc)[:160])
         cap2 = http(RB, "POST", "/api/fp/note/capture",
                     {"attempt_id": "combo-c4", "operation_id": "d" * 32,
-                     "book_id": scope, "quote": "重启后原句", "chapter": 1,
-                     "locator": "", "text": "重启后新捕获"})
+                     "book_id": scope, "quote": "正文行。", "chapter": 1,
+                     "locator": "", "text": "重启后新捕获",
+                     "para_ch": 1, "para_pi": 1})
         check(cap2.get("ok") is True, "C-4c-post-restart-capture", str(cap2)[:160])
 
         # C-1 组件门指针（双端编辑契约由 NOTES-006 入口承载，此处核其存在且可执行）
