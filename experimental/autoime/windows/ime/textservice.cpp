@@ -189,7 +189,10 @@ void CTextService::RefreshCandidateWindow(ITfContext* pic) {
           if (!composition_) return S_FALSE;
           ITfRange* range = nullptr;
           if (FAILED(composition_->GetRange(&range))) return S_FALSE;
-          view->GetTextExt(ec, range, &caret, nullptr);
+          HRESULT hr_ext = view->GetTextExt(ec, range, &caret, nullptr);
+          ImeLog("GetTextExt hr=0x%08lx rect=(%ld,%ld,%ld,%ld)",
+                 static_cast<unsigned long>(hr_ext), (long)caret.left,
+                 (long)caret.top, (long)caret.right, (long)caret.bottom);
           range->Release();
           return S_OK;
         });
@@ -198,6 +201,28 @@ void CTextService::RefreshCandidateWindow(ITfContext* pic) {
                             &hr);
     session->Release();
     view->Release();
+    ImeLog("read session hr=0x%08lx", static_cast<unsigned long>(hr));
+  }
+  if (caret.left == 0 && caret.top == 0 && caret.right == 0 &&
+      caret.bottom == 0) {
+    // fallback: the host application's caret rectangle (client coords of the
+    // focused window -> screen)
+    GUITHREADINFO gi{};
+    gi.cbSize = sizeof(gi);
+    if (GetGUIThreadInfo(GetCurrentThreadId(), &gi) && gi.hwndCaret) {
+      caret = gi.rcCaret;
+      POINT p{caret.left, caret.top};
+      ScreenToClient(gi.hwndCaret, &p);
+      POINT tl{p.x, p.y};
+      ClientToScreen(gi.hwndCaret, &tl);
+      POINT br{caret.right, caret.bottom};
+      ClientToScreen(gi.hwndCaret, &br);
+      caret.left = tl.x; caret.top = tl.y;
+      caret.right = br.x; caret.bottom = br.y;
+      ImeLog("caret fallback via GUITHREADINFO");
+    } else {
+      ImeLog("caret fallback unavailable (no hwndCaret)");
+    }
   }
   HWND focus_wnd = GetFocus();
   candidate_wnd_.EnsureCreated(focus_wnd);
@@ -213,6 +238,15 @@ HRESULT CTextService::UpdateCompositionText(ITfContext* pic,
     if (FAILED(composition_->GetRange(&range))) return E_FAIL;
     const HRESULT hr = range->SetText(ec, 0, text.c_str(),
                                       static_cast<LONG>(text.size()));
+    if (SUCCEEDED(hr)) {
+      // keep the caret at the composition end while composing
+      range->Collapse(ec, TF_ANCHOR_END);
+      TF_SELECTION sel{};
+      sel.range = range;
+      sel.style.ase = TF_AE_END;
+      sel.style.fInterimChar = FALSE;
+      pic->SetSelection(ec, 1, &sel);
+    }
     range->Release();
     return hr;
   });
@@ -299,6 +333,15 @@ HRESULT CTextService::FinalizeComposition(ITfContext* pic,
     if (FAILED(comp->GetRange(&range))) return E_FAIL;
     const HRESULT hr_set = range->SetText(ec, 0, text.c_str(),
                                           static_cast<LONG>(text.size()));
+    // park the caret AFTER the committed text (issue: caret landed before it)
+    if (SUCCEEDED(hr_set)) {
+      range->Collapse(ec, TF_ANCHOR_END);
+      TF_SELECTION sel{};
+      sel.range = range;
+      sel.style.ase = TF_AE_END;
+      sel.style.fInterimChar = FALSE;
+      pic->SetSelection(ec, 1, &sel);
+    }
     comp->EndComposition(ec);
     range->Release();
     return hr_set;
@@ -348,9 +391,29 @@ void CTextService::ApplyCompositionState(
     return;
   }
   // Engine consumed the key but produced neither preedit nor commit
-  // (composition cleared): close the composition, keep its text.
-  EndCompositionKeepText(pic);
-  candidate_wnd_.Hide();
+  // (composition cancelled, e.g. Esc): REMOVE the composition text so the
+  // document returns to its pre-edit state.
+  {
+    ITfComposition* comp = composition_;
+    ITfContext* ctx = active_ctx_;
+    composition_ = nullptr;
+    active_ctx_ = nullptr;
+    composition_text_.clear();
+    candidate_wnd_.Hide();
+    if (comp) {
+      RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
+        ITfRange* range = nullptr;
+        if (SUCCEEDED(comp->GetRange(&range))) {
+          range->SetText(ec, 0, L"", 0);  // discard the composition text
+          comp->EndComposition(ec);
+          range->Release();
+        }
+        return S_OK;
+      });
+      comp->Release();
+    }
+    if (ctx) ctx->Release();
+  }
 }
 
 bool CTextService::ProcessAndApplyKey(ITfContext* pic, WPARAM wParam) {

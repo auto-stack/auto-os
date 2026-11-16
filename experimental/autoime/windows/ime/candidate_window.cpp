@@ -75,6 +75,9 @@ void CandidateWindow::Layout(const RimeEngine::Snapshot& snap,
   if (x + w > mi.rcWork.right) x = mi.rcWork.right - w;
   if (y + h > mi.rcWork.bottom) y = caret.top - h - 2;  // flip above caret
   if (y < mi.rcWork.top) y = mi.rcWork.top;
+  ImeLog("cand layout lines=%zu max_w=%d w=%d h=%d at (%d,%d) caret=(%ld,%ld,%ld,%ld)",
+         lines_.size(), max_w, w, h, x, y, (long)caret.left, (long)caret.top,
+         (long)caret.right, (long)caret.bottom);
   SetWindowPos(wnd_, HWND_TOPMOST, x, y, w, h,
                SWP_NOACTIVATE | SWP_SHOWWINDOW);
   visible_ = true;

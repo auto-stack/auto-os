@@ -207,10 +207,10 @@ int AutoIMEVkToKeysym(WPARAM vk, LPARAM) {
   const DWORD v = static_cast<DWORD>(vk);
   // VK codes for letters are UPPERCASE ASCII; pinyin needs lowercase keysyms.
   if (v >= 'A' && v <= 'Z') return static_cast<int>(v + 0x20);
-  // Printable ASCII (digits, punctuation).
-  if (v >= 0x20 && v <= 0x7e && v != VK_SPACE) return static_cast<int>(v);
+  // Navigation and editing VKs FIRST: their numeric values (0x21..0x2e)
+  // overlap printable ASCII and must not fall into the printable branch.
   switch (v) {
-    case VK_SPACE: return 0x0020;
+    case VK_SPACE: return 0x0020;    // Space
     case VK_BACK: return 0xff08;     // BackSpace
     case VK_ESCAPE: return 0xff1b;   // Escape
     case VK_RETURN: return 0xff0d;   // Return
@@ -224,6 +224,22 @@ int AutoIMEVkToKeysym(WPARAM vk, LPARAM) {
     case VK_PRIOR: return 0xff55;    // Page Up
     case VK_NEXT: return 0xff56;     // Page Down
     case VK_END: return 0xff57;      // End
-    default: return 0;               // not routed to Rime
+    default: break;
+  }
+  // Digits and OEM punctuation carry their ASCII glyph in the VK code.
+  if (v >= '0' && v <= '9') return static_cast<int>(v);
+  switch (v) {
+    case VK_OEM_1: return ';';    // 0xBA
+    case VK_OEM_PLUS: return '='; // 0xBB
+    case VK_OEM_COMMA: return ','; // 0xBC
+    case VK_OEM_MINUS: return '-'; // 0xBD
+    case VK_OEM_PERIOD: return '.'; // 0xBE
+    case VK_OEM_2: return '/';    // 0xBF
+    case VK_OEM_3: return '`';    // 0xC0
+    case VK_OEM_4: return '[';    // 0xDB
+    case VK_OEM_5: return '\\';   // 0xDC
+    case VK_OEM_6: return ']';    // 0xDD
+    case VK_OEM_7: return '\'';   // 0xDE
+    default: return 0;            // not routed to Rime
   }
 }
