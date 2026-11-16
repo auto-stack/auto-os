@@ -182,6 +182,8 @@ stage: review | review_scope: final | reviewer_identity: 实现会话内复审�
 
 计时表：探针 t1/t2/t3 warm 3.5s（<10s ✓，冷部署 ~60s 为一次性环境准备非用例耗时，已注明）；verify_registered <1s；AC 用户实测轮均 <3min（人工）。
 
+stage: merge | plan_id: PLAN-069 | plan_revision: r2 | outcome: pass | delivery_commit: 94f1101 (main ff-only, main tip 33169d8 = archive commit) | canonical_spec_paths: 无 canonical spec 变更（空影响说明见规范增量节，符合实验原型定位） | archive_path: docs/plans/archived/069-autoime-windows-x64-tsf-preview.md (committed @33169d8, status: archived) | cleanup: wt-guard clean ×2 → worktree D:/autostack/.wt/os-069/auto-os removed → branch codex/os-069-dev deleted → group dir removed；plan-artifacts/plan-069 scope deleted (23MB, registry refreshed @.retention/policy.json, no artifact holds) | deployment_observation: AutoIME 原型已实装并在线——C:\Program Files\AutoIME 注册指向 autoime_ime_221206.dll（=交付构建内容，verify_registered exit 0，用户确认切换器可用）；安装目录残留 3 个被锁旧 DLL（注册已清，宿主退出后可删） | batch_regression: auto-os 无 .last-batch-regression.json（auto-lang 专属门，不适用） | test_scopes: 探针 3 用例 warm 3.5s + verify_registered <1s/次 + AC-01..05 用户实测轮；无新增套件用例，无 release 构建触发
+
 ### 就绪记录（work → review 交接）
 
 - work-owned AC 结果：AC-01 ✅（甲你好乙，文件字节证据）· AC-02 ✅（翻页/
