@@ -21,5 +21,17 @@ auto-lang-core = { path = "../../../auto-lang/crates/auto-lang-core" }
 # 不能作为 skip 统计的数据源）。
 serde_json = "1"
 auto-tool-execution = { path = "../../../auto-lang/crates/auto-tool-execution" }
+# 源/产物身份 hash（与 provider_digest 同族；PLAN-064 A 最小候选注册表）。
+blake3 = "1"
+
+# PLAN-064 M2-A 最小（MIN-A-OS）：ACE 候选见证链，缺省关——
+# 关 = `--ace-min` 具名拒（绝不落旧 VM 解释）；开 = 消费 980 已交
+# `ace-bridge`（NodeDesktopBridge/AceNodeDesktopWindow）与 969 facade。
+[features]
+ace-min = ["dep:auto-lang-ace-host", "auto-ui-runtime/ace-bridge"]
+
+[dependencies.auto-lang-ace-host]
+path = "../../../auto-lang/crates/auto-lang-ace-host"
+optional = true
 
 [dev-dependencies]

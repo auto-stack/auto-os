@@ -9,7 +9,11 @@ param(
     [string]$UiRoot,
     [string]$ManRoot,
     [string]$BuildRoot,
-    [string]$CandidateDir
+    [string]$CandidateDir,
+    # PLAN-064 A 最小：iced 轨 os-desktop 加 `--features ace-min`（980 ace-bridge）。
+    [switch]$AceMin,
+    # 透传给 ui-desktop 的追加参数（如 --ace-min <id> --ace-script ... --hold-ms ... --ace-evidence ...）。
+    [string[]]$ExtraArgs
 )
 
 function Throw-DesktopFailure([string]$Message, [int]$Code = 1) {
@@ -61,13 +65,15 @@ function Invoke-DesktopMain {
         [ValidateSet('vue', 'iced')] [string]$Track = 'vue',
         [switch]$Fullscreen, [switch]$DryRun,
         [string]$LangRoot, [string]$UiRoot, [string]$ManRoot,
-        [string]$BuildRoot, [string]$CandidateDir
+        [string]$BuildRoot, [string]$CandidateDir,
+        [switch]$AceMin, [string[]]$ExtraArgs
     )
     $ErrorActionPreference = 'Stop'
     $os = if ($env:DESKTOP_OS_ROOT) { $env:DESKTOP_OS_ROOT } else { Join-Path $PSScriptRoot '..' }
     $os = (Resolve-Path -LiteralPath $os -ErrorAction Stop).Path
     $parent = Split-Path $os -Parent
     if ($CandidateDir -and $BuildRoot) { Throw-DesktopFailure 'CandidateDir and BuildRoot are mutually exclusive' }
+    if ($AceMin -and $Track -ne 'iced') { Throw-DesktopFailure '-AceMin requires -Track iced (os-desktop ACE candidate chain)' }
     $suffix = if ([Environment]::OSVersion.Platform -eq 'Win32NT') { '.exe' } else { '' }
     $mode = if ($CandidateDir) { 'candidate' } else { 'source' }
     if ($mode -eq 'source') {
@@ -138,7 +144,9 @@ function Invoke-DesktopMain {
                 @{ Root = $UiRoot; Arguments = $toolArgs }
             )
             if ($Track -eq 'iced') {
-                $jobs += @{ Root = $os; Arguments = @('build', '--locked', '-p', 'os-desktop', '--bin', 'ui-desktop') }
+                $desktopArgs = @('build', '--locked', '-p', 'os-desktop', '--bin', 'ui-desktop')
+                if ($AceMin) { $desktopArgs += @('--features', 'ace-min') }
+                $jobs += @{ Root = $os; Arguments = $desktopArgs }
             }
             foreach ($job in $jobs) {
                 Write-Host "[desktop] cwd=$($job.Root) target=$target cargo $($job.Arguments -join ' ')"
@@ -154,6 +162,7 @@ function Invoke-DesktopMain {
         $executable = if ($Track -eq 'iced') { $desktop } else { $cli }
         $arguments = if ($Track -eq 'iced') { @('--apps-dir', (Join-Path $os 'apps')) } else { @('run', '--desktop') }
         if ($Track -eq 'iced' -and $Fullscreen) { $arguments += '--fullscreen' }
+        if ($Track -eq 'iced' -and $ExtraArgs) { $arguments += $ExtraArgs }
         Write-Host "[desktop] cwd=$cwd run=$executable $($arguments -join ' ')"
         if ($DryRun) { return }
         Push-Location -LiteralPath $cwd

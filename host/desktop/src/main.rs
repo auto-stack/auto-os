@@ -19,6 +19,7 @@ use auto_ui_runtime::ui::iced::{
 };
 use std::path::PathBuf;
 
+mod ace_min;
 mod health;
 mod native_backends;
 mod private_rqhost;
@@ -68,6 +69,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let args: Vec<String> = std::env::args().collect();
+
+    // PLAN-064 M2-A 最小（MIN-A-OS）：`--ace-min` 候选见证链早分流——
+    // 保留宿主真启动迹/主题目录/存储策略（真实 boot 面），跳过生产注册表
+    // 健康报告、native backends 与 rqhost（隔离候选：不触生产 daemon/端口），
+    // 也不进 shell 桌面窗（完整桌面归 B 波）。错误 = 具名拒，码 1。
+    if ace_min::requested(&args) {
+        let boot = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        eprintln!(
+            "[ui-desktop] ace-min boot pid={} t={boot}",
+            std::process::id()
+        );
+        std::panic::set_hook(Box::new(|info| {
+            eprintln!(
+                "[ui-desktop] panic {info}\nbacktrace:\n{}",
+                std::backtrace::Backtrace::force_capture()
+            );
+        }));
+        init_theme_policy_catalog();
+        ace_min::run_cli(&args).map_err(std::io::Error::other)?;
+        return Ok(());
+    }
+
     let fullscreen = args.iter().any(|a| a == "--fullscreen");
     let explicit_apps_dir = args
         .iter()
@@ -84,11 +110,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // boot 自检（只读）：一次说清注册表/exe 产物/空壳 app/storage/rqhost 可达性。
     health::report(&apps_dir, apps_dir_src);
-    let mut native_backends = native_backends::DesktopBackends::start(&apps_dir)
-        .map_err(std::io::Error::other)?;
+    let mut native_backends =
+        native_backends::DesktopBackends::start(&apps_dir).map_err(std::io::Error::other)?;
     let mut private_rqhost = private_rqhost::DesktopRqhost::start(
         std::env::var("AUTO_DESKTOP_RQHOST").as_deref() == Ok("1"),
-    ).map_err(std::io::Error::other)?;
+    )
+    .map_err(std::io::Error::other)?;
     if let Some(endpoint) = private_rqhost.endpoint() {
         std::env::set_var("AUTO_DESKTOP_ENDPOINT", endpoint);
         // OS owns this helper; the shared renderer must not spawn a duplicate.
