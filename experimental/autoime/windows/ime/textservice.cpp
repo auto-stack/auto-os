@@ -185,6 +185,13 @@ STDMETHODIMP CTextService::Activate(ITfThreadMgr* ptim, TfClientId tid) {
       [this](int page_index, uint64_t version) {
         SelectCandidate(page_index, version);
       });
+  // Caret-follow timer: re-query the host caret while the popup is visible so
+  // window moves/zoom are picked up without another keypress.
+  candidate_wnd_.SetRefreshHandler([this] {
+    if (!composition_) return;
+    ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
+    if (ctx) RefreshCandidateWindow(ctx);
+  });
   char detail[64];
   _snprintf_s(detail, sizeof(detail), _TRUNCATE, "tid=%u advise=%d",
               static_cast<unsigned>(tid),
@@ -201,6 +208,7 @@ STDMETHODIMP CTextService::Deactivate() {
   diag::Event("service", "deactivate");
   candidate_wnd_.Hide();
   candidate_wnd_.SetSelectHandler(nullptr);
+  candidate_wnd_.SetRefreshHandler(nullptr);
   UnadviseKeyEventSink();
   // Leaving the IME must not leave an unconfirmed pre-edit behind: restore
   // the original text/selection while the old context is still editable.
@@ -463,9 +471,22 @@ void CTextService::SelectCandidate(int page_index, uint64_t version) {
   if (ctx) ApplyCompositionState(ctx, has_commit, commit, snap);
 }
 
-HRESULT CTextService::UpdateCompositionText(ITfContext* pic,
-                                            const std::wstring& text) {
+HRESULT CTextService::UpdateCompositionText(
+    ITfContext* pic, const RimeEngine::Snapshot& snap) {
+  const std::wstring text =
+      snap.preedit_utf16.empty() ? autoime::Utf8ToUtf16(snap.preedit_utf8)
+                                 : snap.preedit_utf16;
   composition_text_ = text;
+  const int length = static_cast<int>(text.size());
+  int cursor = snap.preedit_cursor;
+  if (cursor < 0) cursor = 0;
+  if (cursor > length) cursor = length;
+  int sel_start = snap.preedit_sel_start;
+  int sel_end = snap.preedit_sel_end;
+  if (sel_start < 0) sel_start = 0;
+  if (sel_end < sel_start) sel_end = sel_start;
+  if (sel_end > length) sel_end = length;
+  if (sel_end <= sel_start) sel_start = sel_end = cursor;
   return RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) -> HRESULT {
     if (!composition_) return E_FAIL;
     ITfRange* range = nullptr;
@@ -473,13 +494,32 @@ HRESULT CTextService::UpdateCompositionText(ITfContext* pic,
     const HRESULT hr = range->SetText(ec, 0, text.c_str(),
                                       static_cast<LONG>(text.size()));
     if (SUCCEEDED(hr)) {
-      // keep the caret at the composition end while composing
-      range->Collapse(ec, TF_ANCHOR_END);
-      TF_SELECTION sel{};
-      sel.range = range;
-      sel.style.ase = TF_AE_END;
-      sel.style.fInterimChar = FALSE;
-      pic->SetSelection(ec, 1, &sel);
+      // The caret/selection follows the ENGINE pre-edit position (Design 05
+      // sections 3/4.2), not always the composition end.
+      ITfRange* caret = nullptr;
+      if (SUCCEEDED(range->Clone(&caret)) && caret) {
+        caret->Collapse(ec, TF_ANCHOR_START);
+        LONG moved = 0;
+        caret->ShiftEnd(ec, sel_end, &moved, nullptr);
+        if (sel_end > sel_start) {
+          ITfRange* anchor = nullptr;
+          if (SUCCEEDED(range->Clone(&anchor)) && anchor) {
+            anchor->Collapse(ec, TF_ANCHOR_START);
+            LONG moved_start = 0;
+            anchor->ShiftEnd(ec, sel_start, &moved_start, nullptr);
+            caret->ShiftStartToRange(ec, anchor, TF_ANCHOR_START);
+            anchor->Release();
+          }
+        } else {
+          caret->Collapse(ec, TF_ANCHOR_END);
+        }
+        TF_SELECTION selection{};
+        selection.range = caret;
+        selection.style.ase = TF_AE_END;
+        selection.style.fInterimChar = FALSE;
+        if (FAILED(pic->SetSelection(ec, 1, &selection)))
+          caret->Release();
+      }
     }
     range->Release();
     return hr;
@@ -713,7 +753,7 @@ void CTextService::ApplyCompositionState(
       candidate_wnd_.Hide();
       return;
     }
-    if (preedit != composition_text_) UpdateCompositionText(pic, preedit);
+    UpdateCompositionText(pic, snap);
     RefreshCandidateWindow(pic);
   }
 }

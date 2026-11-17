@@ -365,29 +365,72 @@ void CaseEmojiConversionKeepsPrefixAndSuffix() {
   CHECK(autoime::Utf8ToUtf16("").empty());
 }
 
+void CaseOffsetMapping() {
+  using autoime::Utf16OffsetFromUtf8Codepoint;
+  CHECK(Utf16OffsetFromUtf8Codepoint("abc", 0) == 0);
+  CHECK(Utf16OffsetFromUtf8Codepoint("abc", 2) == 2);
+  CHECK(Utf16OffsetFromUtf8Codepoint("abc", 3) == 3);
+  CHECK(Utf16OffsetFromUtf8Codepoint("abc", 99) == 3);
+  // U+7532 U+1F600 U+4E59 = 甲😀乙
+  const std::string emoji = "\xE7\x94\xB2\xF0\x9F\x98\x80\xE4\xB9\x99";
+  CHECK(Utf16OffsetFromUtf8Codepoint(emoji, 0) == 0);
+  CHECK(Utf16OffsetFromUtf8Codepoint(emoji, 1) == 1);
+  CHECK(Utf16OffsetFromUtf8Codepoint(emoji, 2) == 3);  // surrogate pair
+  CHECK(Utf16OffsetFromUtf8Codepoint(emoji, 3) == 4);
+  CHECK(Utf16OffsetFromUtf8Codepoint(emoji, -1) == 0);
+  CHECK(Utf16OffsetFromUtf8Codepoint("", 5) == 0);
+}
+
+long long NowUs() {
+  static LARGE_INTEGER freq{};
+  if (!freq.QuadPart) QueryPerformanceFrequency(&freq);
+  LARGE_INTEGER now{};
+  QueryPerformanceCounter(&now);
+  return freq.QuadPart ? now.QuadPart * 1000000 / freq.QuadPart : 0;
+}
+
+struct CaseEntry {
+  const char* name;
+  void (*run)();
+};
+
 }  // namespace
 
 int main() {
   SetConsoleOutputCP(CP_UTF8);
-  CaseRepeatedTestProcessesOnce();
-  CaseDownOnlyProcessesOnce();
-  CaseAutoRepeatProcessesEachPress();
-  CaseStaleFocusCallbackDropped();
-  CaseShortcutsStayWithHost();
-  CaseShiftClickTogglesMode();
-  CaseShiftClickCancelsComposition();
-  CaseSensitiveAndUnreadyPassThrough();
-  CaseAsciiModeTypesDirectly();
-  CaseIdleKeysStayWithHost();
-  CaseComposingKeysAreConsumed();
-  CasePunctuationFollowsMode();
-  CaseGeneratedKeysymMapping();
-  CaseCompositionApplyPlan();
-  CaseEmojiConversionKeepsPrefixAndSuffix();
-  CaseDiagnosticsArePayloadFree();
+  const CaseEntry cases[] = {
+      {"repeated_test", CaseRepeatedTestProcessesOnce},
+      {"down_only", CaseDownOnlyProcessesOnce},
+      {"auto_repeat", CaseAutoRepeatProcessesEachPress},
+      {"stale_focus", CaseStaleFocusCallbackDropped},
+      {"shortcuts", CaseShortcutsStayWithHost},
+      {"shift_click", CaseShiftClickTogglesMode},
+      {"shift_click_cancel", CaseShiftClickCancelsComposition},
+      {"sensitive_unready", CaseSensitiveAndUnreadyPassThrough},
+      {"ascii_mode", CaseAsciiModeTypesDirectly},
+      {"idle_keys", CaseIdleKeysStayWithHost},
+      {"composing_keys", CaseComposingKeysAreConsumed},
+      {"punctuation", CasePunctuationFollowsMode},
+      {"keysym_mapping", CaseGeneratedKeysymMapping},
+      {"composition_plan", CaseCompositionApplyPlan},
+      {"emoji_conversion", CaseEmojiConversionKeepsPrefixAndSuffix},
+      {"offset_mapping", CaseOffsetMapping},
+      {"diagnostics_payload_free", CaseDiagnosticsArePayloadFree},
+  };
+  long long total_us = 0;
+  for (const CaseEntry& entry : cases) {
+    const int before = g_failures;
+    const long long start = NowUs();
+    entry.run();
+    const long long elapsed = NowUs() - start;
+    total_us += elapsed;
+    std::printf("CASE %s ms=%.3f failures=%d\n", entry.name,
+                elapsed / 1000.0, g_failures - before);
+  }
 
-  std::printf("SUMMARY {\"fixture\": \"key_router\", \"checks\": %d, "
-              "\"failures\": %d}\n",
-              g_checks, g_failures);
+  std::printf("SUMMARY {\"fixture\": \"key_router\", \"cases\": %zu, "
+              "\"checks\": %d, \"failures\": %d, \"total_ms\": %.3f}\n",
+              sizeof(cases) / sizeof(cases[0]), g_checks, g_failures,
+              total_us / 1000.0);
   return g_failures == 0 ? 0 : 5;
 }

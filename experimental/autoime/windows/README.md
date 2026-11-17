@@ -36,11 +36,11 @@ build.cmd          :: build\rime_probe.exe
 ## 自动化验证
 
 ```cmd
-ime\test.cmd                      :: 按键路由/编辑计划/隐私（136 checks，~1.5s）
+ime\test.cmd                      :: 先跑 ime\build.cmd；此后仅运行（136 checks，<0.1s）
 probe\build\rime_probe.exe --schema autoime_pinyin ^
     --resources-dir ..\resources  :: 方案/候选套件（T-03，10 用例，~3s）
 pwsh -NoProfile -File ime\tests\run-t04.ps1
-                                  :: 部署/回退/升级/并发/延迟（T-04，~24s）
+                                  :: 部署/回退/升级/并发/延迟（T-04，~30–40s）
 ```
 
 `run-t04.ps1` 覆盖：全新用户目录冷启、未变更重部署、引擎缺失直通、主方案
@@ -111,7 +111,9 @@ scripts\uninstall.cmd --purge  :: 同时删除 %LOCALAPPDATA%\AutoIME
 
 候选窗：纵向原生 Win32 窗口（非小狼毫横向候选条），按引擎标签显示
 1–5，`GetTextExt` 成功且随光标移动；日志记录每显示器 DPI（本次 192）与
-窗口矩形，翻页/缩放后重新定位。手感与视觉最终由用户确认。
+窗口矩形。候选窗可见时每 250ms 重新查询光标并重定位，DPI 变化时重建字体；
+预编辑行显示在候选之上，光标按引擎 `cursor_pos` 落在组合内部。手感与视觉
+最终由用户确认。
 
 ## 探针（词库层）
 

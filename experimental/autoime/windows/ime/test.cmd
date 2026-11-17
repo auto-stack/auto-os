@@ -1,8 +1,16 @@
 @echo off
-rem AutoIME PLAN-070 T-01 automated fixture: build + replay.
+rem AutoIME automated fixture runner (PLAN-070 T-01; review finding P070-F1).
+rem This command does NOT build: preparation is the explicit `ime\build.cmd`
+rem step, and a missing/stale binary is a named preparation error. The fixture
+rem prints per-case wall time.
 setlocal
-call "%~dp0build.cmd" || exit /b 1
-"%~dp0build\autoime_fixture.exe"
+set "EXE=%~dp0build\autoime_fixture.exe"
+if not exist "%EXE%" (
+  echo [test] ERROR: preparation missing - fixture not built: "%EXE%"
+  echo [test] run "ime\build.cmd" first ^(explicit preparation step^)
+  exit /b 2
+)
+"%EXE%"
 if errorlevel 1 exit /b %errorlevel%
 rem Privacy source audit: structural ImeLog must never receive key codes,
 rem pre-edit, commit or selection text.

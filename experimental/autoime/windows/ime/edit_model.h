@@ -16,6 +16,10 @@ namespace autoime {
 // the number of WCHARs, never bytes.
 std::wstring Utf8ToUtf16(const std::string& utf8);
 
+// Maps a UTF-8 code-point offset (the unit used by librime composition
+// positions) to a UTF-16 offset, counting supplementary-plane chars as two.
+int Utf16OffsetFromUtf8Codepoint(const std::string& utf8, int codepoint_offset);
+
 enum class EditAction {
   kNone,              // nothing to apply
   kCommit,            // write the commit once, composition ends

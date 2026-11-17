@@ -119,7 +119,8 @@ class CTextService final : public ITfTextInputProcessor,
                              const std::string& commit_utf8,
                              const RimeEngine::Snapshot& snap);
   bool EnsureComposition(ITfContext* pic);
-  HRESULT UpdateCompositionText(ITfContext* pic, const std::wstring& text);
+  HRESULT UpdateCompositionText(ITfContext* pic,
+                                const RimeEngine::Snapshot& snap);
   HRESULT FinalizeComposition(ITfContext* pic, const std::wstring& text);
   // Reverts the composition to the text/selection that existed before it
   // started (cancel path). Keeps the composition alive when the host refuses

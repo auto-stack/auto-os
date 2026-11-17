@@ -1,5 +1,6 @@
 // AutoIME - native Win32 candidate window implementation (PLAN-069 T-03,
-// PLAN-070 T-03: real labels, page version, DPI metrics, click selection).
+// PLAN-070 T-03/F4: pre-edit line, real labels, page version, DPI metrics,
+// click selection and caret-follow timer).
 #include "candidate_window.h"
 
 #include "diag.h"
@@ -7,10 +8,12 @@
 
 namespace {
 constexpr wchar_t kWndClass[] = L"AutoIMECandidateWindow";
-// Base metrics at 96 DPI; scaled per monitor when the window is created.
+// Base metrics at 96 DPI; scaled per monitor when the window is shown.
 constexpr int kRowH96 = 28;
 constexpr int kPadX96 = 10;
 constexpr int kPadY96 = 6;
+constexpr UINT kRepositionTimer = 1;
+constexpr UINT kRepositionMs = 250;
 
 int Scale(int value, UINT dpi) {
   return MulDiv(value, static_cast<int>(dpi ? dpi : 96), 96);
@@ -37,15 +40,23 @@ bool CandidateWindow::EnsureCreated(HWND owner) {
   wc.lpszClassName = kWndClass;
   RegisterClassW(&wc);
 
-  font_ = CreateFontW(-Scale(17, GetDpiForSystem()), 0, 0, 0, FW_NORMAL, FALSE,
-                      FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
-                      CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
-                      DEFAULT_PITCH | FF_DONTCARE, L"Microsoft YaHei UI");
-
   wnd_ = CreateWindowExW(
       WS_EX_TOPMOST | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW, kWndClass, L"",
       WS_POPUP, 0, 0, 10, 10, owner, nullptr, g_hInst, this);
   return wnd_ != nullptr;
+}
+
+void CandidateWindow::EnsureFont(UINT dpi) {
+  if (font_ && font_dpi_ == dpi) return;
+  if (font_) {
+    DeleteObject(font_);
+    font_ = nullptr;
+  }
+  font_ = CreateFontW(-Scale(17, dpi), 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                      DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                      CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+                      L"Microsoft YaHei UI");
+  font_dpi_ = dpi;
 }
 
 void CandidateWindow::Layout(const RimeEngine::Snapshot& snap,
@@ -55,8 +66,11 @@ void CandidateWindow::Layout(const RimeEngine::Snapshot& snap,
   highlighted_ = snap.highlighted;
   last_page_ = snap.is_last_page;
   page_no_ = snap.page_no;
+  has_preedit_ = !snap.preedit_utf16.empty();
+  preedit_ = snap.preedit_utf16;
   const UINT dpi = wnd_ ? GetDpiForWindow(wnd_) : 0;
   const UINT effective_dpi = dpi ? dpi : 96;
+  EnsureFont(effective_dpi);
   row_h_ = Scale(kRowH96, effective_dpi);
   pad_x_ = Scale(kPadX96, effective_dpi);
   pad_y_ = Scale(kPadY96, effective_dpi);
@@ -72,6 +86,11 @@ void CandidateWindow::Layout(const RimeEngine::Snapshot& snap,
   SIZE sz = {};
   int max_w = 0;
   int max_label_w = 0;
+  if (has_preedit_) {
+    GetTextExtentPoint32W(dc, preedit_.c_str(),
+                          static_cast<int>(preedit_.size()), &sz);
+    max_w = sz.cx;
+  }
   for (const std::wstring& line : lines_) {
     GetTextExtentPoint32W(dc, line.c_str(), static_cast<int>(line.size()),
                           &sz);
@@ -86,20 +105,22 @@ void CandidateWindow::Layout(const RimeEngine::Snapshot& snap,
   ReleaseDC(wnd_, dc);
   label_w_ = max_label_w + Scale(8, effective_dpi);
 
+  const int rows = static_cast<int>(lines_.size()) + (has_preedit_ ? 1 : 0);
   const int w = max_w + pad_x_ * 2 + label_w_;
-  const int h = static_cast<int>(lines_.size()) * row_h_ + pad_y_ * 2;
+  const int h = rows * row_h_ + pad_y_ * 2;
   int x = caret.left;
   int y = caret.bottom + Scale(2, effective_dpi);
-  HMONITOR mon = MonitorFromPoint({caret.left, caret.top},
-                                  MONITOR_DEFAULTTONEAREST);
+  HMONITOR mon =
+      MonitorFromPoint({caret.left, caret.top}, MONITOR_DEFAULTTONEAREST);
   MONITORINFO mi = {sizeof(mi)};
   GetMonitorInfoW(mon, &mi);
   if (x + w > mi.rcWork.right) x = mi.rcWork.right - w;
   if (x < mi.rcWork.left) x = mi.rcWork.left;
   if (y + h > mi.rcWork.bottom) y = caret.top - h - Scale(2, effective_dpi);
   if (y < mi.rcWork.top) y = mi.rcWork.top;
-  ImeLog("cand layout lines=%zu page=%d dpi=%u w=%d h=%d at (%d,%d)",
-         lines_.size(), page_no_, effective_dpi, w, h, x, y);
+  ImeLog("cand layout lines=%zu ped=%d page=%d dpi=%u w=%d h=%d at (%d,%d)",
+         lines_.size(), has_preedit_ ? 1 : 0, page_no_, effective_dpi, w, h, x,
+         y);
   SetWindowPos(wnd_, HWND_TOPMOST, x, y, w, h,
                SWP_NOACTIVATE | SWP_SHOWWINDOW);
   visible_ = true;
@@ -113,11 +134,15 @@ void CandidateWindow::Show(const RimeEngine::Snapshot& snap,
   }
   version_ = snap.version;
   Layout(snap, caret);
+  SetTimer(wnd_, kRepositionTimer, kRepositionMs, nullptr);
   InvalidateRect(wnd_, nullptr, TRUE);
 }
 
 void CandidateWindow::Hide() {
-  if (wnd_ && visible_) ShowWindow(wnd_, SW_HIDE);
+  if (wnd_) {
+    KillTimer(wnd_, kRepositionTimer);
+    if (visible_) ShowWindow(wnd_, SW_HIDE);
+  }
   visible_ = false;
 }
 
@@ -128,7 +153,14 @@ void CandidateWindow::Paint(HDC dc) {
                         GetClassLongPtrW(wnd_, GCLP_HBRBACKGROUND)));
   SetBkMode(dc, TRANSPARENT);
   SelectObject(dc, font_);
+  const UINT dpi = GetDpiForWindow(wnd_);
   int y = pad_y_;
+  if (has_preedit_) {
+    SetTextColor(dc, RGB(0x50, 0x50, 0x50));
+    TextOutW(dc, pad_x_, y + Scale(4, dpi), preedit_.c_str(),
+             static_cast<int>(preedit_.size()));
+    y += row_h_;
+  }
   const HBRUSH highlight = CreateSolidBrush(RGB(0x2B, 0x6C, 0xF0));
   for (size_t i = 0; i < lines_.size(); ++i) {
     if (static_cast<int>(i) == highlighted_) {
@@ -138,10 +170,10 @@ void CandidateWindow::Paint(HDC dc) {
     } else {
       SetTextColor(dc, RGB(0x20, 0x20, 0x20));
     }
-    TextOutW(dc, pad_x_, y + Scale(4, GetDpiForWindow(wnd_)),
-             labels_[i].c_str(), static_cast<int>(labels_[i].size()));
-    TextOutW(dc, pad_x_ + label_w_, y + Scale(4, GetDpiForWindow(wnd_)),
-             lines_[i].c_str(), static_cast<int>(lines_[i].size()));
+    TextOutW(dc, pad_x_, y + Scale(4, dpi), labels_[i].c_str(),
+             static_cast<int>(labels_[i].size()));
+    TextOutW(dc, pad_x_ + label_w_, y + Scale(4, dpi), lines_[i].c_str(),
+             static_cast<int>(lines_[i].size()));
     y += row_h_;
   }
   DeleteObject(highlight);
@@ -149,7 +181,8 @@ void CandidateWindow::Paint(HDC dc) {
 
 void CandidateWindow::OnClick(int y) {
   if (lines_.empty()) return;
-  const int row = (y - pad_y_) / (row_h_ > 0 ? row_h_ : 1);
+  int row = (y - pad_y_) / (row_h_ > 0 ? row_h_ : 1);
+  if (has_preedit_) --row;  // the first row is the pre-edit line
   if (row < 0 || row >= static_cast<int>(lines_.size())) return;
   diag::Event("candidate", "click");
   if (handler_) handler_(row, version_);
@@ -178,6 +211,11 @@ LRESULT CALLBACK CandidateWindow::WndProc(HWND wnd, UINT msg, WPARAM wparam,
       return 0;
     case WM_MOUSEACTIVATE:
       return MA_NOACTIVATE;  // never steal editor focus
+    case WM_TIMER:
+      if (self && wparam == kRepositionTimer && self->visible_ &&
+          self->refresh_)
+        self->refresh_();
+      return 0;
     case WM_DPICHANGED:
       InvalidateRect(wnd, nullptr, TRUE);
       return 0;

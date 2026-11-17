@@ -400,10 +400,19 @@ struct Rime {
   }
 };
 
+long long NowUs() {
+  static LARGE_INTEGER freq{};
+  if (!freq.QuadPart) QueryPerformanceFrequency(&freq);
+  LARGE_INTEGER now{};
+  QueryPerformanceCounter(&now);
+  return freq.QuadPart ? now.QuadPart * 1000000 / freq.QuadPart : 0;
+}
+
 struct TestResult {
   const char* name;
   bool pass;
   std::string detail;
+  double ms = 0.0;
 };
 
 int PrintUsageError(const char* msg) {
@@ -663,6 +672,7 @@ int main(int argc, char** argv) {
   // t1: nihao -> "ni hao" -> select #1 -> exactly one commit "你好"
   {
     TestResult r{"t1_first_commit", false, ""};
+      const long long case_start = NowUs();
     std::string preedit;
     bool ok = rime.TypeString(session, "nihao");
     ok = ok && rime.GetPreedit(session, &preedit);
@@ -705,6 +715,7 @@ int main(int argc, char** argv) {
         r.pass = true;
       }
     }
+    r.ms = (NowUs() - case_start) / 1000.0;
     results.push_back(r);
   }
 
@@ -712,6 +723,7 @@ int main(int argc, char** argv) {
   {
     rime.api->clear_composition(session);
     TestResult r{"t2_cancel", false, ""};
+      const long long case_start = NowUs();
     bool ok = rime.TypeString(session, "ni");
     std::string preedit;
     ok = ok && rime.GetPreedit(session, &preedit);
@@ -733,12 +745,14 @@ int main(int argc, char** argv) {
     } else {
       r.pass = true;
     }
+    r.ms = (NowUs() - case_start) / 1000.0;
     results.push_back(r);
   }
 
   // t3: two sessions isolated (composition + candidates)
   {
     TestResult r{"t3_two_sessions", false, ""};
+      const long long case_start = NowUs();
     const RimeSessionId s2 = rime.api->create_session();
     TRACE("create_session(2nd) -> %zu", static_cast<size_t>(s2));
     bool ok = s2 != 0 && s2 != session;
@@ -773,6 +787,7 @@ int main(int argc, char** argv) {
     } else {
       r.pass = true;
     }
+    r.ms = (NowUs() - case_start) / 1000.0;
     results.push_back(r);
     rime.api->destroy_session(s2);
   }
@@ -791,6 +806,7 @@ int main(int argc, char** argv) {
     // t4: the deployed schema id is read back from a NEW session.
     {
       TestResult r{"t4_schema_identity", false, ""};
+      const long long case_start = NowUs();
       const RimeSessionId probe_session = rime.api->create_session();
       std::string id, name;
       const bool ok = probe_session != 0 &&
@@ -803,7 +819,8 @@ int main(int argc, char** argv) {
       else
         r.pass = true;
       if (probe_session) rime.api->destroy_session(probe_session);
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
 
     // t5: "nh" keeps the 你好 / 内核 ambiguity; labels are the schema's real
@@ -811,6 +828,7 @@ int main(int argc, char** argv) {
     {
       rime.api->clear_composition(session);
       TestResult r{"t5_abbrev_label_select", false, ""};
+      const long long case_start = NowUs();
       Rime::Page page;
       bool ok = rime.TypeString(session, "nh");
       bool saw_ni = false;
@@ -871,13 +889,15 @@ int main(int argc, char** argv) {
         else
           r.pass = true;
       }
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
     // t6: full pinyin of a project term reaches the term candidate and shows
     // it (cross-page search), then the shown label commits it once.
     {
       rime.api->clear_composition(session);
       TestResult r{"t6_project_term", false, ""};
+      const long long case_start = NowUs();
       bool ok = rime.TypeString(session, "zengliangbianyi");
       Rime::Page page;
       int found = -1;
@@ -912,13 +932,15 @@ int main(int argc, char** argv) {
         else
           r.pass = true;
       }
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
 
-    // t7: explicit mixed alias "ros2" produces "ROS 2" (case and space kept).
+    // t7: explicit mixed alias "ros" produces "ROS 2" (letter-only code; digits are
     {
       rime.api->clear_composition(session);
       TestResult r{"t7_mixed_english", false, ""};
+      const long long case_start = NowUs();
       bool ok = rime.TypeString(session, "ros");
       Rime::Page page;
       int found = -1;
@@ -948,13 +970,15 @@ int main(int argc, char** argv) {
         else
           r.pass = true;
       }
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
 
     // t8: user-editable phrase file: add -> redeploy -> reachable; remove ->
     // redeploy -> gone. This is the "增删并重新部署生效" contract.
     {
       TestResult r{"t8_custom_phrase_redeploy", false, ""};
+      const long long case_start = NowUs();
       // First check the phrase shipped in the resource file: if that is not
       // reachable, the custom_phrase translator itself is not active.
       rime.api->clear_composition(session);
@@ -1034,12 +1058,14 @@ int main(int argc, char** argv) {
       // Restore the shipped phrase file (best effort; temp dirs are deleted).
       CopyResourceFile(opt.resources_dir, "custom_phrase.txt",
                        opt.user_data_dir, false);
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
 
     // t9: an explicit schema choice still works, including the Luna fallback.
     {
       TestResult r{"t9_fallback_luna", false, ""};
+      const long long case_start = NowUs();
       RimeSessionId s5 = rime.api->create_session();
       std::string id, name;
       bool ok = s5 != 0 && RIME_PROVIDED(rime.api, select_schema) &&
@@ -1081,13 +1107,15 @@ int main(int argc, char** argv) {
       else
         r.pass = true;
       if (s5) rime.api->destroy_session(s5);
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
 
     // t10: a half-typed syllable ("nih") still composes and its shown label
     // commits exactly the displayed candidate.
     {
       TestResult r{"t10_partial_syllable", false, ""};
+      const long long case_start = NowUs();
       // t8 restarted the engine, so use a fresh session.
       RimeSessionId s6 = rime.api->create_session();
       Rime::Page page;
@@ -1119,7 +1147,8 @@ int main(int argc, char** argv) {
       else
         r.pass = true;
       if (s6) rime.api->destroy_session(s6);
-      results.push_back(r);
+      r.ms = (NowUs() - case_start) / 1000.0;
+    results.push_back(r);
     }
   }
 
@@ -1135,7 +1164,8 @@ int main(int argc, char** argv) {
 
   bool all_pass = true;
   for (const TestResult& r : results) {
-    std::printf("RESULT %s=%s%s%s\n", r.name, r.pass ? "PASS" : "FAIL",
+    std::printf("RESULT %s=%s ms=%.1f%s%s\n", r.name,
+                r.pass ? "PASS" : "FAIL", r.ms,
                 r.detail.empty() ? "" : " detail: ", r.detail.c_str());
     all_pass = all_pass && r.pass;
   }

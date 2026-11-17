@@ -23,6 +23,7 @@ if exist "%DST%\autoime_deploy.exe" (
   del "%TEMP%\autoime-ime.log" 2>nul
 )
 del "%DST%\autoime_deploy.exe" 2>nul
+del "%DST%\verify_registered.exe" 2>nul
 if exist "%DST%\resources" rmdir /s /q "%DST%\resources"
 rmdir "%DST%" 2>nul
 

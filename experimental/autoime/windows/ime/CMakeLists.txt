@@ -24,7 +24,7 @@ set_target_properties(autoime_ime PROPERTIES OUTPUT_NAME "autoime_ime")
 add_executable(verify_registered verify_registered.cpp)
 target_compile_features(verify_registered PRIVATE cxx_std_17)
 target_compile_definitions(verify_registered PRIVATE _CRT_SECURE_NO_WARNINGS)
-target_link_libraries(verify_registered PRIVATE uuid ole32 user32)
+target_link_libraries(verify_registered PRIVATE uuid ole32 user32 version)
 
 # PLAN-070 T-01 automated fixture: replays the TSF callback shapes against the
 # production KeyRouter and checks the diagnostics contract.
@@ -45,6 +45,7 @@ add_executable(autoime_deploy
   tools/deploy_main.cpp
   deployment.cpp
   diag.cpp
+  edit_model.cpp
   rime_engine.cpp
 )
 target_compile_features(autoime_deploy PRIVATE cxx_std_17)

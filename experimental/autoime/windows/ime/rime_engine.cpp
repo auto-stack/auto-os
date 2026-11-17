@@ -6,6 +6,7 @@
 #include <cstring>
 
 #include "deployment.h"
+#include "edit_model.h"
 #include "diag.h"
 #include "ime.h"
 
@@ -137,7 +138,7 @@ void RimeEngine::WriteDefaultCustomYaml() const {
   std::fclose(f);
 }
 
-bool RimeEngine::InitializeAndMaintain() {
+bool RimeEngine::InitializeAndMaintain(bool full_check) {
   if (!api_) return false;
   CreateDirectoryA(user_data_dir_.c_str(), nullptr);
   WriteDefaultCustomYaml();
@@ -151,7 +152,7 @@ bool RimeEngine::InitializeAndMaintain() {
   api_->set_notification_handler(nullptr, nullptr);
   api_->setup(&traits);
   api_->initialize(&traits);
-  api_->start_maintenance(True);
+  api_->start_maintenance(full_check ? True : False);
   if (api_->is_maintenance_mode()) api_->join_maintenance_thread();
   return true;
 }
@@ -202,11 +203,12 @@ void RimeEngine::CommitResources() {
   if (!resources_dir_.empty()) deployment::Commit(user_data_dir_);
 }
 
-void RimeEngine::RollbackResources() {
-  if (resources_dir_.empty()) return;
+bool RimeEngine::RollbackResources() {
+  if (resources_dir_.empty()) return false;
   std::string detail;
-  deployment::Rollback(user_data_dir_, &detail);
+  const bool restored = deployment::Rollback(user_data_dir_, &detail);
   deployment_detail_ += " | " + detail;
+  return restored;
 }
 
 RimeEngine::~RimeEngine() {
@@ -269,7 +271,7 @@ bool RimeEngine::EnsureReady(std::string* error) {
   const std::string env_schema = EnvOr("AUTOIME_RIME_SCHEMA", "");
   if (!env_schema.empty()) schema_ = env_schema;
 
-  if (!InitializeAndMaintain()) {
+  if (!InitializeAndMaintain(true)) {
     finished_.store(true);
     deployment_detail_ += " | initialize failed";
     return false;
@@ -284,7 +286,7 @@ bool RimeEngine::EnsureReady(std::string* error) {
     // first so the compile output is no longer mapped and can be dropped.
     FinalizeEngine();
     RollbackResources();
-    if (InitializeAndMaintain() && ValidateSchema(schema_, &actual)) {
+    if (InitializeAndMaintain(true) && ValidateSchema(schema_, &actual)) {
       ready_.store(true);
       diag::Event("engine", "ready_after_rollback");
     } else {
@@ -293,7 +295,7 @@ bool RimeEngine::EnsureReady(std::string* error) {
       schema_override_ = "luna_pinyin_simp";
       fallback_.store(true);
       FinalizeEngine();
-      if (InitializeAndMaintain() && ValidateSchema(schema_, &actual)) {
+      if (InitializeAndMaintain(true) && ValidateSchema(schema_, &actual)) {
         ready_.store(true);
         diag::Event("engine", "ready_luna");
       } else {
@@ -346,7 +348,33 @@ bool RimeEngine::GetContext(uintptr_t session, Snapshot* out) {
   RIME_STRUCT(RimeContext, ctx);
   if (!api_->get_context(session, &ctx)) return false;
   *out = Snapshot{};
-  if (ctx.composition.preedit) out->preedit_utf8 = ctx.composition.preedit;
+  if (ctx.composition.preedit) {
+    out->preedit_utf8 = ctx.composition.preedit;
+    out->preedit_utf16 = Utf8ToUtf16(out->preedit_utf8);
+    int codepoints = 0;
+    for (size_t i = 0; i < out->preedit_utf8.size(); ++i) {
+      const unsigned char c = static_cast<unsigned char>(out->preedit_utf8[i]);
+      if ((c & 0xC0) != 0x80) ++codepoints;
+    }
+    const int cursor = ctx.composition.cursor_pos;
+    const int clamped_cursor =
+        (cursor >= 0 && cursor <= codepoints) ? cursor : codepoints;
+    out->preedit_cursor =
+        autoime::Utf16OffsetFromUtf8Codepoint(out->preedit_utf8, clamped_cursor);
+    int sel_start = ctx.composition.sel_start;
+    int sel_end = ctx.composition.sel_end;
+    if (sel_start < 0 || sel_end <= sel_start) {
+      out->preedit_sel_start = out->preedit_cursor;
+      out->preedit_sel_end = out->preedit_cursor;
+    } else {
+      if (sel_start > codepoints) sel_start = codepoints;
+      if (sel_end > codepoints) sel_end = codepoints;
+      out->preedit_sel_start =
+          autoime::Utf16OffsetFromUtf8Codepoint(out->preedit_utf8, sel_start);
+      out->preedit_sel_end =
+          autoime::Utf16OffsetFromUtf8Codepoint(out->preedit_utf8, sel_end);
+    }
+  }
   out->is_composing = ctx.composition.length > 0;
   out->page_no = ctx.menu.page_no;
   out->is_last_page = ctx.menu.is_last_page != 0;

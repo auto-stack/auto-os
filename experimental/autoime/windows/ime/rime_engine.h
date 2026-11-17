@@ -29,6 +29,10 @@ class RimeEngine {
 
   struct Snapshot {
     std::string preedit_utf8;       // composition preedit
+    std::wstring preedit_utf16;     // same text for the candidate window
+    int preedit_cursor = 0;         // UTF-16 units, from the engine cursor
+    int preedit_sel_start = 0;      // UTF-16; == cursor when no selection
+    int preedit_sel_end = 0;
     bool is_composing = false;
     // Candidates of the CURRENT page only, with the engine's real labels.
     std::vector<std::wstring> candidates;  // UTF-16 for GDI
@@ -93,11 +97,11 @@ class RimeEngine {
  private:
   bool LoadDll(std::string* error);
   void WriteDefaultCustomYaml() const;
-  bool InitializeAndMaintain();
+  bool InitializeAndMaintain(bool full_check);
   bool ValidateSchema(const std::string& expected, std::string* actual);
   void FinalizeEngine();
   void CommitResources();
-  void RollbackResources();
+  bool RollbackResources();
   static std::string EnvOr(const char* env, const std::string& fallback);
 
   std::mutex init_mutex_;

@@ -317,8 +317,17 @@ bool Rollback(const std::string& user_dir, std::string* detail) {
   DeleteFileA(Join(user_dir, kPending).c_str());
   RemoveTree(backup);
   RemoveTree(Join(user_dir, kStageDir));
-  // Drop the failed compile output so the retry rebuilds from the restored set.
-  RemoveTree(Join(user_dir, kBuildDir));
+  // Drop only AutoIME's own compile output so the retry rebuilds from the
+  // restored sources; the Luna/stroke artifacts and shared dictionary tables
+  // stay valid and are reused (recovery time budget).
+  const std::string build = Join(user_dir, kBuildDir);
+  const char* const stale[] = {
+      "autoime_pinyin.schema.yaml", "autoime_pinyin.prism.bin",
+      "autoime_pinyin.table.bin",   "autoime_terms.table.bin",
+      "autoime_terms.prism.bin",    "autoime_terms.reverse.bin",
+      "autoime_en.table.bin",       "autoime_en.reverse.bin",
+  };
+  for (const char* name : stale) DeleteFileA(Join(build, name).c_str());
   if (detail)
     *detail = restored ? "restored last known-good resources"
                        : "no previous resources; primary schema disabled";

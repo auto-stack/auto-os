@@ -33,6 +33,7 @@ if errorlevel 1 (
   copy /y "%SRC%" "%DST%\autoime_ime.dll" >nul || (echo [install] copy failed & exit /b 1)
 )
 if exist "%BUILD%\autoime_deploy.exe" copy /y "%BUILD%\autoime_deploy.exe" "%DST%\" >nul
+if exist "%BUILD%\verify_registered.exe" copy /y "%BUILD%\verify_registered.exe" "%DST%\" >nul
 
 rem Rime resources live next to the DLL (<install>\resources).
 if exist "%DST%\resources" rmdir /s /q "%DST%\resources"
@@ -54,6 +55,12 @@ if errorlevel 1 (
   del "%DST%\autoime_ime.dll" 2>nul
   rmdir /s /q "%DST%\resources" 2>nul
   exit /b 3
+)
+rem PLAN-070 T-04/F5: verify the registered path, binary and version.
+"%DST%\verify_registered.exe" "%DST%\autoime_ime.dll"
+if errorlevel 1 (
+  echo [install] ERROR: registration verification failed ^(path/file/version^)
+  exit /b 4
 )
 echo [install] OK: %DST%\autoime_ime.dll registered ^(zh-CN profile^)
 
