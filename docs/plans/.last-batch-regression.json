@@ -1,15 +1,22 @@
 {
-  "last_covered_plan_id": 69,
-  "timestamp": "2026-11-16T21:30:00Z",
-  "covered_commit": "fd40a5e",
+  "last_covered_plan_id": 70,
+  "timestamp": "2026-11-17T06:17:06Z",
+  "covered_commit": "359b7fa8d445827592944b503a0af690b83a9f5a",
   "command": "check-app-submodules.ps1 + verify-app-links.py (auto-os adopted batch legs, main single instance)",
   "legs": [
     "check-app-submodules",
     "verify-app-links"
   ],
-  "new_reds": [],
+  "new_reds": [
+    "APPS-SUBMODULES-UNINITIALIZED — check-app-submodules exit 1: all manifest app gitlinks uninitialized (apps/* empty) in this main checkout; no plan attribution (git diff fd40a5e..HEAD -- apps .gitmodules apps.manifest empty); host/combo-checkout state, fix = git submodule update --init --recursive (owner: user/combo checkout)"
+  ],
   "known_reds_seen": [
     "VERIFY-APP-LINKS-STALE — Incorrect gitlink apps/auto-calc; pre-existing stale verifier table (manifest 无 commit 字段 vs 演进 pin)，同身份 vs 35be187/PLAN-055/060 回执；owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
   ],
-  "context": "plan-067 merge closeout batch (069/067 landed since last receipt 68@2026-11-11)"
+  "verdict": "new-reds-with-attribution (1 environment red, 1 known red; no PLAN-070 regression)",
+  "context": "plan-070 merge closeout batch (070 landed since last receipt 69@fd40a5e); both legs single-instance on main",
+  "timings": {
+    "check_app_submodules_ms": 1905,
+    "verify_app_links_ms": 1518
+  }
 }
