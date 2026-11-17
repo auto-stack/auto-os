@@ -18,18 +18,9 @@
 #include <new>
 
 #include "diag.h"
+#include "edit_model.h"
 
 namespace {
-
-std::wstring Utf8ToUtf16(const std::string& utf8) {
-  if (utf8.empty()) return std::wstring();
-  const int n = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(),
-                                    static_cast<int>(utf8.size()), nullptr, 0);
-  std::wstring out(n, L'\0');
-  MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), static_cast<int>(utf8.size()),
-                      &out[0], n);
-  return out;
-}
 
 // Synchronous edit session runner: must be called on the UI thread while
 // handling key events (TF_ES_SYNC).
@@ -86,6 +77,24 @@ HRESULT RunSyncEdit(ITfContext* ctx, TfClientId tid,
 const GUID kPropInputScope = {
     0x1713dd5a, 0x68e7, 0x4a5b, {0x9a, 0xf6, 0x59, 0x2a, 0x59, 0x5c, 0x77,
                                 0x8d}};
+
+// Reads a range's text in UTF-16 chunks (surrogate pairs stay intact because
+// the unit is WCHAR).
+bool ReadRangeText(TfEditCookie ec, ITfRange* range, std::wstring* out) {
+  out->clear();
+  constexpr LONG kChunk = 512;
+  std::wstring chunk(static_cast<size_t>(kChunk), L'\0');
+  LONG offset = 0;
+  for (;;) {
+    ULONG fetched = 0;
+    const HRESULT hr =
+        range->GetText(ec, offset, &chunk[0], kChunk, &fetched);
+    if (FAILED(hr)) return false;
+    out->append(chunk.data(), static_cast<size_t>(fetched));
+    if (fetched < static_cast<ULONG>(kChunk)) return true;
+    offset += static_cast<LONG>(fetched);
+  }
+}
 
 }  // namespace
 
@@ -183,6 +192,14 @@ STDMETHODIMP CTextService::Deactivate() {
   diag::Event("service", "deactivate");
   candidate_wnd_.Hide();
   UnadviseKeyEventSink();
+  // Leaving the IME must not leave an unconfirmed pre-edit behind: restore
+  // the original text/selection while the old context is still editable.
+  if (composition_ && active_ctx_) {
+    ITfContext* ctx = active_ctx_;
+    ctx->AddRef();
+    RestoreComposition(ctx);
+    ctx->Release();
+  }
   if (composition_) {
     composition_->Release();
     composition_ = nullptr;
@@ -192,6 +209,7 @@ STDMETHODIMP CTextService::Deactivate() {
     active_ctx_ = nullptr;
   }
   composition_text_.clear();
+  ReleaseOrigin();
   engine_composing_ = false;
   if (rime_session_) {
     engine_.DestroySession(rime_session_);
@@ -339,8 +357,10 @@ void CTextService::CancelComposition() {
   if (rime_session_) engine_.ClearComposition(rime_session_);
   engine_composing_ = false;
   candidate_wnd_.Hide();
-  ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
-  if (composition_ && ctx) DiscardComposition(ctx);
+  if (composition_) {
+    ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
+    if (ctx) RestoreComposition(ctx);
+  }
   diag::Event("composition", "cancel");
 }
 
@@ -431,12 +451,29 @@ HRESULT CTextService::UpdateCompositionText(ITfContext* pic,
   });
 }
 
+void CTextService::ReleaseOrigin() {
+  if (origin_.range) {
+    origin_.range->Release();
+    origin_.range = nullptr;
+  }
+  origin_.text.clear();
+  origin_.had_selection = false;
+}
+
 // Opens the composition over the CURRENT SELECTION (covers both the caret
-// case and the "selected text to replace" case required by AC-01).
+// case and the "selected text to replace" case). Before the composition can
+// replace anything, the selection range and its text are cloned into origin_
+// so a cancel restores them exactly (PLAN-070 T-02).
 bool CTextService::EnsureComposition(ITfContext* pic) {
   if (composition_) {
     if (active_ctx_ == pic) return true;
-    DiscardComposition(active_ctx_ ? active_ctx_ : pic);
+    ITfContext* previous = active_ctx_ ? active_ctx_ : pic;
+    if (previous) {
+      previous->AddRef();
+      RestoreComposition(previous);
+      previous->Release();
+    }
+    if (composition_) return false;  // restore failed: never cross-write
   }
   HRESULT hr = RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) -> HRESULT {
     ITfRange* range = nullptr;
@@ -457,10 +494,24 @@ bool CTextService::EnsureComposition(ITfContext* pic) {
       insert_at_selection->Release();
       if (FAILED(hr_ins)) return hr_ins;
     }
+    // Snapshot the origin BEFORE the composition replaces it.
+    BOOL empty = TRUE;
+    const bool have_empty_flag = SUCCEEDED(range->IsEmpty(ec, &empty));
+    std::wstring original;
+    const bool text_ok = ReadRangeText(ec, range, &original);
+    ITfRange* origin_clone = nullptr;
+    const bool clone_ok =
+        SUCCEEDED(range->Clone(&origin_clone)) && origin_clone != nullptr;
+    if (!text_ok || !clone_ok) {
+      if (origin_clone) origin_clone->Release();
+      range->Release();
+      return E_FAIL;  // no reversible origin: do not replace the document
+    }
     ITfContextComposition* context_composition = nullptr;
     if (FAILED(pic->QueryInterface(IID_ITfContextComposition,
                                    reinterpret_cast<void**>(
                                        &context_composition)))) {
+      origin_clone->Release();
       range->Release();
       return E_FAIL;
     }
@@ -469,10 +520,15 @@ bool CTextService::EnsureComposition(ITfContext* pic) {
     context_composition->Release();
     range->Release();
     if (SUCCEEDED(hr_start) && composition_) {
+      ReleaseOrigin();
+      origin_.range = origin_clone;
+      origin_.text = original;
+      origin_.had_selection = have_empty_flag ? (empty == FALSE) : false;
       active_ctx_ = pic;
       active_ctx_->AddRef();
       ImeLog("StartComposition ok comp=%p", (void*)composition_);
     } else {
+      origin_clone->Release();
       ImeLog("StartComposition FAILED hr=0x%08lx",
              static_cast<unsigned long>(hr_start));
     }
@@ -486,7 +542,6 @@ bool CTextService::EnsureComposition(ITfContext* pic) {
 
 HRESULT CTextService::FinalizeComposition(ITfContext* pic,
                                           const std::wstring& text) {
-  composition_text_.clear();
   candidate_wnd_.Hide();
   if (!composition_) {
     // No open composition (e.g. Rime committed without composing): insert.
@@ -505,69 +560,119 @@ HRESULT CTextService::FinalizeComposition(ITfContext* pic,
     });
   }
   ITfComposition* comp = composition_;
-  composition_ = nullptr;
   ITfContext* ctx = active_ctx_;
-  active_ctx_ = nullptr;
+  const uint64_t gen = generation_;
+  bool ended = false;
   const HRESULT hr = RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
+    if (gen != generation_) return E_ABORT;
     ITfRange* range = nullptr;
     if (FAILED(comp->GetRange(&range))) return E_FAIL;
     const HRESULT hr_set = range->SetText(ec, 0, text.c_str(),
                                           static_cast<LONG>(text.size()));
-    // park the caret AFTER the committed text
     if (SUCCEEDED(hr_set)) {
+      // park the caret AFTER the committed text
       range->Collapse(ec, TF_ANCHOR_END);
       TF_SELECTION sel{};
       sel.range = range;
       sel.style.ase = TF_AE_END;
       sel.style.fInterimChar = FALSE;
       pic->SetSelection(ec, 1, &sel);
+      comp->EndComposition(ec);
+      ended = true;
     }
-    comp->EndComposition(ec);
     range->Release();
     return hr_set;
   });
-  comp->Release();
-  if (ctx) ctx->Release();
+  if (ended) {
+    composition_ = nullptr;
+    active_ctx_ = nullptr;
+    composition_text_.clear();
+    if (ctx) ctx->Release();
+    comp->Release();
+    ReleaseOrigin();
+    diag::Event("composition", "commit");
+  } else {
+    // Host refused/locked the write: keep the composition and its origin so
+    // nothing is silently rewritten; a later cancel can still restore.
+    diag::Failure("commit", hr);
+  }
   return hr;
 }
 
-// Drops the open composition without committing its text. The engine session
-// is cleared separately by the caller. T-02 replaces this with the reversible
-// path that restores the original selection.
-void CTextService::DiscardComposition(ITfContext* pic) {
-  if (!composition_) return;
+// Reverts the composition to the text/selection that existed before it
+// started (cancel path, including Esc, focus loss and mode switch).
+HRESULT CTextService::RestoreComposition(ITfContext* pic) {
+  if (!composition_ || !pic) return S_OK;
   ITfComposition* comp = composition_;
-  composition_ = nullptr;
   ITfContext* ctx = active_ctx_;
-  active_ctx_ = nullptr;
-  composition_text_.clear();
-  if (pic) {
-    RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
-      ITfRange* range = nullptr;
-      if (SUCCEEDED(comp->GetRange(&range))) {
-        range->SetText(ec, 0, L"", 0);  // discard the composition text
-        comp->EndComposition(ec);
+  const uint64_t gen = generation_;
+  CompositionOrigin origin = origin_;
+  origin_ = CompositionOrigin{};
+  bool ended = false;
+  const HRESULT hr =
+      RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) -> HRESULT {
+        if (gen != generation_) return E_ABORT;
+        ITfRange* range = nullptr;
+        if (FAILED(comp->GetRange(&range))) return E_FAIL;
+        const HRESULT hr_set =
+            range->SetText(ec, 0, origin.text.c_str(),
+                           static_cast<LONG>(origin.text.size()));
+        if (SUCCEEDED(hr_set)) {
+          comp->EndComposition(ec);
+          ended = true;
+          if (origin.range) {
+            ITfRange* restored = nullptr;
+            if (SUCCEEDED(origin.range->Clone(&restored)) && restored) {
+              if (!origin.had_selection) restored->Collapse(ec, TF_ANCHOR_START);
+              TF_SELECTION selection{};
+              selection.range = restored;
+              selection.style.ase = TF_AE_END;
+              selection.style.fInterimChar = FALSE;
+              if (FAILED(pic->SetSelection(ec, 1, &selection)))
+                restored->Release();
+            }
+          }
+        }
         range->Release();
-      }
-      return S_OK;
-    });
+        return hr_set;
+      });
+  if (ended) {
+    composition_ = nullptr;
+    active_ctx_ = nullptr;
+    composition_text_.clear();
+    if (ctx) ctx->Release();
+    comp->Release();
+    if (origin.range) origin.range->Release();
+    diag::Event("composition", "restored");
+  } else {
+    origin_ = origin;  // keep the snapshot for the next attempt
+    diag::Failure("restore", hr);
   }
-  comp->Release();
-  if (ctx) ctx->Release();
+  return hr;
 }
 
 void CTextService::ApplyCompositionState(
     ITfContext* pic, bool has_commit, const std::string& commit_utf8,
     const RimeEngine::Snapshot& snap) {
   if (!pic) return;
-  const std::wstring preedit = Utf8ToUtf16(snap.preedit_utf8);
-  if (has_commit && !commit_utf8.empty()) {
-    // Close the current composition with the committed text (or insert at
-    // the selection when no composition is open); if Rime still holds
-    // preedit, a fresh composition opens below.
-    FinalizeComposition(pic, Utf8ToUtf16(commit_utf8));
-    if (preedit.empty()) return;
+  const autoime::EditAction action = autoime::PlanCompositionApply(
+      has_commit, commit_utf8.empty(), snap.preedit_utf8.empty());
+  if (action == autoime::EditAction::kRestore) {
+    // Engine consumed the key but produced neither preedit nor commit
+    // (composition cancelled, e.g. Esc): restore the original selection.
+    if (composition_) RestoreComposition(pic);
+    candidate_wnd_.Hide();
+    return;
   }
+  if (action == autoime::EditAction::kCommit ||
+      action == autoime::EditAction::kCommitThenCompose) {
+    // Write the committed prefix exactly once; a leftover pre-edit opens a
+    // fresh composition after it (partial commit).
+    if (FAILED(FinalizeComposition(pic, autoime::Utf8ToUtf16(commit_utf8))))
+      return;
+    if (action == autoime::EditAction::kCommit) return;
+  }
+  const std::wstring preedit = autoime::Utf8ToUtf16(snap.preedit_utf8);
   if (!preedit.empty()) {
     if (!EnsureComposition(pic)) {
       candidate_wnd_.Hide();
@@ -575,13 +680,7 @@ void CTextService::ApplyCompositionState(
     }
     if (preedit != composition_text_) UpdateCompositionText(pic, preedit);
     RefreshCandidateWindow(pic);
-    return;
   }
-  // Engine consumed the key but produced neither preedit nor commit
-  // (composition cancelled, e.g. Esc): remove the composition text so the
-  // document returns to its pre-edit state.
-  DiscardComposition(pic);
-  candidate_wnd_.Hide();
 }
 
 STDMETHODIMP CTextService::OnSetFocus(BOOL fForeground) {
@@ -660,6 +759,7 @@ STDMETHODIMP CTextService::OnCompositionTerminated(
     active_ctx_ = nullptr;
   }
   composition_text_.clear();
+  ReleaseOrigin();
   candidate_wnd_.Hide();
   engine_composing_ = false;
   if (rime_session_) engine_.ClearComposition(rime_session_);

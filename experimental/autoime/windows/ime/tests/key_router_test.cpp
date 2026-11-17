@@ -12,6 +12,7 @@
 //
 // Exit code 0 = all cases pass, 5 = at least one case failed.
 #include "../diag.h"
+#include "../edit_model.h"
 #include "../key_router.h"
 
 #include <windows.h>
@@ -333,6 +334,37 @@ void CaseDiagnosticsArePayloadFree() {
   diag::Shutdown();
 }
 
+// T-02: the commit/pre-edit combinations decide whether the prefix is
+// written once, a new composition opens after it, or the original text is
+// restored.
+void CaseCompositionApplyPlan() {
+  using autoime::EditAction;
+  using autoime::PlanCompositionApply;
+  CHECK(PlanCompositionApply(true, false, true) == EditAction::kCommit);
+  CHECK(PlanCompositionApply(true, false, false) ==
+        EditAction::kCommitThenCompose);
+  CHECK(PlanCompositionApply(false, true, false) == EditAction::kCompose);
+  CHECK(PlanCompositionApply(false, true, true) == EditAction::kRestore);
+  // An empty commit string never writes anything.
+  CHECK(PlanCompositionApply(true, true, true) == EditAction::kRestore);
+}
+
+// T-02: emoji and the surrounding text survive UTF-8 -> UTF-16 conversion.
+void CaseEmojiConversionKeepsPrefixAndSuffix() {
+  // U+7532 U+1F600 U+4E59 = 甲😀乙
+  const std::string utf8 = "\xE7\x94\xB2\xF0\x9F\x98\x80\xE4\xB9\x99";
+  const std::wstring wide = autoime::Utf8ToUtf16(utf8);
+  CHECK(wide.size() == 4);  // 甲 + surrogate pair + 乙
+  if (wide.size() == 4) {
+    CHECK(wide[0] == 0x7532);
+    CHECK(wide[1] == 0xD83D);
+    CHECK(wide[2] == 0xDE00);
+    CHECK(wide[3] == 0x4E59);
+  }
+  CHECK(autoime::Utf8ToUtf16("AutoOS").size() == 6);
+  CHECK(autoime::Utf8ToUtf16("").empty());
+}
+
 }  // namespace
 
 int main() {
@@ -350,6 +382,8 @@ int main() {
   CaseComposingKeysAreConsumed();
   CasePunctuationFollowsMode();
   CaseGeneratedKeysymMapping();
+  CaseCompositionApplyPlan();
+  CaseEmojiConversionKeepsPrefixAndSuffix();
   CaseDiagnosticsArePayloadFree();
 
   std::printf("SUMMARY {\"fixture\": \"key_router\", \"checks\": %d, "

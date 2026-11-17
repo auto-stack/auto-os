@@ -7,6 +7,7 @@ add_library(autoime_ime SHARED
   textservice.cpp
   key_router.cpp
   diag.cpp
+  edit_model.cpp
   rime_engine.cpp
   candidate_window.cpp
   register.cpp
@@ -30,6 +31,7 @@ add_executable(autoime_fixture
   tests/key_router_test.cpp
   key_router.cpp
   diag.cpp
+  edit_model.cpp
 )
 target_compile_features(autoime_fixture PRIVATE cxx_std_17)
 target_compile_definitions(autoime_fixture PRIVATE _CRT_SECURE_NO_WARNINGS

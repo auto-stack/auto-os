@@ -121,9 +121,20 @@ class CTextService final : public ITfTextInputProcessor,
   bool EnsureComposition(ITfContext* pic);
   HRESULT UpdateCompositionText(ITfContext* pic, const std::wstring& text);
   HRESULT FinalizeComposition(ITfContext* pic, const std::wstring& text);
-  void DiscardComposition(ITfContext* pic);
+  // Reverts the composition to the text/selection that existed before it
+  // started (cancel path). Keeps the composition alive when the host refuses
+  // the write so the user's pre-edit is never silently rewritten elsewhere.
+  HRESULT RestoreComposition(ITfContext* pic);
+  void ReleaseOrigin();
   void RefreshCandidateWindow(ITfContext* pic);
   KeyEvent MakeKeyEvent(WPARAM wParam, LPARAM lParam) const;
+
+  // Everything needed to undo this composition session (PLAN-070 T-02).
+  struct CompositionOrigin {
+    ITfRange* range = nullptr;  // clone of the original selection range
+    std::wstring text;          // text the composition replaced
+    bool had_selection = false;
+  };
 
   LONG ref_ = 1;
   ITfThreadMgr* thread_mgr_ = nullptr;
@@ -136,6 +147,7 @@ class CTextService final : public ITfTextInputProcessor,
   ITfContext* current_ctx_ = nullptr;  // context of the callback in flight
   ITfComposition* composition_ = nullptr;
   std::wstring composition_text_;
+  CompositionOrigin origin_;
   CandidateWindow candidate_wnd_;
 
   KeyRouter router_;
