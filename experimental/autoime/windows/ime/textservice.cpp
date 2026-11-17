@@ -1,13 +1,23 @@
-// AutoIME TSF text service - key routing, composition, candidates (T-03).
-// Key flow (PLAN-069): OnTestKeyDown decides whether Rime wants the key by
-// processing it and applying the resulting state; OnKeyDown returns the
-// cached decision (and self-heals if a host skips Test). Unconsumed keys are
-// returned to the host untouched. Failures in the engine layer degrade to
-// pass-through so the user keeps a usable editor.
+// AutoIME TSF text service - key routing, composition, candidates.
+//
+// PLAN-070 T-01 rewires the callbacks through KeyRouter:
+//   * OnTestKeyDown only DECIDES (no engine mutation, no commit, no learning);
+//   * OnKeyDown performs the single engine operation for that physical key,
+//     reusing the decision cached by a preceding Test;
+//   * repeated Test callbacks, Down-only hosts, auto-repeat and late callbacks
+//     from a previous focus generation are all handled explicitly;
+//   * Ctrl/Alt/Win shortcuts (including AltGr) stay with the host;
+//   * password/sensitive input scopes and host-disabled contexts pass through;
+//   * a single Shift click switches Chinese/English mode.
+// Diagnostics are payload-free (stage/code/counters/timings only).
 #include "ime.h"
+
+#include <inputscope.h>
 
 #include <functional>
 #include <new>
+
+#include "diag.h"
 
 namespace {
 
@@ -55,15 +65,27 @@ class SyncEditSession final : public ITfEditSession {
   std::function<HRESULT(TfEditCookie)> task_;
 };
 
-HRESULT RunSyncEdit(ITfContext* ctx, TfClientId tid,
+HRESULT RunSyncEdit(ITfContext* ctx, TfClientId tid, DWORD flags,
                     std::function<HRESULT(TfEditCookie)> task) {
   auto* session = new (std::nothrow) SyncEditSession(std::move(task));
   if (!session) return E_OUTOFMEMORY;
   HRESULT hr = E_FAIL;
-  ctx->RequestEditSession(tid, session, TF_ES_SYNC | TF_ES_READWRITE, &hr);
+  ctx->RequestEditSession(tid, session, TF_ES_SYNC | flags, &hr);
   session->Release();
   return hr;
 }
+
+HRESULT RunSyncEdit(ITfContext* ctx, TfClientId tid,
+                    std::function<HRESULT(TfEditCookie)> task) {
+  return RunSyncEdit(ctx, tid, TF_ES_READWRITE, std::move(task));
+}
+
+// GUID_PROP_INPUTSCOPE as published by InputScope.h. The SDK header only
+// declares it; linking would require a symbol the TSF runtime does not export
+// from a dedicated LIB, so keep the literal value here.
+const GUID kPropInputScope = {
+    0x1713dd5a, 0x68e7, 0x4a5b, {0x9a, 0xf6, 0x59, 0x2a, 0x59, 0x5c, 0x77,
+                                0x8d}};
 
 }  // namespace
 
@@ -114,32 +136,43 @@ void CTextService::UnadviseKeyEventSink() {
 }
 
 bool CTextService::EnsureEngine() {
+  if (engine_load_failed_) return false;
+  diag::Init();
   std::string error;
   if (!engine_.EnsureReady(&error)) {
-    static bool logged = false;
-    if (!logged) {
+    if (!engine_load_failed_) {
       ImeLog("engine unavailable: %s (pass-through mode)", error.c_str());
-      logged = true;
+      diag::Failure("engine", E_FAIL);
+      engine_load_failed_ = true;
     }
     return false;
   }
   if (rime_session_ == 0) {
     rime_session_ = engine_.CreateSession();
-    ImeLog("rime session=%zu", rime_session_);
+    if (rime_session_) {
+      bool disabled = false;
+      engine_.GetStatus(rime_session_, &ascii_mode_, &disabled);
+      engine_composing_ = false;
+      ImeLog("rime session=%zu ascii=%d", rime_session_, ascii_mode_ ? 1 : 0);
+    }
   }
   return rime_session_ != 0;
 }
 
 STDMETHODIMP CTextService::Activate(ITfThreadMgr* ptim, TfClientId tid) {
   if (!ptim) return E_INVALIDARG;
+  diag::Init();
   thread_mgr_ = ptim;
   thread_mgr_->AddRef();
   client_id_ = tid;
+  router_.SetTarget(this);
+  router_.OnFocus(generation_, true);
   char detail[64];
   _snprintf_s(detail, sizeof(detail), _TRUNCATE, "tid=%u advise=%d",
               static_cast<unsigned>(tid),
               AdviseKeyEventSink() ? 1 : 0);
   ImeLog("activate %s", detail);
+  diag::Event("service", "activate");
   // Engine loads lazily on first key so a missing rime.dll never blocks
   // switching input methods.
   return S_OK;
@@ -147,12 +180,9 @@ STDMETHODIMP CTextService::Activate(ITfThreadMgr* ptim, TfClientId tid) {
 
 STDMETHODIMP CTextService::Deactivate() {
   ImeLog("deactivate");
+  diag::Event("service", "deactivate");
   candidate_wnd_.Hide();
   UnadviseKeyEventSink();
-  if (rime_session_) {
-    engine_.DestroySession(rime_session_);
-    rime_session_ = 0;
-  }
   if (composition_) {
     composition_->Release();
     composition_ = nullptr;
@@ -162,7 +192,13 @@ STDMETHODIMP CTextService::Deactivate() {
     active_ctx_ = nullptr;
   }
   composition_text_.clear();
-  test_processed_ = false;
+  engine_composing_ = false;
+  if (rime_session_) {
+    engine_.DestroySession(rime_session_);
+    rime_session_ = 0;
+  }
+  current_ctx_ = nullptr;
+  router_.SetTarget(nullptr);
   if (thread_mgr_) {
     thread_mgr_->Release();
     thread_mgr_ = nullptr;
@@ -171,13 +207,152 @@ STDMETHODIMP CTextService::Deactivate() {
   return S_OK;
 }
 
+bool CTextService::IsSensitiveContext(ITfContext* pic) {
+  if (!pic || !thread_mgr_) return false;
+  // 1. The host asked TSF to disable the IME (e.g. a password dialog).
+  {
+    ITfCompartmentMgr* mgr = nullptr;
+    if (SUCCEEDED(thread_mgr_->QueryInterface(
+            IID_ITfCompartmentMgr, reinterpret_cast<void**>(&mgr))) &&
+        mgr) {
+      ITfCompartment* comp = nullptr;
+      if (SUCCEEDED(mgr->GetCompartment(GUID_COMPARTMENT_KEYBOARD_DISABLED,
+                                        &comp)) &&
+          comp) {
+        VARIANT var;
+        VariantInit(&var);
+        bool disabled = false;
+        if (SUCCEEDED(comp->GetValue(&var))) {
+          if (var.vt == VT_I4) disabled = var.lVal != 0;
+          VariantClear(&var);
+        }
+        comp->Release();
+        mgr->Release();
+        if (disabled) return true;
+      } else {
+        mgr->Release();
+      }
+    }
+  }
+  // 2. The caret sits in a password/sensitive input scope. Windows reports it
+  // through GUID_PROP_INPUTSCOPE on the current selection range.
+  bool sensitive = false;
+  RunSyncEdit(pic, client_id_, TF_ES_READ, [&](TfEditCookie ec) -> HRESULT {
+    ITfProperty* prop = nullptr;
+    if (FAILED(pic->GetProperty(kPropInputScope, &prop)) || !prop)
+      return S_FALSE;
+    TF_SELECTION sel{};
+    ULONG fetched = 0;
+    if (FAILED(pic->GetSelection(ec, TF_DEFAULT_SELECTION, 1, &sel,
+                                 &fetched)) ||
+        fetched == 0 || !sel.range) {
+      prop->Release();
+      return S_FALSE;
+    }
+    VARIANT var;
+    VariantInit(&var);
+    const HRESULT hr = prop->GetValue(ec, sel.range, &var);
+    sel.range->Release();
+    if (SUCCEEDED(hr)) {
+      IUnknown* unknown = nullptr;
+      if (var.vt == VT_UNKNOWN) unknown = var.punkVal;
+      if (var.vt == VT_DISPATCH && var.pdispVal)
+        unknown = static_cast<IUnknown*>(var.pdispVal);
+      if (unknown) {
+        ITfInputScope* scope = nullptr;
+        if (SUCCEEDED(unknown->QueryInterface(
+                IID_ITfInputScope, reinterpret_cast<void**>(&scope))) &&
+            scope) {
+          InputScope* scopes = nullptr;
+          UINT count = 0;
+          if (SUCCEEDED(scope->GetInputScopes(&scopes, &count)) && scopes) {
+            for (UINT i = 0; i < count; ++i) {
+              if (scopes[i] == IS_PASSWORD ||
+                  scopes[i] == IS_NUMERIC_PASSWORD)
+                sensitive = true;
+            }
+            CoTaskMemFree(scopes);
+          }
+          scope->Release();
+        }
+      }
+      VariantClear(&var);
+    }
+    prop->Release();
+    return S_OK;
+  });
+  return sensitive;
+}
+
+KeyEvent CTextService::MakeKeyEvent(WPARAM wParam, LPARAM lParam) const {
+  KeyEvent key;
+  key.vk = wParam;
+  key.mods.shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+  key.mods.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+  key.mods.alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
+  key.mods.win = (GetKeyState(VK_LWIN) & 0x8000) != 0 ||
+                 (GetKeyState(VK_RWIN) & 0x8000) != 0;
+  key.repeat = (lParam & (1 << 30)) != 0;
+  return key;
+}
+
+bool CTextService::Composing() { return engine_composing_; }
+bool CTextService::AsciiMode() { return ascii_mode_; }
+bool CTextService::EngineReady() { return EnsureEngine(); }
+bool CTextService::Sensitive() { return IsSensitiveContext(current_ctx_); }
+
+bool CTextService::ProcessKey(int keysym, int rime_modifiers) {
+  if (!EnsureEngine()) return false;
+  LARGE_INTEGER start{}, end{}, freq{};
+  QueryPerformanceCounter(&start);
+  const bool consumed =
+      engine_.ProcessKey(rime_session_, keysym, rime_modifiers);
+  bool has_commit = false;
+  const std::string commit = engine_.TakeCommit(rime_session_, &has_commit);
+  RimeEngine::Snapshot snap;
+  if (!engine_.GetContext(rime_session_, &snap)) {
+    snap = RimeEngine::Snapshot{};
+  }
+  engine_composing_ = snap.is_composing;
+  bool disabled = false;
+  engine_.GetStatus(rime_session_, &ascii_mode_, &disabled);
+  ApplyCompositionState(current_ctx_ ? current_ctx_ : active_ctx_, has_commit,
+                        commit, snap);
+  QueryPerformanceCounter(&end);
+  QueryPerformanceFrequency(&freq);
+  const long long us = freq.QuadPart
+                           ? (end.QuadPart - start.QuadPart) * 1000000 /
+                                 freq.QuadPart
+                           : 0;
+  diag::Count("key", "latency_us", us);
+  return consumed;
+}
+
+void CTextService::ToggleMode() {
+  if (!EnsureEngine()) return;
+  ascii_mode_ = !ascii_mode_;
+  engine_.SetOption(rime_session_, "ascii_mode", ascii_mode_);
+  diag::Event("mode", ascii_mode_ ? "ascii" : "chinese");
+}
+
+void CTextService::CancelComposition() {
+  if (rime_session_) engine_.ClearComposition(rime_session_);
+  engine_composing_ = false;
+  candidate_wnd_.Hide();
+  ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
+  if (composition_ && ctx) DiscardComposition(ctx);
+  diag::Event("composition", "cancel");
+}
+
 // Measures the composition range extent in screen coordinates. The work must
 // happen inside the synchronous read session (the edit cookie is only valid
 // during DoEditSession).
 void CTextService::RefreshCandidateWindow(ITfContext* pic) {
+  if (!pic) return;
   RimeEngine::Snapshot snap;
-  if (!engine_.GetContext(rime_session_, &snap) ||
-      snap.candidates.empty()) {
+  const bool have_composition =
+      engine_.GetContext(rime_session_, &snap) && !snap.candidates.empty();
+  if (!have_composition) {
     candidate_wnd_.Hide();
     return;
   }
@@ -189,19 +364,21 @@ void CTextService::RefreshCandidateWindow(ITfContext* pic) {
           if (!composition_) return S_FALSE;
           ITfRange* range = nullptr;
           if (FAILED(composition_->GetRange(&range))) return S_FALSE;
-          HRESULT hr_ext = view->GetTextExt(ec, range, &caret, nullptr);
-          ImeLog("GetTextExt hr=0x%08lx rect=(%ld,%ld,%ld,%ld)",
-                 static_cast<unsigned long>(hr_ext), (long)caret.left,
-                 (long)caret.top, (long)caret.right, (long)caret.bottom);
+          BOOL clipped = FALSE;
+          const HRESULT hr_ext =
+              view->GetTextExt(ec, range, &caret, &clipped);
+          ImeLog("GetTextExt hr=0x%08lx clipped=%d rect=(%ld,%ld,%ld,%ld)",
+                 static_cast<unsigned long>(hr_ext), clipped ? 1 : 0,
+                 static_cast<long>(caret.left), static_cast<long>(caret.top),
+                 static_cast<long>(caret.right),
+                 static_cast<long>(caret.bottom));
           range->Release();
           return S_OK;
         });
     HRESULT hr = E_FAIL;
-    pic->RequestEditSession(client_id_, session, TF_ES_SYNC | TF_ES_READ,
-                            &hr);
+    pic->RequestEditSession(client_id_, session, TF_ES_SYNC | TF_ES_READ, &hr);
     session->Release();
     view->Release();
-    ImeLog("read session hr=0x%08lx", static_cast<unsigned long>(hr));
   }
   if (caret.left == 0 && caret.top == 0 && caret.right == 0 &&
       caret.bottom == 0) {
@@ -217,8 +394,10 @@ void CTextService::RefreshCandidateWindow(ITfContext* pic) {
       ClientToScreen(gi.hwndCaret, &tl);
       POINT br{caret.right, caret.bottom};
       ClientToScreen(gi.hwndCaret, &br);
-      caret.left = tl.x; caret.top = tl.y;
-      caret.right = br.x; caret.bottom = br.y;
+      caret.left = tl.x;
+      caret.top = tl.y;
+      caret.right = br.x;
+      caret.bottom = br.y;
       ImeLog("caret fallback via GUITHREADINFO");
     } else {
       ImeLog("caret fallback unavailable (no hwndCaret)");
@@ -257,7 +436,7 @@ HRESULT CTextService::UpdateCompositionText(ITfContext* pic,
 bool CTextService::EnsureComposition(ITfContext* pic) {
   if (composition_) {
     if (active_ctx_ == pic) return true;
-    EndCompositionKeepText(active_ctx_);  // context switched mid-composition
+    DiscardComposition(active_ctx_ ? active_ctx_ : pic);
   }
   HRESULT hr = RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) -> HRESULT {
     ITfRange* range = nullptr;
@@ -299,8 +478,9 @@ bool CTextService::EnsureComposition(ITfContext* pic) {
     }
     return hr_start;
   });
-  if (FAILED(hr)) ImeLog("StartComposition session failed hr=0x%08lx",
-                         static_cast<unsigned long>(hr));
+  if (FAILED(hr))
+    ImeLog("StartComposition session failed hr=0x%08lx",
+           static_cast<unsigned long>(hr));
   return SUCCEEDED(hr) && composition_ != nullptr;
 }
 
@@ -333,7 +513,7 @@ HRESULT CTextService::FinalizeComposition(ITfContext* pic,
     if (FAILED(comp->GetRange(&range))) return E_FAIL;
     const HRESULT hr_set = range->SetText(ec, 0, text.c_str(),
                                           static_cast<LONG>(text.size()));
-    // park the caret AFTER the committed text (issue: caret landed before it)
+    // park the caret AFTER the committed text
     if (SUCCEEDED(hr_set)) {
       range->Collapse(ec, TF_ANCHOR_END);
       TF_SELECTION sel{};
@@ -351,21 +531,27 @@ HRESULT CTextService::FinalizeComposition(ITfContext* pic,
   return hr;
 }
 
-void CTextService::EndCompositionKeepText(ITfContext* pic) {
+// Drops the open composition without committing its text. The engine session
+// is cleared separately by the caller. T-02 replaces this with the reversible
+// path that restores the original selection.
+void CTextService::DiscardComposition(ITfContext* pic) {
   if (!composition_) return;
   ITfComposition* comp = composition_;
   composition_ = nullptr;
   ITfContext* ctx = active_ctx_;
   active_ctx_ = nullptr;
   composition_text_.clear();
-  RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
-    ITfRange* range = nullptr;
-    if (SUCCEEDED(comp->GetRange(&range))) {
-      range->Release();
-    }
-    comp->EndComposition(ec);
-    return S_OK;
-  });
+  if (pic) {
+    RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
+      ITfRange* range = nullptr;
+      if (SUCCEEDED(comp->GetRange(&range))) {
+        range->SetText(ec, 0, L"", 0);  // discard the composition text
+        comp->EndComposition(ec);
+        range->Release();
+      }
+      return S_OK;
+    });
+  }
   comp->Release();
   if (ctx) ctx->Release();
 }
@@ -373,6 +559,7 @@ void CTextService::EndCompositionKeepText(ITfContext* pic) {
 void CTextService::ApplyCompositionState(
     ITfContext* pic, bool has_commit, const std::string& commit_utf8,
     const RimeEngine::Snapshot& snap) {
+  if (!pic) return;
   const std::wstring preedit = Utf8ToUtf16(snap.preedit_utf8);
   if (has_commit && !commit_utf8.empty()) {
     // Close the current composition with the committed text (or insert at
@@ -391,84 +578,47 @@ void CTextService::ApplyCompositionState(
     return;
   }
   // Engine consumed the key but produced neither preedit nor commit
-  // (composition cancelled, e.g. Esc): REMOVE the composition text so the
+  // (composition cancelled, e.g. Esc): remove the composition text so the
   // document returns to its pre-edit state.
-  {
-    ITfComposition* comp = composition_;
-    ITfContext* ctx = active_ctx_;
-    composition_ = nullptr;
-    active_ctx_ = nullptr;
-    composition_text_.clear();
-    candidate_wnd_.Hide();
-    if (comp) {
-      RunSyncEdit(pic, client_id_, [&](TfEditCookie ec) {
-        ITfRange* range = nullptr;
-        if (SUCCEEDED(comp->GetRange(&range))) {
-          range->SetText(ec, 0, L"", 0);  // discard the composition text
-          comp->EndComposition(ec);
-          range->Release();
-        }
-        return S_OK;
-      });
-      comp->Release();
-    }
-    if (ctx) ctx->Release();
-  }
-}
-
-bool CTextService::ProcessAndApplyKey(ITfContext* pic, WPARAM wParam) {
-  if (!EnsureEngine()) return false;
-  // Ctrl/Alt/Shift combinations (Ctrl+S, Ctrl+V, ...) belong to the host.
-  if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ||
-      (GetKeyState(VK_SHIFT) & 0x8000))
-    return false;
-  const int keysym = AutoIMEVkToKeysym(wParam, 0);
-  if (keysym == 0) return false;
-  // When NOT composing, only letters may start a composition; every other
-  // key (arrows, Home/End, space, Enter, Backspace, Esc, digits) belongs to
-  // the host application.
-  RimeEngine::Snapshot pre;
-  if (!engine_.GetContext(rime_session_, &pre)) pre.is_composing = false;
-  if (!pre.is_composing && !(keysym >= 'a' && keysym <= 'z')) return false;
-
-  if (!engine_.ProcessKey(rime_session_, keysym)) return false;
-
-  bool has_commit = false;
-  const std::string commit = engine_.TakeCommit(rime_session_, &has_commit);
-  RimeEngine::Snapshot snap;
-  if (!engine_.GetContext(rime_session_, &snap)) snap.preedit_utf8.clear();
-  ImeLog("key vk=%lu consumed commit=[%s] preedit=[%s]",
-         static_cast<unsigned long>(wParam), has_commit ? commit.c_str() : "",
-         snap.preedit_utf8.c_str());
-  ApplyCompositionState(pic, has_commit, commit, snap);
-  return true;
+  DiscardComposition(pic);
+  candidate_wnd_.Hide();
 }
 
 STDMETHODIMP CTextService::OnSetFocus(BOOL fForeground) {
   ImeLog("OnSetFocus foreground=%d", fForeground);
-  if (!fForeground) candidate_wnd_.Hide();
+  if (!fForeground) {
+    candidate_wnd_.Hide();
+    // Revert an unfinished composition before the old context turns stale.
+    if (composition_) CancelComposition();
+    if (rime_session_) engine_.ClearComposition(rime_session_);
+    engine_composing_ = false;
+    ++generation_;
+    router_.OnFocus(generation_, false);
+  } else {
+    router_.OnFocus(generation_, true);
+  }
   return S_OK;
 }
 
 STDMETHODIMP CTextService::OnTestKeyDown(ITfContext* pic, WPARAM wParam,
-                                         LPARAM, BOOL* pfEaten) {
+                                         LPARAM lParam, BOOL* pfEaten) {
   *pfEaten = FALSE;
-  if (!EnsureEngine()) return S_OK;  // pass-through while engine unavailable
-  const bool consumed = ProcessAndApplyKey(pic, wParam);
-  test_processed_ = consumed;
-  *pfEaten = consumed ? TRUE : FALSE;
+  if (!pic) return S_OK;
+  current_ctx_ = pic;
+  const KeyEvent key = MakeKeyEvent(wParam, lParam);
+  const RouteDecision decision = router_.OnTestKeyDown(key, generation_);
+  *pfEaten = decision.eat ? TRUE : FALSE;
   return S_OK;
 }
 
-STDMETHODIMP CTextService::OnKeyDown(ITfContext* pic, WPARAM wParam, LPARAM,
-                                     BOOL* pfEaten) {
-  if (test_processed_) {
-    // The key was already processed in OnTestKeyDown; do not double-apply.
-    test_processed_ = false;
-    *pfEaten = TRUE;
-    return S_OK;
-  }
-  *pfEaten = ProcessAndApplyKey(pic, wParam) ? TRUE : FALSE;
+STDMETHODIMP CTextService::OnKeyDown(ITfContext* pic, WPARAM wParam,
+                                     LPARAM lParam, BOOL* pfEaten) {
+  *pfEaten = FALSE;
+  if (!pic) return S_OK;
+  current_ctx_ = pic;
+  const KeyEvent key = MakeKeyEvent(wParam, lParam);
+  const RouteDecision decision = router_.OnKeyDown(key, generation_);
+  *pfEaten = decision.eat ? TRUE : FALSE;
   return S_OK;
 }
 
@@ -478,9 +628,13 @@ STDMETHODIMP CTextService::OnTestKeyUp(ITfContext*, WPARAM, LPARAM,
   return S_OK;
 }
 
-STDMETHODIMP CTextService::OnKeyUp(ITfContext*, WPARAM, LPARAM,
-                                   BOOL* pfEaten) {
+STDMETHODIMP CTextService::OnKeyUp(ITfContext* pic, WPARAM wParam,
+                                   LPARAM lParam, BOOL* pfEaten) {
   *pfEaten = FALSE;
+  if (!pic) return S_OK;
+  current_ctx_ = pic;
+  const KeyEvent key = MakeKeyEvent(wParam, lParam);
+  router_.OnKeyUp(key, generation_);
   return S_OK;
 }
 
@@ -493,9 +647,9 @@ STDMETHODIMP CTextService::OnPreservedKey(ITfContext*, REFGUID,
 STDMETHODIMP CTextService::OnCompositionTerminated(
     TfEditCookie, ITfComposition* pComposition) {
   ImeLog("OnCompositionTerminated");
-  // Focus or selection moved away: end our state cleanly. The text already
-  // in the terminated composition stays visible in ITS document (never
-  // written to another window); the engine session is reset.
+  // The host (or another service) ended the composition. Whatever the host
+  // already did to the document is authoritative: only release our state and
+  // retire the generation so late callbacks cannot write into the old target.
   if (composition_) {
     composition_->Release();
     composition_ = nullptr;
@@ -506,8 +660,11 @@ STDMETHODIMP CTextService::OnCompositionTerminated(
     active_ctx_ = nullptr;
   }
   composition_text_.clear();
-  test_processed_ = false;
   candidate_wnd_.Hide();
+  engine_composing_ = false;
   if (rime_session_) engine_.ClearComposition(rime_session_);
+  ++generation_;
+  router_.OnFocus(generation_, false);
+  diag::Event("composition", "terminated_by_host");
   return S_OK;
 }

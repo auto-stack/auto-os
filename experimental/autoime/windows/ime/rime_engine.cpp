@@ -157,8 +157,23 @@ void RimeEngine::DestroySession(uintptr_t session) {
   if (api_ && session) api_->destroy_session(session);
 }
 
-bool RimeEngine::ProcessKey(uintptr_t session, int keysym) {
-  return api_ && session && api_->process_key(session, keysym, 0);
+bool RimeEngine::ProcessKey(uintptr_t session, int keysym, int modifiers) {
+  return api_ && session && api_->process_key(session, keysym, modifiers);
+}
+
+bool RimeEngine::GetStatus(uintptr_t session, bool* ascii_mode, bool* disabled) {
+  if (!api_ || !RIME_PROVIDED(api_, get_status)) return false;
+  RIME_STRUCT(RimeStatus, status);
+  if (!session || !api_->get_status(session, &status)) return false;
+  if (ascii_mode) *ascii_mode = status.is_ascii_mode != 0;
+  if (disabled) *disabled = status.is_disabled != 0;
+  api_->free_status(&status);
+  return true;
+}
+
+void RimeEngine::SetOption(uintptr_t session, const char* option, bool value) {
+  if (api_ && session && option && RIME_PROVIDED(api_, set_option))
+    api_->set_option(session, option, value ? True : False);
 }
 
 bool RimeEngine::GetContext(uintptr_t session, Snapshot* out) {
@@ -201,45 +216,4 @@ void RimeEngine::ClearComposition(uintptr_t session) {
 void RimeEngine::SelectCandidate(uintptr_t session, size_t index) {
   if (api_ && session && RIME_PROVIDED(api_, select_candidate))
     api_->select_candidate(session, index);
-}
-
-int AutoIMEVkToKeysym(WPARAM vk, LPARAM) {
-  const DWORD v = static_cast<DWORD>(vk);
-  // VK codes for letters are UPPERCASE ASCII; pinyin needs lowercase keysyms.
-  if (v >= 'A' && v <= 'Z') return static_cast<int>(v + 0x20);
-  // Navigation and editing VKs FIRST: their numeric values (0x21..0x2e)
-  // overlap printable ASCII and must not fall into the printable branch.
-  switch (v) {
-    case VK_SPACE: return 0x0020;    // Space
-    case VK_BACK: return 0xff08;     // BackSpace
-    case VK_ESCAPE: return 0xff1b;   // Escape
-    case VK_RETURN: return 0xff0d;   // Return
-    case VK_TAB: return 0xff09;      // Tab
-    case VK_DELETE: return 0xffff;   // Delete
-    case VK_HOME: return 0xff50;     // Home
-    case VK_LEFT: return 0xff51;     // Left
-    case VK_UP: return 0xff52;       // Up
-    case VK_RIGHT: return 0xff53;    // Right
-    case VK_DOWN: return 0xff54;     // Down
-    case VK_PRIOR: return 0xff55;    // Page Up
-    case VK_NEXT: return 0xff56;     // Page Down
-    case VK_END: return 0xff57;      // End
-    default: break;
-  }
-  // Digits and OEM punctuation carry their ASCII glyph in the VK code.
-  if (v >= '0' && v <= '9') return static_cast<int>(v);
-  switch (v) {
-    case VK_OEM_1: return ';';    // 0xBA
-    case VK_OEM_PLUS: return '='; // 0xBB
-    case VK_OEM_COMMA: return ','; // 0xBC
-    case VK_OEM_MINUS: return '-'; // 0xBD
-    case VK_OEM_PERIOD: return '.'; // 0xBE
-    case VK_OEM_2: return '/';    // 0xBF
-    case VK_OEM_3: return '`';    // 0xC0
-    case VK_OEM_4: return '[';    // 0xDB
-    case VK_OEM_5: return '\\';   // 0xDC
-    case VK_OEM_6: return ']';    // 0xDD
-    case VK_OEM_7: return '\'';   // 0xDE
-    default: return 0;            // not routed to Rime
-  }
 }

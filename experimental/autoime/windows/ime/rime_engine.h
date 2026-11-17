@@ -36,10 +36,14 @@ class RimeEngine {
   uintptr_t CreateSession();
   void DestroySession(uintptr_t session);
 
-  // Sends one key; returns true when Rime consumed it.
-  bool ProcessKey(uintptr_t session, int keysym);
+  // Sends one key with its modifier mask; returns true when Rime consumed it.
+  bool ProcessKey(uintptr_t session, int keysym, int modifiers);
   // Reads the composition context; false when the engine call fails.
   bool GetContext(uintptr_t session, Snapshot* out);
+  // Reports schema mode flags (ascii/disabled). False when unavailable.
+  bool GetStatus(uintptr_t session, bool* ascii_mode, bool* disabled);
+  // Runtime option switch (e.g. "ascii_mode"); no-op when the API is old.
+  void SetOption(uintptr_t session, const char* option, bool value);
   // Returns the pending commit text ("" when none) and consumes it.
   std::string TakeCommit(uintptr_t session, bool* has_commit);
   void ClearComposition(uintptr_t session);
@@ -59,9 +63,5 @@ class RimeEngine {
   std::string user_data_dir_;
   std::string schema_ = "luna_pinyin_simp";
 };
-
-// Maps a VK wParam (+ current modifiers are ignored for the preview) to an
-// X11-style Rime keysym; returns 0 when the key is not routed to Rime.
-int AutoIMEVkToKeysym(WPARAM vk, LPARAM lParam);
 
 #endif  // AUTOIME_RIME_ENGINE_H_

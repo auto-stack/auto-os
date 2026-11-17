@@ -1,6 +1,7 @@
-// AutoIME Windows x64 - TSF text service (PLAN-069 T-02/T-03).
+// AutoIME Windows x64 - TSF text service (PLAN-069 T-02/T-03, PLAN-070 T-01).
 // Minimal x64 TSF keyboard TIP: registers with its own CLSID and language
-// profile, transparently passes keys in T-02; T-03 adds Rime composition.
+// profile, routes keys through a deduplicating router, and applies the Rime
+// composition/commit result to the host's edit context.
 #ifndef AUTOIME_IME_H_
 #define AUTOIME_IME_H_
 
@@ -8,9 +9,11 @@
 #include <msctf.h>
 
 #include "candidate_window.h"
+#include "key_router.h"
 #include "rime_engine.h"
 
 #include <cstdio>
+#include <string>
 
 // {02e1e367-4389-429e-b13c-483eb5555d37}
 DEFINE_GUID(CLSID_AutoIMETextService,
@@ -23,7 +26,9 @@ DEFINE_GUID(GUID_PROFILE_AUTOIME,
 
 constexpr LANGID kAutoIMElangid = 0x0804;  // Chinese (Simplified)
 
-// Append a line to %TEMP%\autoime-ime.log (best effort, never fatal).
+// Append a structural line to %TEMP%\autoime-ime.log (best effort, never
+// fatal). This entry point is for identity/paths/rectangles/HRESULTs only;
+// key codes, pre-edit, selection and committed text must never be passed here.
 void ImeLog(const char* fmt, ...);
 
 // COM object count shared by DllCanUnloadNow (dllmain.cpp).
@@ -57,7 +62,8 @@ class CClassFactory final : public IClassFactory {
 
 class CTextService final : public ITfTextInputProcessor,
                            public ITfKeyEventSink,
-                           public ITfCompositionSink {
+                           public ITfCompositionSink,
+                           private IKeyTarget {
  public:
   CTextService() : ref_(1) { AutoIMEAddRefObject(); }
 
@@ -95,21 +101,29 @@ class CTextService final : public ITfTextInputProcessor,
                                        ITfComposition* pComposition) override;
 
  private:
+  // IKeyTarget: the router owns the callback de-duplication policy; these
+  // hooks expose the engine/composition state and apply one key exactly once.
+  bool Composing() override;
+  bool AsciiMode() override;
+  bool Sensitive() override;
+  bool EngineReady() override;
+  bool ProcessKey(int keysym, int rime_modifiers) override;
+  void ToggleMode() override;
+  void CancelComposition() override;
+
   bool AdviseKeyEventSink();
   void UnadviseKeyEventSink();
-  // Routes one key through Rime and applies the resulting composition /
-  // commit / candidate state to the edit context. Returns whether the key
-  // was consumed.
-  bool ProcessAndApplyKey(ITfContext* pic, WPARAM wParam);
+  bool EnsureEngine();
+  bool IsSensitiveContext(ITfContext* pic);
   void ApplyCompositionState(ITfContext* pic, bool has_commit,
                              const std::string& commit_utf8,
                              const RimeEngine::Snapshot& snap);
   bool EnsureComposition(ITfContext* pic);
   HRESULT UpdateCompositionText(ITfContext* pic, const std::wstring& text);
   HRESULT FinalizeComposition(ITfContext* pic, const std::wstring& text);
-  void EndCompositionKeepText(ITfContext* pic);
+  void DiscardComposition(ITfContext* pic);
   void RefreshCandidateWindow(ITfContext* pic);
-  bool EnsureEngine();
+  KeyEvent MakeKeyEvent(WPARAM wParam, LPARAM lParam) const;
 
   LONG ref_ = 1;
   ITfThreadMgr* thread_mgr_ = nullptr;
@@ -118,11 +132,17 @@ class CTextService final : public ITfTextInputProcessor,
 
   RimeEngine engine_;
   uintptr_t rime_session_ = 0;
-  ITfContext* active_ctx_ = nullptr;      // context of the open composition
+  ITfContext* active_ctx_ = nullptr;   // context owning the open composition
+  ITfContext* current_ctx_ = nullptr;  // context of the callback in flight
   ITfComposition* composition_ = nullptr;
   std::wstring composition_text_;
   CandidateWindow candidate_wnd_;
-  bool test_processed_ = false;  // OnTestKeyDown already applied the key
+
+  KeyRouter router_;
+  uint64_t generation_ = 1;
+  bool engine_composing_ = false;
+  bool ascii_mode_ = false;
+  bool engine_load_failed_ = false;
 };
 
 // Registry self-registration (register.cpp). Install failures roll back the
