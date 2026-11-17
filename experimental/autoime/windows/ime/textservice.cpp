@@ -176,6 +176,10 @@ STDMETHODIMP CTextService::Activate(ITfThreadMgr* ptim, TfClientId tid) {
   client_id_ = tid;
   router_.SetTarget(this);
   router_.OnFocus(generation_, true);
+  candidate_wnd_.SetSelectHandler(
+      [this](int page_index, uint64_t version) {
+        SelectCandidate(page_index, version);
+      });
   char detail[64];
   _snprintf_s(detail, sizeof(detail), _TRUNCATE, "tid=%u advise=%d",
               static_cast<unsigned>(tid),
@@ -191,6 +195,7 @@ STDMETHODIMP CTextService::Deactivate() {
   ImeLog("deactivate");
   diag::Event("service", "deactivate");
   candidate_wnd_.Hide();
+  candidate_wnd_.SetSelectHandler(nullptr);
   UnadviseKeyEventSink();
   // Leaving the IME must not leave an unconfirmed pre-edit behind: restore
   // the original text/selection while the old context is still editable.
@@ -425,7 +430,32 @@ void CTextService::RefreshCandidateWindow(ITfContext* pic) {
   }
   HWND focus_wnd = GetFocus();
   candidate_wnd_.EnsureCreated(focus_wnd);
+  candidate_version_ = snap.version;
   candidate_wnd_.Show(snap, caret);
+}
+
+void CTextService::SelectCandidate(int page_index, uint64_t version) {
+  if (!composition_ || version != candidate_version_) {
+    diag::Event("candidate", "stale_click");
+    return;
+  }
+  if (!EnsureEngine()) return;
+  if (!engine_.SelectCandidateOnPage(rime_session_,
+                                     static_cast<size_t>(page_index))) {
+    diag::Event("candidate", "select_failed");
+    return;
+  }
+  bool has_commit = false;
+  const std::string commit = engine_.TakeCommit(rime_session_, &has_commit);
+  RimeEngine::Snapshot snap;
+  if (!engine_.GetContext(rime_session_, &snap)) {
+    snap = RimeEngine::Snapshot{};
+  }
+  engine_composing_ = snap.is_composing;
+  bool disabled = false;
+  engine_.GetStatus(rime_session_, &ascii_mode_, &disabled);
+  ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
+  if (ctx) ApplyCompositionState(ctx, has_commit, commit, snap);
 }
 
 HRESULT CTextService::UpdateCompositionText(ITfContext* pic,

@@ -1,0 +1,117 @@
+# Rime schema - AutoIME default pinyin (PLAN-070 T-03).
+# encoding: utf-8
+#
+# Built on the installed Weasel 0.17.4 (librime 1.13.1) shared data:
+#   __include: luna_pinyin.schema:/        general pinyin engine settings
+#   dictionary: luna_pinyin                general Chinese characters/words
+# AutoIME adds original resources only: project terms, mixed English aliases
+# and a user-editable explicit phrase table. No upstream file is modified.
+__include: luna_pinyin.schema:/
+
+schema:
+  schema_id: autoime_pinyin
+  name: AutoIME 拼音
+  version: "0.1.0"
+  author:
+    - AutoIME
+  description: |
+    离线简体拼音：全拼、简拼、全简混输、项目术语与中英混输。
+    通用字词与转换数据复用已安装小狼毫（librime 1.13.1）的共享目录；
+    项目术语、英文别名与用户短语由 AutoIME 资源目录提供。
+  dependencies:
+    - autoime_terms
+    - autoime_en
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 英文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: simplification
+    reset: 1
+    states: [ 简体, 繁体 ]
+  - name: ascii_punct
+    states: [ 。，, ．， ]
+
+engine:
+  translators:
+    - punct_translator
+    - table_translator@custom_phrase
+    - script_translator
+    - script_translator@autoime_terms
+    - table_translator@autoime_en
+  filters:
+    - simplifier
+    - uniquifier
+
+speller:
+  # Digits stay outside the alphabet so they remain page-selection keys;
+  # mixed English aliases use letter-only codes (see autoime_en).
+  alphabet: zyxwvutsrqponmlkjihgfedcba
+  delimiter: " '"
+  max_code_length: 32
+  algebra:
+    __patch:
+      - pinyin:/abbreviation
+      - pinyin:/spelling_correction
+      - pinyin:/key_correction
+
+translator:
+  dictionary: luna_pinyin
+  enable_user_dict: true
+  user_dict: autoime_user
+  preedit_format:
+    - xform/([nl])v/$1ü/
+    - xform/([nl])ue/$1üe/
+    - xform/([jqxy])v/$1u/
+
+# Original project terminology (AutoIME resources).
+autoime_terms:
+  dictionary: autoime_terms
+  enable_user_dict: false
+  enable_sentence: false
+  initial_quality: 0.2
+
+# Original mixed English/technical aliases (AutoIME resources).
+autoime_en:
+  dictionary: autoime_en
+  enable_completion: true
+  enable_sentence: false
+  enable_user_dict: false
+  initial_quality: 0.1
+
+# User-editable explicit phrases: %APPDATA%\AutoIME\rime\custom_phrase.txt
+custom_phrase:
+  dictionary: ""
+  user_dict: custom_phrase
+  db_class: stabledb
+  columns:
+    - text
+    - code
+    - weight
+  enable_completion: false
+  enable_sentence: false
+  initial_quality: 1
+
+# Default digit selection labels (1-5 for a five-candidate page); the IME
+# always renders the labels reported by the engine.
+menu:
+  page_size: 5
+  alternative_select_keys: "12345"
+
+simplifier:
+  option_name: simplification
+  opencc_config: t2s.json
+  tips: all
+
+punctuator:
+  import_preset: symbols
+
+key_binder:
+  import_preset: default
+
+recognizer:
+  import_preset: default
+  patterns:
+    punct: '^/([0-9]0?|[A-Za-z]+)$'

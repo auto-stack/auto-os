@@ -1,0 +1,24 @@
+# Rime dependency schema - AutoIME mixed English aliases (PLAN-070 T-03).
+# encoding: utf-8
+#
+# Makes autoime_en.dict.yaml deployable (see autoime_terms.schema.yaml). Never
+# listed in the switcher; the aliases are consumed by the main schema's
+# table_translator@autoime_en.
+schema:
+  schema_id: autoime_en
+  name: AutoIME 英文别名（依赖）
+  version: "0.1.0"
+  author:
+    - AutoIME
+  description: |
+    AutoIME 中英混输别名表的部署入口（不作为可选方案展示）。
+
+engine:
+  translators:
+    - table_translator
+
+translator:
+  dictionary: autoime_en
+  enable_completion: true
+  enable_sentence: false
+  enable_user_dict: false

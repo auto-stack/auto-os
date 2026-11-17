@@ -1,0 +1,24 @@
+# Rime dependency schema - AutoIME project terms (PLAN-070 T-03).
+# encoding: utf-8
+#
+# A declared schema dependency is how librime learns to compile a dictionary:
+# the deployer prepares the primary translator's dictionary for every schema in
+# the dependency list. This schema is never listed in the switcher; it only
+# makes autoime_terms.dict.yaml deployable.
+schema:
+  schema_id: autoime_terms
+  name: AutoIME 术语（依赖）
+  version: "0.1.0"
+  author:
+    - AutoIME
+  description: |
+    AutoIME 项目术语词库的部署入口（不作为可选方案展示）。
+
+engine:
+  translators:
+    - script_translator
+
+translator:
+  dictionary: autoime_terms
+  enable_user_dict: false
+  enable_sentence: false

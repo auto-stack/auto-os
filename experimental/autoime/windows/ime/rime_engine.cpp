@@ -1,6 +1,7 @@
 // AutoIME - narrow librime adapter implementation (PLAN-069 T-03).
 #include "rime_engine.h"
 
+#include <atomic>
 #include <cstdio>
 #include <cstring>
 
@@ -46,6 +47,11 @@ std::wstring Utf8ToUtf16(const std::string& utf8) {
 }
 
 }  // namespace
+
+uint64_t NextSnapshotVersion() {
+  static std::atomic<uint64_t> counter{0};
+  return ++counter;
+}
 
 std::string RimeEngine::EnvOr(const char* env, const std::string& fallback) {
   char buf[MAX_PATH]{};
@@ -180,16 +186,51 @@ bool RimeEngine::GetContext(uintptr_t session, Snapshot* out) {
   if (!api_ || !session) return false;
   RIME_STRUCT(RimeContext, ctx);
   if (!api_->get_context(session, &ctx)) return false;
-  if (ctx.composition.preedit)
-    out->preedit_utf8 = ctx.composition.preedit;
+  *out = Snapshot{};
+  if (ctx.composition.preedit) out->preedit_utf8 = ctx.composition.preedit;
   out->is_composing = ctx.composition.length > 0;
-  for (int i = 0; i < ctx.menu.num_candidates && ctx.menu.candidates; ++i) {
-    if (ctx.menu.candidates[i].text)
-      out->candidates.push_back(Utf8ToUtf16(ctx.menu.candidates[i].text));
-  }
-  out->highlighted = ctx.menu.highlighted_candidate_index;
   out->page_no = ctx.menu.page_no;
   out->is_last_page = ctx.menu.is_last_page != 0;
+  if (ctx.menu.select_keys) out->select_keys = ctx.menu.select_keys;
+  // The engine reports the whole candidate list; the snapshot keeps only the
+  // current page and pairs every entry with its real selection label
+  // (PLAN-070 T-03: labels, page index and page version).
+  const int total = ctx.menu.num_candidates;
+  const int page_size =
+      ctx.menu.page_size > 0 ? ctx.menu.page_size : (total > 0 ? total : 1);
+  int begin = ctx.menu.page_no * page_size;
+  if (begin >= total) begin = 0;
+  int end = begin + page_size;
+  if (end > total) end = total;
+  for (int i = begin; i < end && ctx.menu.candidates; ++i) {
+    out->candidates.push_back(ctx.menu.candidates[i].text
+                                  ? Utf8ToUtf16(ctx.menu.candidates[i].text)
+                                  : std::wstring());
+    out->comments.push_back(ctx.menu.candidates[i].comment
+                                ? Utf8ToUtf16(ctx.menu.candidates[i].comment)
+                                : std::wstring());
+    std::wstring label;
+    if (ctx.select_labels && ctx.select_labels[i] &&
+        ctx.select_labels[i][0]) {
+      label = Utf8ToUtf16(ctx.select_labels[i]);
+    } else {
+      const int rel = i - begin;
+      if (rel < static_cast<int>(out->select_keys.size())) {
+        label = std::wstring(
+            1, static_cast<wchar_t>(
+                   static_cast<unsigned char>(out->select_keys[rel])));
+      } else {
+        label = std::to_wstring(rel + 1);
+      }
+    }
+    out->labels.push_back(label);
+  }
+  out->highlighted = ctx.menu.highlighted_candidate_index;
+  if (out->highlighted >= begin && out->highlighted < end)
+    out->highlighted -= begin;
+  else if (out->highlighted >= page_size)
+    out->highlighted -= begin;
+  out->version = NextSnapshotVersion();
   if (ctx.commit_text_preview)
     out->commit_preview_utf8 = ctx.commit_text_preview;
   api_->free_context(&ctx);
@@ -211,6 +252,13 @@ std::string RimeEngine::TakeCommit(uintptr_t session, bool* has_commit) {
 
 void RimeEngine::ClearComposition(uintptr_t session) {
   if (api_ && session) api_->clear_composition(session);
+}
+
+bool RimeEngine::SelectCandidateOnPage(uintptr_t session, size_t page_index) {
+  if (!api_ || !session) return false;
+  if (RIME_PROVIDED(api_, select_candidate_on_current_page))
+    return api_->select_candidate_on_current_page(session, page_index) != 0;
+  return false;
 }
 
 void RimeEngine::SelectCandidate(uintptr_t session, size_t index) {

@@ -1,0 +1,27 @@
+# Rime table dictionary - AutoIME mixed English/technical aliases
+# (PLAN-070 T-03). encoding: utf-8
+#
+# Original entries only. Codes are the exact letter strings typed while
+# composing; the committed text keeps the canonical case and spaces.
+# Digits are reserved for candidate selection, so codes stay letter-only; the
+# alias trigger is defined by this scheme (see design 05 section 5).
+---
+name: autoime_en
+version: "0.1.0"
+sort: by_weight
+columns:
+  - text
+  - code
+  - weight
+...
+
+ROS 2	ros	1000
+AutoOS	autoos	900
+AutoEdit	autoedit	900
+AutoIME	autoime	900
+AutoStack	autostack	800
+librime	librime	800
+TSF	tsf	800
+gRPC	grpc	700
+OpenCC	opencc	700
+SQLite	sqlite	700

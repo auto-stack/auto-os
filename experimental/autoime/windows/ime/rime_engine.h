@@ -18,10 +18,15 @@ class RimeEngine {
   struct Snapshot {
     std::string preedit_utf8;       // composition preedit
     bool is_composing = false;
-    std::vector<std::wstring> candidates;  // page 0..n, UTF-16 for GDI
-    int highlighted = 0;
+    // Candidates of the CURRENT page only, with the engine's real labels.
+    std::vector<std::wstring> candidates;  // UTF-16 for GDI
+    std::vector<std::wstring> labels;      // parallel to candidates
+    std::vector<std::wstring> comments;    // parallel to candidates
+    int highlighted = 0;                   // page-relative
     int page_no = 0;
     bool is_last_page = true;
+    std::string select_keys;
+    uint64_t version = 0;  // bumps per snapshot; stale clicks compare
     std::string commit_preview_utf8;
   };
 
@@ -47,6 +52,8 @@ class RimeEngine {
   // Returns the pending commit text ("" when none) and consumes it.
   std::string TakeCommit(uintptr_t session, bool* has_commit);
   void ClearComposition(uintptr_t session);
+  // Selects by PAGE-LOCAL index (candidate window click).
+  bool SelectCandidateOnPage(uintptr_t session, size_t page_index);
   void SelectCandidate(uintptr_t session, size_t index);
 
  private:

@@ -1,0 +1,28 @@
+# Rime dictionary - AutoIME project terminology (PLAN-070 T-03).
+# encoding: utf-8
+#
+# Original entries only (no upstream word list is copied). Codes use one
+# pinyin syllable per character; the schema's abbreviation algebra also makes
+# the usual short forms ("zlb y") reachable.
+---
+name: autoime_terms
+version: "0.1.0"
+sort: by_weight
+columns:
+  - text
+  - code
+  - weight
+...
+
+增量编译	zeng liang bian yi	1000
+高斯泼溅	gao si po jian	1000
+离线拼音	li xian pin yin	900
+候选窗口	hou xuan chuang kou	900
+热更新	re geng xin	800
+引擎适配器	yin qing shi pei qi	800
+输入方案	shu ru fang an	700
+预编辑	yu bian ji	700
+焦点代次	jiao dian dai ci	600
+用户短语	yong hu duan yu	600
+项目术语	xiang mu shu yu	600
+词库版本	ci ku ban ben	500

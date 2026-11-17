@@ -1,0 +1,8 @@
+# AutoIME user-editable explicit phrases (PLAN-070 T-03).
+# encoding: utf-8
+#
+# One line per phrase:  <text><TAB><code><TAB><weight>
+# <code> is typed literally while composing and wins over natural candidates.
+# Codes are letter-only (digits select candidates while composing).
+# Edit this file and redeploy (or restart the editor) to apply.
+高速缓存	gaosuhuancun	1

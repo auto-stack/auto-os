@@ -42,6 +42,7 @@ struct Options {
   std::string shared_data_dir;
   std::string user_data_dir;
   std::string schema = "luna_pinyin_simp";
+  std::string resources_dir;  // PLAN-070 T-03 schema/dict resources
   bool keep_user_dir = false;
   bool user_dir_from_temp = true;  // default user dir is probe-provided
 };
@@ -134,6 +135,38 @@ std::string JsonEscape(const std::string& s) {
     }
   }
   return out;
+}
+
+// Copy one AutoIME resource file into the user dir. `keep_existing` protects
+// user-editable files (custom_phrase.txt) from being overwritten.
+bool CopyResourceFile(const std::string& dir, const std::string& name,
+                      const std::string& user_dir, bool keep_existing) {
+  const std::string dst = JoinPath(user_dir, name);
+  if (keep_existing && FileExists(dst)) return true;
+  return CopyFileA(JoinPath(dir, name).c_str(), dst.c_str(), FALSE) != 0;
+}
+
+// Copies the PLAN-070 T-03 schema resources; returns the count or -1.
+int CopyAutoIMEResources(const std::string& dir, const std::string& user_dir,
+                         std::string* error) {
+  const char* required[] = {"autoime_pinyin.schema.yaml",
+                            "autoime_terms.schema.yaml",
+                            "autoime_en.schema.yaml",
+                            "autoime_terms.dict.yaml",
+                            "autoime_en.dict.yaml"};
+  int copied = 0;
+  for (const char* name : required) {
+    if (!CopyResourceFile(dir, name, user_dir, false)) {
+      if (error) *error = std::string("cannot copy ") + name;
+      return -1;
+    }
+    ++copied;
+  }
+  if (!CopyResourceFile(dir, "custom_phrase.txt", user_dir, true)) {
+    if (error) *error = "cannot copy custom_phrase.txt";
+    return -1;
+  }
+  return copied + 1;
 }
 
 // ------------------------------------------------------------------ tracing
@@ -253,6 +286,118 @@ struct Rime {
     }
     return text;
   }
+
+  // One candidate page plus the schema's real selection labels (PLAN-070
+  // T-03: snapshots must carry labels, page index and page version data).
+  struct Page {
+    std::string preedit;
+    int page_size = 0;
+    int page_no = 0;
+    int highlighted = 0;
+    bool is_last_page = true;
+    std::vector<std::string> texts;
+    std::vector<std::string> comments;
+    std::vector<std::string> labels;
+    std::string select_keys;
+  };
+
+  bool GetPage(RimeSessionId session, Page* page) {
+    page->preedit.clear();
+    page->page_no = 0;
+    page->page_size = 0;
+    page->highlighted = 0;
+    page->is_last_page = true;
+    page->texts.clear();
+    page->comments.clear();
+    page->labels.clear();
+    page->select_keys.clear();
+    RIME_STRUCT(RimeContext, ctx);
+    if (!api->get_context(session, &ctx)) return false;
+    if (ctx.composition.preedit) page->preedit = ctx.composition.preedit;
+    page->page_no = ctx.menu.page_no;
+    page->page_size = ctx.menu.page_size;
+    page->is_last_page = ctx.menu.is_last_page != 0;
+    if (ctx.menu.select_keys) page->select_keys = ctx.menu.select_keys;
+    // librime exposes the whole candidate list plus the current page index;
+    // the UI must show only this page's slice (PLAN-070 T-03 page index).
+    const int total = ctx.menu.num_candidates;
+    const int page_size = ctx.menu.page_size > 0 ? ctx.menu.page_size
+                                                 : (total > 0 ? total : 1);
+    int begin = page->page_no * page_size;
+    if (begin >= total) begin = 0;  // defensive: already page-local arrays
+    const int end = (begin + page_size < total) ? begin + page_size : total;
+    page->highlighted = ctx.menu.highlighted_candidate_index;
+    if (page->highlighted >= begin && page->highlighted < end)
+      page->highlighted -= begin;
+    else if (page->highlighted >= page_size)
+      page->highlighted -= begin;
+    for (int i = begin; i < end && ctx.menu.candidates; ++i) {
+      page->texts.push_back(ctx.menu.candidates[i].text
+                                ? ctx.menu.candidates[i].text
+                                : "");
+      page->comments.push_back(ctx.menu.candidates[i].comment
+                                   ? ctx.menu.candidates[i].comment
+                                   : "");
+      std::string label;
+      if (ctx.select_labels && ctx.select_labels[i])
+        label = ctx.select_labels[i];
+      page->labels.push_back(label);
+    }
+    // Older librime builds expose only menu.select_keys; derive the display
+    // labels from it so the probe checks the same labels the UI shows.
+    if (!page->select_keys.empty()) {
+      for (size_t i = 0; i < page->labels.size() &&
+                         i < page->select_keys.size();
+           ++i) {
+        if (page->labels[i].empty())
+          page->labels[i] = std::string(1, page->select_keys[i]);
+      }
+    }
+    api->free_context(&ctx);
+    return true;
+  }
+
+  int FindOnPage(const Page& page, const std::string& text) {
+    for (size_t i = 0; i < page.texts.size(); ++i)
+      if (page.texts[i] == text) return static_cast<int>(i);
+    return -1;
+  }
+
+  // Selects the candidate shown under `label` (what the user actually presses
+  // and sees in the candidate window).
+  bool SelectLabel(RimeSessionId session, const std::string& label) {
+    if (label.empty()) return false;
+    return api->process_key(session,
+                            static_cast<int>(static_cast<unsigned char>(
+                                label[0])),
+                            0) != 0;
+  }
+
+  bool SelectIndex(RimeSessionId session, size_t index) {
+    if (!RIME_PROVIDED(api, select_candidate)) return false;
+    return api->select_candidate(session, index) != 0;
+  }
+
+  bool Deploy() {
+    if (RIME_PROVIDED(api, deploy)) {
+      const Bool ok = api->deploy();
+      if (ok) return true;
+    }
+    api->start_maintenance(True);
+    if (api->is_maintenance_mode()) api->join_maintenance_thread();
+    return true;
+  }
+
+  // A user-edited stabledb phrase file is only re-imported when the engine is
+  // restarted (this is what an explicit "redeploy" does in the real IME).
+  bool Restart(RimeTraits traits) {
+    api->finalize();
+    api->setup(&traits);
+    api->initialize(&traits);
+    api->start_maintenance(False);
+    if (api->is_maintenance_mode()) api->join_maintenance_thread();
+    return true;
+  }
 };
 
 struct TestResult {
@@ -264,7 +409,8 @@ struct TestResult {
 int PrintUsageError(const char* msg) {
   std::printf("ERROR bad usage: %s\n", msg);
   std::printf("usage: rime_probe.exe [--rime-dll PATH] [--shared-data-dir DIR]"
-              " [--user-data-dir DIR] [--schema SCHEMA_ID] [--keep]\n");
+              " [--user-data-dir DIR] [--schema SCHEMA_ID]"
+              " [--resources-dir DIR] [--keep]\n");
   return 2;
 }
 
@@ -310,6 +456,10 @@ int main(int argc, char** argv) {
       const char* v = value();
       if (!v) return PrintUsageError("--schema needs a value");
       opt.schema = v;
+    } else if (arg == "--resources-dir") {
+      const char* v = value();
+      if (!v) return PrintUsageError("--resources-dir needs a value");
+      opt.resources_dir = v;
     } else if (arg == "--keep") {
       opt.keep_user_dir = true;
     } else {
@@ -352,7 +502,10 @@ int main(int argc, char** argv) {
   }
   const std::string schema_file =
       JoinPath(opt.shared_data_dir, opt.schema + ".schema.yaml");
-  if (!FileExists(schema_file)) {
+  const bool schema_in_resources =
+      !opt.resources_dir.empty() &&
+      FileExists(JoinPath(opt.resources_dir, opt.schema + ".schema.yaml"));
+  if (!FileExists(schema_file) && !schema_in_resources) {
     std::printf(
         "ERROR [missing-schema] schema file not found: %s\n"
         "  fix: pass --shared-data-dir DIR containing %s.schema.yaml\n",
@@ -402,12 +555,28 @@ int main(int argc, char** argv) {
       return 4;
     }
     std::fprintf(f,
-                 "# AutoIME probe: pin schema list (PLAN-069 T-01)\n"
+                 "# AutoIME probe: pin schema list (PLAN-069 T-01 / PLAN-070 "
+                 "T-03)\n"
                  "patch:\n"
                  "  schema_list:\n"
                  "    - schema: %s\n",
                  opt.schema.c_str());
+    if (opt.schema != "luna_pinyin_simp") {
+      std::fprintf(f, "    - schema: luna_pinyin_simp\n");
+    }
     std::fclose(f);
+  }
+  if (!opt.resources_dir.empty()) {
+    std::string copy_error;
+    const int copied =
+        CopyAutoIMEResources(opt.resources_dir, opt.user_data_dir, &copy_error);
+    if (copied < 0) {
+      std::printf("ERROR [resources] %s (dir=%s)\n", copy_error.c_str(),
+                  opt.resources_dir.c_str());
+      if (!opt.keep_user_dir) RemoveTreeRecursively(opt.user_data_dir);
+      return 4;
+    }
+    TRACE("resources copied=%d from %s", copied, opt.resources_dir.c_str());
   }
 
   // ------------------------------------------------------------ load engine
@@ -444,6 +613,8 @@ int main(int argc, char** argv) {
   TRACE("setup(shared=%s user=%s)", opt.shared_data_dir.c_str(),
         opt.user_data_dir.c_str());
   rime.api->setup(&traits);
+  LARGE_INTEGER deploy_start{}, deploy_end{}, deploy_freq{};
+  QueryPerformanceCounter(&deploy_start);
   TRACE("initialize");
   rime.api->initialize(&traits);
   TRACE("start_maintenance(full_check=True)");
@@ -452,7 +623,14 @@ int main(int argc, char** argv) {
     TRACE("maintenance running, joining thread");
     rime.api->join_maintenance_thread();
   }
-  TRACE("maintenance done");
+  QueryPerformanceCounter(&deploy_end);
+  QueryPerformanceFrequency(&deploy_freq);
+  const long long deploy_ms =
+      deploy_freq.QuadPart
+          ? (deploy_end.QuadPart - deploy_start.QuadPart) * 1000 /
+                deploy_freq.QuadPart
+          : 0;
+  TRACE("maintenance done (deploy_ms=%lld)", deploy_ms);
 
   // ---------------------------------------------------- schema sanity check
   const RimeSessionId session = rime.api->create_session();
@@ -498,8 +676,12 @@ int main(int argc, char** argv) {
     } else {
       std::string first;
       rime.GetFirstCandidate(session, &first);
-      TRACE("t1 first candidate: '%s'", first.c_str());
-      ok = rime.TypeKey(session, '1', "1");  // select candidate #1
+      Rime::Page page;
+      rime.GetPage(session, &page);
+      const std::string label = page.labels.empty() ? "1" : page.labels[0];
+      TRACE("t1 first candidate: '%s' label='%s'", first.c_str(),
+            label.c_str());
+      ok = rime.SelectLabel(session, label);  // select candidate #1
       bool has = false;
       const std::string committed = rime.TakeCommit(session, &has);
       TRACE("t1 commit: has=%d text='%s'", has, committed.c_str());
@@ -595,6 +777,352 @@ int main(int argc, char** argv) {
     rime.api->destroy_session(s2);
   }
 
+  // ------------------------------------- PLAN-070 T-03 schema/candidate suite
+  if (!opt.resources_dir.empty()) {
+    const std::string kNiHao = "\xE4\xBD\xA0\xE5\xA5\xBD";          // 你好
+    const std::string kNeiHe = "\xE5\x86\x85\xE6\xA0\xB8";          // 内核
+    const std::string kZengLiang =
+        "\xE5\xA2\x9E\xE9\x87\x8F\xE7\xBC\x96\xE8\xAF\x91";         // 增量编译
+    const std::string kZiCeDuanYu =
+        "\xE8\x87\xAA\xE6\xB5\x8B\xE7\x9F\xAD\xE8\xAF\xAD";         // 自测短语
+    const std::string kGaoSuHuanCun =
+        "\xE9\xAB\x98\xE9\x80\x9F\xE7\xBC\x93\xE5\xAD\x98";         // 高速缓存
+
+    // t4: the deployed schema id is read back from a NEW session.
+    {
+      TestResult r{"t4_schema_identity", false, ""};
+      const RimeSessionId probe_session = rime.api->create_session();
+      std::string id, name;
+      const bool ok = probe_session != 0 &&
+                      rime.GetStatusSchema(probe_session, &id, &name) &&
+                      id == opt.schema;
+      TRACE("t4 new-session schema id=%s name=%s expected=%s", id.c_str(),
+            name.c_str(), opt.schema.c_str());
+      if (!ok)
+        r.detail = "schema id='" + id + "' expected '" + opt.schema + "'";
+      else
+        r.pass = true;
+      if (probe_session) rime.api->destroy_session(probe_session);
+      results.push_back(r);
+    }
+
+    // t5: "nh" keeps the 你好 / 内核 ambiguity; labels are the schema's real
+    // (non-numeric) labels and pressing one commits exactly the shown item.
+    {
+      rime.api->clear_composition(session);
+      TestResult r{"t5_abbrev_label_select", false, ""};
+      Rime::Page page;
+      bool ok = rime.TypeString(session, "nh");
+      bool saw_ni = false;
+      int pick = -1;
+      std::string expected, label;
+      for (int p = 0; ok && p < 3; ++p) {
+        ok = rime.GetPage(session, &page);
+        if (!ok) break;
+        for (size_t i = 0; i < page.texts.size(); ++i) {
+          if (page.texts[i] == kNiHao) saw_ni = true;
+          if (pick < 0 && page.texts[i] == kNeiHe && !page.labels[i].empty()) {
+            pick = static_cast<int>(i);
+            expected = page.texts[i];
+            label = page.labels[i];
+          }
+        }
+        {
+          std::string joined;
+          for (const std::string& text : page.texts) joined += text + "|";
+          TRACE("t5 page=%d slice=[%s]", page.page_no, joined.c_str());
+        }
+        if (pick >= 0 || page.is_last_page) break;
+        rime.TypeKey(session, 0xff56, "Page_Down");
+      }
+      TRACE("t5 preedit='%s' select_keys='%s' page_size=%d page=%d "
+            "texts=%zu labels=%zu pick=%d label='%s' saw_ni=%d",
+            page.preedit.c_str(), page.select_keys.c_str(), page.page_size,
+            page.page_no, page.texts.size(), page.labels.size(), pick,
+            label.c_str(), saw_ni);
+      if (!ok) {
+        r.detail = "type/get_context failed";
+      } else if (!saw_ni) {
+        r.detail = "\xE4\xBD\xA0\xE5\xA5\xBD missing from 'nh' candidates";
+      } else if (pick < 0) {
+        r.detail =
+            "\xE5\x86\x85\xE6\xA0\xB8 missing from 'nh' candidates (ambiguity lost)";
+      } else if (page.labels.size() != page.texts.size()) {
+        r.detail = "labels do not match the engine page: count=" +
+                   std::to_string(page.labels.size());
+      } else {
+        ok = rime.SelectLabel(session, label);
+        bool has = false;
+        const std::string committed = rime.TakeCommit(session, &has);
+        std::string after;
+        rime.GetPreedit(session, &after);
+        bool has2 = false;
+        rime.TakeCommit(session, &has2);
+        TRACE("t5 committed='%s' expected='%s' after='%s'", committed.c_str(),
+              expected.c_str(), after.c_str());
+        if (!ok)
+          r.detail = "label key not consumed";
+        else if (!has || committed != expected)
+          r.detail = "commit='" + committed + "' expected='" + expected + "'";
+        else if (!after.empty())
+          r.detail = "composition not empty after commit: '" + after + "'";
+        else if (has2)
+          r.detail = "more than one commit produced";
+        else
+          r.pass = true;
+      }
+      results.push_back(r);
+    }
+    // t6: full pinyin of a project term reaches the term candidate and shows
+    // it (cross-page search), then the shown label commits it once.
+    {
+      rime.api->clear_composition(session);
+      TestResult r{"t6_project_term", false, ""};
+      bool ok = rime.TypeString(session, "zengliangbianyi");
+      Rime::Page page;
+      int found = -1;
+      for (int p = 0; ok && p < 3; ++p) {
+        ok = rime.GetPage(session, &page);
+        found = ok ? rime.FindOnPage(page, kZengLiang) : -1;
+        if (found >= 0 || page.is_last_page) break;
+        rime.TypeKey(session, 0xff56, "Page_Down");
+      }
+      TRACE("t6 preedit='%s' page=%d found=%d candidates=%zu",
+            page.preedit.c_str(), page.page_no, found, page.texts.size());
+      if (!ok) {
+        r.detail = "engine calls failed";
+      } else if (found < 0) {
+        r.detail = "增量编译 missing from 'zengliangbianyi' candidates";
+      } else {
+        const std::string expected = page.texts[found];
+        const std::string label = page.labels[found];
+        ok = rime.SelectLabel(session, label);
+        bool has = false;
+        const std::string committed = rime.TakeCommit(session, &has);
+        bool has2 = false;
+        rime.TakeCommit(session, &has2);
+        TRACE("t6 label=%s expected='%s' committed='%s'", label.c_str(),
+              expected.c_str(), committed.c_str());
+        if (!ok)
+          r.detail = "label not consumed";
+        else if (!has || committed != expected)
+          r.detail = "commit='" + committed + "' expected='" + expected + "'";
+        else if (has2)
+          r.detail = "more than one commit produced";
+        else
+          r.pass = true;
+      }
+      results.push_back(r);
+    }
+
+    // t7: explicit mixed alias "ros2" produces "ROS 2" (case and space kept).
+    {
+      rime.api->clear_composition(session);
+      TestResult r{"t7_mixed_english", false, ""};
+      bool ok = rime.TypeString(session, "ros");
+      Rime::Page page;
+      int found = -1;
+      for (int p = 0; ok && p < 3; ++p) {
+        ok = rime.GetPage(session, &page);
+        found = ok ? rime.FindOnPage(page, "ROS 2") : -1;
+        if (found >= 0 || page.is_last_page) break;
+        rime.TypeKey(session, 0xff56, "Page_Down");
+      }
+      TRACE("t7 preedit='%s' found=%d candidates=%zu", page.preedit.c_str(),
+            found, page.texts.size());
+      if (!ok) {
+        r.detail = "engine calls failed";
+      } else if (found < 0) {
+        r.detail = "'ROS 2' missing from 'ros' candidates";
+      } else {
+        const std::string expected = page.texts[found];
+        const std::string label = page.labels[found];
+        ok = rime.SelectLabel(session, label);
+        bool has = false;
+        const std::string committed = rime.TakeCommit(session, &has);
+        TRACE("t7 label=%s committed='%s'", label.c_str(), committed.c_str());
+        if (!ok)
+          r.detail = "label not consumed";
+        else if (!has || committed != expected)
+          r.detail = "commit='" + committed + "' expected='" + expected + "'";
+        else
+          r.pass = true;
+      }
+      results.push_back(r);
+    }
+
+    // t8: user-editable phrase file: add -> redeploy -> reachable; remove ->
+    // redeploy -> gone. This is the "增删并重新部署生效" contract.
+    {
+      TestResult r{"t8_custom_phrase_redeploy", false, ""};
+      // First check the phrase shipped in the resource file: if that is not
+      // reachable, the custom_phrase translator itself is not active.
+      rime.api->clear_composition(session);
+      Rime::Page shipped;
+      const bool shipped_ok = rime.TypeString(session, "gaosuhuancun") &&
+                              rime.GetPage(session, &shipped);
+      const int shipped_idx =
+          shipped_ok ? rime.FindOnPage(shipped, kGaoSuHuanCun) : -1;
+      TRACE("t8 shipped phrase idx=%d candidates=%zu", shipped_idx,
+            shipped.texts.size());
+      rime.api->clear_composition(session);
+      const std::string phrase_path =
+          JoinPath(opt.user_data_dir, "custom_phrase.txt");
+      auto write_phrase = [&](const std::string& body) {
+        FILE* f = std::fopen(phrase_path.c_str(), "wb");
+        if (!f) return false;
+        std::fputs(body.c_str(), f);
+        std::fclose(f);
+        return true;
+      };
+      const std::string code = "testphrase";
+      bool ok = write_phrase("# AutoIME probe phrase\n" + kZiCeDuanYu + "\t" +
+                             code + "\t1\n") &&
+                rime.Restart(traits);
+      RimeSessionId s3 = ok ? rime.api->create_session() : 0;
+      ok = ok && s3 != 0;
+      Rime::Page page;
+      ok = ok && rime.TypeString(s3, code.c_str()) && rime.GetPage(s3, &page);
+      const int add_idx = ok ? rime.FindOnPage(page, kZiCeDuanYu) : -1;
+      const std::string label =
+          (ok && add_idx >= 0 && add_idx < static_cast<int>(page.labels.size()))
+              ? page.labels[add_idx]
+              : std::string();
+      bool committed_ok = false;
+      if (add_idx >= 0 && !label.empty()) {
+        committed_ok = rime.SelectLabel(s3, label);
+        bool has = false;
+        const std::string committed = rime.TakeCommit(s3, &has);
+        committed_ok = committed_ok && has && !committed.empty();
+      }
+      // Removal: rewrite the file without the phrase and redeploy.
+      const bool removed =
+          write_phrase("# AutoIME probe phrase removed\n") && rime.Restart(traits);
+      RimeSessionId s4 = removed ? rime.api->create_session() : 0;
+      bool gone = false;
+      if (s4) {
+        Rime::Page after;
+        if (rime.TypeString(s4, code.c_str()) && rime.GetPage(s4, &after)) {
+          gone = true;
+          for (int p = 0; p < 3; ++p) {
+            if (rime.FindOnPage(after, kZiCeDuanYu) >= 0) {
+              gone = false;
+              break;
+            }
+            if (after.is_last_page) break;
+            rime.TypeKey(s4, 0xff56, "Page_Down");
+            if (!rime.GetPage(s4, &after)) break;
+          }
+        }
+        rime.api->destroy_session(s4);
+      }
+      TRACE("t8 add_idx=%d label='%s' committed_ok=%d removed=%d gone=%d",
+            add_idx, label.c_str(), committed_ok, removed, gone);
+      if (shipped_idx < 0)
+        r.detail = "shipped custom phrase 'gaosuhuancun' not reachable";
+      else if (!ok)
+        r.detail = "phrase add/deploy failed";
+      else if (add_idx < 0)
+        r.detail = "added phrase not reachable after redeploy";
+      else if (!committed_ok)
+        r.detail = "added phrase did not commit";
+      else if (!gone)
+        r.detail = "removed phrase still reachable after redeploy";
+      else
+        r.pass = true;
+      if (s3) rime.api->destroy_session(s3);
+      // Restore the shipped phrase file (best effort; temp dirs are deleted).
+      CopyResourceFile(opt.resources_dir, "custom_phrase.txt",
+                       opt.user_data_dir, false);
+      results.push_back(r);
+    }
+
+    // t9: an explicit schema choice still works, including the Luna fallback.
+    {
+      TestResult r{"t9_fallback_luna", false, ""};
+      RimeSessionId s5 = rime.api->create_session();
+      std::string id, name;
+      bool ok = s5 != 0 && RIME_PROVIDED(rime.api, select_schema) &&
+                rime.api->select_schema(s5, "luna_pinyin_simp");
+      if (ok) rime.GetStatusSchema(s5, &id, &name);
+      ok = ok && id == "luna_pinyin_simp";
+      bool ascii = false, disabled = false;
+      if (ok && RIME_PROVIDED(rime.api, get_status)) {
+        RIME_STRUCT(RimeStatus, status);
+        if (rime.api->get_status(s5, &status)) {
+          ascii = status.is_ascii_mode != 0;
+          disabled = status.is_disabled != 0;
+          rime.api->free_status(&status);
+        }
+      }
+      TRACE("t9 after select: ascii=%d disabled=%d", ascii, disabled);
+      if (ascii && RIME_PROVIDED(rime.api, set_option))
+        rime.api->set_option(s5, "ascii_mode", False);
+      Rime::Page page;
+      ok = ok && rime.TypeString(s5, "nihao") && rime.GetPage(s5, &page);
+      const int idx = ok ? rime.FindOnPage(page, kNiHao) : -1;
+      bool committed_ok = false;
+      if (idx >= 0) {
+        std::string label = page.labels[idx];
+        if (label.empty()) label = std::string(1, static_cast<char>('1' + idx));
+        committed_ok = rime.SelectLabel(s5, label);
+        bool has = false;
+        const std::string committed = rime.TakeCommit(s5, &has);
+        committed_ok = committed_ok && has && !committed.empty();
+      }
+      TRACE("t9 schema=%s name=%s idx=%d committed=%d", id.c_str(),
+            name.c_str(), idx, committed_ok);
+      if (!ok)
+        r.detail = "explicit luna_pinyin_simp selection failed";
+      else if (idx < 0)
+        r.detail = "你好 missing under luna_pinyin_simp";
+      else if (!committed_ok)
+        r.detail = "luna_pinyin_simp commit failed";
+      else
+        r.pass = true;
+      if (s5) rime.api->destroy_session(s5);
+      results.push_back(r);
+    }
+
+    // t10: a half-typed syllable ("nih") still composes and its shown label
+    // commits exactly the displayed candidate.
+    {
+      TestResult r{"t10_partial_syllable", false, ""};
+      // t8 restarted the engine, so use a fresh session.
+      RimeSessionId s6 = rime.api->create_session();
+      Rime::Page page;
+      bool ok = s6 != 0 && rime.TypeString(s6, "nih") &&
+                rime.GetPage(s6, &page);
+      const bool has = ok && !page.texts.empty();
+      bool committed_ok = false;
+      std::string expected, committed;
+      if (has) {
+        expected = page.texts[0];
+        const std::string label =
+            (page.labels.empty() || page.labels[0].empty())
+                ? std::string("1")
+                : page.labels[0];
+        committed_ok = rime.SelectLabel(s6, label);
+        bool got = false;
+        committed = rime.TakeCommit(s6, &got);
+        committed_ok = committed_ok && got && committed == expected;
+      }
+      TRACE("t10 preedit='%s' candidates=%zu first='%s' committed='%s'",
+            page.preedit.c_str(), page.texts.size(),
+            page.texts.empty() ? "" : page.texts[0].c_str(), committed.c_str());
+      if (!ok)
+        r.detail = "engine calls failed";
+      else if (!has)
+        r.detail = "no labeled candidate for 'nih'";
+      else if (!committed_ok)
+        r.detail = "commit='" + committed + "' expected='" + expected + "'";
+      else
+        r.pass = true;
+      if (s6) rime.api->destroy_session(s6);
+      results.push_back(r);
+    }
+  }
+
   // ---------------------------------------------------------------- summary
   rime.api->destroy_session(session);
   rime.api->finalize();
@@ -611,13 +1139,19 @@ int main(int argc, char** argv) {
                 r.detail.empty() ? "" : " detail: ", r.detail.c_str());
     all_pass = all_pass && r.pass;
   }
+  std::string tests_json;
+  for (size_t i = 0; i < results.size(); ++i) {
+    if (i) tests_json += ", ";
+    tests_json += "\"" + std::string(results[i].name) + "\": \"" +
+                  (results[i].pass ? "pass" : "fail") + "\"";
+  }
   std::printf(
       "SUMMARY {\"probe\": \"rime_probe\", \"dll\": \"%s\", "
       "\"dll_file_version\": \"%s\", \"librime_version\": \"%s\", "
       "\"probe_bits\": %d, \"schema\": \"%s\", \"schema_name\": \"%s\", "
       "\"shared_data_dir\": \"%s\", \"user_data_dir\": \"%s\", "
-      "\"tests\": {\"t1_first_commit\": \"%s\", \"t2_cancel\": \"%s\", "
-      "\"t3_two_sessions\": \"%s\"}}\n",
+      "\"resources_dir\": \"%s\", \"deploy_ms\": %lld, "
+      "\"tests\": {%s}}\n",
       JsonEscape(opt.rime_dll).c_str(),
       JsonEscape(DllFileVersion(opt.rime_dll)).c_str(),
       JsonEscape(rime_version).c_str(),
@@ -625,8 +1159,8 @@ int main(int argc, char** argv) {
       JsonEscape(schema_name).c_str(),
       JsonEscape(opt.shared_data_dir).c_str(),
       JsonEscape(opt.user_data_dir).c_str(),
-      results[0].pass ? "pass" : "fail", results[1].pass ? "pass" : "fail",
-      results[2].pass ? "pass" : "fail");
+      JsonEscape(opt.resources_dir).c_str(), deploy_ms,
+      tests_json.c_str());
   // Terminate without running atexit handlers / DLL unload: rime.dll keeps
   // background threads and static state that make the CRT exit path unreliable
   // after finalize(); all engine state is fully torn down above.

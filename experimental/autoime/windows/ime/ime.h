@@ -127,6 +127,7 @@ class CTextService final : public ITfTextInputProcessor,
   HRESULT RestoreComposition(ITfContext* pic);
   void ReleaseOrigin();
   void RefreshCandidateWindow(ITfContext* pic);
+  void SelectCandidate(int page_index, uint64_t version);
   KeyEvent MakeKeyEvent(WPARAM wParam, LPARAM lParam) const;
 
   // Everything needed to undo this composition session (PLAN-070 T-02).
@@ -152,6 +153,7 @@ class CTextService final : public ITfTextInputProcessor,
 
   KeyRouter router_;
   uint64_t generation_ = 1;
+  uint64_t candidate_version_ = 0;  // page version shown by the window
   bool engine_composing_ = false;
   bool ascii_mode_ = false;
   bool engine_load_failed_ = false;
