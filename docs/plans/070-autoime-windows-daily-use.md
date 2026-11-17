@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-070
-status: execution_done
+status: reviewed
 feature_name: AutoIME Windows 日常试用版
 author: [Codex]
 created_at: 2026-11-17
@@ -202,6 +202,23 @@ stage: work | plan_id: PLAN-070 | plan_revision: r2 | outcome: pass（F1–F6 �
 
 stage: goal | plan_id: PLAN-070 | plan_revision: r2 | round: 6 | from: work | to: review | status: execution_done | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: fae70a2 | next: review
 
+stage: review | review_scope: final | reviewer_identity: 独立复-review 子代理 reviewer2（独立上下文，未参与 r2 修复；未重跑 GUI/宿主，复用 t06 宿主日志；librime 1.13.1 上游语义核对）| plan_id: PLAN-070 | plan_revision: r2 | outcome: pass | worktree_path: D:/autostack/.wt/os-070/auto-os | branch: plan-070-dev | reviewed_commit: fae70a2527cb0a1a886c47e5839f701fdd39f7e4 | base_commit: 61237ba7910bb54e0ba06119f8e43c547777bddf | dependency_revisions: rime.dll=librime 1.13.1（Weasel 0.17.4，sha256 2D8F1BC3…C45B）；安装 DLL=审阅构建（sha256 ACFC00F0…8F17），FileVersion 0.1.0.0 | spec_inputs: docs/design/05-autoime-windows.md @ 57e0315（r2 §4.2 有界例外）；无 docs/specs 变更、无 .autoos/specs.json 写入 | acceptance_results: T-01 pass · T-02 pass · T-03 pass · T-04 pass（32/32；D 4036ms / E 3612ms）· T-05 partial（记事本+Edge pass；AutoEdit 待测，不计通过）| pending_closeout_gates: AutoEdit 宿主复验；候选窗/手感人工确认；安装 DLL 非逐字节可复现（MSVC link）；P070-R1/R4 + R5 归并记录 | findings: F1–F9 全闭合（F9 仅记录性待测）；新增 P070-R1（minor，潜在不可达路径）+ R2..R5（informational）| evidence: D:/autostack/plan-artifacts/plan-070/t06/**（7/7 sha256 复核一致）+ 本轮实跑（fixture 6.736ms、probe 10/10 deploy 3025ms、T-04 32/32 suite 18504ms）| next: merge
+
+### 复-review 结论（r2，pass）
+
+- **F1–F6 全闭合**：F1 缺前置→具名错误 exit 2、正常 17 cases/146 checks/6.7ms 且每例计时、
+  probe 无隐式构建；F2 Design r2 文本与 `RestoreTerminatedOrigin` 语义一致；F3 快照字段与
+  `offset_mapping` 通过；F4 候选窗实现与 README/宿主日志（ped=1 dpi=192、矩形 356→372→390）
+  一致；F5 校验器正/负例 0/4、安装日志 version 0.1.0.0；F6 T-04 32/32，D 4036ms/E 3612ms。
+- **F7–F9**：F7 同量级测量差异、F8 注释/时长已修、F9 敏感直通/写锁/过期点击仍以代码+夹具
+  为证（记录性待测，不计通过）。
+- **新增非阻塞项**：P070-R1（minor，潜在不可达路径：多段/半匹配预编辑的选区起点构造与
+  librime 字节偏移语义；交付拼音流程为单段、光标在末尾，验收不受影响）；R2（Design r2
+  可补一句“TSF 不提供终止原因”）；R3（README 仍写 136 checks / ~30–40s）；R4（回滚选择性
+  清理未含依赖方案文件，依赖资源损坏路径未验）；R5（空规范增量建议在 merge 补一句理由）。
+
+stage: goal | plan_id: PLAN-070 | plan_revision: r2 | round: 7 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: fae70a2 | next: merge
+
 ## 待澄清事项
 
 - **（待测，非阻塞）AutoEdit 兼容复验**：T-05 验收时 AutoOS 桌面/AutoEdit
@@ -211,3 +228,9 @@ stage: goal | plan_id: PLAN-070 | plan_revision: r2 | round: 6 | from: work | to
   选区替换/取消、中英混输与半截拼音切焦；AutoIME 自身缺陷另立修复。
 - 人工手感（候选窗视觉、点击选词、缩放）建议由用户在最终验收时确认；本计划
   已用宿主真实输入链验证功能，不替代主观手感。
+- **P070-R1（minor，非阻塞，随 merge 归档为跟进项）**：多段/半匹配预编辑的选区起点
+  构造与 librime 字节偏移语义在交付拼音流程（单段、光标在末尾）不可达；关闭条件=
+  后续计划修正 `ShiftStartToRange` 起点/字节→UTF-16 换算，并补非零 `sel_start` 夹具。
+- **P070-R2..R5（informational）**：Design 05 补“TSF 不提供终止原因”一句；README
+  计数/时长；回滚选择性清理补依赖方案文件并验证依赖损坏路径；merge 时为空的规范增量
+  写明“experimental 原型、无 docs/specs 目标”的理由。以上均不阻塞交付。
