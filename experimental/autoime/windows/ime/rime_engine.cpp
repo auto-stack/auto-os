@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include "deployment.h"
+#include "diag.h"
 #include "ime.h"
 
 namespace {
@@ -107,30 +109,38 @@ bool RimeEngine::LoadDll(std::string* error) {
   return true;
 }
 
+// Pins AutoIME's schema list in the private user dir. A file the user owns
+// (no AutoIME marker) is left untouched.
 void RimeEngine::WriteDefaultCustomYaml() const {
   const std::string custom = JoinPath(user_data_dir_, "default.custom.yaml");
-  if (FileExists(custom)) return;
-  FILE* f = fopen(custom.c_str(), "wb");
+  std::string existing;
+  {
+    FILE* f = std::fopen(custom.c_str(), "rb");
+    if (f) {
+      char buffer[4096];
+      const size_t n = std::fread(buffer, 1, sizeof(buffer), f);
+      existing.assign(buffer, n);
+      std::fclose(f);
+    }
+  }
+  if (!existing.empty() && existing.find("# AutoIME (PLAN-070)") != 0) return;
+  FILE* f = std::fopen(custom.c_str(), "wb");
   if (!f) return;
-  fprintf(f,
-          "# AutoIME (PLAN-069): pin schema list\n"
-          "patch:\n"
-          "  schema_list:\n"
-          "    - schema: %s\n",
-          schema_.c_str());
-  fclose(f);
+  std::fprintf(f,
+               "# AutoIME (PLAN-070): pinned schema list with Luna fallback\n"
+               "patch:\n"
+               "  schema_list:\n"
+               "    - schema: %s\n",
+               schema_.c_str());
+  if (schema_ != "luna_pinyin_simp")
+    std::fprintf(f, "    - schema: luna_pinyin_simp\n");
+  std::fclose(f);
 }
 
-void RimeEngine::InitializeOnce() {
-  if (!ready_) return;
-  // AutoIME's own user data dir (not the system Weasel user dir).
-  user_data_dir_ =
-      EnvOr("AUTOIME_RIME_USER_DATA_DIR",
-            JoinPath(EnvOr("LOCALAPPDATA", ""), "AutoIME\\rime"));
+bool RimeEngine::InitializeAndMaintain() {
+  if (!api_) return false;
   CreateDirectoryA(user_data_dir_.c_str(), nullptr);
-  schema_ = EnvOr("AUTOIME_RIME_SCHEMA", "luna_pinyin_simp");
   WriteDefaultCustomYaml();
-
   RIME_STRUCT(RimeTraits, traits);
   traits.shared_data_dir = shared_data_dir_.c_str();
   traits.user_data_dir = user_data_dir_.c_str();
@@ -141,22 +151,167 @@ void RimeEngine::InitializeOnce() {
   api_->set_notification_handler(nullptr, nullptr);
   api_->setup(&traits);
   api_->initialize(&traits);
-  api_->start_maintenance(False);
+  api_->start_maintenance(True);
   if (api_->is_maintenance_mode()) api_->join_maintenance_thread();
-  ImeLog("rime ready dll=%s user=%s schema=%s", dll_path_.c_str(),
-         user_data_dir_.c_str(), schema_.c_str());
-}
-
-bool RimeEngine::EnsureReady(std::string* error) {
-  if (ready_) return true;
-  if (!LoadDll(error)) return false;
-  ready_ = true;
-  InitializeOnce();
   return true;
 }
 
+void RimeEngine::FinalizeEngine() {
+  if (api_) api_->finalize();
+}
+
+bool RimeEngine::ValidateSchema(const std::string& expected,
+                                std::string* actual) {
+  if (!api_ || !RIME_PROVIDED(api_, get_status)) return false;
+  const RimeSessionId session = api_->create_session();
+  if (!session) return false;
+  std::string id, name;
+  RIME_STRUCT(RimeStatus, status);
+  if (api_->get_status(session, &status)) {
+    if (status.schema_id) id = status.schema_id;
+    if (status.schema_name) name = status.schema_name;
+    api_->free_status(&status);
+  }
+  // A schema whose YAML failed to parse still reports its declared id (with
+  // the display name falling back to the id), and a stale compiled artifact
+  // can keep working. Require both an effective display name and a functional
+  // composition probe before declaring the deployed set usable.
+  bool functional = false;
+  const char* probe = "nihao";
+  for (const char* p = probe; *p; ++p) api_->process_key(session, *p, 0);
+  RIME_STRUCT(RimeContext, ctx);
+  if (api_->get_context(session, &ctx)) {
+    functional = ctx.menu.num_candidates > 0 && ctx.menu.candidates &&
+                 ctx.menu.candidates[0].text &&
+                 ctx.menu.candidates[0].text[0] != '\0';
+    api_->free_context(&ctx);
+  }
+  api_->clear_composition(session);
+  api_->destroy_session(session);
+  if (actual) *actual = id;
+  ImeLog("schema validation id=%s name=%s expected=%s functional=%d",
+         id.c_str(), name.c_str(), expected.c_str(), functional ? 1 : 0);
+  return id == expected && !name.empty() && name != id && functional;
+}
+
+void RimeEngine::CommitResources() {
+  if (!resources_dir_.empty()) deployment::Commit(user_data_dir_);
+}
+
+void RimeEngine::RollbackResources() {
+  if (resources_dir_.empty()) return;
+  std::string detail;
+  deployment::Rollback(user_data_dir_, &detail);
+  deployment_detail_ += " | " + detail;
+}
+
+RimeEngine::~RimeEngine() {
+  if (worker_.joinable()) worker_.join();
+}
+
+void RimeEngine::StartAsync() {
+  bool expected = false;
+  if (!started_.compare_exchange_strong(expected, true)) return;
+  worker_ = std::thread([this] {
+    std::string error;
+    if (!EnsureReady(&error))
+      ImeLog("async engine initialization failed: %s", error.c_str());
+  });
+}
+
+void RimeEngine::Shutdown() {
+  if (worker_.joinable()) worker_.join();
+  std::lock_guard<std::mutex> guard(init_mutex_);
+  FinalizeEngine();
+  ready_.store(false);
+}
+
+bool RimeEngine::EnsureReady(std::string* error) {
+  std::lock_guard<std::mutex> guard(init_mutex_);
+  if (finished_.load()) return ready_.load();
+  if (!LoadDll(error)) {
+    finished_.store(true);
+    diag::Failure("engine", E_FAIL);
+    return false;
+  }
+  user_data_dir_ =
+      user_override_.empty() ? deployment::DefaultUserDir() : user_override_;
+  CreateDirectoryA(user_data_dir_.c_str(), nullptr);
+  resources_dir_ = resources_override_;
+  if (resources_dir_.empty() && !module_dir_.empty())
+    resources_dir_ = deployment::ResolveResourcesDir(module_dir_);
+
+  // Hold the cross-process deployment gate across Prepare + compile + commit:
+  // two hosts cold-starting together must compile the dictionaries only once.
+  deployment::DeployLock deploy_lock;
+  bool resources_ok = false;
+  if (!resources_dir_.empty()) {
+    const deployment::Status st =
+        deployment::Prepare(resources_dir_, user_data_dir_);
+    resources_ok = st.ok;
+    deployment_version_ = st.version;
+    deployment_detail_ = st.detail;
+    ImeLog("deploy resources=%s version=%s copied=%d unchanged=%d detail=%s",
+           resources_dir_.c_str(), st.version.c_str(), st.copied ? 1 : 0,
+           st.unchanged ? 1 : 0, st.detail.c_str());
+    diag::Event("deploy", st.ok ? (st.unchanged ? "unchanged" : "prepared")
+                                : "failed");
+  } else {
+    deployment_detail_ = "no resources directory (Luna fallback)";
+    diag::Event("deploy", "no_resources");
+  }
+
+  schema_ = resources_ok ? "autoime_pinyin" : "luna_pinyin_simp";
+  const std::string env_schema = EnvOr("AUTOIME_RIME_SCHEMA", "");
+  if (!env_schema.empty()) schema_ = env_schema;
+
+  if (!InitializeAndMaintain()) {
+    finished_.store(true);
+    deployment_detail_ += " | initialize failed";
+    return false;
+  }
+  std::string actual;
+  if (ValidateSchema(schema_, &actual)) {
+    if (resources_ok) CommitResources();
+    ready_.store(true);
+    diag::Event("engine", "ready");
+  } else {
+    // 1. Restore the last known-good resource set and retry once. Finalize
+    // first so the compile output is no longer mapped and can be dropped.
+    FinalizeEngine();
+    RollbackResources();
+    if (InitializeAndMaintain() && ValidateSchema(schema_, &actual)) {
+      ready_.store(true);
+      diag::Event("engine", "ready_after_rollback");
+    } else {
+      // 2. Last resort: Luna schema shipped with Weasel (no AutoIME data).
+      schema_ = "luna_pinyin_simp";
+      schema_override_ = "luna_pinyin_simp";
+      fallback_.store(true);
+      FinalizeEngine();
+      if (InitializeAndMaintain() && ValidateSchema(schema_, &actual)) {
+        ready_.store(true);
+        diag::Event("engine", "ready_luna");
+      } else {
+        disabled_.store(true);
+        ready_.store(false);
+        FinalizeEngine();
+        diag::Event("engine", "disabled");
+        if (error) *error = "engine disabled: no usable schema";
+      }
+    }
+  }
+  finished_.store(true);
+  return ready_.load();
+}
+
 uintptr_t RimeEngine::CreateSession() {
-  return api_ ? api_->create_session() : 0;
+  if (!api_) return 0;
+  const uintptr_t session = api_->create_session();
+  if (session && !schema_override_.empty() &&
+      RIME_PROVIDED(api_, select_schema))
+    api_->select_schema(session, schema_override_.c_str());
+  return session;
 }
 
 void RimeEngine::DestroySession(uintptr_t session) {

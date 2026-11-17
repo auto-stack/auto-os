@@ -8,6 +8,7 @@ add_library(autoime_ime SHARED
   key_router.cpp
   diag.cpp
   edit_model.cpp
+  deployment.cpp
   rime_engine.cpp
   candidate_window.cpp
   register.cpp
@@ -38,8 +39,22 @@ target_compile_definitions(autoime_fixture PRIVATE _CRT_SECURE_NO_WARNINGS
                                                 UNICODE _UNICODE)
 target_link_libraries(autoime_fixture PRIVATE user32)
 
+# PLAN-070 T-04 deployment CLI: synchronous deploy + schema validation with
+# rollback/fallback, first-deploy timing and key-to-candidate latency.
+add_executable(autoime_deploy
+  tools/deploy_main.cpp
+  deployment.cpp
+  diag.cpp
+  rime_engine.cpp
+)
+target_compile_features(autoime_deploy PRIVATE cxx_std_17)
+target_compile_definitions(autoime_deploy PRIVATE _CRT_SECURE_NO_WARNINGS
+                                               UNICODE _UNICODE)
+target_link_libraries(autoime_deploy PRIVATE advapi32 user32)
+
 if(MSVC)
   target_compile_options(autoime_ime PRIVATE /W4 /permissive- /EHsc)
   target_compile_options(verify_registered PRIVATE /W4 /permissive- /EHsc /utf-8)
   target_compile_options(autoime_fixture PRIVATE /W4 /permissive- /EHsc /utf-8)
+  target_compile_options(autoime_deploy PRIVATE /W4 /permissive- /EHsc /utf-8)
 endif()

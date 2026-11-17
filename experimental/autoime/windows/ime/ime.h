@@ -156,7 +156,6 @@ class CTextService final : public ITfTextInputProcessor,
   uint64_t candidate_version_ = 0;  // page version shown by the window
   bool engine_composing_ = false;
   bool ascii_mode_ = false;
-  bool engine_load_failed_ = false;
 };
 
 // Registry self-registration (register.cpp). Install failures roll back the

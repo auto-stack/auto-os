@@ -145,17 +145,11 @@ void CTextService::UnadviseKeyEventSink() {
 }
 
 bool CTextService::EnsureEngine() {
-  if (engine_load_failed_) return false;
   diag::Init();
-  std::string error;
-  if (!engine_.EnsureReady(&error)) {
-    if (!engine_load_failed_) {
-      ImeLog("engine unavailable: %s (pass-through mode)", error.c_str());
-      diag::Failure("engine", E_FAIL);
-      engine_load_failed_ = true;
-    }
-    return false;
-  }
+  // Deployment/licensing happens on the worker started at activation; until it
+  // finishes every key passes through (PLAN-070 T-04: first deploy is not the
+  // first key).
+  if (!engine_.ready() || engine_.disabled()) return false;
   if (rime_session_ == 0) {
     rime_session_ = engine_.CreateSession();
     if (rime_session_) {
@@ -176,6 +170,17 @@ STDMETHODIMP CTextService::Activate(ITfThreadMgr* ptim, TfClientId tid) {
   client_id_ = tid;
   router_.SetTarget(this);
   router_.OnFocus(generation_, true);
+  // Shipped resources live next to the DLL (<install>\resources); deployment
+  // and dictionary compilation run on a worker thread.
+  {
+    char module[MAX_PATH]{};
+    GetModuleFileNameA(g_hInst, module, MAX_PATH);
+    std::string module_dir(module);
+    const size_t slash = module_dir.find_last_of("\\/");
+    if (slash != std::string::npos) module_dir.resize(slash);
+    engine_.SetModuleDir(module_dir);
+    engine_.StartAsync();
+  }
   candidate_wnd_.SetSelectHandler(
       [this](int page_index, uint64_t version) {
         SelectCandidate(page_index, version);
