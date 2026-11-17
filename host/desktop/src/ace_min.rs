@@ -127,6 +127,34 @@ fn lookup_candidate(id: &str) -> Result<&'static CandidateSpec, String> {
     })
 }
 
+/// 候选源身份核（读源 + blake3 对 pin；缺源/失配具名拒）——feature 无关
+/// 纯逻辑层，`imp::activate` 消费；负例（缺源/错 hash）由本层永久测试
+/// 守恒（review P1，2026-11-17）。
+fn load_verified_source(
+    spec: &CandidateSpec,
+) -> Result<(std::path::PathBuf, String, String), String> {
+    let ui_root = resolve_ui_root()?;
+    let source_path = ui_root.join(spec.source_rel);
+    let bytes = std::fs::read(&source_path).map_err(|e| {
+        format!(
+            "ace-min: {} 源不可读（{}）: {e}",
+            spec.id,
+            source_path.display()
+        )
+    })?;
+    let digest = blake3_hex(&bytes);
+    if digest != spec.blake3 {
+        return Err(format!(
+            "ace-min: {} 源身份失配——blake3 期望 {} 实得 {}（来源变化使本候选失效；\
+             先具名修订注册表再重试）",
+            spec.id, spec.blake3, digest
+        ));
+    }
+    let source =
+        String::from_utf8(bytes).map_err(|_| format!("ace-min: {} 源非 UTF-8", spec.id))?;
+    Ok((source_path, digest, source))
+}
+
 /// 候选静态校验：engine/provider/instances/脚本界（不触源，纯逻辑）。
 fn validate_spec(c: &CandidateSpec) -> Result<(), String> {
     if c.engine != "av" && c.engine != "ace-av" {
@@ -328,26 +356,9 @@ mod imp {
         hold_ms: Option<u64>,
         evidence: Option<&str>,
     ) -> Result<serde_json::Value, String> {
-        // ---- 身份核（缺源/错 hash/错 SDK 具名拒，零副作用）----
+        // ---- 身份核（缺源/错 hash 具名拒——feature 无关纯逻辑层；零副作用）----
+        let (source_path, digest, source) = super::load_verified_source(spec)?;
         let ui_root = super::resolve_ui_root()?;
-        let source_path = ui_root.join(spec.source_rel);
-        let source = std::fs::read(&source_path).map_err(|e| {
-            format!(
-                "ace-min: {} 源不可读（{}）: {e}",
-                spec.id,
-                source_path.display()
-            )
-        })?;
-        let digest = super::blake3_hex(&source);
-        if digest != spec.blake3 {
-            return Err(format!(
-                "ace-min: {} 源身份失配——blake3 期望 {} 实得 {}（来源变化使本候选失效；\
-                 先具名修订注册表再重试）",
-                spec.id, spec.blake3, digest
-            ));
-        }
-        let source =
-            String::from_utf8(source).map_err(|_| format!("ace-min: {} 源非 UTF-8", spec.id))?;
 
         // ---- SDK 身份（ACE 宿主 + ui980 provider 注册/构建，幂等）----
         auto_lang_ace_host::install().map_err(|e| format!("ace-min: ace host install: {e}"))?;
@@ -716,103 +727,6 @@ mod imp {
         use super::super::*;
         use super::*;
 
-        #[test]
-        fn p064_candidate_registry_freeze_is_well_formed() {
-            assert_eq!(CANDIDATES.len(), 2, "A 最小只冻结 Hello 与 Counter");
-            let ids: Vec<_> = CANDIDATES.iter().map(|c| c.id).collect();
-            assert_eq!(
-                ids.len(),
-                std::collections::HashSet::<_>::from_iter(ids.iter().copied()).len(),
-                "稳定 id 须唯一"
-            );
-            for c in CANDIDATES {
-                validate_spec(c).unwrap_or_else(|e| panic!("{e}"));
-                assert_eq!(c.engine, "av");
-                assert_eq!(c.provider, "p980_ui980_native");
-                parse_script(c.script).unwrap_or_else(|e| panic!("{}: {e}", c.id));
-            }
-        }
-
-        #[test]
-        fn p064_blake3_known_vector() {
-            assert_eq!(
-                blake3_hex(b""),
-                "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
-            );
-        }
-
-        #[test]
-        fn p064_blake3_pins_match_frozen_sources() {
-            let root = resolve_ui_root().expect("auto-ui 根可达");
-            for c in CANDIDATES {
-                let bytes = std::fs::read(root.join(c.source_rel))
-                    .unwrap_or_else(|e| panic!("{}: {e}", c.source_rel));
-                let actual = blake3_hex(&bytes);
-                assert_eq!(actual, c.blake3, "{} 来源身份漂移——先具名修订注册表", c.id);
-            }
-        }
-
-        #[test]
-        fn p064_unknown_engine_refused() {
-            let mut c = CANDIDATES[0].clone();
-            let spec = CandidateSpec { engine: "vm", ..c };
-            let err = validate_spec(&spec).unwrap_err();
-            assert!(err.contains("非 ACE AV"), "{err}");
-            let _ = &mut c;
-        }
-
-        #[test]
-        fn p064_provider_mismatch_refused() {
-            let spec = CandidateSpec {
-                provider: "other_sdk",
-                ..CANDIDATES[0].clone()
-            };
-            let err = validate_spec(&spec).unwrap_err();
-            assert!(err.contains("SDK 身份"), "{err}");
-        }
-
-        #[test]
-        fn p064_instances_bound_refused() {
-            for n in [0usize, 5] {
-                let spec = CandidateSpec {
-                    instances: n,
-                    ..CANDIDATES[0].clone()
-                };
-                let err = validate_spec(&spec).unwrap_err();
-                assert!(err.contains("越界"), "{err}");
-            }
-        }
-
-        #[test]
-        fn p064_script_parser_accepts_and_refuses() {
-            let ok = parse_script("1:click:0:2, 2:close,3:late,4:reopen").unwrap();
-            assert_eq!(
-                ok,
-                vec![
-                    (1, ScriptKind::Click(0, 2)),
-                    (2, ScriptKind::Close),
-                    (3, ScriptKind::Late),
-                    (4, ScriptKind::Reopen),
-                ]
-            );
-            assert!(parse_script("0:click:0:0").is_err(), "tick 从 1");
-            assert!(parse_script("1:boom").is_err());
-            assert!(parse_script("1:click:0").is_err());
-            assert!(parse_script("x:close").is_err());
-        }
-
-        #[test]
-        fn p064_unknown_candidate_refused() {
-            let err = lookup_candidate("nope.app").unwrap_err();
-            assert!(err.contains("未注册候选"), "{err}");
-        }
-
-        #[test]
-        fn p064_cli_requires_id() {
-            let err = run_cli(&["ui-desktop".into()]).unwrap_err();
-            assert!(err.contains("缺 --ace-min"), "{err}");
-        }
-
         /// 双 App 同宿主进程：会话单调、关闭 session 不复活、业务不串
         /// （B-HOST-I 双App反例的进程内形态；跨进程形态见 tests/ace_min.rs）。
         #[test]
@@ -843,5 +757,138 @@ mod imp {
                 "counter 自 0 起轨不受 hello 影响"
             );
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 纯逻辑永久回归（feature 无关——T-01 冻结命令 `cargo test -p os-desktop`
+// 直跑；含 review P1 补齐的缺源/错 hash 具名拒负例，2026-11-17）
+// ---------------------------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn p064_candidate_registry_freeze_is_well_formed() {
+        assert_eq!(CANDIDATES.len(), 2, "A 最小只冻结 Hello 与 Counter");
+        let ids: Vec<_> = CANDIDATES.iter().map(|c| c.id).collect();
+        assert_eq!(
+            ids.len(),
+            std::collections::HashSet::<_>::from_iter(ids.iter().copied()).len(),
+            "稳定 id 须唯一"
+        );
+        for c in CANDIDATES {
+            validate_spec(c).unwrap_or_else(|e| panic!("{e}"));
+            assert_eq!(c.engine, "av");
+            assert_eq!(c.provider, "p980_ui980_native");
+            parse_script(c.script).unwrap_or_else(|e| panic!("{}: {e}", c.id));
+        }
+    }
+
+    #[test]
+    fn p064_blake3_known_vector() {
+        assert_eq!(
+            blake3_hex(b""),
+            "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+        );
+    }
+
+    #[test]
+    fn p064_blake3_pins_match_frozen_sources() {
+        let root = resolve_ui_root().expect("auto-ui 根可达");
+        for c in CANDIDATES {
+            let bytes = std::fs::read(root.join(c.source_rel))
+                .unwrap_or_else(|e| panic!("{}: {e}", c.source_rel));
+            let actual = blake3_hex(&bytes);
+            assert_eq!(actual, c.blake3, "{} 来源身份漂移——先具名修订注册表", c.id);
+        }
+    }
+
+    #[test]
+    fn p064_unknown_engine_refused() {
+        let spec = CandidateSpec {
+            engine: "vm",
+            ..CANDIDATES[0].clone()
+        };
+        let err = validate_spec(&spec).unwrap_err();
+        assert!(err.contains("非 ACE AV"), "{err}");
+    }
+
+    #[test]
+    fn p064_provider_mismatch_refused() {
+        let spec = CandidateSpec {
+            provider: "other_sdk",
+            ..CANDIDATES[0].clone()
+        };
+        let err = validate_spec(&spec).unwrap_err();
+        assert!(err.contains("SDK 身份"), "{err}");
+    }
+
+    #[test]
+    fn p064_instances_bound_refused() {
+        for n in [0usize, 5] {
+            let spec = CandidateSpec {
+                instances: n,
+                ..CANDIDATES[0].clone()
+            };
+            let err = validate_spec(&spec).unwrap_err();
+            assert!(err.contains("越界"), "{err}");
+        }
+    }
+
+    #[test]
+    fn p064_script_parser_accepts_and_refuses() {
+        let ok = parse_script("1:click:0:2, 2:close,3:late,4:reopen").unwrap();
+        assert_eq!(
+            ok,
+            vec![
+                (1, ScriptKind::Click(0, 2)),
+                (2, ScriptKind::Close),
+                (3, ScriptKind::Late),
+                (4, ScriptKind::Reopen),
+            ]
+        );
+        assert!(parse_script("0:click:0:0").is_err(), "tick 从 1");
+        assert!(parse_script("1:boom").is_err());
+        assert!(parse_script("1:click:0").is_err());
+        assert!(parse_script("x:close").is_err());
+    }
+
+    #[test]
+    fn p064_unknown_candidate_refused() {
+        let err = lookup_candidate("nope.app").unwrap_err();
+        assert!(err.contains("未注册候选"), "{err}");
+    }
+
+    #[test]
+    fn p064_cli_requires_id() {
+        let err = run_cli(&["ui-desktop".into()]).unwrap_err();
+        assert!(err.contains("缺 --ace-min"), "{err}");
+    }
+
+    /// review P1 负例：缺源（注册表指向不存在的源）→ 具名拒、不 launch。
+    #[test]
+    fn p064_missing_source_named_refusal() {
+        let spec = CandidateSpec {
+            source_rel: "examples/ui/no-such-candidate-dir/app.at",
+            ..CANDIDATES[0].clone()
+        };
+        let err = load_verified_source(&spec).unwrap_err();
+        assert!(err.contains("源不可读"), "{err}");
+        assert!(err.contains(spec.id), "{err}");
+    }
+
+    /// review P1 负例：错 hash（pin 与实际源失配）→ 具名拒、不 launch——
+    /// 身份门若被删/绕过，本例必红。
+    #[test]
+    fn p064_pin_mismatch_named_refusal() {
+        let spec = CandidateSpec {
+            blake3: "0000000000000000000000000000000000000000000000000000000000000000",
+            ..CANDIDATES[0].clone()
+        };
+        let err = load_verified_source(&spec).unwrap_err();
+        assert!(err.contains("源身份失配"), "{err}");
+        assert!(err.contains("先具名修订注册表"), "{err}");
     }
 }
