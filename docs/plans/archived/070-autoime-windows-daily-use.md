@@ -1,6 +1,6 @@
 ---
 plan_id: PLAN-070
-status: reviewed
+status: archived
 feature_name: AutoIME Windows 日常试用版
 author: [Codex]
 created_at: 2026-11-17
@@ -18,13 +18,13 @@ touched_goals: []
 
 ## 交付目标与依据
 
-在现有 Windows 11 x64 TSF 输入法上交付一套可日常使用的离线拼音方案。行为以 [Design 05](../design/05-autoime-windows.md) 为准。[PLAN-069](archived/069-autoime-windows-x64-tsf-preview.md) 已交付记事本上屏原型（代码 `94f1101`），构成本计划唯一且已满足的计划依赖。AutoOS 仓主导现有 Windows 原生实现；新版 AGE/ACE、Linux PLAN-062 以及 AutoUI 新功能均不在关键路径。
+在现有 Windows 11 x64 TSF 输入法上交付一套可日常使用的离线拼音方案。行为以 [Design 05](../../design/05-autoime-windows.md) 为准。[PLAN-069](069-autoime-windows-x64-tsf-preview.md) 已交付记事本上屏原型（代码 `94f1101`），构成本计划唯一且已满足的计划依赖。AutoOS 仓主导现有 Windows 原生实现；新版 AGE/ACE、Linux PLAN-062 以及 AutoUI 新功能均不在关键路径。
 
 069 的「甲你好乙」与双窗无串扰是回归基线。它们没有覆盖选中旧词后取消、重复 Test 回调、Shift 混输、非数字候选标签或新方案离线升级。已归档的 069 继续保留其原始验收结果。
 
 ## 执行步骤
 
-路径相对于 [Windows 原型目录](../../experimental/autoime/windows/README.md)。下列工作逐项记录改动版本、验证入口与结果。
+路径相对于 [Windows 原型目录](../../../experimental/autoime/windows/README.md)。下列工作逐项记录改动版本、验证入口与结果。
 
 | 步骤 | 实施面和操作 | 通过条件 |
 |---|---|---|
@@ -32,7 +32,7 @@ touched_goals: []
 | T-02 ✅ · 编辑会话 | 在 `ime/textservice.cpp` 记录原选区及恢复信息，维护焦点代次，处理宿主主动终止、写锁失败、异步失效与部分提交；富文本采用设计中的可逆路径。 | 对「甲旧词乙」选中「旧词」后输入并取消，正文、选区恢复；确认「你好」只替换一次。A 切 B 时预编辑无串写，宿主接管后的旧回调不改正文；含 emoji 的前后缀保持完整。 |
 | T-03 ✅ · 方案与候选窗 | 新增 `autoime_pinyin` 方案及通用中文、项目、中英、显式短语等资源；登记实际依赖、版本、校验值和来源。扩展引擎快照，在 `ime/candidate_window.cpp` 消费真实标签、页内索引和页版本；修正 `GetTextExt` 输出参数，验证缩放与回退。 | 在临时用户目录回读新会话的方案 ID；回放 nh、nih、nihao、项目词、中英混输及自定义短语增删。选词与所示标签一致，过期点击无效。基础方案离线工作，既有显式方案选择及朙月回退均可用。 |
 | T-04 ✅ · 部署与恢复 | 更新 `scripts/install.cmd`、`scripts/uninstall.cmd` 和引擎加载路径，分离首次部署和首键处理。候选资源编译成功后切换版本，失败保留最近可用版本；处理双宿主同时冷启及已加载旧 DLL。 | 从全新测试用户目录做离线冷启；分别验证资源损坏回退、引擎完全不可用时键盘直通、升级后用户短语和学习数据保留。记录首次部署时间和就绪后按键到候选延迟的中位数、P95。 |
-| T-05 ✅ · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
+| T-05 ✅ · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
 
 ## 验证方式和范围
 
@@ -219,12 +219,14 @@ stage: review | review_scope: final | reviewer_identity: 独立复-review 子代
 
 stage: goal | plan_id: PLAN-070 | plan_revision: r2 | round: 7 | from: review | to: merge | status: reviewed | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: fae70a2 | next: merge
 
+stage: merge | plan_id: PLAN-070 | plan_revision: r2 | outcome: pass（landed · canonical_verified · archived；cleaned 随后补记）| delivery_commit: 518f96c（main ff-only，无 merge commit）| reviewed_commit: fae70a2（review pass @ b6890a2）| rebase_mapping: fae70a2→518f96c，`git range-diff 61237ba..fae70a2 b6890a2..518f96c` 6/6 全等 | canonical_spec_paths: 无（空影响：交付仅 experimental/autoime/windows 原型与 docs/design/05 r2；仓库无 Windows IME 的 docs/specs 组件，沿 069 先例；无 specs.json 写入）| archive_path: docs/plans/archived/070-autoime-windows-daily-use.md | deployment_observation: 安装目录 AutoIME 0.1.0.0 已是本计划 r2 构建（MSVC link 非逐字节可复现，sha256 ACFC00F0…8F17），未触发 release/打包或服务重启 | batch_regression: AUTO-OS 有 .last-batch-regression.json（last_covered_plan_id=69 @2026-11-16T21:30Z，command=check-app-submodules + verify-app-links）；本计划 id 70 可被 5 整除且晚于 69 → **due**，清理后交 /auto-plan:regress 单实例执行 | test_scopes: fixture 17 cases/146 checks 6.7ms；probe 10 用例（deploy≈3.0s，最慢 134ms）；T-04 32 checks（D 4036ms/E 3612ms，suite 18504ms）；宿主 t06 复用（记事本 A/B/G、Edge A/B/C）；无新增 >10s 用例
+
 ## 待澄清事项
 
 - **（待测，非阻塞）AutoEdit 兼容复验**：T-05 验收时 AutoOS 桌面/AutoEdit
   未运行（仅有 `auto-ui-tool` 进程、无 AutoEdit 窗口），按计划记待测、不计作
   通过。复验入口：启动 AutoOS 桌面并打开
-  [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md)，重复
+  [041 AutoEdit](../../../../auto-ui/examples/ui/041-auto-edit/README.md)，重复
   选区替换/取消、中英混输与半截拼音切焦；AutoIME 自身缺陷另立修复。
 - 人工手感（候选窗视觉、点击选词、缩放）建议由用户在最终验收时确认；本计划
   已用宿主真实输入链验证功能，不替代主观手感。
