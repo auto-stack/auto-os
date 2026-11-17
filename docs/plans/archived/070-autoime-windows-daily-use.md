@@ -237,3 +237,5 @@ stage: merge | plan_id: PLAN-070 | plan_revision: r2 | outcome: pass（landed ·
 - **P070-R2..R5（informational）**：Design 05 补“TSF 不提供终止原因”一句；README
   计数/时长；回滚选择性清理补依赖方案文件并验证依赖损坏路径；merge 时为空的规范增量
   写明“experimental 原型、无 docs/specs 目标”的理由。以上均不阻塞交付。
+
+batch regression（2026-11-17，due run on main @359b7fa → receipt @da19396）：`check-app-submodules.ps1` exit 1（manifest 27 条全部未初始化，属宿主/组合检出状态，`git diff fd40a5e..HEAD -- apps .gitmodules apps.manifest` 为空，无 PLAN-070 归属；修复=git submodule update --init --recursive，owner=user/combo checkout）＋ `verify-app-links.py` exit 1（已知 VERIFY-APP-LINKS-STALE，身份不变）。回执 `docs/plans/.last-batch-regression.json`（covered 70）。
