@@ -1,13 +1,13 @@
 ---
 plan_id: PLAN-070
-status: executing
+status: execution_done
 feature_name: AutoIME Windows 日常试用版
 author: [Codex]
 created_at: 2026-11-17
 updated_at: 2026-11-17
 plan_revision: 1
 depends_on: [PLAN-069]
-current_step: 4
+current_step: 5
 total_steps: 5
 supersedes_spec_components: []
 new_spec_components: []
@@ -32,7 +32,7 @@ touched_goals: []
 | T-02 ✅ · 编辑会话 | 在 `ime/textservice.cpp` 记录原选区及恢复信息，维护焦点代次，处理宿主主动终止、写锁失败、异步失效与部分提交；富文本采用设计中的可逆路径。 | 对「甲旧词乙」选中「旧词」后输入并取消，正文、选区恢复；确认「你好」只替换一次。A 切 B 时预编辑无串写，宿主接管后的旧回调不改正文；含 emoji 的前后缀保持完整。 |
 | T-03 ✅ · 方案与候选窗 | 新增 `autoime_pinyin` 方案及通用中文、项目、中英、显式短语等资源；登记实际依赖、版本、校验值和来源。扩展引擎快照，在 `ime/candidate_window.cpp` 消费真实标签、页内索引和页版本；修正 `GetTextExt` 输出参数，验证缩放与回退。 | 在临时用户目录回读新会话的方案 ID；回放 nh、nih、nihao、项目词、中英混输及自定义短语增删。选词与所示标签一致，过期点击无效。基础方案离线工作，既有显式方案选择及朙月回退均可用。 |
 | T-04 ✅ · 部署与恢复 | 更新 `scripts/install.cmd`、`scripts/uninstall.cmd` 和引擎加载路径，分离首次部署和首键处理。候选资源编译成功后切换版本，失败保留最近可用版本；处理双宿主同时冷启及已加载旧 DLL。 | 从全新测试用户目录做离线冷启；分别验证资源损坏回退、引擎完全不可用时键盘直通、升级后用户短语和学习数据保留。记录首次部署时间和就绪后按键到候选延迟的中位数、P95。 |
-| T-05 · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
+| T-05 ✅ · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
 
 ## 验证方式和范围
 
@@ -107,6 +107,30 @@ touched_goals: []
   `deploy-measure.log`
   （sha256 `08C8F18E54CB514A9AFE0416328BA23C8BBE4B3F1DD84C3C35141A1E221A7A18`）。
 
+- **T-05 ✅（2026-11-17，交付构建=安装目录 DLL，code `268611d`；AutoEdit 单列
+  待测）** 验收脚本先判定目标窗口当前 TIP：起一段组合并枚举宿主进程是否出现
+  AutoIME 自带候选窗类 `AutoIMECandidateWindow`（小狼毫不产生该窗口），判定
+  失败即中止、不向其他窗口发键；此前的误判（实际是小狼毫）已由此校验纠正。
+  记事本（WinUI）：选区替换「甲旧词乙」→「甲你好乙」；Esc 取消恢复原文；
+  emoji 前后缀「甲😀你好乙」；`autoos`/`ros`/`tsf` 首候选分别上屏
+  AutoOS/ROS 2/TSF；半截拼音 `ni` 切窗后在另一窗提交 `好`，旧窗无串写且
+  预编辑被清空；单击 Shift 切英文后 `abc` 直通，Ctrl+S 由宿主打开“另存为”、
+  Esc 关闭后正文不变。浏览器（Edge/Chromium）：替换、取消（宿主终止组合时
+  按保存的原选区回写）、`tsf`→`TSF` 均通过。候选窗为纵向原生窗口，按引擎
+  标签与每显示器 DPI（本次 192）绘制、随光标移动，日志含每页标签与矩形。
+  **AutoEdit 待测**：验收时 AutoOS 桌面/AutoEdit 未运行（仅有 `auto-ui-tool`
+  进程、无 AutoEdit 窗口），故不计作通过；复验入口=启动 AutoOS 桌面并打开
+  041 AutoEdit，重复替换/取消、中英混输与半截拼音切焦。
+  证据：`plan-artifacts/plan-070/t05/notepad-verified-2.log`
+  （sha256 `66E61E3B0C4D04F05B8F9AB77B3354E19B164CEB1D1066A6E03584A61BAEA880`）、
+  `edge-verified.log`
+  （sha256 `C8EBCE15FC8491142346DD1B33424B621A5B3BD70A348B4FD3D47B8F905C3720`）、
+  `shortcut-autoedit.log`
+  （sha256 `BE7BD6A98D4D621B8A65DA8298C1D28491F918BDDB591BC6D1CCD2EF7815EBBF`）、
+  `t04-final.log`
+  （sha256 `CC1B7DF34F8A7BA07D1F8583222C3136E98C46EB7D6E745C51B76BF9BD7EB97D`）。
+  回归：fixture 136 checks、probe 10 用例、T-04 套件 32 checks 全过。
+
 stage: work | plan_id: PLAN-070 | plan_revision: r1 | outcome: pass（T-01 完成，T-02..T-05 续）| worktree_path: D:/autostack/.wt/os-070/auto-os | branch: plan-070-dev | base_commit: 61237ba | code_commit: b130c61 | dependency_revisions: rime.dll=librime 1.13.1 (Weasel 0.17.4, 系统安装未改动) | task_ids: T-01 | evidence: D:/autostack/plan-artifacts/plan-070/t01/fixture.log (sha256 2D645C67…F2FE) | blockers: 无 | next_responsible_role: work (T-02 编辑会话、T-03 方案/候选、T-04 部署)
 
 stage: goal | plan_id: PLAN-070 | plan_revision: r1 | round: 1 | from: work | to: work | status: executing | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: b130c61 | next: work
@@ -118,3 +142,17 @@ stage: goal | plan_id: PLAN-070 | plan_revision: r1 | round: 2 | from: work | to
 stage: work | plan_id: PLAN-070 | plan_revision: r1 | outcome: pass（T-04 完成；T-05 待人工验收）| worktree_path: D:/autostack/.wt/os-070/auto-os | branch: plan-070-dev | base_commit: 61237ba | code_commit: b1ab2a5 | dependency_revisions: rime.dll=librime 1.13.1 (Weasel 0.17.4, 系统安装未改动) | task_ids: T-04 | evidence: D:/autostack/plan-artifacts/plan-070/t04/run-t04-3.log (32 checks, sha256 B00AD90D…BCAC), deploy-measure.log (deploy 2870ms, median 149us/P95 164us) | blockers: 无（T-05 需管理员安装新构建并在真实宿主键入）| next_responsible_role: work (T-05 安装与三宿主验收)
 
 stage: goal | plan_id: PLAN-070 | plan_revision: r1 | round: 3 | from: work | to: work | status: executing | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: b1ab2a5 | next: work
+
+stage: work | plan_id: PLAN-070 | plan_revision: r1 | outcome: pass（T-01..T-05 完成；AutoEdit 单列待测，非阻塞）| worktree_path: D:/autostack/.wt/os-070/auto-os | branch: plan-070-dev | base_commit: 61237ba | code_commit: 268611d | dependency_revisions: rime.dll=librime 1.13.1 (Weasel 0.17.4, 系统安装未改动) | task_ids: T-01..T-05 | evidence: plan-artifacts/plan-070/{t01/fixture,t02-fixture,t03/probe-t03-final,t04/run-t04-3,t05/{notepad-verified-2,edge-verified,shortcut-autoedit,t04-final}}.log | blockers: 无（AutoEdit 宿主未运行→待测，复验入口见待澄清事项）| next_responsible_role: review
+
+stage: goal | plan_id: PLAN-070 | plan_revision: r1 | round: 4 | from: work | to: review | status: execution_done | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: 268611d | next: review
+
+## 待澄清事项
+
+- **（待测，非阻塞）AutoEdit 兼容复验**：T-05 验收时 AutoOS 桌面/AutoEdit
+  未运行（仅有 `auto-ui-tool` 进程、无 AutoEdit 窗口），按计划记待测、不计作
+  通过。复验入口：启动 AutoOS 桌面并打开
+  [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md)，重复
+  选区替换/取消、中英混输与半截拼音切焦；AutoIME 自身缺陷另立修复。
+- 人工手感（候选窗视觉、点击选词、缩放）建议由用户在最终验收时确认；本计划
+  已用宿主真实输入链验证功能，不替代主观手感。
