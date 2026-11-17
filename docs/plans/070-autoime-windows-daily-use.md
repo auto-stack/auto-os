@@ -1,13 +1,13 @@
 ---
 plan_id: PLAN-070
-status: executing
+status: execution_done
 feature_name: AutoIME Windows 日常试用版
 author: [Codex]
 created_at: 2026-11-17
 updated_at: 2026-11-17
-plan_revision: 1
+plan_revision: 2
 depends_on: [PLAN-069]
-current_step: 0
+current_step: 5
 total_steps: 5
 supersedes_spec_components: []
 new_spec_components: []
@@ -28,11 +28,11 @@ touched_goals: []
 
 | 步骤 | 实施面和操作 | 通过条件 |
 |---|---|---|
-| T-01 · 隐私与按键 | 在 `ime/dllmain.cpp`、`ime/textservice.cpp`、`ime/ime.h` 移除输入内容诊断，处理 TSF 探询、实际派发、重复消息和修饰键。在 `ime/rime_engine.{h,cpp}` 传入真实修饰状态。 | 自动重放 Test→Test→Down、仅 Down、长按与失焦迟到事件；每个有效键只产生预期次数的操作。Shift 单击切模式、Shift＋字母保留大小写，Ctrl+S 由宿主处理。敏感输入直通，无学习或候选；诊断中无键码序列、预编辑、选区或提交正文。 |
-| T-02 · 编辑会话 | 在 `ime/textservice.cpp` 记录原选区及恢复信息，维护焦点代次，处理宿主主动终止、写锁失败、异步失效与部分提交；富文本采用设计中的可逆路径。 | 对「甲旧词乙」选中「旧词」后输入并取消，正文、选区恢复；确认「你好」只替换一次。A 切 B 时预编辑无串写，宿主接管后的旧回调不改正文；含 emoji 的前后缀保持完整。 |
-| T-03 · 方案与候选窗 | 新增 `autoime_pinyin` 方案及通用中文、项目、中英、显式短语等资源；登记实际依赖、版本、校验值和来源。扩展引擎快照，在 `ime/candidate_window.cpp` 消费真实标签、页内索引和页版本；修正 `GetTextExt` 输出参数，验证缩放与回退。 | 在临时用户目录回读新会话的方案 ID；回放 nh、nih、nihao、项目词、中英混输及自定义短语增删。选词与所示标签一致，过期点击无效。基础方案离线工作，既有显式方案选择及朙月回退均可用。 |
-| T-04 · 部署与恢复 | 更新 `scripts/install.cmd`、`scripts/uninstall.cmd` 和引擎加载路径，分离首次部署和首键处理。候选资源编译成功后切换版本，失败保留最近可用版本；处理双宿主同时冷启及已加载旧 DLL。 | 从全新测试用户目录做离线冷启；分别验证资源损坏回退、引擎完全不可用时键盘直通、升级后用户短语和学习数据保留。记录首次部署时间和就绪后按键到候选延迟的中位数、P95。 |
-| T-05 · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
+| T-01 ✅ · 隐私与按键 | 在 `ime/dllmain.cpp`、`ime/textservice.cpp`、`ime/ime.h` 移除输入内容诊断，处理 TSF 探询、实际派发、重复消息和修饰键。在 `ime/rime_engine.{h,cpp}` 传入真实修饰状态。 | 自动重放 Test→Test→Down、仅 Down、长按与失焦迟到事件；每个有效键只产生预期次数的操作。Shift 单击切模式、Shift＋字母保留大小写，Ctrl+S 由宿主处理。敏感输入直通，无学习或候选；诊断中无键码序列、预编辑、选区或提交正文。 |
+| T-02 ✅ · 编辑会话 | 在 `ime/textservice.cpp` 记录原选区及恢复信息，维护焦点代次，处理宿主主动终止、写锁失败、异步失效与部分提交；富文本采用设计中的可逆路径。 | 对「甲旧词乙」选中「旧词」后输入并取消，正文、选区恢复；确认「你好」只替换一次。A 切 B 时预编辑无串写，宿主接管后的旧回调不改正文；含 emoji 的前后缀保持完整。 |
+| T-03 ✅ · 方案与候选窗 | 新增 `autoime_pinyin` 方案及通用中文、项目、中英、显式短语等资源；登记实际依赖、版本、校验值和来源。扩展引擎快照，在 `ime/candidate_window.cpp` 消费真实标签、页内索引和页版本；修正 `GetTextExt` 输出参数，验证缩放与回退。 | 在临时用户目录回读新会话的方案 ID；回放 nh、nih、nihao、项目词、中英混输及自定义短语增删。选词与所示标签一致，过期点击无效。基础方案离线工作，既有显式方案选择及朙月回退均可用。 |
+| T-04 ✅ · 部署与恢复 | 更新 `scripts/install.cmd`、`scripts/uninstall.cmd` 和引擎加载路径，分离首次部署和首键处理。候选资源编译成功后切换版本，失败保留最近可用版本；处理双宿主同时冷启及已加载旧 DLL。 | 从全新测试用户目录做离线冷启；分别验证资源损坏回退、引擎完全不可用时键盘直通、升级后用户短语和学习数据保留。记录首次部署时间和就绪后按键到候选延迟的中位数、P95。 |
+| T-05 ✅ · 集成人工验收 | 用同一交付构建在记事本、浏览器文本框与 [041 AutoEdit](../../../auto-ui/examples/ui/041-auto-edit/README.md) 完成一轮真实键入。更新原型 README 的构建、部署、恢复说明，附合成用例和实际结果。 | 三宿主分别记录选区替换与取消、快捷键、中英混输、半截拼音切焦和候选跟随。AutoEdit 如确因宿主不可用，记待测原因及复验入口，不能计作通过；可复现的 AutoIME 自身缺陷在本计划修复。 |
 
 ## 验证方式和范围
 
@@ -163,9 +163,47 @@ stage: review | review_scope: final | reviewer_identity: 独立子代理 reviewe
 
 stage: goal | plan_id: PLAN-070 | plan_revision: r1 | round: 5 | from: review | to: work | status: executing | outcome: needs_fix | worktree: D:/autostack/.wt/os-070/auto-os | commit: 268611d | next: work
 
+### r2 修复与复验（2026-11-17，code `fae70a2`，plan r2 / Design 05 r2）
+
+- **F1 ✅ 测试纪律**：`ime/test.cmd` 只运行预构建夹具，缺件时具名报错
+  `preparation missing` 并 exit 2（实测），不再内嵌 `build.cmd`；准备步骤=
+  `ime/build.cmd`。fixture 输出每例耗时并汇总（17 cases/146 checks，
+  总 7.3ms，最慢 diagnostics 7.6ms）；probe 的 RESULT 也带每例 ms
+  （10 用例，最慢 t8 134ms）。无新增 >10s 用例。
+- **F2 ✅ 契约调和**：Design 05 → r2，§4.2 增加“有界例外”——仅当宿主在
+  取消/切窗时终止组合且仍持有原选区快照时，经终止 `ecWrite` 与仍有效的
+  origin range 回写，折叠路径带内容守卫；不得按历史偏移回写或跨上下文。
+  计划 r2 记录该修订。
+- **F3 ✅ 预编辑位置**：引擎快照新增 `preedit_utf16/preedit_cursor/
+  preedit_sel_start/preedit_sel_end`（UTF-16，含代理对换算）；组合光标/选区
+  跟随 `RimeComposition.cursor_pos/sel_*`，不再恒在末尾；换算函数抽到
+  `edit_model` 并由夹具 `offset_mapping` 覆盖（ASCII、甲😀乙、越界、空串）。
+- **F4 ✅ 候选窗**：显示预编辑行（候选行下移、点击索引扣减），字体按窗口 DPI
+  重建，候选可见时每 250ms 重查光标并重定位；README 的缩放/重定位描述同步更正。
+- **F5 ✅ 安装校验**：`verify_registered` 增加 InprocServer32 路径/文件/版本与
+  期望路径比对（正例 exit 0、错误期望 exit 4），`autoime.rc` 增加 0.1.0.0
+  版本资源；安装脚本复制并调用它，失败 exit 4；卸载删除该工具。实测安装输出
+  `version=0.1.0.0 path_matches_expected=1`。
+- **F6 ✅ 恢复余量**：回滚只丢弃 AutoIME 自身编译产物、保留朙月/共享表复用；
+  T-04 D/E 从 9.3/9.5s 降到 4.0/3.9s（全 32 checks 通过，套件 19.0s）。
+- **F7/F8/F9**：F7 为测量差异，记录不改断言；F8 注释与 README 时长已更正；
+  F9 敏感直通/写锁/过期点击仍以代码+夹具为证，保留为待测项。
+- **回归**：fixture 17/146 ✅（7.3ms）、probe 10/10 ✅（每例 ≤134ms）、
+  T-04 32/32 ✅（A 3.2s/B 0.6s/D 4.0s/E 3.9s/F 3.2s/G 4.1s）。
+- **宿主复验（安装构建 0.1.0.0）**：记事本 A/B/G、autoos/ros/tsf 首候选、
+  半截拼音切窗后旧窗清空；Edge 新进程 A/B/C 全过；候选窗结构日志
+  `ped=1 dpi=192` 且矩形随光标变化（`host-candidate.log`）。
+- 证据（sha256）：`t06/fixture-final.log` `D2B7035D…05EC`、
+  `t06/probe-final.log` `3510A19C…E2A1`、`t06/t04-r2.log` `04B818D2…3775`、
+  `t06/notepad-r2.log` `0D528CE0…7E81`、`t06/edge-r2.log` `9A4E9AB6…F792`、
+  `t06/host-candidate.log` `E9AB8BC7…9D67`、`t06/install-4.log` `A7B3CDD5…BB19`。
+
+stage: work | plan_id: PLAN-070 | plan_revision: r2 | outcome: pass（F1–F6 修复，F7–F9 记录/待测）| worktree_path: D:/autostack/.wt/os-070/auto-os | branch: plan-070-dev | base_commit: 61237ba | code_commit: fae70a2 | dependency_revisions: rime.dll=librime 1.13.1 (Weasel 0.17.4) | task_ids: T-01..T-05 | evidence: D:/autostack/plan-artifacts/plan-070/t06/{fixture-final,probe-final,t04-r2,notepad-r2,edge-r2,host-candidate,install-4}.log | blockers: 无（AutoEdit 仍待宿主可用）| next_responsible_role: review
+
+stage: goal | plan_id: PLAN-070 | plan_revision: r2 | round: 6 | from: work | to: review | status: execution_done | outcome: pass | worktree: D:/autostack/.wt/os-070/auto-os | commit: fae70a2 | next: review
+
 ## 待澄清事项
 
-- **（work 修复中）复审 F1–F5**：F1 测试前置拆分与每例计时；F2 Design 05 §4.2 有界例外并在计划 r2 记录；F3 预编辑光标/选区跟随；F4 候选窗预编辑行、字体 DPI 与重定位；F5 安装调用注册校验。完成后仅复验受影响项。
 - **（待测，非阻塞）AutoEdit 兼容复验**：T-05 验收时 AutoOS 桌面/AutoEdit
   未运行（仅有 `auto-ui-tool` 进程、无 AutoEdit 窗口），按计划记待测、不计作
   通过。复验入口：启动 AutoOS 桌面并打开
