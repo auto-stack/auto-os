@@ -123,7 +123,7 @@ void RimeEngine::WriteDefaultCustomYaml() const {
       std::fclose(f);
     }
   }
-  if (!existing.empty() && existing.find("# AutoIME (PLAN-070)") != 0) return;
+  if (!existing.empty() && existing.find("# AutoIME") != 0) return;
   FILE* f = std::fopen(custom.c_str(), "wb");
   if (!f) return;
   std::fprintf(f,
@@ -165,6 +165,10 @@ bool RimeEngine::ValidateSchema(const std::string& expected,
   if (!api_ || !RIME_PROVIDED(api_, get_status)) return false;
   const RimeSessionId session = api_->create_session();
   if (!session) return false;
+  // Validate the named schema itself, independent of the user's previous
+  // explicit selection (which is preserved for the runtime sessions).
+  if (RIME_PROVIDED(api_, select_schema))
+    api_->select_schema(session, expected.c_str());
   std::string id, name;
   RIME_STRUCT(RimeStatus, status);
   if (api_->get_status(session, &status)) {

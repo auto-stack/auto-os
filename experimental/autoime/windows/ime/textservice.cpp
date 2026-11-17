@@ -778,12 +778,76 @@ STDMETHODIMP CTextService::OnPreservedKey(ITfContext*, REFGUID,
   return S_OK;
 }
 
+void CTextService::RestoreTerminatedOrigin(TfEditCookie ec) {
+  if (!origin_.range) {
+    ReleaseOrigin();
+    return;
+  }
+  ITfContext* ctx = active_ctx_ ? active_ctx_ : current_ctx_;
+  if (!ctx) {
+    ReleaseOrigin();
+    return;
+  }
+  if (origin_.text.empty() && !origin_.had_selection) {
+    // A collapsed insertion: the host may have left the last pre-edit spelling
+    // in the document. Remove it only when the document still contains exactly
+    // that spelling at the origin, then park the caret there.
+    ITfRange* span = nullptr;
+    if (SUCCEEDED(origin_.range->Clone(&span)) && span) {
+      LONG shifted = 0;
+      if (!composition_text_.empty() &&
+          SUCCEEDED(span->ShiftEnd(
+              ec, static_cast<LONG>(composition_text_.size()), &shifted, nullptr))) {
+        std::wstring existing;
+        if (ReadRangeText(ec, span, &existing) &&
+            existing == composition_text_) {
+          span->SetText(ec, 0, L"", 0);
+          diag::Event("composition", "removed_late_preedit");
+        }
+      }
+      span->Release();
+    }
+    ITfRange* caret = nullptr;
+    if (SUCCEEDED(origin_.range->Clone(&caret)) && caret) {
+      caret->Collapse(ec, TF_ANCHOR_START);
+      TF_SELECTION selection{};
+      selection.range = caret;
+      selection.style.ase = TF_AE_END;
+      selection.style.fInterimChar = FALSE;
+      if (FAILED(ctx->SetSelection(ec, 1, &selection))) caret->Release();
+    }
+    ReleaseOrigin();
+    return;
+  }
+  const HRESULT hr =
+      origin_.range->SetText(ec, 0, origin_.text.c_str(),
+                             static_cast<LONG>(origin_.text.size()));
+  if (SUCCEEDED(hr)) {
+    ITfRange* restored = nullptr;
+    if (SUCCEEDED(origin_.range->Clone(&restored)) && restored) {
+      if (!origin_.had_selection) restored->Collapse(ec, TF_ANCHOR_START);
+      TF_SELECTION selection{};
+      selection.range = restored;
+      selection.style.ase = TF_AE_END;
+      selection.style.fInterimChar = FALSE;
+      if (FAILED(ctx->SetSelection(ec, 1, &selection))) restored->Release();
+    }
+    diag::Event("composition", "restored_after_termination");
+  } else {
+    diag::Failure("restore_terminated", hr);
+  }
+  ReleaseOrigin();
+}
+
 STDMETHODIMP CTextService::OnCompositionTerminated(
-    TfEditCookie, ITfComposition* pComposition) {
+    TfEditCookie ecWrite, ITfComposition* pComposition) {
   ImeLog("OnCompositionTerminated");
-  // The host (or another service) ended the composition. Whatever the host
-  // already did to the document is authoritative: only release our state and
-  // retire the generation so late callbacks cannot write into the old target.
+  // The host ended the composition. Write the saved original text/selection
+  // back through the termination cookie first: Chromium/Edge deletes the
+  // selection when the composition starts, so a cancel there would otherwise
+  // lose the original text. Then release state and retire the generation so
+  // late callbacks cannot write into the old target.
+  RestoreTerminatedOrigin(ecWrite);
   if (composition_) {
     composition_->Release();
     composition_ = nullptr;

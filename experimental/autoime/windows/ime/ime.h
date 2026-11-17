@@ -125,6 +125,9 @@ class CTextService final : public ITfTextInputProcessor,
   // started (cancel path). Keeps the composition alive when the host refuses
   // the write so the user's pre-edit is never silently rewritten elsewhere.
   HRESULT RestoreComposition(ITfContext* pic);
+  // Restores the saved origin when the host terminated the composition, using
+  // the termination edit cookie (no reversible path is available there).
+  void RestoreTerminatedOrigin(TfEditCookie ec);
   void ReleaseOrigin();
   void RefreshCandidateWindow(ITfContext* pic);
   void SelectCandidate(int page_index, uint64_t version);

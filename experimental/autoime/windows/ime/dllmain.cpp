@@ -24,7 +24,7 @@ void AutoIMELockServer(BOOL fLock) {
 void ImeLog(const char* fmt, ...) {
   char path[MAX_PATH];
   if (GetTempPathA(MAX_PATH, path) == 0) return;
-  if (strcat_s(path, "autoime-ime.log") != 0) return;
+  if (strcat_s(path, "autoime-host.log") != 0) return;
   HANDLE file = CreateFileA(path, FILE_APPEND_DATA, FILE_SHARE_READ |
                             FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS,
                             FILE_ATTRIBUTE_NORMAL, nullptr);

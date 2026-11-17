@@ -97,6 +97,22 @@ scripts\uninstall.cmd --purge  :: 同时删除 %LOCALAPPDATA%\AutoIME
 选区或提交正文。敏感输入范围（密码框等）与宿主禁用 IME 时整键直通，
 不建立学习会话，不显示候选。原型的明文日志位置与清理入口见上。
 
+## 集成验收记录（2026-11-17，交付构建 = 安装目录 `autoime_ime.dll`）
+
+每个场景开始前先做 TIP 判定：在目标窗口起一段组合，枚举宿主进程中是否
+出现 AutoIME 自带候选窗类 `AutoIMECandidateWindow`；小狼毫不产生该窗口，
+因此可区分两者。判定失败时脚本中止，不向其他窗口发送按键。
+
+| 宿主 | 结果 | 证据 |
+|---|---|---|
+| 记事本（WinUI） | 选区替换「甲旧词乙」→「甲你好乙」；Esc 取消恢复「甲旧词乙」；emoji 前缀/后缀「甲😀你好乙」；`autoos`→`AutoOS`、`ros`→`ROS 2`、`tsf`→`TSF`；半截拼音 `ni` 切到另一窗口提交 `好`，旧窗无串写且预编辑被清空；单击 Shift 切英文后 `abc` 直通，Ctrl+S 打开宿主“另存为”对话框、Esc 关闭后正文不变 | `plan-artifacts/plan-070/t05/notepad-verified-2.log` |
+| 浏览器文本框（Edge/Chromium） | 选区替换「甲旧词乙」→「甲你好乙」；Esc 取消恢复「甲旧词乙」（宿主终止组合时按保存的原选区回写）；`tsf`→`TSF` | `plan-artifacts/plan-070/t05/edge-verified.log` |
+| 041 AutoEdit | **待测**：验收时 AutoOS 桌面/AutoEdit 未运行（仅有 `auto-ui-tool` 进程，无 AutoEdit 窗口），不能计作通过。复验入口：启动 AutoOS 桌面并打开 041 AutoEdit，重复上面的选区替换/取消、中英混输与半截拼音切焦 | — |
+
+候选窗：纵向原生 Win32 窗口（非小狼毫横向候选条），按引擎标签显示
+1–5，`GetTextExt` 成功且随光标移动；日志记录每显示器 DPI（本次 192）与
+窗口矩形，翻页/缩放后重新定位。手感与视觉最终由用户确认。
+
 ## 探针（词库层）
 
 ```cmd
