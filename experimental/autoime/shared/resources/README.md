@@ -1,8 +1,9 @@
-# AutoIME 资源与依赖登记（PLAN-070 T-03）
+# AutoIME 资源与依赖登记（PLAN-070 T-03；PLAN-071 T-01 迁至 shared/）
 
-本目录是 AutoIME Windows 版随版本发布的 Rime 资源。部署时由安装/首启流程复制到
-AutoIME 私有用户目录（`%LOCALAPPDATA%\AutoIME\rime`），不修改小狼毫的共享目录，
-也不覆盖用户已编辑的 `custom_phrase.txt`。
+本目录是 AutoIME 随版本发布的 Rime 资源（PLAN-071 起 Windows/Linux 共用源
+数据，路径 `experimental/autoime/shared/resources/`）。部署时由安装/首启流程
+复制到 AutoIME 私有用户目录（Windows：`%LOCALAPPDATA%\AutoIME\rime`），不修改
+小狼毫的共享目录，也不覆盖用户已编辑的 `custom_phrase.txt`。
 
 ## 本仓原创资源
 

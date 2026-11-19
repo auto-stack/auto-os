@@ -64,21 +64,32 @@ std::string RimeEngine::EnvOr(const char* env, const std::string& fallback) {
 }
 
 bool RimeEngine::LoadDll(std::string* error) {
-  // Resolution order: env override -> registry WeaselRoot -> error.
+  // PLAN-071 T-02 engine resolution. Release mode resolves from the install
+  // directory (rime.dll + data\ sit next to the IME DLL / deploy tool), so
+  // the offline installer never touches the registry. Order:
+  //   1. env overrides (dev/headless runs)
+  //   2. <module_dir>\rime.dll + <module_dir>\data  (installed package)
+  //   3. registry WeaselRoot (dev machine with an installed Weasel)
+  //   4. error -> keyboard pass-through (caller decides)
   std::string weasel_root = ReadRegistryWeaselRoot();
-  dll_path_ = EnvOr("AUTOIME_RIME_DLL",
-                    weasel_root.empty() ? std::string()
-                                        : JoinPath(weasel_root, "rime.dll"));
-  shared_data_dir_ = EnvOr("AUTOIME_RIME_SHARED_DATA_DIR",
-                           weasel_root.empty() ? std::string()
-                                               : JoinPath(weasel_root, "data"));
+  std::string default_dll, default_shared;
+  if (!module_dir_.empty() &&
+      FileExists(JoinPath(module_dir_, "rime.dll"))) {
+    default_dll = JoinPath(module_dir_, "rime.dll");
+    default_shared = JoinPath(module_dir_, "data");
+  } else if (!weasel_root.empty()) {
+    default_dll = JoinPath(weasel_root, "rime.dll");
+    default_shared = JoinPath(weasel_root, "data");
+  }
+  dll_path_ = EnvOr("AUTOIME_RIME_DLL", default_dll);
+  shared_data_dir_ = EnvOr("AUTOIME_RIME_SHARED_DATA_DIR", default_shared);
   if (!dll_path_.empty() && !FileExists(dll_path_)) {
     *error = "rime.dll not found: " + dll_path_;
     return false;
   }
   if (dll_path_.empty() || shared_data_dir_.empty()) {
-    *error = "Weasel not found (registry WeaselRoot missing); set "
-             "AUTOIME_RIME_DLL and AUTOIME_RIME_SHARED_DATA_DIR";
+    *error = "engine not found: no AUTOIME_RIME_DLL, no <module_dir>\\rime.dll, "
+             "and no registry WeaselRoot";
     return false;
   }
   module_ = LoadLibraryA(dll_path_.c_str());

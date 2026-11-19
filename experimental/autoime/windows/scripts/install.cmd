@@ -35,9 +35,10 @@ if errorlevel 1 (
 if exist "%BUILD%\autoime_deploy.exe" copy /y "%BUILD%\autoime_deploy.exe" "%DST%\" >nul
 if exist "%BUILD%\verify_registered.exe" copy /y "%BUILD%\verify_registered.exe" "%DST%\" >nul
 
-rem Rime resources live next to the DLL (<install>\resources).
+rem Rime resources live next to the DLL (<install>\resources); the shared
+rem source of truth is <autoime>\shared\resources (PLAN-071 T-01).
 if exist "%DST%\resources" rmdir /s /q "%DST%\resources"
-xcopy /e /i /y /q "%~dp0..\resources" "%DST%\resources" >nul || (echo [install] resource copy failed & exit /b 1)
+xcopy /e /i /y /q "%~dp0..\..\shared\resources" "%DST%\resources" >nul || (echo [install] resource copy failed & exit /b 1)
 
 rem Pre-deploy: compile + validate the schema now, not on the first key.
 echo [install] deploying Rime resources (first deploy compiles dictionaries)...

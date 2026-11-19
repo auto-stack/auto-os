@@ -16,11 +16,19 @@
 //
 // Usage:
 //   rime_probe.exe [--rime-dll PATH] [--shared-data-dir DIR]
-//                  [--user-data-dir DIR] [--schema SCHEMA_ID] [--keep]
+//                  [--user-data-dir DIR] [--schema SCHEMA_ID]
+//                  [--resources-dir DIR] [--cases FILE] [--keep]
 // Defaults resolve WeaselRoot from the registry (HKLM\...\Rime\Weasel) and
 // create a fresh empty user dir under %TEMP% (kept when --keep is given;
 // a probe-provided dir is removed at exit unless --keep).
+//
+// PLAN-071 T-01: --cases replays the platform-agnostic candidate expectations
+// from shared/tests/cases.json BEFORE the built-in suite, so every rank is
+// measured on the same blank user data. Case replay is read-only (compose +
+// read candidates, no selection, no commit); the built-in t1..t10 suite then
+// runs unchanged after it.
 
+#include "json_mini.h"
 #include "rime_api.h"
 
 #include <windows.h>
@@ -29,6 +37,7 @@
 
 #include <cstdio>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -43,6 +52,7 @@ struct Options {
   std::string user_data_dir;
   std::string schema = "luna_pinyin_simp";
   std::string resources_dir;  // PLAN-070 T-03 schema/dict resources
+  std::string cases_path;     // PLAN-071 T-01 shared candidate cases
   bool keep_user_dir = false;
   bool user_dir_from_temp = true;  // default user dir is probe-provided
 };
@@ -409,17 +419,151 @@ long long NowUs() {
 }
 
 struct TestResult {
-  const char* name;
+  std::string name;
   bool pass;
   std::string detail;
   double ms = 0.0;
 };
 
+// Aggregate counts for the shared cases replay (PLAN-071 T-01): preferred
+// hit = the case's target text ranked #1 on page 0; top-5 hit = ranked
+// within the first page (page size 5).
+struct CasesStats {
+  size_t total = 0;
+  size_t passed = 0;
+  size_t preferred_hits = 0;
+  size_t top5_hits = 0;
+};
+
+bool ReadAllBytes(const std::string& path, std::string* out) {
+  FILE* f = std::fopen(path.c_str(), "rb");
+  if (!f) return false;
+  char buf[8192];
+  size_t n = 0;
+  while ((n = std::fread(buf, 1, sizeof(buf), f)) > 0) out->append(buf, n);
+  const bool ok = !std::ferror(f);
+  std::fclose(f);
+  return ok;
+}
+
+// Replays the shared platform-agnostic candidate expectations (PLAN-071
+// T-01). One expectation per case selects the TARGET text whose page-0 rank
+// is recorded (expect_first / expect_top5 / expect_rank[0]); all given
+// expectations must hold for the case to pass. Read-only by contract: the
+// composition is typed and read but never selected or committed, so ranks
+// are measured on the same blank user data on every platform.
+bool RunSharedCases(Rime& rime, RimeSessionId session,
+                    const std::string& cases_path,
+                    std::vector<TestResult>* results, CasesStats* stats,
+                    std::string* error) {
+  std::string src;
+  if (!ReadAllBytes(cases_path, &src)) {
+    *error = "cannot read cases file: " + cases_path;
+    return false;
+  }
+  json_mini::Value root;
+  std::string parse_error;
+  if (!json_mini::Parse(src, &root, &parse_error)) {
+    *error = "cases JSON invalid: " + parse_error;
+    return false;
+  }
+  const json_mini::Value* cases = root.member("cases");
+  if (!cases || cases->kind != json_mini::Value::Kind::Array ||
+      cases->array.empty()) {
+    *error = "cases file has no non-empty \"cases\" array";
+    return false;
+  }
+  for (const json_mini::ValuePtr& cv : cases->array) {
+    if (cv->kind != json_mini::Value::Kind::Object) {
+      *error = "each case must be an object";
+      return false;
+    }
+    ++stats->total;
+    TestResult r;
+    r.name = "case-" + cv->str_or("id", "");
+    const long long case_start = NowUs();
+    const std::string id = cv->str_or("id", "");
+    const std::string keys = cv->str_or("keys", "");
+    const std::string expect_first = cv->str_or("expect_first", "");
+    const std::string expect_top5 = cv->str_or("expect_top5", "");
+    std::string rank_text;
+    int expected_rank = 0;
+    if (const json_mini::Value* er = cv->member("expect_rank")) {
+      if (er->kind == json_mini::Value::Kind::Array && er->array.size() == 2 &&
+          er->array[0]->kind == json_mini::Value::Kind::String &&
+          er->array[1]->kind == json_mini::Value::Kind::Number) {
+        rank_text = er->array[0]->string;
+        expected_rank = static_cast<int>(er->array[1]->number);
+      }
+    }
+    const std::string target = !expect_first.empty()
+                                   ? expect_first
+                                   : (!expect_top5.empty() ? expect_top5
+                                                           : rank_text);
+    std::string detail;
+    int rank = 0;
+    bool ok_case = false;
+    if (id.empty()) {
+      detail = "case has no id";
+    } else if (keys.empty()) {
+      detail = "case has no keys";
+    } else if (target.empty()) {
+      detail = "case has no expectation (expect_first/expect_top5/expect_rank)";
+    } else {
+      rime.api->clear_composition(session);
+      bool ok = rime.TypeString(session, keys.c_str());
+      Rime::Page page;
+      ok = ok && rime.GetPage(session, &page);
+      for (size_t i = 0; i < page.texts.size() && i < 5; ++i) {
+        TRACE("case %s top%zu: '%s'", id.c_str(), i + 1,
+              page.texts[i].c_str());
+      }
+      if (ok) {
+        const int idx = rime.FindOnPage(page, target);
+        rank = idx >= 0 ? idx + 1 : 0;
+      }
+      if (!ok) {
+        detail = "engine calls failed (keys '" + keys + "')";
+      } else if (page.texts.empty()) {
+        detail = "no candidates for keys '" + keys + "'";
+      } else {
+        if (!expect_first.empty() && rank != 1) {
+          detail = "first='" + page.texts[0] + "' expected '" + expect_first +
+                   "'";
+        }
+        if (detail.empty() && !expect_top5.empty() &&
+            (rank == 0 || rank > 5)) {
+          detail = "'" + expect_top5 + "' not in top-5 (rank=" +
+                   std::to_string(rank) + ")";
+        }
+        if (detail.empty() && !rank_text.empty() && rank != expected_rank) {
+          detail = "'" + rank_text + "' rank=" + std::to_string(rank) +
+                   " expected " + std::to_string(expected_rank);
+        }
+        if (!detail.empty()) detail += " (rank=" + std::to_string(rank) + ")";
+      }
+      ok_case = detail.empty();
+      // Per-case rank lands in the durable RESULT line (PLAN-071 T-01:
+      // record the rank of every case, not only failures).
+      if (ok_case && rank > 0) detail = "rank=" + std::to_string(rank);
+      if (rank == 1) ++stats->preferred_hits;
+      if (rank >= 1 && rank <= 5) ++stats->top5_hits;
+      rime.api->clear_composition(session);
+    }
+    r.detail = detail;
+    r.pass = ok_case;
+    if (r.pass) ++stats->passed;
+    r.ms = (NowUs() - case_start) / 1000.0;
+    results->push_back(std::move(r));
+  }
+  return true;
+}
+
 int PrintUsageError(const char* msg) {
   std::printf("ERROR bad usage: %s\n", msg);
   std::printf("usage: rime_probe.exe [--rime-dll PATH] [--shared-data-dir DIR]"
               " [--user-data-dir DIR] [--schema SCHEMA_ID]"
-              " [--resources-dir DIR] [--keep]\n");
+              " [--resources-dir DIR] [--cases FILE] [--keep]\n");
   return 2;
 }
 
@@ -469,6 +613,10 @@ int main(int argc, char** argv) {
       const char* v = value();
       if (!v) return PrintUsageError("--resources-dir needs a value");
       opt.resources_dir = v;
+    } else if (arg == "--cases") {
+      const char* v = value();
+      if (!v) return PrintUsageError("--cases needs a value");
+      opt.cases_path = v;
     } else if (arg == "--keep") {
       opt.keep_user_dir = true;
     } else {
@@ -668,6 +816,22 @@ int main(int argc, char** argv) {
 
   // ---------------------------------------------------------------- tests
   std::vector<TestResult> results;
+  CasesStats cases_stats;
+
+  // PLAN-071 T-01: shared platform-agnostic cases replay first, on the same
+  // blank user data (read-only), then the built-in behavioral suite.
+  if (!opt.cases_path.empty()) {
+    std::string cases_error;
+    if (!RunSharedCases(rime, session, opt.cases_path, &results, &cases_stats,
+                        &cases_error)) {
+      std::printf("ERROR [cases] %s\n", cases_error.c_str());
+      rime.api->destroy_session(session);
+      if (!opt.keep_user_dir) RemoveTreeRecursively(opt.user_data_dir);
+      rime.api->finalize();
+      return 4;
+    }
+  }
+
 
   // t1: nihao -> "ni hao" -> select #1 -> exactly one commit "你好"
   {
@@ -1164,7 +1328,7 @@ int main(int argc, char** argv) {
 
   bool all_pass = true;
   for (const TestResult& r : results) {
-    std::printf("RESULT %s=%s ms=%.1f%s%s\n", r.name,
+    std::printf("RESULT %s=%s ms=%.1f%s%s\n", r.name.c_str(),
                 r.pass ? "PASS" : "FAIL", r.ms,
                 r.detail.empty() ? "" : " detail: ", r.detail.c_str());
     all_pass = all_pass && r.pass;
@@ -1172,8 +1336,16 @@ int main(int argc, char** argv) {
   std::string tests_json;
   for (size_t i = 0; i < results.size(); ++i) {
     if (i) tests_json += ", ";
-    tests_json += "\"" + std::string(results[i].name) + "\": \"" +
+    tests_json += "\"" + results[i].name + "\": \"" +
                   (results[i].pass ? "pass" : "fail") + "\"";
+  }
+  char cases_json[160] = "";
+  if (!opt.cases_path.empty()) {
+    std::snprintf(cases_json, sizeof(cases_json),
+                  ", \"cases\": {\"total\": %zu, \"pass\": %zu, "
+                  "\"preferred_hits\": %zu, \"top5_hits\": %zu}",
+                  cases_stats.total, cases_stats.passed,
+                  cases_stats.preferred_hits, cases_stats.top5_hits);
   }
   std::printf(
       "SUMMARY {\"probe\": \"rime_probe\", \"dll\": \"%s\", "
@@ -1181,7 +1353,7 @@ int main(int argc, char** argv) {
       "\"probe_bits\": %d, \"schema\": \"%s\", \"schema_name\": \"%s\", "
       "\"shared_data_dir\": \"%s\", \"user_data_dir\": \"%s\", "
       "\"resources_dir\": \"%s\", \"deploy_ms\": %lld, "
-      "\"tests\": {%s}}\n",
+      "\"tests\": {%s}%s}\n",
       JsonEscape(opt.rime_dll).c_str(),
       JsonEscape(DllFileVersion(opt.rime_dll)).c_str(),
       JsonEscape(rime_version).c_str(),
@@ -1190,7 +1362,7 @@ int main(int argc, char** argv) {
       JsonEscape(opt.shared_data_dir).c_str(),
       JsonEscape(opt.user_data_dir).c_str(),
       JsonEscape(opt.resources_dir).c_str(), deploy_ms,
-      tests_json.c_str());
+      tests_json.c_str(), cases_json);
   // Terminate without running atexit handlers / DLL unload: rime.dll keeps
   // background threads and static state that make the CRT exit path unreliable
   // after finalize(); all engine state is fully torn down above.

@@ -143,8 +143,11 @@ std::string ResolveResourcesDir(const std::string& module_dir) {
   const DWORD n = GetEnvironmentVariableA("AUTOIME_RESOURCES_DIR", env,
                                           MAX_PATH);
   if (n > 0 && n < MAX_PATH && DirExists(env)) return env;
+  // PLAN-071 T-01: the shipped resources live in <autoime>\shared\resources;
+  // the third suffix reaches it from the dev build tree (windows/ime/build).
   const char* const suffixes[] = {"\\resources", "\\..\\resources",
-                                  "\\..\\..\\resources"};
+                                  "\\..\\..\\resources",
+                                  "\\..\\..\\..\\shared\\resources"};
   for (const char* suffix : suffixes) {
     const std::string candidate = module_dir + suffix;
     if (DirExists(candidate)) return candidate;

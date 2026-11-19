@@ -86,7 +86,8 @@ function Copy-Resources([string]$destination) {
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ime = Split-Path -Parent $here
 $windows = Split-Path -Parent $ime
-$script:resources = Join-Path $windows 'resources'
+$autoime = Split-Path -Parent $windows
+$script:resources = Join-Path $autoime 'shared\resources'
 $script:deploy = Join-Path $ime 'build\autoime_deploy.exe'
 if (-not (Test-Path $script:deploy)) { throw "build the IME first: $($script:deploy) missing" }
 

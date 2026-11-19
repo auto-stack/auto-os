@@ -1,19 +1,24 @@
-# AutoIME Windows x64（PLAN-069 / PLAN-070）
+# AutoIME Windows x64（PLAN-069 / PLAN-070 / PLAN-071）
 
 AutoIME 的 Windows x64 离线拼音输入法：TSF 文本服务 + librime 引擎 + 原生
 Win32 候选窗。PLAN-069 交付了记事本上屏原型（代码 `94f1101`）；PLAN-070
 在其上交付日常试用版（按键/编辑/方案/部署），行为合同见
-[Design 05](../../../docs/design/05-autoime-windows.md)。
+[Design 05](../../../docs/design/05-autoime-windows.md)。PLAN-071 交付
+Windows x64 离线安装包，并把方案资源与回放用例升为跨平台共享
+（`../shared/`，Linux 由后续计划消费）。
 
 ## 目录
 
 ```
-probe/    引擎探针：直接加载 rime.dll 回放词库、方案与候选行为
-ime/      TSF 文本服务、按键路由、编辑会话、候选窗、部署与诊断
-  tests/  自动化夹具（TSF 回调序列、编辑计划、emoji）与 T-04 部署套件
-  tools/  autoime_deploy.exe（同步部署 + 校验 + 延迟测量）
-resources/ 默认方案 autoime_pinyin、术语/别名词表、用户短语模板、依赖台账
-scripts/  安装/卸载脚本（UAC；安装时预部署资源）
+probe/         引擎探针：直接加载 rime.dll 回放词库、方案与候选行为
+ime/           TSF 文本服务、按键路由、编辑会话、候选窗、部署与诊断
+  tests/       自动化夹具（TSF 回调序列、编辑计划、emoji）与 T-04 部署套件
+  tools/       autoime_deploy.exe（同步部署 + 校验 + 延迟测量）
+installer/     Inno Setup 离线安装包定义与构建入口（PLAN-071）
+scripts/       安装/卸载脚本（UAC；安装时预部署资源）
+../shared/resources/  默认方案 autoime_pinyin、术语/别名词表、用户短语模板、
+                      依赖台账（Windows/Linux 共用源数据）
+../shared/tests/      平台无关按键/候选期望用例（Windows/Linux 共用）
 ```
 
 ## 前置
@@ -38,7 +43,13 @@ build.cmd          :: build\rime_probe.exe
 ```cmd
 ime\test.cmd                      :: 先跑 ime\build.cmd；此后仅运行（136 checks，<0.1s）
 probe\build\rime_probe.exe --schema autoime_pinyin ^
-    --resources-dir ..\resources  :: 方案/候选套件（T-03，10 用例，~3s）
+    --resources-dir ..\..\shared\resources
+                                  :: 方案/候选套件（T-03，10 用例，~3s）
+probe\build\rime_probe.exe --schema autoime_pinyin ^
+    --resources-dir ..\..\shared\resources ^
+    --cases ..\..\shared\tests\cases.json
+                                  :: 共享用例回放（PLAN-071 T-01：空白用户数据，
+                                  :: 逐例排名与首选/前五命中率，只读不选词）
 pwsh -NoProfile -File ime\tests\run-t04.ps1
                                   :: 部署/回退/升级/并发/延迟（T-04，~30–40s）
 ```

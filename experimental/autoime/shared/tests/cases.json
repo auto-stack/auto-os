@@ -1,0 +1,20 @@
+{
+  "format": "autoime-cases@1",
+  "schema": "autoime_pinyin",
+  "note": "平台无关按键/候选期望（PLAN-071 T-01）。只读回放：逐例在空白用户数据上组合并读取第一页候选，不选词、不提交，因此排名可复现。expect_first=目标文本第一；expect_top5=目标文本在第一页（前五）内；expect_rank=[文本, 名次]（1 起，可与其他期望并用）。固定前置：librime 1.13.1（rime.dll SHA-256 2D8F1BC3...C45B）+ 朙月词库（SHA-256 DC15421F...0817）+ shared/resources 本版本 + 全新空用户目录。Windows probe 与 Linux 回放消费同一份文件与同一份 shared/resources。已知边界：四字术语的首字母简拼码（如 zlby）当前不入前五，本文件不以其作期望（观测记录见 PLAN-071）。",
+  "cases": [
+    { "id": "full-nihao", "keys": "nihao", "expect_first": "你好" },
+    { "id": "abbrev-nh", "keys": "nh", "expect_top5": "你好" },
+    { "id": "mixed-shuruf", "keys": "shuruf", "expect_top5": "输入法" },
+    { "id": "full-zengliangbianyi", "keys": "zengliangbianyi", "expect_first": "增量编译", "expect_rank": ["增量编译", 1] },
+    { "id": "full-lixianpinyin", "keys": "lixianpinyin", "expect_first": "离线拼音" },
+    { "id": "full-regengxin", "keys": "regengxin", "expect_first": "热更新" },
+    { "id": "abbrev-regx", "keys": "regx", "expect_top5": "热更新" },
+    { "id": "mixed-gaosipoj", "keys": "gaosipoj", "expect_first": "高斯泼溅" },
+    { "id": "full-gaosipojian", "keys": "gaosipojian", "expect_first": "高斯泼溅" },
+    { "id": "en-ros", "keys": "ros", "expect_first": "ROS 2" },
+    { "id": "en-autoos", "keys": "autoos", "expect_first": "AutoOS" },
+    { "id": "en-tsf", "keys": "tsf", "expect_first": "TSF" },
+    { "id": "custom-gaosuhuancun", "keys": "gaosuhuancun", "expect_first": "高速缓存" }
+  ]
+}
