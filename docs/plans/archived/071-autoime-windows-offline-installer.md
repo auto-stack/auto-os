@@ -104,7 +104,13 @@ Linux 首次验证使用 Fcitx 5 与 fcitx5-rime 加载同一份共享方案，�
 - 批量回归到期检查：收据 last_covered_plan_id=70 @2026-11-17T06:17Z；id 71 不被 5 整除，但收据早于 48h 且本计划在其后合入 → **到期**（48h 规则），清理后交 /auto-plan:regress 在 main 单实例执行并刷新收据。
 - 测试范围（merge 会话）：无新增测试、无新增用例；复用 final review 的 HEAD 重构建证据（probe 23/23、fixture 146 checks）与落地后 main 哈希核对，无重复运行。
 - `stage: merge | plan_id: PLAN-071 | plan_revision: r1 | outcome: pass（landed · canonical_verified · archived） | delivery_commit: 9b393ac5（main ff-only，无 merge commit） | reviewed_commit: 9b393ac5（delivery == reviewed，无文档后代） | canonical_spec_paths: 无（空影响：experimental/autoime 域交付，沿 069/070 先例） | archive_path: docs/plans/archived/071-autoime-windows-offline-installer.md | cleanup: pending（worktree/分支/plan-artifacts 清理随后执行并补记） | next: cleanup`
-- `stage: goal | plan_id: PLAN-071 | plan_revision: 1 | round: 5 | from: merge | to: merge | status: archived | outcome: pass | worktree: D:/autostack/.wt/os-071/auto-os | commit: 9b393ac5 | next: cleanup`
+
+### 2026-11-20 · merge 收尾（cleaned + 批量回归）
+
+- **cleaned**：移除前 wt-guard clean；worktree `D:/autostack/.wt/os-071/auto-os` 移除、分支 `plan-071-dev` 删除（was `9b393ac`，已合入）、组目录 `.wt/os-071/` 删除；`plan-artifacts/plan-071/` 全删（25.8MB，证据摘要已折入本文件 §4/§9），登记表 `.retention/policy.json` 刷新（auto-os/PLAN-071 记录，无具名持有）。
+- **批量回归（48h 规则到期）**：main 单实例执行两腿——`check-app-submodules.ps1` exit 1（27 gitlink 未初始化，环境臂，无计划归属：`git diff 359b7fa..HEAD -- apps .gitmodules apps.manifest` 为空）+ `verify-app-links.py` exit 1（`apps/auto-calc` 过期校验表，已知红 VERIFY-APP-LINKS-STALE）。裁定 **known-reds-only**：无新红、无 071 回归；收据 `docs/plans/.last-batch-regression.json` 已提交（last_covered_plan_id=71 @ `378768b`，timings 751ms/340ms）。
+- `stage: merge | plan_id: PLAN-071 | plan_revision: r1 | outcome: pass（cleaned 补记 · batch_regression known-reds-only） | delivery_commit: 9b393ac5 | archive_path: docs/plans/archived/071-autoime-windows-offline-installer.md | cleanup: worktree/branch/group removed (wt-guard clean ×2), plan-artifacts scope deleted (25.8MB), registry refreshed | batch_regression: known-reds-only (receipt 71@378768b; APPS-SUBMODULES-UNINITIALIZED env + VERIFY-APP-LINKS-STALE known, both same-identity as plan-070 receipt, no 071 attribution) | next: done`
+- `stage: goal | plan_id: PLAN-071 | plan_revision: 1 | round: 6 | from: merge | to: done | status: archived | outcome: pass | worktree: removed | commit: 378768b | next: done`
 
 ## 10. 待澄清事项
 

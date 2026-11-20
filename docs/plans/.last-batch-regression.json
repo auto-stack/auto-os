@@ -1,22 +1,21 @@
 {
-  "last_covered_plan_id": 70,
-  "timestamp": "2026-11-17T06:17:06Z",
-  "covered_commit": "359b7fa8d445827592944b503a0af690b83a9f5a",
+  "last_covered_plan_id": 71,
+  "timestamp": "2026-11-20T05:35:00Z",
+  "covered_commit": "378768b5a41b4c5f92bfdbd2cc89908357c61b84",
   "command": "check-app-submodules.ps1 + verify-app-links.py (auto-os adopted batch legs, main single instance)",
   "legs": [
     "check-app-submodules",
     "verify-app-links"
   ],
-  "new_reds": [
-    "APPS-SUBMODULES-UNINITIALIZED — check-app-submodules exit 1: all manifest app gitlinks uninitialized (apps/* empty) in this main checkout; no plan attribution (git diff fd40a5e..HEAD -- apps .gitmodules apps.manifest empty); host/combo-checkout state, fix = git submodule update --init --recursive (owner: user/combo checkout)"
-  ],
+  "new_reds": [],
   "known_reds_seen": [
-    "VERIFY-APP-LINKS-STALE — Incorrect gitlink apps/auto-calc; pre-existing stale verifier table (manifest 无 commit 字段 vs 演进 pin)，同身份 vs 35be187/PLAN-055/060 回执；owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
+    "APPS-SUBMODULES-UNINITIALIZED — check-app-submodules exit 1: all 27 manifest app gitlinks uninitialized (apps/* empty) in this main checkout; no plan attribution (git diff 359b7fa..HEAD -- apps .gitmodules apps.manifest empty); host/combo-checkout state, fix = git submodule update --init --recursive (owner: user/combo checkout); same identity as plan-070 receipt",
+    "VERIFY-APP-LINKS-STALE — verify-app-links exit 1: AssertionError 'Incorrect gitlink apps/auto-calc'; pre-existing stale verifier table (manifest 无 commit 字段 vs 演进 pin), same identity as 35be187/PLAN-055/060 回执 and plan-070 receipt; owner=verifier maintenance (KNOWN-DEBT-AND-RISKS.md)"
   ],
-  "verdict": "new-reds-with-attribution (1 environment red, 1 known red; no PLAN-070 regression)",
-  "context": "plan-070 merge closeout batch (070 landed since last receipt 69@fd40a5e); both legs single-instance on main",
+  "verdict": "known-reds-only (no new reds, no PLAN-071 regression; batch run at plan-071 merge closeout, due via 48h rule)",
+  "context": "plan-071 merge closeout batch (071 landed since last receipt 70@359b7fa; receipt was >48h old); both legs single-instance on main, machine occupancy checked idle",
   "timings": {
-    "check_app_submodules_ms": 1905,
-    "verify_app_links_ms": 1518
+    "check_app_submodules_ms": 751,
+    "verify_app_links_ms": 340
   }
 }
