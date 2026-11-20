@@ -17,7 +17,7 @@ widget ResponsivePage {
                 col (style: "gap-2 border rounded-md p-3") {
                     row (style: "gap-2") {
                         square (color: "blue", h: 10, w: 16, text: "always") {}
-                        square (color: "emerald", h: 10, w: 16, text: "md+") {}
+                        square (color: "emerald", h: 10, w: 16, class: "hidden md:flex", text: "md+") {}
                     }
                 }
             }
