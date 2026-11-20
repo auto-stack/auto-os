@@ -6,9 +6,6 @@
 // 页面持有,本模块只做纯派生,双端(vue 转译进 SFC / VM import_aliases)
 // 同源(Plan 522 路径,calendar_util 先例)。
 //
-// pads 阶梯数组字面量随 use-fn 转译进 SFC 源 → Tailwind JIT 可扫描;
-// VM 侧 class.rs pl-{N} 任意数值。depth>8 钳制 pl-32(任意形状兜底)。
-//
 // ⚠ VM 轨遍历纪律(P614 实证):for-in 对函数参数列表迭代零次(对状态
 // 路径迭代正常)——本模块所有列表遍历一律 while + 索引(索引访问参数
 // 列表已实证正常)。嵌套 children 同式。
@@ -22,6 +19,20 @@ pub type TreeNode {
     is_leaf bool
     badge str
     children List<TreeNode>
+}
+
+type TreeRow {
+    id str
+    label str
+    depth int
+    has_kids bool
+    open bool
+    leaf bool
+    icon str
+    badge str
+    guides List<str>
+    chev str
+    state str
 }
 
 /// 线性成员测试(while+索引;for-in 参数列表 VM 零次迭代,见头注)。
@@ -57,39 +68,40 @@ pub fn toggle_id(list List<str>, id str) List<str> {
 }
 
 /// 全部(或仅目录)id 收集——Expand All / Collapse All 用。
-pub fn collect_ids(nodes List, dirs_only bool) List {
-    var out List = []
-    var stack List = []
-    var i int = nodes.len()
-    while i > 0 {
-        i = i - 1
-        stack.push(nodes[i])
-    }
-    while stack.len() > 0 {
-        var top int = stack.len() - 1
-        var nd = stack[top]
-        stack.pop()
-        var kids List = nd.children
-        var is_dir bool = nd.kind == "dir" || kids.len() > 0
-        if !dirs_only {
-            out.push(nd.id)
+pub fn collect_ids(nodes List<TreeNode>, dirs_only bool) List<str> {
+    var out List<str> = []
+    var parents List<List<TreeNode>> = []
+    var positions List<int> = []
+    var current = nodes
+    var i int = 0
+    while i < current.len() || parents.len() > 0 {
+        if i == current.len() {
+            let parent = parents.remove(parents.len() - 1)
+            current = parent.move
+            i = positions.remove(positions.len() - 1)
         } else {
-            if is_dir {
-                out.push(nd.id)
+            let kids = current[i].children
+            if !dirs_only || current[i].kind == "dir" || kids.len() > 0 {
+                out.push(current[i].id.clone())
             }
-        }
-        var j int = kids.len()
-        while j > 0 {
-            j = j - 1
-            stack.push(kids[j])
+            i = i + 1
+            if kids.len() > 0 {
+                // 只有还有兄弟节点待访问时才保留当前层。
+                if i < current.len() {
+                    parents.push(current.move)
+                    positions.push(i)
+                }
+                current = kids.move
+                i = 0
+            }
         }
     }
     return out
 }
 
 /// 文件名 → 文件图标(lucide 名)。图片族/文本族/其余 file。
-pub fn ext_icon(name str) str {
-    var ic str = "file"
+pub fn ext_icon(name str) Str {
+    var ic Str = "file"
     if name.ends_with(".png") || name.ends_with(".jpg") || name.ends_with(".jpeg") || name.ends_with(".gif") || name.ends_with(".webp") || name.ends_with(".svg") {
         ic = "image"
     } else {
@@ -105,115 +117,92 @@ pub fn ext_icon(name str) str {
 /// guides = 每层缩进单元的线型列表("l"=连续竖线,"n"=断线——父为末子时
 /// 该层线在下行断开,└ 语义;长度 = depth)。缩进由 guides 单元(w-4)承载,
 /// 不再用 pl-N。
-pub fn flatten_tree(nodes List, expanded List, directory bool, selected str) List {
-    var outRows List = []
-    var stack List = []
-    var depths List = []
-    var gstack List = []
-    var lstack List = []
-    var i int = nodes.len()
-    while i > 0 {
-        i = i - 1
-        stack.push(nodes[i])
-        depths.push(0)
-        gstack.push([])
-        lstack.push("l")
-    }
-    while stack.len() > 0 {
-        var top int = stack.len() - 1
-        var nd = stack[top]
-        var d int = depths[top]
-        var g List = gstack[top]
-        var lastMark str = lstack[top]
-        stack.pop()
-        depths.pop()
-        gstack.pop()
-        lstack.pop()
-        var kids List = nd.children
-        var is_leaf bool = nd.is_leaf == true
-        var has_kids bool = false
-        if kids.len() > 0 && !is_leaf {
-            has_kids = true
-        }
-        var open bool = false
-        if has_kids && has_id(expanded, nd.id) {
-            open = true
-        }
-        var ic str = nd.icon
-        if ic == "" && directory {
-            var is_dir bool = nd.kind == "dir" || has_kids
-            if is_dir {
-                if open {
-                    ic = "folder-open"
+pub fn flatten_tree(nodes List<TreeNode>, expanded List<str>, directory bool, selected str) List<TreeRow> {
+    var rows List<TreeRow> = []
+    var parents List<List<TreeNode>> = []
+    var positions List<int> = []
+    var pathGuides List<str> = []
+    var current = nodes
+    var i int = 0
+    while i < current.len() || parents.len() > 0 {
+        if i == current.len() {
+            let parent = parents.remove(parents.len() - 1)
+            current = parent.move
+            i = positions.remove(positions.len() - 1)
+            pathGuides.remove(pathGuides.len() - 1)
+        } else {
+            let kids = current[i].children
+            let id = current[i].id.clone()
+            let label = current[i].label.clone()
+            let has_kids = kids.len() > 0 && !current[i].is_leaf
+            let open = has_kids && has_id(expanded, id)
+            var icon Str = current[i].icon.clone()
+            if icon == "" && directory {
+                if current[i].kind == "dir" || has_kids {
+                    if open {
+                        icon = "folder-open"
+                    } else {
+                        icon = "folder"
+                    }
                 } else {
-                    ic = "folder"
+                    icon = ext_icon(label)
                 }
-            } else {
-                ic = ext_icon(nd.label)
             }
-        }
-        var chev str = "chevron-right"
-        if open {
-            chev = "chevron-down"
-        }
-        var state str = "hover:bg-accent/50"
-        if selected != "" {
-            if selected == nd.id {
+            var chev str = "chevron-right"
+            if open {
+                chev = "chevron-down"
+            }
+            var state str = "hover:bg-accent/50"
+            if selected != "" && selected == id {
                 state = "bg-accent text-accent-foreground"
             }
-        }
-        outRows.push({ id: nd.id, label: nd.label, depth: d, has_kids: has_kids, open: open, leaf: !has_kids, icon: ic, badge: nd.badge, guides: g, chev: chev, state: state })
-        if open {
-            // 孩子帧的 guides = 本行 guides + 本层线型(本节点为父的末子?
-            // 末子标记 lastMark=="n" → 孩子在该层断线 "n",否则连续 "l";
-            // 根层 lastMark="" → 不加段)。逐元素显式拷贝,规避 VM List
-            // 赋值的引用/拷贝语义歧义。
-            var j int = kids.len()
-            while j > 0 {
-                j = j - 1
-                var cg List = []
-                var k int = 0
-                while k < g.len() {
-                    cg.push(g[k])
-                    k = k + 1
+            let depth = pathGuides.len()
+            var guides List<str> = []
+            var j int = 0
+            while j < depth {
+                guides.push(pathGuides[j].clone())
+                j = j + 1
+            }
+            rows.push(TreeRow {
+                id: id.move, label: label.move, depth: depth, has_kids: has_kids,
+                open: open, leaf: !has_kids, icon: icon.move, badge: current[i].badge.clone(),
+                guides: guides.move, chev: chev.clone(), state: state.clone()
+            })
+            if open {
+                if depth > 0 && i == 0 {
+                    pathGuides.push("n")
+                } else {
+                    pathGuides.push("l")
                 }
-                if lastMark != "" {
-                    if lastMark == "n" {
-                        cg.push("n")
-                    } else {
-                        cg.push("l")
-                    }
-                }
-                var childLast str = "l"
-                if j == 0 {
-                    childLast = "n"
-                }
-                stack.push(kids[j])
-                depths.push(d + 1)
-                gstack.push(cg)
-                lstack.push(childLast)
+                parents.push(current.move)
+                positions.push(i + 1)
+                current = kids.move
+                i = 0
+            } else {
+                i = i + 1
             }
         }
     }
-    return outRows
+    return rows
 }
 
-
-/// 树过滤:保留命中节点(label 含 kw,大小写不敏感)与其全部祖先。
-/// kw 为空返回全量浅拷贝。递归实现——VM 轨递归能力经 P618 探针验证;
-/// 供搜索框场景:过滤后以 collect_ids(结果, false) 全展开。
-pub fn filter_tree(nodes List, kw str) List {
-    var out List = []
+/// 保留标签命中及祖先，保留各级原顺序。
+pub fn filter_tree(nodes List<TreeNode>, kw str) List<TreeNode> {
+    var out List<TreeNode> = []
     var i int = 0
     while i < nodes.len() {
-        var nd = nodes[i]
-        var fk List = filter_tree(nd.children, kw)
-        // v1 大小写敏感(P618 实证):.lower() 链在 VM 轨沿嵌套帧返回空串
-        // (两步赋值在浅帧正常、深帧仍失效),故 contains 直用原串;引擎修复
-        // 后可恢复不区分大小写。
-        var selfHit bool = kw == "" || nd.label.contains(kw)
-        if selfHit || fk.len() > 0 {
-            out.push({ id: nd.id, label: nd.label, kind: nd.kind, icon: nd.icon, is_leaf: nd.is_leaf, badge: nd.badge, children: fk })
+        let kids = nodes[i].children
+        var filtered List<TreeNode> = []
+        if kids.len() > 0 {
+            filtered = filter_tree(kids, kw)
+        }
+        let label = nodes[i].label.clone()
+        if kw == "" || label.contains(kw) || filtered.len() > 0 {
+            out.push(TreeNode {
+                id: nodes[i].id.clone(), label: label.move, kind: nodes[i].kind.clone(),
+                icon: nodes[i].icon.clone(), is_leaf: nodes[i].is_leaf, badge: nodes[i].badge.clone(),
+                children: filtered.move
+            })
         }
         i = i + 1
     }
