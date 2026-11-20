@@ -36,7 +36,9 @@ PrivilegesRequired=admin
 ; no close-applications nag and no reboot requirement in the normal flow.
 CloseApplications=no
 SetupLogging=yes
-LicenseFile=THIRD-PARTY-NOTICES.txt
+; Generated from THIRD-PARTY-NOTICES.md by build.cmd (staging step 4, before
+; ISCC runs) - shown on the installer's license page and shipped in licenses\.
+LicenseFile=stage\licenses\THIRD-PARTY-NOTICES.txt
 
 [Files]
 Source: "stage\autoime_ime.dll"; DestDir: "{app}"; Flags: ignoreversion restartreplace
@@ -66,8 +68,10 @@ Filename: "{app}\verify_registered.exe"; \
 ; Per-user steps in the original user's context (over-the-shoulder safe):
 ; pre-deploy personal Rime data (compiles dictionaries so the first key
 ; never waits) and add AutoIME to that user's Win+Space switcher list.
+; {localappdata} matches the runtime DefaultUserDir (%LOCALAPPDATA%\AutoIME\rime)
+; so the pre-deployed data IS the data the IME uses.
 Filename: "{app}\autoime_deploy.exe"; \
-    Parameters: "--resources-dir ""{app}\resources"" --user-data-dir ""{userappdata}\AutoIME\rime"""; \
+    Parameters: "--resources-dir ""{app}\resources"" --user-data-dir ""{localappdata}\AutoIME\rime"""; \
     StatusMsg: "Preparing your Rime user data (compiling dictionaries)..."; \
     Flags: runasoriginaluser
 Filename: "powershell.exe"; \
@@ -82,20 +86,30 @@ Filename: "{sys}\regsvr32.exe"; Parameters: "/u /s ""{app}\autoime_ime.dll"""; \
     RunOnceId: "UnregisterAutoIME"; Flags: runascurrentuser
 Filename: "powershell.exe"; \
     Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\disable-user-list.ps1"""; \
-    RunOnceId: "RemoveAutoIMESwitcherEntry"; Flags: runasoriginaluser
+    RunOnceId: "RemoveAutoIMESwitcherEntry"
 
 [UninstallDelete]
-; Parked old DLLs are not Inno-owned; remove them with the program files.
-Type: files; Name: "{app}\autoime_ime_old_*.dll"
+; Parked old DLLs are not Inno-owned; remove them with the program files
+; (both parking schemes; a DLL still mapped by a live host can't be deleted
+; and is cleaned by a later install/uninstall). The resources tree is Inno-
+; owned but its empty parent dirs would otherwise survive uninstall.
+Type: files; Name: "{app}\autoime_ime_*.dll"
+Type: filesandordirs; Name: "{app}\resources"
 
 [Code]
+// Win32 tick count for unique parked-DLL names (not built into PascalScript).
+function GetTickCount: DWORD;
+  external 'GetTickCount@kernel32.dll stdcall';
+
 // Removes files parked by earlier upgrades (their hosts have released them
-// by the time a new install runs).
+// by the time a new install runs). The glob covers both parking schemes:
+// autoime_ime_old_<n>.dll (Inno installs) and the numeric autoime_ime_<n>.dll
+// scheme left by the 070-era scripts; autoime_ime.dll itself never matches.
 procedure DeleteParkedDlls(const app: String);
 var
   find: TFindRec;
 begin
-  if FindFirst(app + '\autoime_ime_old_*.dll', find) then begin
+  if FindFirst(app + '\autoime_ime_*.dll', find) then begin
     try
       repeat
         if (find.Attributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
