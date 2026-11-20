@@ -20,9 +20,9 @@
 // TreeView (nodes: .tvNodes, expanded: .tvExpanded, selected: .tvSel,
 //           on_toggle: .TvToggle, on_select: .TvSelect) {}
 
-use tree_util: flatten_tree
+use tree_util: TreeNode, flatten_tree
 
-widget TreeView (nodes: List, expanded: List = [], selected: str = "", on_toggle: msg, on_select: msg, directory: bool = false) {
+widget TreeView (nodes: List<TreeNode>, expanded: List<str> = [], selected: str = "", on_toggle: msg, on_select: msg, directory: bool = false) {
     msg { Toggle(str), Select(str) }
 
     computed {

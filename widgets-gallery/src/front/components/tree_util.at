@@ -13,11 +13,16 @@
 // 路径迭代正常)——本模块所有列表遍历一律 while + 索引(索引访问参数
 // 列表已实证正常)。嵌套 children 同式。
 //
-// node schema(数据轨;字段必填全键书写——VM Obj 字面量为形状锁定类型
-// 实例,缺键字段访问=硬错,P614 实证。kind: "dir"|"file"|"" 仅 directory
-// 模式消费;icon 显式指定优先于自动映射):
-// { id: str, label: str, children: List, kind: str, icon: str,
-//   is_leaf: bool, badge: str }
+// kind: "dir"|"file"|"" 仅 directory 模式消费；显式 icon 优先于自动映射。
+pub type TreeNode {
+    id str
+    label str
+    kind str
+    icon str
+    is_leaf bool
+    badge str
+    children List<TreeNode>
+}
 
 /// 线性成员测试(while+索引;for-in 参数列表 VM 零次迭代,见头注)。
 pub fn has_id(list List<str>, id str) bool {

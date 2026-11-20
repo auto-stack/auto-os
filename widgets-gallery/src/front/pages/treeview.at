@@ -9,7 +9,7 @@
 // 回显计数走 handler 内预计算(tvCount)——view 端 f-string 内方法调用
 // (.len())VM 轨不解析(P614 实证),纯字段插值正常。
 
-use components.tree_util: toggle_id, collect_ids
+use components.tree_util: TreeNode, toggle_id, collect_ids
 
 widget TreeViewPage {
     use { package: official from "../components" }
@@ -23,7 +23,7 @@ widget TreeViewPage {
 
         // 任意形状:深链(level-1..level-9 验证 pad 钳制)+混合叶枝+单子链;
         // kind/icon/badge 全键书写(VM Obj 形状锁定,缺键硬错)。
-        tvNodes = [
+        tvNodes List<TreeNode> = [
             { id: "project", label: "project", kind: "dir", icon: "", is_leaf: false, badge: "", children: [
                 { id: "src", label: "src", kind: "dir", icon: "", is_leaf: false, badge: "12", children: [
                     { id: "main.rs", label: "main.rs", kind: "file", icon: "", is_leaf: false, badge: "", children: [] },

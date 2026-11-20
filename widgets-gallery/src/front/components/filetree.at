@@ -14,9 +14,9 @@
 // use { package: official from "../components" }
 // FileTree (nodes: .ftNodes, default_expanded: ["src", "src/components"]) {}
 
-use components.tree_util: flatten_tree, toggle_id
+use components.tree_util: TreeNode, flatten_tree, toggle_id
 
-widget FileTree (nodes: List, default_expanded: List = []) {
+widget FileTree (nodes: List<TreeNode>, default_expanded: List<str> = []) {
     msg { Init, Toggle(str), Select(str) }
 
     model {

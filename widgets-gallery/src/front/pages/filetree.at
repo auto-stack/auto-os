@@ -6,13 +6,15 @@
 // 语义),kind: "dir"/"file" 驱动 directory 图标。选中态为 FileTree 内部
 // 状态(自包含契约,页面不读)。
 
+use components.tree_util: TreeNode
+
 widget FileTreePage {
     use { package: official from "../components" }
 
     msg {}
 
     model {
-        ftNodes = [
+        ftNodes List<TreeNode> = [
             { id: "docs", label: "docs", kind: "dir", icon: "", is_leaf: false, badge: "611", children: [
                 { id: "docs/plans", label: "plans", kind: "dir", icon: "", is_leaf: false, badge: "611", children: [
                     { id: "docs/plans/242-a2r-feature-gap-tracker.md", label: "242-a2r-feature-gap-tracker.md", kind: "file", icon: "", is_leaf: false, badge: "", children: [] },
