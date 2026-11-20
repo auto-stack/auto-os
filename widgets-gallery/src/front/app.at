@@ -98,20 +98,36 @@ widget App {
         dark_mode bool = true
     }
 
+    msg {
+        openSidebar,
+        closeSidebar,
+        openSearch,
+        closeSearch,
+        openThemePicker,
+        closeThemePicker,
+        SetAccent(str),
+        SetIndigo,
+        SetCoral,
+        SetOcean,
+        SetSage,
+        SetAmber,
+        ToggleDark
+    }
+
     on {
-        .openSidebar -> { sidebarOpen = true }
-        .closeSidebar -> { sidebarOpen = false }
-        .openSearch -> { searchOpen = true }
-        .closeSearch -> { searchOpen = false }
-        .openThemePicker -> { themeOpen = !themeOpen }
-        .closeThemePicker -> { themeOpen = false }
-        .SetAccent(name) -> { accent_color = name }
-        .SetIndigo -> { accent_color = "indigo" }
-        .SetCoral -> { accent_color = "coral" }
-        .SetOcean -> { accent_color = "ocean" }
-        .SetSage -> { accent_color = "sage" }
-        .SetAmber -> { accent_color = "amber" }
-        .ToggleDark -> { dark_mode = !dark_mode }
+        .openSidebar -> { .sidebarOpen = true }
+        .closeSidebar -> { .sidebarOpen = false }
+        .openSearch -> { .searchOpen = true }
+        .closeSearch -> { .searchOpen = false }
+        .openThemePicker -> { .themeOpen = !themeOpen }
+        .closeThemePicker -> { .themeOpen = false }
+        .SetAccent(name) -> { .accent_color = name }
+        .SetIndigo -> { .accent_color = "indigo" }
+        .SetCoral -> { .accent_color = "coral" }
+        .SetOcean -> { .accent_color = "ocean" }
+        .SetSage -> { .accent_color = "sage" }
+        .SetAmber -> { .accent_color = "amber" }
+        .ToggleDark -> { .dark_mode = !dark_mode }
     }
 
     view {
