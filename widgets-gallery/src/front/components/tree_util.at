@@ -102,11 +102,15 @@ pub fn collect_ids(nodes List<TreeNode>, dirs_only bool) List<str> {
 /// 文件名 → 文件图标(lucide 名)。图片族/文本族/其余 file。
 pub fn ext_icon(name str) Str {
     var ic Str = "file"
-    if name.ends_with(".png") || name.ends_with(".jpg") || name.ends_with(".jpeg") || name.ends_with(".gif") || name.ends_with(".webp") || name.ends_with(".svg") {
-        ic = "image"
+    if name.ends_with(".md") {
+        ic = "file-text"
     } else {
-        if name.ends_with(".at") || name.ends_with(".rs") || name.ends_with(".ts") || name.ends_with(".vue") || name.ends_with(".md") || name.ends_with(".txt") || name.ends_with(".json") || name.ends_with(".toml") || name.ends_with(".css") || name.ends_with(".js") {
-            ic = "file-text"
+        if name.ends_with(".png") || name.ends_with(".jpg") || name.ends_with(".jpeg") || name.ends_with(".gif") || name.ends_with(".webp") || name.ends_with(".svg") {
+            ic = "image"
+        } else {
+            if name.ends_with(".at") || name.ends_with(".rs") || name.ends_with(".ts") || name.ends_with(".vue") || name.ends_with(".txt") || name.ends_with(".json") || name.ends_with(".toml") || name.ends_with(".css") || name.ends_with(".js") {
+                ic = "file-text"
+            }
         }
     }
     return ic
