@@ -8,6 +8,8 @@ shadcn widgets：每个组件一个页面，含示例预览（`preview-card`）�
 > 前身是 `examples/gallery`（改名而来），并吸收了原 `examples/ui/024-widgets-gallery`
 > 的修复验证内容（024 目录已于 2026-08 清理删除）。
 
+图表原页的 AV 和 A2Vue 验收及源修由 AutoUI PLAN-107 记录。[AutoUI 计划索引](../../auto-ui/docs/plans/README.md)
+
 ## 布局（`source/front/app.at`）
 
 - **Header** — sticky，含移动端汉堡菜单 + 搜索

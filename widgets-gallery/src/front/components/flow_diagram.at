@@ -50,9 +50,7 @@ widget FlowDiagram (nodes: List, edges: List, direction: str = "td") {
             var nd = .nodesDg[i]
             .tipDgTitle = nd.label
             .tipDgBody = f"id: ${nd.id}"
-            var tx = nd.x
-            var ty = nd.y
-            .tipDgStyle = f"absolute left-[${tx + 4}px] top-[${ty + 2}px]"
+            .tipDgStyle = f"absolute left-[${nd.tipX}px] top-[${nd.tipY}px]"
         }
         .NodeOut -> {
             .hoverDg = 999
@@ -471,10 +469,11 @@ widget FlowDiagram (nodes: List, edges: List, direction: str = "td") {
                 }
                 var cx2 = cxs[i]
                 var cy2 = cys[i]
-                var ivf float = i
                 outNodes.push({
                     x: f"${cx2 - nw / 2.0}",
                     y: f"${cy2 - nh / 2.0}",
+                    tipX: f"${cx2 - nw / 2.0 + 4.0}",
+                    tipY: f"${cy2 - nh / 2.0 + 2.0}",
                     w: f"${nw}",
                     h: f"${nh}",
                     cx: f"${cx2}",
@@ -483,8 +482,7 @@ widget FlowDiagram (nodes: List, edges: List, direction: str = "td") {
                     stroke: stroke,
                     label: lbl,
                     id: nd["id"],
-                    hover: false,
-                    i: ivf
+                    i: i
                 })
                 i = i + 1
             }
@@ -699,13 +697,13 @@ widget FlowDiagram (nodes: List, edges: List, direction: str = "td") {
                     }
                     if .hoverDg != 999 {
                         for nd in .nodesDg {
-                            if nd.hover {
+                            if nd.i == .hoverDg {
                                 rect (x: nd.x, y: nd.y, width: nd.w, height: nd.h, rx: "6", fill: nd.fill, stroke: "#2563eb", stroke-width: "2") {}
                                 text nd.label { x: nd.cx, y: nd.cy, fill: "#1e293b", font-size: "12", text-anchor: "middle" }
                             }
                         }
                         for nd in .nodesDg {
-                            if !nd.hover {
+                            if nd.i != .hoverDg {
                                 rect (x: nd.x, y: nd.y, width: nd.w, height: nd.h, rx: "6", fill: nd.fill, stroke: nd.stroke, stroke-width: "1", fill-opacity: "0.55") {}
                                 text nd.label { x: nd.cx, y: nd.cy, fill: "#94a3b8", font-size: "12", text-anchor: "middle" }
                             }
@@ -718,7 +716,7 @@ widget FlowDiagram (nodes: List, edges: List, direction: str = "td") {
                     mouse-area (coords: .hitDg, onmouseenter: .HoverNode(nd.i), onmouseleave: .NodeOut, style: f"absolute left-[${nd.x}px] top-[${nd.y}px] w-[${nd.w}px] h-[${nd.h}px]") {}
                 }
                 if .hoverDg != 999 {
-                    col (class: f"${.tipDgStyle} z-50 bg-popover border rounded-md px-2 py-1 shadow-md") {
+                    col (coords: .hitDg, class: f"${.tipDgStyle} pointer-events-none z-50 bg-popover border rounded-md px-2 py-1 shadow-md") {
                         text .tipDgTitle { style: "text-xs font-semibold text-foreground" }
                         text .tipDgBody { style: "text-xs text-muted-foreground" }
                     }
